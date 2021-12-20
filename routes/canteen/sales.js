@@ -2,7 +2,7 @@ module.exports = (app, m, fn) => {
     app.get('/sales/:id',        fn.loggedIn(), fn.permissions.get('pos_user'),   (req, res) => res.render('canteen/sales/show'));
 
     app.get('/get/sales',        fn.loggedIn(), fn.permissions.check('pos_user'), (req, res) => {
-        m.sales.findAll({
+        m.sales.findAndCountAll({
             where: req.query.where,
             include: [
                 fn.inc.canteen.sale_lines({item: true}),
@@ -10,7 +10,7 @@ module.exports = (app, m, fn) => {
             ],
             ...fn.pagination(req.query)
         })
-        .then(sales => res.send({success: true, result: sales}))
+        .then(results => fn.send_res('sales', res, results, req.query))
         .catch(err => fn.send_error(res, err))
     });
     app.get('/get/sale',         fn.loggedIn(), fn.permissions.check('pos_user'), (req, res) => {
@@ -23,10 +23,7 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err))
     });
     app.get('/get/sale_current', fn.loggedIn(), fn.permissions.check('pos_user'), (req, res) => {
-        m.sessions.findAll({
-            where: {status: 1},
-            ...fn.pagination(req.query)
-        })
+        m.sessions.findAll({where: {status: 1}})
         .then(sessions => {
             if (sessions.length !== 1) fn.send_error(res, `${sessions.length} session(s) open`)
             else {
@@ -44,12 +41,12 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/sale_lines',   fn.loggedIn(), fn.permissions.check('pos_user'), (req, res) => {
-        m.sale_lines.findAll({
+        m.sale_lines.findAndCountAll({
             where:   req.query.where,
             include: [fn.inc.canteen.item()],
             ...fn.pagination(req.query)
         })
-        .then(lines => res.send({success: true, result: lines}))
+        .then(results => fn.send_res('lines', res, results, req.query))
         .catch(err => fn.send_error(res, err))
     });
 

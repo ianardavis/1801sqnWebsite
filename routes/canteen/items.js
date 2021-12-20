@@ -3,11 +3,11 @@ module.exports = (app, m, fn) => {
     app.get('/canteen_items/:id',    fn.loggedIn(), fn.permissions.get('access_canteen'),        (req, res) => res.render('canteen/items/show'));
     
     app.get('/get/canteen_items',    fn.loggedIn(), fn.permissions.check('access_canteen'),      (req, res) => {
-        m.canteen_items.findAll({
+        m.canteen_items.findAndCountAll({
             where: req.query.where,
             ...fn.pagination(req.query)
         })
-        .then(items => res.send({success: true, result: items}))
+        .then(results => fn.send_res('items', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/canteen_item',     fn.loggedIn(), fn.permissions.check('access_canteen'),      (req, res) => {

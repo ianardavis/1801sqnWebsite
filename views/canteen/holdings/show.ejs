@@ -39,6 +39,7 @@
                 </thead>
                 <tbody id="tbl_movements"></tbody>
             </table>
+            <%- include(`${partials}/limit`, {table: 'movements'}) %>
         </div>
         <%- include(`${partials}/common/actions/tab_body`) %>
         <%- include(`${partials}/common/notes/tab_body`) %>

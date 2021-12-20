@@ -1,13 +1,13 @@
 module.exports = (app, m, fn) => {
     app.get('/get/addresses',    fn.loggedIn(), fn.permissions.check('access_stores'),  (req, res) => {
-        m.addresses.findAll({
+        m.addresses.findAndCountAll({
             include: [{
                 model: m.supplier_addresses,
                 where: req.query.where
             }],
             ...fn.pagination(req.query)
         })
-        .then(addresses => res.send({success: true, result: addresses}))
+        .then(results => fn.send_res('addresses', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/address',      fn.loggedIn(), fn.permissions.check('access_stores'),  (req, res) => {

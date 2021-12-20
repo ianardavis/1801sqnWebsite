@@ -3,11 +3,11 @@ module.exports = (app, m, fn) => {
     app.get('/suppliers/:id',         fn.loggedIn(), fn.permissions.get('supplier_admin'),   (req, res) => res.render('stores/suppliers/show'));
 
     app.get('/get/suppliers',         fn.loggedIn(), fn.permissions.check('supplier_admin'), (req, res) => {
-        m.suppliers.findAll({
+        m.suppliers.findAndCountAll({
             where: req.query.where,
             ...fn.pagination(req.query)
         })
-        .then(suppliers => res.send({success: true, result: suppliers}))
+        .then(results => fn.send_res('suppliers', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/supplier',          fn.loggedIn(), fn.permissions.check('supplier_admin'), (req, res) => {

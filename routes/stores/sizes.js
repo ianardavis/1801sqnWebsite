@@ -8,7 +8,7 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/sizes',    fn.loggedIn(), fn.permissions.check('access_stores'), (req, res) => {
-        m.sizes.findAll({
+        m.sizes.findAndCountAll({
             where: req.query.where,
             include: [
                 fn.inc.stores.item(),
@@ -16,7 +16,7 @@ module.exports = (app, m, fn) => {
             ],
             ...fn.pagination(req.query)
         })
-        .then(sizes => res.send({success: true, result: sizes}))
+        .then(results => fn.send_res('sizes', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/size',     fn.loggedIn(), fn.permissions.check('access_stores'), (req, res) => {

@@ -3,7 +3,7 @@ module.exports = (app, m, fn) => {
     app.get('/receipts/:id',    fn.loggedIn(), fn.permissions.get('canteen_stock_admin'),   (req, res) => res.render('canteen/receipts/show'));
     
     app.get('/get/receipts',    fn.loggedIn(), fn.permissions.check('canteen_stock_admin'), (req, res) => {
-        m.receipts.findAll({
+        m.receipts.findAndCountAll({
             where: req.query.where,
             include: [
                 fn.inc.users.user(),
@@ -11,7 +11,7 @@ module.exports = (app, m, fn) => {
             ],
             ...fn.pagination(req.query)
         })
-        .then(receipts => res.send({success: true,  result: receipts}))
+        .then(results => fn.send_res('receipts', res, results, req.query))
         .catch(err =>     fn.send_error(res, err))
     });
     app.get('/get/receipt',     fn.loggedIn(), fn.permissions.check('canteen_stock_admin'), (req, res) => {

@@ -36,6 +36,7 @@
                 </thead>
                 <tbody id='tbl_stocks'></tbody>
             </table>
+            <%- include(`${partials}/limit`, {table: 'stocks'}) %>
         </div>
         <div class="tab-pane fade" id="serials" role="tabpanel" aria-labelledby="serials-tab">
             <%- include(`${partials}/filter/sort`, {table: 'serials'}) %>
@@ -48,6 +49,7 @@
                 </thead>
                 <tbody id='tbl_serials'></tbody>
             </table>
+            <%- include(`${partials}/limit`, {table: 'serials'}) %>
         </div>
         <%- include(`${partials}/common/actions/tab_body`) %>
         <%- include(`${partials}/common/notes/tab_body`) %>

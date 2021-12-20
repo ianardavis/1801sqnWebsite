@@ -46,6 +46,15 @@ function viewOrder(order_id) {
     .catch(err => console.log(err));
 };
 addReloadListener(getOrders);
+sort_listeners(
+    'orders',
+    getOrders,
+    [
+        {value: 'createdAt', text: 'Created', selected: true},
+        {value: 'qty',       text: 'Qty'},
+        {value: 'status',    text: 'Status'}
+    ]
+);
 window.addEventListener('load', function () {
     addListener('sel_order_status', getOrders, 'change');
     modalOnShow('order_view', function (event) {viewOrder(event.relatedTarget.dataset.id)});

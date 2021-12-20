@@ -1,7 +1,7 @@
 module.exports = (app, m, fn) => {
-    app.get('/demands',              fn.loggedIn(), fn.permissions.get('stores_stock_admin'),           (req, res) => res.render('stores/demands/index'));
-    app.get('/demands/:id',          fn.loggedIn(), fn.permissions.get('stores_stock_admin'),           (req, res) => res.render('stores/demands/show'));
-    app.get('/demands/:id/download', fn.loggedIn(), fn.permissions.check('stores_stock_admin'),         (req, res) => {
+    app.get('/demands',              fn.loggedIn(), fn.permissions.get(  'stores_stock_admin'),  (req, res) => res.render('stores/demands/index'));
+    app.get('/demands/:id',          fn.loggedIn(), fn.permissions.get(  'stores_stock_admin'),  (req, res) => res.render('stores/demands/show'));
+    app.get('/demands/:id/download', fn.loggedIn(), fn.permissions.check('stores_stock_admin'),  (req, res) => {
         fn.get(
             'demands',
             {demand_id: req.params.id}
@@ -17,25 +17,25 @@ module.exports = (app, m, fn) => {
         })
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/demand_lines/:id',     fn.loggedIn(), fn.permissions.get('stores_stock_admin'),           (req, res) => res.render('stores/demand_lines/show'));
+    app.get('/demand_lines/:id',     fn.loggedIn(), fn.permissions.get(  'stores_stock_admin'),  (req, res) => res.render('stores/demand_lines/show'));
     
-    app.get('/count/demands',        fn.loggedIn(), fn.permissions.check('stores_stock_admin'),         (req, res) => {
+    app.get('/count/demands',        fn.loggedIn(), fn.permissions.check('stores_stock_admin'),  (req, res) => {
         m.demands.count({where: req.query})
         .then(count => res.send({success: true, result: count}))
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/count/demand_lines',   fn.loggedIn(), fn.permissions.check('stores_stock_admin'),         (req, res) => {
+    app.get('/count/demand_lines',   fn.loggedIn(), fn.permissions.check('stores_stock_admin'),  (req, res) => {
         m.demand_lines.count({where: req.query})
         .then(count => res.send({success: true, result: count}))
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/sum/demand_lines',     fn.loggedIn(), fn.permissions.check('stores_stock_admin'),         (req, res) => {
+    app.get('/sum/demand_lines',     fn.loggedIn(), fn.permissions.check('stores_stock_admin'),  (req, res) => {
         m.demand_lines.sum('qty', {where: req.query})
         .then(sum => res.send({success: true, result: sum}))
         .catch(err => fn.send_error(res, err));
     });
     
-    app.get('/get/demand',           fn.loggedIn(), fn.permissions.check('stores_stock_admin'),         (req, res) => {
+    app.get('/get/demand',           fn.loggedIn(), fn.permissions.check('stores_stock_admin'),  (req, res) => {
         fn.get(
             'demands',
             req.query.where,
@@ -47,8 +47,8 @@ module.exports = (app, m, fn) => {
         .then(demand => res.send({success: true, result: demand}))
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/demands',          fn.loggedIn(), fn.permissions.check('stores_stock_admin'),         (req, res) => {
-        m.demands.findAll({
+    app.get('/get/demands',          fn.loggedIn(), fn.permissions.check('stores_stock_admin'),  (req, res) => {
+        m.demands.findAndCountAll({
             where:   req.query.where,
             include: [
                 fn.inc.users.user(),
@@ -56,11 +56,11 @@ module.exports = (app, m, fn) => {
             ],
             ...fn.pagination(req.query)
         })
-        .then(demands => res.send({success: true, result: demands}))
+        .then(results => fn.send_res('demands', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/demand_lines',     fn.loggedIn(), fn.permissions.check('stores_stock_admin'),         (req, res) => {
-        m.demand_lines.findAll({
+    app.get('/get/demand_lines',     fn.loggedIn(), fn.permissions.check('stores_stock_admin'),  (req, res) => {
+        m.demand_lines.findAndCountAll({
             where:   req.query.where,
             include: [
                 fn.inc.stores.size(),
@@ -69,10 +69,10 @@ module.exports = (app, m, fn) => {
             ],
             ...fn.pagination(req.query)
         })
-        .then(lines => res.send({success: true, result: lines}))
+        .then(results => fn.send_res('lines', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/demand_line',      fn.loggedIn(), fn.permissions.check('stores_stock_admin'),         (req, res) => {
+    app.get('/get/demand_line',      fn.loggedIn(), fn.permissions.check('stores_stock_admin'),  (req, res) => {
         fn.get(
             'demand_lines',
             req.query.where,

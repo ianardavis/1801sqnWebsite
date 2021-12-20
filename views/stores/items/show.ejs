@@ -37,6 +37,7 @@
                         </thead>
                         <tbody id='tbl_categories'></tbody>
                     </table>
+                    <%- include(`${partials}/limit`, {table: 'categories'}) %>
                     <div id="div_categories_menu" class="mb-1">
                         <span class="float-start">
                             <%- include(`${partials}/button/modal/open`, {icon: 'plus-square', type: 'success', modal: 'category_add'}) %>
@@ -47,7 +48,7 @@
         </div>
         <div class="tab-pane fade" id="sizes" role="tabpanel" aria-labelledby="sizes-tab">
             <div class="row">
-                <div class="col-12 col-lg-4 mx-auto">
+                <div class="col-12 col-lg-6 mx-auto">
                     <%- include(`${partials}/filter/sort`, {table: 'sizes'}) %>
 	                <table class='table table-sm table-hover w-100'>
                         <thead class='thead-dark'>
@@ -58,6 +59,7 @@
                         </thead>
                         <tbody id='tbl_sizes'></tbody>
                     </table>
+                    <%- include(`${partials}/limit`, {table: 'sizes'}) %>
                     <div id="div_sizes_menu" class="mb-1">
                         <span class="float-start">
                             <%- include(`${partials}/button/modal/open`, {icon: 'plus-square', type: 'success', modal: 'size_add'}) %>
@@ -176,14 +178,12 @@
 <% } %>
 
 <script src='/js/stores/items/show/categories/view.js'></script>
-<script async>getCategories()</script>
 <% if (permissions.stores_stock_admin) { %>
     <script src='/js/stores/items/show/categories/add.js'></script>
     <script src='/js/stores/items/show/categories/delete.js'></script>
 <% } %>
 
 <script src='/js/stores/items/show/sizes/view.js'></script>
-<script async>getSizes()</script>
 <% if (permissions.stores_stock_admin) { %>
     <% if (permissions.supplier_admin) { %>
         <script src='/js/utils/list/suppliers.js'></script>

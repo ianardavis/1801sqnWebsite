@@ -66,7 +66,7 @@ module.exports = (app, m, fn) => {
     });
     app.get('/get/loancards',                fn.loggedIn(), fn.permissions.check('access_stores', true), (req, res) => {
         if (!req.allowed) req.query.user_id_loancard = req.user.user_id;
-        m.loancards.findAll({
+        m.loancards.findAndCountAll({
             where: req.query.where,
             include: [
                 {
@@ -79,11 +79,11 @@ module.exports = (app, m, fn) => {
             ],
             ...fn.pagination(req.query)
         })
-        .then(loancards => res.send({success: true, result: loancards}))
+        .then(results => fn.send_res('loancards', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/loancard_lines',           fn.loggedIn(), fn.permissions.check('access_stores', true), (req, res) => {
-        m.loancard_lines.findAll({
+        m.loancard_lines.findAndCountAll({
             where:   req.query.where,
             include: [
                 fn.inc.stores.size(),
@@ -101,7 +101,7 @@ module.exports = (app, m, fn) => {
             ],
             ...fn.pagination(req.query)
         })
-        .then(lines => res.send({success: true, result: lines}))
+        .then(results => fn.send_res('lines', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/loancard_line',            fn.loggedIn(), fn.permissions.check('access_stores', true), (req, res) => {
@@ -127,7 +127,7 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/loancard_lines_due',       fn.loggedIn(), fn.permissions.check('access_stores'),       (req, res) => {
-        m.loancard_lines.findAll({
+        m.loancard_lines.findAndCountAll({
             where: {status: 2},
             include: [
                 fn.inc.stores.size(),
@@ -142,7 +142,7 @@ module.exports = (app, m, fn) => {
             ],
             ...fn.pagination(req.query)
         })
-        .then(issues => res.send({success: true, result: issues}))
+        .then(results => fn.send_res('issues', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });
 

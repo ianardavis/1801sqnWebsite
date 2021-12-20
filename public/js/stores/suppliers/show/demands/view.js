@@ -7,11 +7,12 @@ function getDemands() {
         if (sel_status.value !== '') where.status = sel_status.value;
         get({
             table: 'demands',
-            where: where
+            where: where,
+            func: getDemands
         })
-        .then(function ([demands, options]) {
-            set_count('demand', demands.length);
-            demands.forEach(demand => {
+        .then(function ([result, options]) {
+            set_count('demand', result.count);
+            result.demands.forEach(demand => {
                 try {
                     let row = tbl_demands.insertRow(-1);
                     add_cell(row, table_date(demand.createdAt));
@@ -25,17 +26,16 @@ function getDemands() {
     })
 };
 addReloadListener(getDemands);
-sort_listeners('demands', getDemands);
+sort_listeners(
+    'demands',
+    getDemands,
+    [
+        {value: 'createdAt', text: 'Created'},
+        {value: 'status',    text: 'Status'},
+        {value: 'filename',  text: 'Filename'},
+        {value: 'user_id',   text: 'User'}
+    ]
+);
 window.addEventListener('load', function () {
     addListener('sel_demand_status', getDemands, 'change');
-    addSortOptions(
-        'demands',
-        [
-            {value: 'createdAt', text: 'Created'},
-            {value: 'status',    text: 'Status'},
-            {value: 'filename',  text: 'Filename'},
-            {value: 'user_id',   text: 'User'}
-        ]
-    )
-    .then(result => getDemands());
 });

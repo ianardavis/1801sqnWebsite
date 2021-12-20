@@ -4,8 +4,8 @@ function getSuppliers() {
         get({
             table: 'suppliers'
         })
-        .then(function ([suppliers, options]) {
-            suppliers.forEach(supplier => {
+        .then(function ([result, options]) {
+            result.suppliers.forEach(supplier => {
                 tbl_suppliers.appendChild(new Card({
                     href:     `/suppliers/${supplier.supplier_id}`,
                     title:    supplier.name,
@@ -21,14 +21,11 @@ function getSuppliers() {
     });
 };
 addReloadListener(getSuppliers);
-sort_listeners('suppliers', getSuppliers);
-window.addEventListener('load', function () {
-    addSortOptions(
-        'suppliers',
-        [
-            {value: 'createdAt', text: 'Created'},
-            {value: 'name',      text: 'Name', selected: true}
-        ]
-    )
-    .then(result => getSuppliers());
-});
+sort_listeners(
+    'suppliers',
+    getSuppliers,
+    [
+        {value: 'createdAt', text: 'Created'},
+        {value: 'name',      text: 'Name', selected: true}
+    ]
+);

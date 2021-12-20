@@ -1,7 +1,7 @@
 module.exports = (app, m, fn) => {
     app.get('/stocks/:id',          fn.loggedIn(), fn.permissions.get('access_stores'),        (req, res) => res.render('stores/stocks/show'));
     app.get('/get/stocks',          fn.loggedIn(), fn.permissions.check('access_stores'),      (req, res) => {
-        m.stocks.findAll({
+        m.stocks.findAndCountAll({
             where:   req.query.where,
             include: [
                 fn.inc.stores.size(),
@@ -9,7 +9,7 @@ module.exports = (app, m, fn) => {
             ],
             ...fn.pagination(req.query)
         })
-        .then(stocks => res.send({success: true, result: stocks}))
+        .then(results => fn.send_res('stocks', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });
     app.get('/sum/stocks',          fn.loggedIn(), fn.permissions.check('access_stores'),      (req, res) => {
@@ -18,7 +18,7 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/negative_stock',  fn.loggedIn(), fn.permissions.check('access_stores'),      (req, res) => {
-        m.stocks.findAll({
+        m.stocks.findAndCountAll({
             where: {qty: {[fn.op.lt]: 0}},
             include: [
                 fn.inc.stores.size(),
@@ -26,7 +26,7 @@ module.exports = (app, m, fn) => {
             ],
             ...fn.pagination(req.query)
         })
-        .then(stocks => res.send({success: true, result: stocks}))
+        .then(results => fn.send_res('stocks', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/stock',           fn.loggedIn(), fn.permissions.check('access_stores'),      (req, res) => {

@@ -9,11 +9,11 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/locations', fn.loggedIn(),                                      (req, res) => {
-        m.locations.findAll({
+        m.locations.findAndCountAll({
             where: req.query.where,
             ...fn.pagination(req.query)
         })
-        .then(locations => res.send({success: true, result: locations}))
+        .then(results =>fn.send_res('locations', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });
 

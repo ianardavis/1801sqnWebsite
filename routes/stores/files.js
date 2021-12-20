@@ -10,11 +10,11 @@ module.exports = (app, m, fn) => {
         );
     });
     app.get('/get/files',           fn.loggedIn(), fn.permissions.check('supplier_admin'),  (req, res) => {
-        m.files.findAll({
+        m.files.findAndCountAll({
             where: req.query.where,
             ...fn.pagination(req.query)
         })
-        .then(files => res.send({success: true, result: files}))
+        .then(results => fn.send_res('files', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/file',            fn.loggedIn(), fn.permissions.check('supplier_admin'),  (req, res) => {
@@ -27,11 +27,11 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/file_details',    fn.loggedIn(), fn.permissions.check('supplier_admin'),  (req, res) => {
-        m.file_details.findAll({
+        m.file_details.findAndCountAll({
             where: req.query.where,
             ...fn.pagination(req.query)
         })
-        .then(details => res.send({success: true, result: details}))
+        .then(results => fn.send_res('details', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/file_detail',     fn.loggedIn(), fn.permissions.check('supplier_admin'),  (req, res) => {

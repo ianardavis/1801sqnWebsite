@@ -39,16 +39,15 @@ function getIssues() {
         get({
             table:  'issues',
             ...query(),
-            ...pagination('issues')
+            func: getIssues
         })
         .then(function ([result, options]) {
-            add_page_links(result.count, result.limit, result.offset, 'issues', getIssues);
             let row_index = 0;
             result.issues.forEach(issue => {
                 let row = tbl_issues.insertRow(-1);
                 add_cell(row, table_date(issue.createdAt));
                 add_cell(row, {text: print_user(issue.user_issue)});
-                add_cell(row, {text: (issue.size ? (issue.size.item ? issue.size.item.description : '') : '')});
+                add_cell(row, {text: (issue.size && issue.size.item ? issue.size.item.description : '')});
                 add_cell(row, {text: (issue.size ? print_size(issue.size) : '')});
                 add_cell(row, {text: issue.qty});
                 add_cell(row, {
@@ -129,12 +128,21 @@ function getUsers() {
     });
 };
 addReloadListener(getIssues);
-sort_listeners('issues', getIssues);
+sort_listeners(
+    'issues',
+    getIssues,
+    [
+        {value: 'createdAt',     text: 'Date', selected: true},
+        {value: 'user_id_issue', text: 'User'},
+        {value: 'description',   text: 'Description'},
+        {value: 'size1',         text: 'Size 1'},
+        {value: 'size2',         text: 'Size 2'},
+        {value: 'size3',         text: 'Size 3'},
+        {value: 'qty',           text: 'Qty'},
+        {value: 'status',        text: 'Status'}
+    ]
+);
 window.addEventListener('load', function () {
-    addListener('limit_issues_10',  getIssues, 'input');
-    addListener('limit_issues_20',  getIssues, 'input');
-    addListener('limit_issues_30',  getIssues, 'input');
-    addListener('limit_issues_all', getIssues, 'input');
     addListener('filter_issues_user', getIssues, 'input');
     addListener('status_issues_0', getIssues, 'input');
     addListener('status_issues_1', getIssues, 'input');
@@ -148,21 +156,4 @@ window.addEventListener('load', function () {
     addListener('filter_issues_size_1', getIssues, 'input');
     addListener('filter_issues_size_2', getIssues, 'input');
     addListener('filter_issues_size_3', getIssues, 'input');
-    Promise.all([
-        getUsers(),
-        addSortOptions(
-            'issues',
-            [
-                {value: 'createdAt',     text: 'Date', selected: true},
-                {value: 'user_id_issue', text: 'User'},
-                {value: 'description',   text: 'Description'},
-                {value: 'size1',         text: 'Size 1'},
-                {value: 'size2',         text: 'Size 2'},
-                {value: 'size3',         text: 'Size 3'},
-                {value: 'qty',           text: 'Qty'},
-                {value: 'status',        text: 'Status'}
-            ]
-        )
-    ])
-    .then(result => getIssues());
 });

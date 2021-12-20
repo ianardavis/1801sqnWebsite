@@ -18,3 +18,13 @@ function getSizes() {
     });
 };
 addReloadListener(getSizes);
+sort_listeners(
+    'sizes',
+    getSizes,
+    [
+        {value: 'createdAt', text: 'Created'},
+        {value: 'size1',     text: 'Size 1', selected: true},
+        {value: 'size2',     text: 'Size 2'},
+        {value: 'size3',     text: 'Size 3'}
+    ]
+);

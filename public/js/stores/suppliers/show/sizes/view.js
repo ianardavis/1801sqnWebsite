@@ -7,9 +7,9 @@ function getItems() {
             location: 'items/supplier',
             where: {supplier_id: path[2]}
         })
-        .then(function ([items, options]) {
-            set_count('item', items.length);
-            items.forEach(item => {
+        .then(function ([result, options]) {
+            set_count('item', result.count);
+            result.items.forEach(item => {
                 sel_items.appendChild(new Option({value: item.item_id, text: item.description}).e);
             });
         });
@@ -25,10 +25,11 @@ function getSizes() {
                 where: {
                     item_id: item_id.value,
                     supplier_id: path[2]
-                }
+                },
+                func: getSizes
             })
-            .then(function ([sizes, options]) {
-                sizes.forEach(size => {
+            .then(function ([result, options]) {
+                result.sizes.forEach(size => {
                     let row = tbl_sizes.insertRow(-1);
                     add_cell(row, {text: size.size1});
                     add_cell(row, {text: size.size2});
@@ -40,23 +41,22 @@ function getSizes() {
     });
 };
 addReloadListener(getItems);
-sort_listeners('items', getItems);
-sort_listeners('sizes', getSizes);
+sort_listeners(
+    'items',
+    getItems,
+    [
+        {value: 'description', text: 'Description', selected: true}
+    ]
+);
+sort_listeners(
+    'sizes',
+    getSizes,
+    [
+        {value: 'size1', text: 'Size 1'},
+        {value: 'size2', text: 'Size 2'},
+        {value: 'size3', text: 'Size 3'},
+    ]
+);
 window.addEventListener('load', function () {
     addListener('sel_items', getSizes, 'input');
-    addSortOptions(
-        'sizes',
-        [
-            {value: 'size1', text: 'Size 1'},
-            {value: 'size2', text: 'Size 2'},
-            {value: 'size3', text: 'Size 3'},
-        ]
-    )
-    addSortOptions(
-        'items',
-        [
-            {value: 'description', text: 'Description', selected: true}
-        ]
-    )
-    .then(result => getItems());
 });

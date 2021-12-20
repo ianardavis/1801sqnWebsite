@@ -80,16 +80,12 @@ module.exports = (app, m, fn) => {
                         where.createdAt = {[fn.op.lt]: query.lt.value}
                     };
                 };
-                return m.issues.findAll({
+                return m.issues.findAndCountAll({
                     where: where,
                     include: include,
                     ...fn.pagination(query)
                 })
-                .then(issues => {
-                    return m.issues.count({where: where, include: include})
-                    .then(count => res.send({success: true, result: {issues: issues, count: count, ...{limit: query.limit, offset: query.offset}}}))
-                    .catch(err => fn.send_error(res, err));
-                })
+                .then(results => fn.send_res('issues', res, results, query))
                 .catch(err => fn.send_error(res, err));
             })
             .catch(err => fn.send_error(res, err));

@@ -1,7 +1,7 @@
 module.exports = (app, m, fn) => {
     app.get('/nsns/:id',          fn.loggedIn(), fn.permissions.get('access_stores'),   (req, res) => res.render('stores/nsns/show'));
     app.get('/get/nsns',          fn.loggedIn(), fn.permissions.check('access_stores'), (req, res) => {
-        m.nsns.findAll({
+        m.nsns.findAndCountAll({
             where: req.query.where,
             include: [
                 fn.inc.stores.nsn_group(),
@@ -11,7 +11,7 @@ module.exports = (app, m, fn) => {
             ],
             ...fn.pagination(req.query)
         })
-        .then(nsns => res.send({success: true, result: nsns}))
+        .then(results => fn.send_res('nsns', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/nsn',           fn.loggedIn(), fn.permissions.check('access_stores'), (req, res) => {
@@ -29,28 +29,28 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/nsn_groups',    fn.loggedIn(), fn.permissions.check('access_stores'), (req, res) => {
-        m.nsn_groups.findAll({
+        m.nsn_groups.findAndCountAll({
             where: req.query.where,
             ...fn.pagination(req.query)
         })
-        .then(nsn_groups => res.send({success: true, result: nsn_groups}))
+        .then(results => fn.send_res('nsn_groups', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/nsn_classes',   fn.loggedIn(), fn.permissions.check('access_stores'), (req, res) => {
         if (req.query.nsn_group_id === '') req.query.nsn_group_id = null;
-        m.nsn_classes.findAll({
+        m.nsn_classes.findAndCountAll({
             where: req.query.where,
             ...fn.pagination(req.query)
         })
-        .then(nsn_classes => res.send({success: true, result: nsn_classes}))
+        .then(results => fn.send_res('nsn_classes', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/nsn_countries', fn.loggedIn(), fn.permissions.check('access_stores'), (req, res) => {
-        m.nsn_countries.findAll({
+        m.nsn_countries.findAndCountAll({
             where: req.query.where,
             ...fn.pagination(req.query)
         })
-        .then(nsn_countries => res.send({success: true, result: nsn_countries}))
+        .then(results => fn.send_res('nsn_countries', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });
 

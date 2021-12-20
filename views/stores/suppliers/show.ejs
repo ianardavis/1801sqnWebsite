@@ -47,6 +47,7 @@
                 </thead>
                 <tbody id="tbl_files"></tbody>
             </table>
+            <%- include(`${partials}/limit`, {table: 'files'}) %>
             <div id="div_files_menu" class="mb-1">
                 <span class="float-start">
                     <%- include(`${partials}/button/modal/open`, {icon: 'file-upload', type: 'success', modal: 'file_add'}) %>
@@ -64,6 +65,7 @@
                 </thead>
                 <tbody id="tbl_addresses"></tbody>
             </table>
+            <%- include(`${partials}/limit`, {table: 'addresses'}) %>
             <div id="div_addresses_menu" class="mb-1">
                 <span class="float-start">
                     <%- include(`${partials}/button/modal/open`, {icon: 'plus-square', type: 'success', modal: 'address_add'}) %>
@@ -81,6 +83,7 @@
                 </thead>
                 <tbody id="tbl_contacts"></tbody>
             </table>
+            <%- include(`${partials}/limit`, {table: 'contacts'}) %>
             <div id="div_contacts_menu" class="mb-1">
                 <span class="float-start">
                     <%- include(`${partials}/button/modal/open`, {icon: 'plus-square', type: 'success', modal: 'contact_add'}) %>
@@ -102,6 +105,7 @@
                         </thead>
                         <tbody id="tbl_sizes"></tbody>
                     </table>
+                    <%- include(`${partials}/limit`, {table: 'sizes'}) %>
                 </div>
             </div>
             <div id="div_sizes"></div>
@@ -118,6 +122,7 @@
                     </thead>
                     <tbody id="tbl_demands"></tbody>
                 </table>
+                <%- include(`${partials}/limit`, {table: 'demands'}) %>
             </div>
         <% } %>
         <%- include(`${partials}/common/notes/tab_body`) %>

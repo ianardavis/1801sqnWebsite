@@ -15,6 +15,7 @@
         </thead>
         <tbody id="tbl_movements"></tbody>
     </table>
+    <%- include(`${partials}/limit`, {table: 'movements'}) %>
 </section>
 <%- include(`${partials}/foot/app`) %>
 <script src="/js/canteen/movements/index/view.js"></script>

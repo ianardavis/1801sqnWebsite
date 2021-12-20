@@ -20,6 +20,7 @@
             <th><i class='fas fa-search'></i></th>
         </thead>
         <tbody id="tbl_items"></tbody>
+		<%- include(`${partials}/limit`, {table: 'canteen_items'}) %>
     </table>
     <div id="div_modals">
         <% if (permissions.canteen_stock_admin) { %>

@@ -1,12 +1,12 @@
 module.exports = (app, m, fn) => {
     app.get('/get/categories',    fn.loggedIn(), fn.permissions.check('access_stores'), (req, res) => {
-        let query = fn.nullify(req.query.where);
-        m.categories.findAll({
-            where:   query,
+        // let query = fn.nullify(req.query.where);
+        m.categories.findAndCountAll({
+            where:   req.query.where || {},
             include: [fn.inc.stores.categories({as: 'parent'})],
             ...fn.pagination(req.query)
         })
-        .then(categories => res.send({success: true, result: categories}))
+        .then(results => fn.send_res('categories', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/category',      fn.loggedIn(), fn.permissions.check('access_stores'), (req, res) => {

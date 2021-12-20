@@ -70,6 +70,7 @@
 			</thead>
 			<tbody id="tbl_orders"></tbody>
 		</table>
+		<%- include(`${partials}/limit`, {table: 'orders'}) %>
 	<% if (permissions.stores_stock_admin) { %></form><% } %>
 	<div id="div_modals">
 		<% if (permissions.stores_stock_admin) { %>

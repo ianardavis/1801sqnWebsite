@@ -3,22 +3,18 @@ module.exports = (app, m, fn) => {
     app.get('/items/:id',              fn.loggedIn(), fn.permissions.get('access_stores'),        (req, res) => res.render('stores/items/show'));
     
     app.get('/get/items/supplier',     fn.loggedIn(), fn.permissions.check('access_stores'),      (req, res) => {
-        m.items.findAll({
+        m.items.findAndCountAll({
             include: [{
                 model: m.sizes,
                 where: req.query.where
             }],
             ...fn.pagination(req.query)
         })
-        .then(items => {
-            console.log(req.query.where);
-            delete items.sizes;
-            res.send({success: true, result: items});
-        })
+        .then(results => fn.send_res('items', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/items/uniform',      fn.loggedIn(), fn.permissions.check('access_stores'),      (req, res) => {
-        m.items.findAll({
+        m.items.findAndCountAll({
             include: [{
                 model: m.item_categories,
                 required: true,
@@ -30,16 +26,18 @@ module.exports = (app, m, fn) => {
             }],
             ...fn.pagination(req.query)
         })
-        .then(items => res.send({success: true, result: items}))
+        .then(results => fn.send_res('items', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/items',              fn.loggedIn(), fn.permissions.check('access_stores'),      (req, res) => {
-        m.items.findAll({
-            where:   req.query.where,
+        let where = req.query.where || {};
+        if (req.query.like) where.description = {[fn.op.substring]: req.query.like.description || ''}
+        m.items.findAndCountAll({
+            where:   where,
             include: [fn.inc.stores.gender()],
             ...fn.pagination(req.query)
         })
-        .then(items => res.send({success: true, result: items}))
+        .then(results => fn.send_res('items', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/item',               fn.loggedIn(), fn.permissions.check('access_stores'),      (req, res) => {
@@ -52,12 +50,12 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/item_categories',    fn.loggedIn(), fn.permissions.check('access_stores'),      (req, res) => {
-        m.item_categories.findAll({
+        m.item_categories.findAndCountAll({
             where:   req.query.where,
             include: [fn.inc.stores.category()],
             ...fn.pagination(req.query)
         })
-        .then(categories => res.send({success: true, result: categories}))
+        .then(results => fn.send_res('categories', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/item_category',      fn.loggedIn(), fn.permissions.check('access_stores'),      (req, res) => {

@@ -356,7 +356,7 @@ function Page_Number(options = {}) {
     if (options.classes) options.classes.forEach(e => _input.classList.add(e));
     _input.setAttribute('type', 'radio');
     _input.setAttribute('id',   `offset_${options.offset}`);
-    _input.setAttribute('name', 'page[offset]');
+    _input.setAttribute('name', `offset_${options.table}`);
     _input.setAttribute('form', 'form_filter');
     _input.setAttribute('value', options.offset);
     if (options.selected === options.offset) _input.setAttribute('checked', true);

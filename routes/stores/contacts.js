@@ -1,13 +1,13 @@
 module.exports = (app, m, fn) => {
     app.get('/get/contacts',    fn.loggedIn(), fn.permissions.check('access_stores'),  (req, res) => {
-        m.contacts.findAll({
+        m.contacts.findAndCountAll({
             include: [{
                 model: m.supplier_contacts,
                 where: req.query.where
             }],
             ...fn.pagination(req.query)
         })
-        .then(contacts => res.send({success: true, result: contacts}))
+        .then(results => fn.send_res('contacts', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/contact',     fn.loggedIn(), fn.permissions.check('access_stores'),  (req, res) => {

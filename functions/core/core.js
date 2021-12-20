@@ -12,6 +12,14 @@ module.exports = function (m, fn) {
         if (err.message) console.log(err);
         res.send({success: false, message: err.message || err});
     };
+    fn.send_res = function (table, res, result, query) {
+        let _return = {success: true, result: {}};
+        _return.result[table] = result.rows;
+        _return.result.count  = result.count;
+        _return.result.limit  = query.limit;
+        _return.result.offset = query.offset;
+        res.send(_return);
+    };
     fn.add_years = function (years = 0) {
         let now = new Date();
         return new Date(now.getFullYear() + years, now.getMonth(), now.getDate());

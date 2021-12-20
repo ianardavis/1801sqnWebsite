@@ -1,5 +1,5 @@
 function listGenders(options = {}) {
-	return new Promise((resolve, reject) => {
+	return new Promise(resolve => {
 		clear(options.select || 'sel_genders')
 		.then(sel_genders => {
 			get({
@@ -8,29 +8,29 @@ function listGenders(options = {}) {
 				...options
 			})
 			.then(function ([genders, options]) {
-				if (options.blank === true) {
+				if (options.blank) {
 					sel_genders.appendChild(
 						new Option({
 							selected: (!options.selected),
-							text:     options.blank_text || ''
+							text:     options.blank.text || ''
 						}).e
 					);
 				};
 				genders.forEach(gender => {
-					let value = '';
-					if (options.id_only === true) value = gender.gender_id
-					else						  value = `"gender_id":"${gender.gender_id}"`
 					sel_genders.appendChild(
 						new Option({
 							selected: (options.selected === gender.gender_id),
 							text:  gender.gender,
-							value: value
+							value: gender.gender_id
 						}).e
 					);
 				});
 				resolve(true);
 			});
 		})
-		.catch(err => reject(err));
+		.catch(err => {
+			console.log(err);
+			resolve(false);
+		});
 	});
 };

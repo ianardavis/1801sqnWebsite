@@ -227,46 +227,57 @@ function selected_user(id = 'sel_users') {
     if (sel_users && sel_users.value !== '') return sel_users.value;
     else return null
 };
-function pagination(table) {
-    let limit  = document.querySelector(`.limit_${table}:checked`)  || {value: '10'},
-        offset = document.querySelector(`.offset_${table}:checked`) || {value: '0'};
-    return {
-        limit: limit.value,
-        offset: offset.value
-    };
+function get_pagination(table) {
+    let limit  = document.querySelector(`.limit_${table}:checked`),
+        offset = document.querySelector(`.offset_${table}:checked`),
+        _return = {};
+    if (limit)  _return.limit  = limit.value;
+    if (offset) _return.offset = offset.value;
+    return _return;
 };
 function add_page_links(count, limit, offset, table, listener) {
-    count = Number(count);
-    limit = Number(limit);
-    offset = Number(offset);
-    clear('page_buttons')
+    clear(`page_buttons_${table}`)
     .then(page_buttons => {
+        count  = Number(count);
+        limit  = Number(limit);
+        offset = Number(offset || 0);
         let page_count = Math.ceil(count/limit);
-        if (page_count <  offset) offset = 0;
+        if (page_count < offset) offset = 0;
         if (limit) {
             for (let i = 0; i < page_count; i++) {
-                page_buttons.appendChild(new Page_Number({classes: [`offset_${table}`], offset: i, listener: listener, selected: offset}).e);
+                page_buttons.appendChild(
+                    new Page_Number({
+                        classes:  [`offset_${table}`],
+                        offset:   i,
+                        listener: listener,
+                        selected: offset,
+                        table:    table
+                    }).e
+                );
             };
-        } else  page_buttons.appendChild(new Page_Number({classes: [`offset_${table}`], offset: 0, listener: listener, selected: 0}).e);
+        } else page_buttons.appendChild(
+            new Page_Number({
+                classes:  [`offset_${table}`],
+                offset:   0,
+                listener: listener,
+                selected: 0,
+                table:    table
+            }).e
+        );
     });
 };
-function addSortOptions(table, options) {
-    return new Promise(resolve => {
-        clear(`sort_${table}`)
-        .then(sort => {
-            options.forEach(o => sort.appendChild(new Option({value: o.value, text: o.text, selected: o.selected}).e));
-            resolve(true);
-        })
-        .catch(err => {
-            console.log(err);
-            resolve(false);
-        });
-    });
-};
-function sort_listeners(table, func) {
+function sort_listeners(table, func, options) {
     window.addEventListener('load', function () {
-        addListener(`sort_${table}`,     func, 'input');
-        addListener(`sort_${table}_dir`, func, 'input');
+        addListener(`limit_${table}_10`,  func, 'input');
+        addListener(`limit_${table}_20`,  func, 'input');
+        addListener(`limit_${table}_30`,  func, 'input');
+        addListener(`limit_${table}_all`, func, 'input');
+        addListener(`sort_${ table}`,     func, 'input');
+        addListener(`sort_${ table}_dir`, func, 'input');
+        clear(`sort_${table}`)
+        .then(sort => options.forEach(o => sort.appendChild(new Option({value: o.value, text: o.text, selected: o.selected}).e)))
+        .catch(err => console.log(err))
+        .finally(() => func());
     });
 };
 let path = window.location.pathname.toString().split('/');

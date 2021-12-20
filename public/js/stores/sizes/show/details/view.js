@@ -3,7 +3,8 @@ function getDetails() {
     .then(tbl_details => {
         get({
             table: 'details',
-            where: {size_id: path[2]}
+            where: {size_id: path[2]},
+            func: getDetails
         })
         .then(function ([details, options]) {
             details.forEach(detail => {
@@ -34,6 +35,15 @@ function viewDetail(detail_id) {
     });
 };
 addReloadListener(getDetails);
+sort_listeners(
+    'details',
+    getDetails,
+    [
+        {value: 'createdAt', text: 'Created'},
+        {value: 'name',      text: 'Name', selected: true},
+        {value: 'value',     text: 'Value'}
+    ]
+);
 window.addEventListener('load', function () {
     modalOnShow('detail_view', function (event) {
         if (event.relatedTarget.dataset.id) {

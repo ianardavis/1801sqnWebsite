@@ -15,6 +15,7 @@
             <th><i class='fas fa-search'></i></th>
         </thead>
         <tbody id="tbl_holdings"></tbody>
+		<%- include(`${partials}/limit`, {table: 'holdings'}) %>
     </table>
     <div id="div_modals">
         <div id='mdl_holding_add' class="modal" tabindex="-1" role="dialog">

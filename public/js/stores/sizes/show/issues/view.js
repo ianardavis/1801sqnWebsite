@@ -9,9 +9,9 @@ function getIssues() {
             table: 'issues',
             where: where
         })
-        .then(function ([issues, options]) {
-            set_count('issue', issues.length);
-            issues.forEach(issue => {
+        .then(function ([result, options]) {
+            set_count('issue', result.issues.length);
+            result.issues.forEach(issue => {
                 try {
                     let row = tbl_issues.insertRow(-1);
                     add_cell(row, table_date(issue.createdAt));
@@ -51,6 +51,16 @@ function viewIssue(issue_id) {
     .catch(err => console.log(err));
 };
 addReloadListener(getIssues);
+sort_listeners(
+    'issues',
+    getIssues,
+    [
+        {value: 'createdAt',     text: 'Created'},
+        {value: 'user_id_issue', text: 'Issued To', selected: true},
+        {value: 'qty',           text: 'Qty'},
+        {value: 'status',        text: 'Status'}
+    ]
+);
 window.addEventListener('load', function () {
     document.querySelector('#sel_issue_status').addEventListener('change', getIssues);
     modalOnShow('issue_view', function (event) {viewIssue(event.relatedTarget.dataset.id)});

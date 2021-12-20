@@ -14,7 +14,6 @@ module.exports = (app, m, fn) => {
     app.get('/get/user',          fn.loggedIn(), fn.permissions.check('access_users', true), (req, res) => {
         m.users.findOne({
             where:      req.query.where,
-            ...fn.pagination(req.query),
             include:    [fn.inc.users.rank(), fn.inc.users.status()],
             attributes: ['user_id', 'full_name', 'service_number', 'first_name', 'surname', 'status_id', 'rank_id', 'login_id', 'reset', 'last_login']
         })
@@ -28,19 +27,19 @@ module.exports = (app, m, fn) => {
     });
     app.get('/get/users',         fn.loggedIn(), fn.permissions.check('access_users', true), (req, res) => {
         if (!req.allowed) req.query.user_id = req.user.user_id;
-        m.users.findAll({
+        m.users.findAdCountAll({
             where:      req.query.where,
             include:    [fn.inc.users.rank(), fn.inc.users.status()],
             attributes: user_attributes,
             ...fn.pagination(req.query)
         })
-        .then(users => res.send({success: true,  result: users}))
+        .then(results => fn.send_res('users', res, results, req.query))
         .catch(err =>  fn.send_error(res, err));
     });
     app.get('/get/users_current', fn.loggedIn(), fn.permissions.check('access_users', true), (req, res) => {
         let where = null
         if (!req.allowed) where = {user_id: req.user.user_id};
-        m.users.findAll({
+        m.users.findAndCountAll({
             where: where,
             include:    [
                 fn.inc.users.rank(),
@@ -52,7 +51,7 @@ module.exports = (app, m, fn) => {
             attributes: user_attributes,
             ...fn.pagination(req.query)
         })
-        .then(users => res.send({success: true,  result: users}))
+        .then(results => fn.send_res('users', res, results, req.query))
         .catch(err =>  fn.send_error(res, err));
     });
 

@@ -39,6 +39,7 @@
                     </thead>
                     <tbody id='tbl_details'></tbody>
                 </table>
+                <%- include(`${partials}/limit`, {table: 'details'}) %>
                 <div id="div_details_details_menu" class="mb-1">
                     <span class="float-start">
                         <%- include(`${partials}/button/modal/open`, {icon: 'plus-square', type: 'success', modal: 'detail_add'}) %>
@@ -57,6 +58,7 @@
                 </thead>
                 <tbody id='tbl_nsns'></tbody>
             </table>
+            <%- include(`${partials}/limit`, {table: 'nsns'}) %>
             <% if (permissions.stores_stock_admin) { %></form><% } %>
             <div id="div_nsns_menu" class="mb-1">
                 <span class="float-start">
@@ -74,6 +76,7 @@
                 </thead>
                 <tbody id='tbl_serials'></tbody>
             </table>
+            <%- include(`${partials}/limit`, {table: 'serials'}) %>
             <div id="div_serials_menu" class="mb-1">
                 <span class="float-start">
                     <%- include(`${partials}/button/modal/open`, {icon: 'plus-square', type: 'success', modal: 'serial_add'}) %>
@@ -90,6 +93,7 @@
                 </thead>
                 <tbody id='tbl_stocks'></tbody>
             </table>
+            <%- include(`${partials}/limit`, {table: 'stocks'}) %>
             <div id="div_stocks_menu" class="mb-1">
                 <span class="float-start">
                     <%- include(`${partials}/button/modal/open`, {icon: 'plus-square', type: 'success', modal: 'stock_add'}) %>
@@ -109,6 +113,7 @@
                     </thead>
                     <tbody id='tbl_orders'></tbody>
                 </table>
+                <%- include(`${partials}/limit`, {table: 'orders'}) %>
                 <div id="div_orders_menu" class="mb-1">
                     <span class="float-start">
                         <%- include(`${partials}/button/modal/open`, {icon: 'plus-square', type: 'success', modal: 'order_add'}) %>
@@ -129,6 +134,7 @@
                 </thead>
                 <tbody id='tbl_issues'></tbody>
             </table>
+            <%- include(`${partials}/limit`, {table: 'issues'}) %>
             <div id="div_issues_menu" class="mb-1">
                 <span class="float-start">
                     <%- include(`${partials}/button/modal/open`, {icon: 'plus-square', type: 'success', modal: 'issue_add'}) %>
@@ -403,7 +409,6 @@
 <script src="/js/stores/sizes/show/view.js"></script>
 <script async>getSize()</script>
 <script src="/js/stores/sizes/show/details/view.js"></script>
-<script async>getDetails()</script>
 <% if (permissions.stores_stock_admin) { %>
     <datalist id="list_detail_options"></datalist>
     <script src="/js/stores/sizes/show/details/add.js"></script>
@@ -417,29 +422,24 @@
 <% } %>
 
 <script src="/js/stores/sizes/show/nsns/view.js"></script>
-<script async>getNSNs()</script>
 <% if (permissions.stores_stock_admin) { %>
     <script src="/js/utils/list/nsns.js"></script>
     <script src="/js/stores/sizes/show/nsns/add.js"></script>
 <% } %>
 
 <script src="/js/stores/sizes/show/serials/view.js"></script>
-<script async>getSerials()</script>
 <% if (permissions.stores_stock_admin) { %>
     <script src="/js/stores/sizes/show/serials/add.js"></script>
 <% } %>
 
 <script src="/js/stores/sizes/show/stock/view.js"></script>
-<script async>getStocks()</script>
 <% if (permissions.stores_stock_admin) { %>
     <script src="/js/stores/sizes/show/stock/add.js"></script>
     <script src="/js/stores/sizes/show/orders/view.js"></script>
-    <script async>getOrders()</script>
     <script src="/js/stores/sizes/show/orders/add.js"></script>
 <% } %>
 
 <script src="/js/stores/sizes/show/issues/view.js"></script>
-<script async>getIssues()</script>
 <% if (permissions.issuer) { %>
     <script src="/js/users/select/showWindow.js"></script>
     <script src="/js/stores/sizes/show/issues/add.js"></script>

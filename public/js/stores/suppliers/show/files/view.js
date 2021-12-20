@@ -3,11 +3,12 @@ function getFiles() {
     .then(tbl_files => {
         get({
             table: 'files',
-            where: {supplier_id: path[2]}
+            where: {supplier_id: path[2]},
+            func: getFiles
         })
-        .then(function ([files, options]) {
-            set_count('file', files.length);
-            files.forEach(file => {
+        .then(function ([result, options]) {
+            set_count('file', result.count);
+            result.files.forEach(file => {
                 let row = tbl_files.insertRow(-1);
                 add_cell(row, {text: file.filename})
                 add_cell(row, {text: file.description});
@@ -36,16 +37,15 @@ function viewFile(file_id) {
         set_innerText('file_updatedAt',   print_date(file.updatedAt, true));
     });
 };
-sort_listeners('files', getFiles);
+addReloadListener(getFiles);
+sort_listeners(
+    'files',
+    getFiles,
+    [
+        {value: 'filename',    text: 'Filename', selected: true},
+        {value: 'description', text: 'Description'}
+    ]
+);
 window.addEventListener('load', function () {
     modalOnShow('file_view', function (event) {viewFile(event.relatedTarget.dataset.id)});
-    document.querySelector('#reload').addEventListener('click', getFiles);
-    addSortOptions(
-        'files',
-        [
-            {value: 'filename',    text: 'Filename', selected: true},
-            {value: 'description', text: 'Description'}
-        ]
-    )
-    .then(result => getFiles());
 });

@@ -15,7 +15,7 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/paid_in_outs',    fn.loggedIn(), fn.permissions.check('pay_in_out'), (req, res) => {
-        m.paid_in_outs.findAll({
+        m.paid_in_outs.findAndCountAll({
             where: req.query.where,
             include: [
                 fn.inc.users.user({as: 'user_paid_in_out'}),
@@ -23,7 +23,7 @@ module.exports = (app, m, fn) => {
             ],
             ...fn.pagination(req.query)
         })
-        .then(paid_ins => res.send({success: true, result: paid_ins}))
+        .then(results => fn.send_res('paid_ins', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });
 

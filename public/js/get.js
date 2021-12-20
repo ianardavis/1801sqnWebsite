@@ -14,8 +14,18 @@ function get(options) {
                         options.streamAction(event.target.responseText)
                     } else {
                         let response = JSON.parse(event.target.responseText);
-                        if (response.success) resolve([response.result, options])
-                        else {
+                        if (response.success) {
+                            if (options.func) {
+                                add_page_links(
+                                    response.result.count,
+                                    response.result.limit,
+                                    response.result.offset,
+                                    options.table,
+                                    options.func
+                                );
+                            };
+                            resolve([response.result, options]);
+                        } else {
                             console.log(`********* Error getting ${options.table} *********`);
                             console.log(response.message || response);
                             console.log('*******************************************');
@@ -36,17 +46,18 @@ function get(options) {
         });
         
         let order_col = document.querySelector(`#sort_${options.table}`),
-            order_dir = document.querySelector(`#sort_${options.table}_dir`);
+            order_dir = document.querySelector(`#sort_${options.table}_dir`),
+            pagination = get_pagination(options.table);
+        console.log(options.table, pagination);
         if (order_col && order_dir) options.order = {col: order_col.value, dir: order_dir.value};
-
         let queries = [];
         if (options.where )  queries.push(`where=${ JSON.stringify(options.where)}`);
         if (options.like  )  queries.push(`like=${  JSON.stringify(options.like)}`);
         if (options.lt    )  queries.push(`lt=${    JSON.stringify(options.lt)}`);
         if (options.gt    )  queries.push(`gt=${    JSON.stringify(options.gt)}`);
         if (options.order )  queries.push(`order=${ JSON.stringify(options.order)}`);
-        if (options.limit )  queries.push(`limit=${ options.limit}`);
-        if (options.offset)  queries.push(`offset=${options.offset}`);
+        if (pagination.limit && pagination.limit !== 'All') queries.push(`limit=${ JSON.stringify(pagination.limit)}`);
+        if (pagination.offset) queries.push(`offset=${JSON.stringify(pagination.offset)}`);
 
         if (options.filter)  queries.push(`filter=${options.filter}`);
         if (options.query )  queries.push(`where={${options.query.join(',')}}`);

@@ -43,7 +43,16 @@ function viewNote(note_id) {
     });
 };
 addReloadListener(getNotes);
-sort_listeners('notes', getNotes);
+sort_listeners(
+    'notes',
+    getNotes,
+    [
+        {value: 'createdAt', text: 'Created', selected: true},
+        {value: 'note',      text: 'Note'},
+        {value: 'user_id',   text: 'User'},
+        {value: 'system',    text: 'System Generated'}
+    ]
+);
 window.addEventListener('load', function () {
     modalOnShow('note_view', function(event) {
         if (event.relatedTarget.dataset.id) {
@@ -51,14 +60,4 @@ window.addEventListener('load', function () {
         } else modalHide('note_view');
     });
     addListener('sel_system', getNotes, 'input');
-    addSortOptions(
-        'notes',
-        [
-            {value: 'createdAt', text: 'Created', selected: true},
-            {value: 'note',      text: 'Note'},
-            {value: 'user_id',   text: 'User'},
-            {value: 'system',    text: 'System Generated'}
-        ]
-    )
-    .then(result => getNotes());
 });

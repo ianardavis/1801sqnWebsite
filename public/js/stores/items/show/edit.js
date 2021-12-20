@@ -1,3 +1,9 @@
+function getGenders(gender_id) {
+    listGenders({
+        selected: gender_id,
+        blank:    true
+    });
+};
 function viewItemEdit() {
     get({
         table:   'item',
@@ -9,14 +15,7 @@ function viewItemEdit() {
         set_value('size_text1_edit',  item.size_text1);
         set_value('size_text2_edit',  item.size_text2);
         set_value('size_text3_edit',  item.size_text3);
-        if (typeof listGenders === 'function') {
-            listGenders({
-                select:   'sel_genders',
-                selected: item.gender_id,
-                blank:    true,
-                id_only:  true
-            });
-        };
+        getGenders(item.gender_id);
     });
 };
 window.addEventListener('load', function () {

@@ -3,11 +3,12 @@ function getAddresses() {
     .then(tbl_addresses => {
         get({
             table: 'addresses',
-            where: {supplier_id: path[2]}
+            where: {supplier_id: path[2]},
+            func: getAddresses
         })
-        .then(function ([addresses, options]) {
-            set_count('address', addresses.length);
-            addresses.forEach(address => {
+        .then(function ([result, options]) {
+            set_count('address', result.count);
+            result.addresses.forEach(address => {
                 let row = tbl_addresses.insertRow(-1);
                 add_cell(row, {text: address.type});
                 add_cell(row, {text: address.unit_number});
@@ -41,22 +42,21 @@ function viewAddress(supplier_address_id) {
         set_innerText('address_updatedAt',   print_date(address.address.updatedAt, true));
     });
 };
-sort_listeners('addresses', getAddresses);
 addReloadListener(getAddresses);
+sort_listeners(
+    'addresses',
+    getAddresses,
+    [
+        {value: 'type',        text: 'Type', selected: true},
+        {value: 'unit_number', text: 'Unit Number'},
+        {value: 'street',      text: 'Street'},
+        {value: 'town',        text: 'Town'},
+        {value: 'county',      text: 'County'},
+        {value: 'country',     text: 'Country'},
+        {value: 'postcode',    text: 'Postcode'},
+        {value: 'createdAt',   text: 'Created'}
+    ]
+);
 window.addEventListener('load', function () {
     modalOnShow('address_view', function (event) {viewAddress(event.relatedTarget.dataset.id)});
-    addSortOptions(
-        'addresses',
-        [
-            {value: 'type',        text: 'Type', selected: true},
-            {value: 'unit_number', text: 'Unit Number'},
-            {value: 'street',      text: 'Street'},
-            {value: 'town',        text: 'Town'},
-            {value: 'county',      text: 'County'},
-            {value: 'country',     text: 'Country'},
-            {value: 'postcode',    text: 'Postcode'},
-            {value: 'createdAt',   text: 'Created'}
-        ]
-    )
-    .then(result => getAddresses());
 });

@@ -42,6 +42,7 @@
                 </thead>
                 <tbody id="tbl_sales"></tbody>
             </table>
+            <%- include(`${partials}/limit`, {table: 'sales'}) %>
         </div>
         <div class="tab-pane fade" id="payments" role="tabpanel" aria-labelledby="payments-tab">
             <%- include(`${partials}/filter/sort`, {table: 'payments'}) %>
@@ -53,6 +54,7 @@
                 </thead>
                 <tbody id="tbl_payments"></tbody>
             </table>
+            <%- include(`${partials}/limit`, {table: 'payments'}) %>
         </div>
         <div class="tab-pane fade" id="items" role="tabpanel" aria-labelledby="items-tab">
             <%- include(`${partials}/filter/sort`, {table: 'items'}) %>
@@ -64,6 +66,7 @@
                     <th><i class='fas fa-search'></i></th>
                 </thead>
                 <tbody id="tbl_items"></tbody>
+                <%- include(`${partials}/limit`, {table: 'canteen_items'}) %>
             </table>
         </div>
         <%- include(`${partials}/common/notes/tab_body`) %>

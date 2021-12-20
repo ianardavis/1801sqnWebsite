@@ -1,11 +1,11 @@
 module.exports = (app, m, fn) => {
     app.get('/get/accounts',    fn.loggedIn(), fn.permissions.check('access_stores'),  (req, res) => {
-        return m.accounts.findAll({
+        return m.accounts.findAndCountAll({
             where:   req.query.where,
             include: [fn.inc.users.user()],
             ...fn.pagination(req.query)
         })
-        .then(accounts => res.send({success: true, result: accounts}))
+        .then(results => fn.send_res('accounts', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/account',     fn.loggedIn(), fn.permissions.check('access_stores'),  (req, res) => {

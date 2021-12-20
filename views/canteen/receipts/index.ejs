@@ -19,6 +19,7 @@
             <th><i class='fas fa-search'></i></th>
         </thead>
         <tbody id="tbl_receipts"></tbody>
+		<%- include(`${partials}/limit`, {table: 'receipts'}) %>
     </table>
     <div id="div_modals">
         <div id='mdl_receipt_add' class="modal" tabindex="-1" role="dialog">

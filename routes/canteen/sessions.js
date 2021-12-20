@@ -3,7 +3,7 @@ module.exports = (app, m, fn) => {
     app.get('/sessions/:id', fn.loggedIn(), fn.permissions.get('pos_user'),         (req, res) => res.render('canteen/sessions/show'));
 
     app.get('/get/sessions', fn.loggedIn(), fn.permissions.check('pos_user'),       (req, res) => {
-        m.sessions.findAll({
+        m.sessions.findAndCountAll({
             where: req.query.where,
             include: [
                 fn.inc.users.user({as: 'user_open'}),
@@ -11,7 +11,7 @@ module.exports = (app, m, fn) => {
             ],
             ...fn.pagination(req.query)
         })
-        .then(sessions => res.send({success: true, result: sessions}))
+        .then(results => fn.send_res('sessions', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/session',  fn.loggedIn(), fn.permissions.check('pos_user'),       (req, res) => {

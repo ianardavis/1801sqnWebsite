@@ -46,6 +46,7 @@
 					</thead>
 					<tbody id='tbl_lines'></tbody>
 				</table>
+				<%- include(`${partials}/limit`, {table: 'demand_lines'}) %>
 			</form>
 		</div>
         <%- include(`${partials}/common/actions/tab_body`) %>

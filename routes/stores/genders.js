@@ -1,13 +1,13 @@
 module.exports = (app, m, fn) => {
-    app.get('/get/genders',    fn.loggedIn(),                                      (req, res) => {
-        m.genders.findAll({
+    app.get('/get/genders',    fn.loggedIn(),                                             (req, res) => {
+        m.genders.findAndCountAll({
             where: req.query.where,
             ...fn.pagination(req.query)
         })
-        .then(genders => res.send({success: true, result: genders}))
+        .then(results => fn.send_res('genders', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/gender',     fn.loggedIn(),                                      (req, res) => {
+    app.get('/get/gender',     fn.loggedIn(),                                             (req, res) => {
         fn.get(
             'genders',
             req.query.where

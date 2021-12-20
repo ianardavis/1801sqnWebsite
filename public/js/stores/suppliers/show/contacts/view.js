@@ -3,11 +3,12 @@ function getContacts() {
     .then(tbl_contacts => {
         get({
             table: 'contacts',
-            where: {supplier_id: path[2]}
+            where: {supplier_id: path[2]},
+            func: getContacts
         })
-        .then(function ([contacts, options]) {
-            set_count('contact', contacts.length);
-            contacts.forEach(contact => {
+        .then(function ([result, options]) {
+            set_count('contact', result.count);
+            result.contacts.forEach(contact => {
                 let row = tbl_contacts.insertRow(-1);
                 add_cell(row, {text: contact.type});
                 add_cell(row, {text: contact.description});
@@ -37,17 +38,16 @@ function viewContact(supplier_contact_id) {
         set_innerText('contact_updatedAt',   print_date(contact.contact.updatedAt, true));
     });
 };
-sort_listeners('contacts', getContacts);
 addReloadListener(getContacts);
+sort_listeners(
+    'contacts',
+    getContacts,
+    [
+        {value: 'type',        text: 'Type', selected: true},
+        {value: 'description', text: 'Description'},
+        {value: 'contact',     text: 'Contact'}
+    ]
+);
 window.addEventListener('load', function () {
     modalOnShow('contact_view', function (event) {viewContact(event.relatedTarget.dataset.id)});
-    addSortOptions(
-        'contacts',
-        [
-            {value: 'type',        text: 'Type', selected: true},
-            {value: 'description', text: 'Description'},
-            {value: 'contact',     text: 'Contact'}
-        ]
-    )
-    .then(result => getContacts());
 });

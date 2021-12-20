@@ -2,7 +2,7 @@ module.exports = (app, m, fn) => {
     app.get('/movements',             fn.loggedIn(), fn.permissions.get('cash_admin'),   (req, res) => res.render('canteen/movements/index'));
     app.get('/movements/:id',         fn.loggedIn(), fn.permissions.get('cash_admin'),   (req, res) => res.render('canteen/movements/show'));
     app.get('/get/movements',         fn.loggedIn(), fn.permissions.check('cash_admin'), (req, res) => {
-        m.movements.findAll({
+        m.movements.findAndCountAll({
             where: req.query.where,
             include: [
                 fn.inc.canteen.session(),
@@ -11,7 +11,7 @@ module.exports = (app, m, fn) => {
             ],
             ...fn.pagination(req.query)
         })
-        .then(movements => res.send({success: true, result: movements}))
+        .then(results => fn.send_res('movements', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/movement',          fn.loggedIn(), fn.permissions.check('cash_admin'), (req, res) => {

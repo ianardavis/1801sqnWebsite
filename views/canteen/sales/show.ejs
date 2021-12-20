@@ -28,6 +28,7 @@
                 </thead>
                 <tbody id="tbl_lines"></tbody>
             </table>
+            <%- include(`${partials}/limit`, {table: 'sale_lines'}) %>
         </div>
         <div class="tab-pane fade" id="payments" role="tabpanel" aria-labelledby="payments-tab">
             <%- include(`${partials}/filter/sort`, {table: 'payments'}) %>
@@ -41,6 +42,7 @@
                 </thead>
                 <tbody id="tbl_payments"></tbody>
             </table>
+            <%- include(`${partials}/limit`, {table: 'payments'}) %>
         </div>
     </div>
 </section>

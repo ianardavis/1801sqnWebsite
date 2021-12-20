@@ -1,6 +1,6 @@
 module.exports = (app, m, fn) => {
     app.get('/get/payments',            fn.loggedIn(), fn.permissions.check('pos_user'), (req, res) => {
-        m.payments.findAll({
+        m.payments.findAndCountAll({
             where: req.query.where,
             include: [
                 fn.inc.canteen.sale(),
@@ -8,11 +8,11 @@ module.exports = (app, m, fn) => {
             ],
             ...fn.pagination(req.query)
         })
-        .then(payments => res.send({success: true, result: payments}))
+        .then(results => fn.send_res('payments', res, results, req.query))
         .catch(err => fn.send_error(res, err))
     });
     app.get('/get/payments_session',    fn.loggedIn(), fn.permissions.check('pos_user'), (req, res) => {
-        m.payments.findAll({
+        m.payments.findAndCountAll({
             include: [
                 fn.inc.canteen.sale({
                     where:    req.query.where,
@@ -22,7 +22,7 @@ module.exports = (app, m, fn) => {
             ],
             ...fn.pagination(req.query)
         })
-        .then(payments => res.send({success: true, result: payments}))
+        .then(results => fn.send_res('payments', res, results, req.query))
         .catch(err => fn.send_error(res, err))
     });
     app.delete('/get/payments_session', fn.loggedIn(), fn.permissions.check('pos_user'), (req, res) => {

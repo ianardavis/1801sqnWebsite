@@ -1,10 +1,10 @@
 module.exports = (app, m, fn) => {
     app.get('/get/details',    fn.loggedIn(), fn.permissions.check('access_stores'), (req, res) => {
-        m.details.findAll({
+        m.details.findAndCountAll({
             where: req.query.where,
             ...fn.pagination(req.query)
         })
-        .then(details => res.send({success: true, result: details}))
+        .then(results => fn.send_res('details', res, results, req.query))
         .catch(err =>    fn.send_error(res, err));
     });
     app.get('/get/detail',     fn.loggedIn(), fn.permissions.check('access_stores'), (req, res) => {
@@ -44,7 +44,6 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.put('/details',        fn.loggedIn(), fn.permissions.check('stores_stock_admin'),   (req, res) => {
-        console.log(req.body.items);
         res.send({success: true, message: 'Detail saved'});
     });
 

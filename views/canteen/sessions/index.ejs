@@ -18,6 +18,7 @@
             <th><i class='fas fa-search'></i></th>
         </thead>
         <tbody id="tbl_sessions"></tbody>
+		<%- include(`${partials}/limit`, {table: 'sessions'}) %>
     </table>
     <div id="div_modals">
         <% if (permissions.pos_supervisor) { %>

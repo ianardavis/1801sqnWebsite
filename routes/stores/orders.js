@@ -15,7 +15,7 @@ module.exports = (app, m, fn) => {
     });
 
     app.get('/get/orders',              fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
-        m.orders.findAll({
+        m.orders.findAndCountAll({
             where: req.query.where,
             include: [
                 fn.inc.stores.size(),
@@ -23,7 +23,7 @@ module.exports = (app, m, fn) => {
             ],
             ...fn.pagination(req.query)
         })
-        .then(orders => res.send({success: true, result: orders}))
+        .then(results => fn.send_res('orders', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/order',               fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {

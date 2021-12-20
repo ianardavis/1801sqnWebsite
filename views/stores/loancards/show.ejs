@@ -62,6 +62,7 @@
 				</thead>
 				<tbody id='tbl_lines'></tbody>
 			</table>
+			<%- include(`${partials}/limit`, {table: 'loancard_lines'}) %>
 			<% if (permissions.issuer) { %></form><% } %>
 		</div>
         <%- include(`${partials}/common/actions/tab_body`) %>

@@ -1,7 +1,7 @@
 module.exports = (app, m, fn) => {
     app.get('/serials/:id',         fn.loggedIn(), fn.permissions.get('access_stores'),   (req, res) => res.render('stores/serials/show'));
     app.get('/get/serials',         fn.loggedIn(), fn.permissions.check('access_stores'), (req, res) => {
-        m.serials.findAll({
+        m.serials.findAndCountAll({
             where:   req.query.where,
             include: [
                 fn.inc.stores.location(),
@@ -10,13 +10,13 @@ module.exports = (app, m, fn) => {
             ],
             ...fn.pagination(req.query)
         })
-        .then(serials => res.send({success: true, result: serials}))
+        .then(results => fn.send_res('serials', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/current_serials', fn.loggedIn(), fn.permissions.check('access_stores'), (req, res) => {
         req.query.location_id = {[fn.op.not]: null};
         req.query.issue_id    = null;
-        m.serials.findAll({
+        m.serials.findAndCountAll({
             where:   req.query.where,
             include: [
                 fn.inc.stores.location(),
@@ -25,7 +25,7 @@ module.exports = (app, m, fn) => {
             ],
             ...fn.pagination(req.query)
         })
-        .then(serials => res.send({success: true, result: serials}))
+        .then(results => fn.send_res('serials', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/serial',          fn.loggedIn(), fn.permissions.check('access_stores'), (req, res) => {

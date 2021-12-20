@@ -9,10 +9,10 @@
 <%- include(`${partials}/spinner`, {id: 'items'}) %>
 <%- include(`${partials}/head/components/close`) %>
 <section class='container'>
-	<%- include(`${partials}/inputs/select`, {id: 'sel_genders', title: 'Genders', spinner_id: 'genders', reload_id: 'reload_genders'}) %>
-	<input class='form-control mb-1' type='text' id='itemSearch' onkeyup='searchTable(this)' placeholder='Search by description...'>
 	<div class="row">
 		<div class="col-12 col-lg-5 mx-auto">
+			<%- include(`${partials}/inputs/select`, {id: 'sel_genders', 	  title: 'Genders', spinner_id: 'genders', reload_id: 'reload_genders'}) %>
+			<%- include(`${partials}/inputs/text`,   {id: 'item_description', title: 'Description'}) %>
 			<%- include(`${partials}/filter/sort`, {table: 'items'}) %>
 	        <table class='table table-sm table-hover'>
 				<thead class='thead-dark'>
@@ -21,6 +21,7 @@
 				</thead>
 				<tbody id='tbl_items'></tbody>
 			</table>
+			<%- include(`${partials}/limit`, {table: 'items'}) %>
 		</div>
 	</div>
 	<div id="div_modals">
@@ -49,15 +50,10 @@
 	</div>
 </section>
 <%- include(`${partials}/foot/app`) %>
-<script src="/js/search/table.js"></script>
-<script src="/js/stores/items/index/view.js"></script>
 <script src="/js/utils/list/genders.js"></script>
-<script src="/js/stores/items/index/genders/view.js"></script>
-<script async>getGenders()</script>
-<script async>getItems()</script>
+<script src="/js/stores/items/index/view.js"></script>
 <% if (permissions.stores_stock_admin) { %>
 	<script src="/js/stores/items/size_descriptions.js"></script>
 	<script src="/js/stores/items/index/add.js"></script>
-	<script src="/js/stores/items/index/genders/add.js"></script>
 <% } %>
 <%- include(`${partials}/foot/components/htmlClose`) %>

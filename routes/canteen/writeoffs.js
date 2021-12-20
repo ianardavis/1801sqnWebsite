@@ -3,7 +3,7 @@ module.exports = (app, m, fn) => {
     app.get('/writeoffs/:id', fn.loggedIn(), fn.permissions.get('canteen_stock_admin'),   (req, res) => res.render('canteen/writeoffs/show'));
     
     app.get('/get/writeoffs', fn.loggedIn(), fn.permissions.check('canteen_stock_admin'), (req, res) => {
-        m.writeoffs.findAll({
+        m.writeoffs.findAndCountAll({
             where: req.query.where,
             include: [
                 fn.inc.users.user(),
@@ -11,7 +11,7 @@ module.exports = (app, m, fn) => {
             ],
             ...fn.pagination(req.query)
         })
-        .then(writeoffs => res.send({success: true, result: writeoffs}))
+        .then(results => fn.send_res('writeoffs', res, results, req.query))
         .catch(err => fn.send_error(res, err))
     });
     app.get('/get/writeoff',  fn.loggedIn(), fn.permissions.check('canteen_stock_admin'), (req, res) => {

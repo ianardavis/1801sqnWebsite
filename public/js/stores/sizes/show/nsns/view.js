@@ -41,6 +41,17 @@ function viewNSN(event) {
     });
 };
 addReloadListener(getNSNs);
+sort_listeners(
+    'nsns',
+    getNSNs,
+    [
+        {value: 'createdAt',      text: 'Created', selected: true},
+        {value: 'nsn_group_id',   text: 'Group'},
+        {value: 'nsn_class_id',   text: 'Class'},
+        {value: 'nsn_country_id', text: 'Country'},
+        {value: 'item_number',    text: 'Item #'}
+    ]
+);
 window.addEventListener('load', function() {
     modalOnShow('nsn_view', viewNSN);
 });

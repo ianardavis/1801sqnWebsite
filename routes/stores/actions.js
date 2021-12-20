@@ -1,6 +1,6 @@
 module.exports = (app, m, fn) => {
     app.get('/get/actions',      fn.loggedIn(), fn.permissions.check('access_stores'), (req, res) => {
-        m.actions.findAll({
+        m.actions.findAndCountAll({
             include: [{
                 model: m.action_links,
                 as:    'links',
@@ -8,7 +8,7 @@ module.exports = (app, m, fn) => {
             }],
             ...fn.pagination(req.query)
         })
-        .then(actions => res.send({success: true, result: actions}))
+        .then(results => fn.send_res('actions', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/action',       fn.loggedIn(), fn.permissions.check('access_stores'), (req, res) => {
