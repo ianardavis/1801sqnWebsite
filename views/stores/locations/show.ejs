@@ -26,7 +26,7 @@
             <%- include(`${partials}/inputs/display`, {id: 'location_updatedAt', title: 'Updated'}) %>
         </div>
         <div class="tab-pane fade" id="stocks" role="tabpanel" aria-labelledby="stocks-tab">
-            <%- include(`${partials}/filter/sort`, {table: 'stocks'}) %>
+            <%- include(`${partials}/sort`, {table: 'stocks'}) %>
 	        <table class='table table-sm table-hover w-100'>
                 <thead class='thead-dark'>
 					<th class='w-40'>Item</th>
@@ -39,7 +39,7 @@
             <%- include(`${partials}/limit`, {table: 'stocks'}) %>
         </div>
         <div class="tab-pane fade" id="serials" role="tabpanel" aria-labelledby="serials-tab">
-            <%- include(`${partials}/filter/sort`, {table: 'serials'}) %>
+            <%- include(`${partials}/sort`, {table: 'serials'}) %>
 	        <table class='table table-sm table-hover w-100'>
                 <thead class='thead-dark'>
 					<th class='w-100'>Item</th>

@@ -10,8 +10,8 @@ function listRanks(options = {}) {
                 table: 'ranks',
                 ...options
             })
-            .then(function ([ranks, options]) {
-                ranks.forEach(rank => {
+            .then(function ([result, options]) {
+                result.ranks.forEach(rank => {
                     sel_ranks.appendChild(new Option({
                         value:    (options.id_only ? rank.rank_id : `"rank_id":"${rank.rank_id}"`),
                         text:     rank.rank,

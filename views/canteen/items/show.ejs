@@ -32,7 +32,7 @@
         </div>
         <% if (permissions.canteen_stock_admin) { %>
             <div class="tab-pane fade" id="receipts"  role="tabpanel" aria-labelledby="receipts-tab">
-                <%- include(`${partials}/filter/sort`, {table: 'receipts'}) %>
+                <%- include(`${partials}/sort`, {table: 'receipts'}) %>
 	            <table class="table table-sm table-hover">
                     <thead class="thead-dark">
                         <th class='w-80'>Date</th>
@@ -46,7 +46,7 @@
         <% } %>
         <% if (permissions.canteen_stock_admin) { %>
             <div class="tab-pane fade" id="writeoffs" role="tabpanel" aria-labelledby="writeoffs-tab">
-                <%- include(`${partials}/filter/sort`, {table: 'writeoffs'}) %>
+                <%- include(`${partials}/sort`, {table: 'writeoffs'}) %>
 	            <table class="table table-sm table-hover">
                     <thead class="thead-dark">
                         <th class='w-30'>Date</th>
@@ -61,7 +61,7 @@
         <% } %>
         <% if (permissions.pos_user) { %>
             <div class="tab-pane fade" id="sales"     role="tabpanel" aria-labelledby="sales-tab">
-                <%- include(`${partials}/filter/sort`, {table: 'sales'}) %>
+                <%- include(`${partials}/sort`, {table: 'sales'}) %>
 	            <table class="table table-sm table-hover">
                     <thead class="thead-dark">
                         <th class='w-80'>Date</th>

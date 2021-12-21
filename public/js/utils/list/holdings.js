@@ -6,12 +6,12 @@ function listHoldings(options = {}) {
                 table: 'holdings',
                 ...options
             })
-            .then(function ([holdings, options]) {
+            .then(function ([result, options]) {
                 sel_holdings.appendChild(new Option({
                     text: options.blank_text || '',
                     selected: (options.selected === '')
                 }).e);
-                holdings.forEach(holding => {
+                result.holdings.forEach(holding => {
                     sel_holdings.appendChild(
                         new Option({
                             text:     holding.description,

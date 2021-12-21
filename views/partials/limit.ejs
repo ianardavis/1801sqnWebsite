@@ -1,24 +1,21 @@
 <nav class='float-start'>
-    <ul class="pagination pagination-sm" id='page_buttons_<%= table%>'></ul>
+    Showing <span id="<%= table%>_page_low"></span> to <span id="<%= table%>_page_high"></span> of <span id="<%= table%>_page_max"></span>
+    <ul class="pagination pagination-sm offset_<%= table%>" id='page_buttons_<%= table%>'></ul>
 </nav>
 <nav class='float-end'>
-    <ul class="pagination pagination-sm">
-        <li class="page-item disabled"><p class="page-link">Issues per page:</p></li>
-        <li class="page-item">
-            <input class='btn-check limit_<%= table%>' type="radio" id='limit_<%= table%>_10'  form='form_filter' name='limit_<%= table%>' value='10' checked>
-            <label class="page-link btn btn-outline-primary" for="limit_<%= table%>_10">10 </label>
+    Records per page
+    <ul class="pagination pagination-sm limit_<%= table%>">
+        <li class="page-item active" data-value="10">
+            <button class="page-link" id="limit_<%= table%>_10">10</button>
         </li>
-        <li class="page-item">
-            <input class='btn-check limit_<%= table%>' type="radio" id='limit_<%= table%>_20'  form='form_filter' name='limit_<%= table%>' value='20'>
-            <label class="page-link btn btn-outline-primary" for="limit_<%= table%>_20">20 </label>
+        <li class="page-item" data-value="20">
+            <button class="page-link" id="limit_<%= table%>_20">20</button>
         </li>
-        <li class="page-item">
-            <input class='btn-check limit_<%= table%>' type="radio" id='limit_<%= table%>_30'  form='form_filter' name='limit_<%= table%>' value='30'>
-            <label class="page-link btn btn-outline-primary" for="limit_<%= table%>_30">30 </label>
+        <li class="page-item" data-value="30">
+            <button class="page-link" id="limit_<%= table%>_30">30</button>
         </li>
-        <li class="page-item">
-            <input class='btn-check limit_<%= table%>' type="radio" id='limit_<%= table%>_all' form='form_filter' name='limit_<%= table%>' value='All'>
-            <label class="page-link btn btn-outline-primary" for="limit_<%= table%>_all">All</label>
+        <li class="page-item" data-value="All">
+            <button class="page-link" id="limit_<%= table%>_all">All</button>
         </li>
     </ul>
 </nav>

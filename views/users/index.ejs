@@ -6,7 +6,7 @@
 <section class='container'>
 	<%- include(`${partials}/inputs/select`, {title: 'Ranks', 	 id: 'sel_ranks',    spinner_id: 'ranks', 	 reload_id: 'reload_ranks'}) %>
 	<%- include(`${partials}/inputs/select`, {title: 'Statuses', id: 'sel_statuses', spinner_id: 'statuses', reload_id: 'reload_statuses'}) %>
-	<%- include(`${partials}/filter/sort`, {table: 'users'}) %>
+	<%- include(`${partials}/sort`, {table: 'users'}) %>
 	<table class="table table-sm table-hover">
 		<thead class="thead-dark">
 			<th class='w-20'>Bader/Service #</th>

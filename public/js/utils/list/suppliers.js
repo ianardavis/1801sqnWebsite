@@ -8,9 +8,9 @@ function listSuppliers(options = {}) {
                 table: 'suppliers',
                 ...options
             })
-            .then(function ([suppliers, options]) {
+            .then(function ([result, options]) {
                 if (options.blank === true) sel_suppliers.appendChild(new Option({text: options.blank_text || ''}).e);
-                suppliers.forEach(supplier => {
+                result.suppliers.forEach(supplier => {
                     sel_suppliers.appendChild(
                         new Option({
                             value:    (options.id_only ? supplier.supplier_id : `"supplier_id":"${supplier.supplier_id}"`),

@@ -40,7 +40,7 @@
         </div>
         <% if (permissions.user_admin || permissions.edit_own_permissions) { %>
             <div class="tab-pane fade" id="permissions" role="tabpanel" aria-labelledby="permissions-tab">
-                <%- include(`${partials}/filter/sort`, {table: 'permissions'}) %>
+                <%- include(`${partials}/sort`, {table: 'permissions'}) %>
 	            <table class="table table-sm table-hover">
                     <thead class="thead-dark">
                         <th class='w-100'>Permission</th>
@@ -101,7 +101,7 @@
                 <form id='form_issue_edit'>
                 <button class='btn btn-success w-100 mb-1'>Action Selected Issues</button>
             <% } %>
-            <%- include(`${partials}/filter/sort`, {table: 'issues'}) %>
+            <%- include(`${partials}/sort`, {table: 'issues'}) %>
 	        <table class='table table-sm table-hover'>
                 <thead class="thead-dark">
                     <th class="w-20">Date</th>
@@ -127,7 +127,7 @@
         </div>
         <div class="tab-pane fade" id="loancards" role="tabpanel" aria-labelledby="loancards-tab">
             <%- include(`${partials}/inputs/select`, {title: 'Status', id: 'sel_status_loancards', options: [{text: 'All'}, {value: '"status":0', text: 'Cancelled'}, {value: '"status":1', text: 'Draft'}, {value: '"status":2', text: 'Open', selected: true}, {value: '"status":3', text: 'Closed'}]}) %>
-            <%- include(`${partials}/filter/sort`, {table: 'loancards'}) %>
+            <%- include(`${partials}/sort`, {table: 'loancards'}) %>
 	        <table class='table table-sm table-hover'>
                 <thead class="thead-dark">
                     <th class="w-40">Date</th>

@@ -302,9 +302,9 @@ module.exports = function (m, fn) {
     };
     fn.pagination = function (query) {
         let pagination = {};
-        if (query.order ) pagination.order = [[query.order.col, query.order.dir]];
-        if (query.limit ) pagination.limit = query.limit;
-        if (query.offset) pagination.offset = query.offset;
+        if (query.order ) pagination.order  = [[query.order.col, query.order.dir]];
+        if (query.limit ) pagination.limit  = query.limit;
+        if (query.offset) pagination.offset = query.offset * query.limit || 0;
         return pagination;
     };
 };

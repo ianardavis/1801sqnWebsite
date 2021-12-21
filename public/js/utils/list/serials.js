@@ -5,8 +5,8 @@ function listSerials(line_id, size) {
             table: 'serials',
             where: {size_id: size.size_id}
         })
-        .then(function ([serials, options]) {
-            serials.forEach(serial => {
+        .then(function ([result, options]) {
+            result.serials.forEach(serial => {
                 if (serial.location) {
                     sel_serials.appendChild(
                         new Option({

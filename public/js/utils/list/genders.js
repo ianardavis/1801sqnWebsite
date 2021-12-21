@@ -7,7 +7,7 @@ function listGenders(options = {}) {
 				spinner: options.spinner || 'genders',
 				...options
 			})
-			.then(function ([genders, options]) {
+			.then(function ([result, options]) {
 				if (options.blank) {
 					sel_genders.appendChild(
 						new Option({
@@ -16,7 +16,7 @@ function listGenders(options = {}) {
 						}).e
 					);
 				};
-				genders.forEach(gender => {
+				result.genders.forEach(gender => {
 					sel_genders.appendChild(
 						new Option({
 							selected: (options.selected === gender.gender_id),

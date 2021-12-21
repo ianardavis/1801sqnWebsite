@@ -14,7 +14,7 @@
 		</div>
 	</div>
 	<%- include(`${partials}/filter/stores/issues/collapse`, {user: true}) %>
-	<%- include(`${partials}/filter/sort`, {table: 'issues'}) %>
+	<%- include(`${partials}/sort`, {table: 'issues'}) %>
 	<% if (permissions.issuer) { %><form id='form_issue_edit'><% } %>
 		<table class="table table-sm table-hover">
 			<thead class="thead-dark">

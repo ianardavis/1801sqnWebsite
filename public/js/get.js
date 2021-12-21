@@ -48,7 +48,6 @@ function get(options) {
         let order_col = document.querySelector(`#sort_${options.table}`),
             order_dir = document.querySelector(`#sort_${options.table}_dir`),
             pagination = get_pagination(options.table);
-        console.log(options.table, pagination);
         if (order_col && order_dir) options.order = {col: order_col.value, dir: order_dir.value};
         let queries = [];
         if (options.where )  queries.push(`where=${ JSON.stringify(options.where)}`);

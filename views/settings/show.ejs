@@ -31,7 +31,7 @@
             <%- include(`${partials}/button/button`, {text: 'Find Printer', type: 'primary', id: 'printers', classes: ['w-100']}) %>
             <form id='form_printers'>
                 <%- include(`${partials}/button/button`, {text: 'Save Selected Printer', type: 'success', classes: ['w-100']}) %>
-                <%- include(`${partials}/filter/sort`, {table: 'printers'}) %>
+                <%- include(`${partials}/sort`, {table: 'printers'}) %>
 	            <table class="table table-sm table-hover">
                     <thead class="thead-dark">
                         <th><i class='fas fa-check'></i></th>
@@ -57,7 +57,7 @@
         </div>
         <% if (permissions.stores_stock_admin) { %>
             <div class="tab-pane fade" id="genders" role="tabpanel" aria-labelledby="genders-tab">
-                <%- include(`${partials}/filter/sort`, {table: 'genders'}) %>
+                <%- include(`${partials}/sort`, {table: 'genders'}) %>
 	            <table class="table table-sm table-hover">
                     <thead class="thead-dark">
                         <th class='w-100'>Gender</th>
@@ -69,7 +69,7 @@
         <% } %>
         <% if (permissions.supplier_admin) { %>
             <div class="tab-pane fade" id="files" role="tabpanel" aria-labelledby="files-tab">
-                <%- include(`${partials}/filter/sort`, {table: 'files'}) %>
+                <%- include(`${partials}/sort`, {table: 'files'}) %>
 	            <table class="table table-sm table-hover">
                     <thead class="thead-dark">
                         <th class='w-20'>File ID </th>
@@ -83,7 +83,7 @@
         <% } %>
         <% if (permissions.supplier_admin) { %>
             <div class="tab-pane fade" id="accounts" role="tabpanel" aria-labelledby="accounts-tab">
-                <%- include(`${partials}/filter/sort`, {table: 'accounts'}) %>
+                <%- include(`${partials}/sort`, {table: 'accounts'}) %>
 	            <table class="table table-sm table-hover">
                     <thead class="thead-dark">
                         <th class='w-40'>Name  </th>
@@ -106,7 +106,7 @@
             </div>
         <% } %>
         <div class="tab-pane fade" id="settings" role="tabpanel" aria-labelledby="settings-tab">
-            <%- include(`${partials}/filter/sort`, {table: 'settings'}) %>
+            <%- include(`${partials}/sort`, {table: 'settings'}) %>
 	        <table class="table table-sm table-hover">
                 <thead class="thead-dark">
 					<th class='w-50'>Setting</th>

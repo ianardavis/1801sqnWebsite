@@ -10,8 +10,8 @@ function listItems(options = {}) {
                 table: 'items',
                 ...options
             })
-            .then(function ([items, options]) {
-                items.forEach(item => {
+            .then(function ([result, options]) {
+                result.items.forEach(item => {
                     tbl_items.appendChild(new Option({
                         value:    (options.id_only ? item.item_id : `item_id=${item.item_id}`),
                         text:     item.description,

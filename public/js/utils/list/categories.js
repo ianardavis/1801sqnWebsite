@@ -6,9 +6,9 @@ function listCategories(options = {}) {
                 table: 'categories',
                 ...options
             })
-            .then(function ([categories, options]) {
+            .then(function ([result, options]) {
                 sel_category.appendChild(new Option({text: '---None---', selected: (options.selected === '')}).e);
-                categories.forEach(category => {
+                result.categories.forEach(category => {
                     sel_category.appendChild(
                         new Option({
                             text:     `${category.category} (${category.category_id})`,

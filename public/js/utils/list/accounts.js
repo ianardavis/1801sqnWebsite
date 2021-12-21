@@ -5,9 +5,9 @@ function listAccounts(options = {}) {
             table: 'accounts',
             ...options
         })
-        .then(function ([accounts, options]) {
+        .then(function ([result, options]) {
             sel_accounts.appendChild(new Option({text: '---None---', selected: (options.selected === null)}).e);
-            accounts.forEach(account => {
+            result.accounts.forEach(account => {
                 sel_accounts.appendChild(
                     new Option({
                         value:    account.account_id,

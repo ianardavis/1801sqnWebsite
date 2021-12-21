@@ -8,8 +8,8 @@ function listSizes(options = {}) {
                 where: options.where || {},
                 ...options
             })
-            .then(function ([sizes, options]) {
-                sizes.forEach(size => {
+            .then(function ([result, options]) {
+                result.sizes.forEach(size => {
                     sel_sizes.appendChild(new Option({
                         value:    (options.id_only ? size.size_id : `"size_id":"${size.size_id}"`),
                         text:     print_size(size),

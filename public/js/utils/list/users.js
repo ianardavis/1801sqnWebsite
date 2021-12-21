@@ -7,9 +7,9 @@ function listUsers(options = {}) {
                 spinner: options.spinner || options.table || 'users',
                 ...options
             })
-            .then(function ([users, options]) {
+            .then(function ([result, options]) {
                 if (options.blank) sel_users.appendChild(new Option({text: options.blank_text || ''}).e);
-                users.forEach(user => {
+                result.users.forEach(user => {
                     sel_users.appendChild(
                         new Option({
                             value:    (options.id_only ? user.user_id : `"user_id${options.append || ''}":"${user.user_id}"`),

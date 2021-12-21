@@ -6,7 +6,7 @@
 <section class="container">
 	<%- include(`${partials}/button/modal/open`, {type: 'success', text: 'Add Supplier', modal: 'supplier_add', classes: ['w-100'], small: true}) %>
 	<input class='form-control my-1' type='text' id='supplierSearch' onkeyup='searchCards(this)' placeholder='Search by name...'>
-	<%- include(`${partials}/filter/sort`, {table: 'suppliers'}) %>
+	<%- include(`${partials}/sort`, {table: 'suppliers'}) %>
 	<div class='menu row' id="tbl_suppliers"></div>
 	<div id="div_modals">
 		<div id='mdl_supplier_add' class="modal fade" tabindex="-1" role="dialog">

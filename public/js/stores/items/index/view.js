@@ -14,8 +14,8 @@ function getItems() {
             like:  like,
             func: getItems
         })
-        .then(function ([items, options]) {
-            items.forEach(item => {
+        .then(function ([result, options]) {
+            result.items.forEach(item => {
                 let row = tbl_items.insertRow(-1);
                 add_cell(row, {text: item.description});
                 add_cell(row, {append: new Link({href: `/items/${item.item_id}`}).e});

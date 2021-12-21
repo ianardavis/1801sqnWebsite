@@ -5,9 +5,9 @@ function listStocks(issue_id, size, blank = false) {
             table: 'stocks',
             where: {size_id: size.size_id}
         })
-        .then(function ([stocks, options]) {
+        .then(function ([result, options]) {
             if (blank) sel_stocks.appendChild(new Option({text: 'Select Location'}).e)
-            stocks.forEach(stock => {
+            result.stocks.forEach(stock => {
                 sel_stocks.appendChild(new Option({
                     text: `${stock.location._location} | Qty: ${stock._qty}`,
                     value: stock.stock_id

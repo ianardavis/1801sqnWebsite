@@ -228,16 +228,28 @@ function selected_user(id = 'sel_users') {
     else return null
 };
 function get_pagination(table) {
-    let limit  = document.querySelector(`.limit_${table}:checked`),
-        offset = document.querySelector(`.offset_${table}:checked`),
+    let limit  = document.querySelector(`.limit_${ table} .active`),
+        offset = document.querySelector(`.offset_${table} .active`),
         _return = {};
-    if (limit)  _return.limit  = limit.value;
-    if (offset) _return.offset = offset.value;
+    if (limit ) _return.limit  = limit .dataset.value;
+    if (offset) _return.offset = offset.dataset.value;
     return _return;
 };
-function add_page_links(count, limit, offset, table, listener) {
+function add_page_links(count, limit, offset, table, func) {
     clear(`page_buttons_${table}`)
     .then(page_buttons => {
+        let listener = function (e) {
+            let offset = document.querySelector(`.offset_${table} .active`);
+            offset.classList.remove('active');
+            e.target.parentNode.classList.add('active');
+            func();
+        };
+        if (!offset) offset = 0;
+        let max = limit * (Number(offset) + 1);
+        if (max > count) max = count;
+        set_innerText(`${table}_page_low`, (limit * offset) + 1);
+        set_innerText(`${table}_page_high`, max);
+        set_innerText(`${table}_page_max`,  count);
         count  = Number(count);
         limit  = Number(limit);
         offset = Number(offset || 0);
@@ -247,20 +259,18 @@ function add_page_links(count, limit, offset, table, listener) {
             for (let i = 0; i < page_count; i++) {
                 page_buttons.appendChild(
                     new Page_Number({
-                        classes:  [`offset_${table}`],
-                        offset:   i,
+                        text:     i,
                         listener: listener,
-                        selected: offset,
+                        selected: (offset === i),
                         table:    table
                     }).e
                 );
             };
         } else page_buttons.appendChild(
             new Page_Number({
-                classes:  [`offset_${table}`],
-                offset:   0,
+                text:     0,
                 listener: listener,
-                selected: 0,
+                selected: true,
                 table:    table
             }).e
         );
@@ -268,10 +278,17 @@ function add_page_links(count, limit, offset, table, listener) {
 };
 function sort_listeners(table, func, options) {
     window.addEventListener('load', function () {
-        addListener(`limit_${table}_10`,  func, 'input');
-        addListener(`limit_${table}_20`,  func, 'input');
-        addListener(`limit_${table}_30`,  func, 'input');
-        addListener(`limit_${table}_all`, func, 'input');
+        let limit_func = function (e) {
+            let limit = document.querySelector(`.limit_${table} .active`);
+            console.log(limit);
+            limit.classList.remove('active');
+            e.target.parentNode.classList.add('active');
+            func();
+        };
+        addListener(`limit_${table}_10`,  limit_func);
+        addListener(`limit_${table}_20`,  limit_func);
+        addListener(`limit_${table}_30`,  limit_func);
+        addListener(`limit_${table}_all`, limit_func);
         addListener(`sort_${ table}`,     func, 'input');
         addListener(`sort_${ table}_dir`, func, 'input');
         clear(`sort_${table}`)

@@ -5,7 +5,7 @@
         </span>
     </div>
     <%- include(`${partials}/inputs/select`, {id: 'sel_system', title: 'System Notes', options: [{text: 'Include', value: ''}, {text: 'Exclude', value: '"system":"0"', selected: true}, {text: 'Only', value: '"system":"1"'}]}) %>
-    <%- include(`${partials}/filter/sort`, {table: 'notes'}) %>
+    <%- include(`${partials}/sort`, {table: 'notes'}) %>
 	<table class="table table-sm table-hover">
         <thead class="thead-dark">
             <th class='w-30'>Date</th>

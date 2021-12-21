@@ -7,8 +7,8 @@ function listStatuses(options = {}) {
                 table: 'statuses',
                 ...options
             })
-            .then(function ([statuses, options]) {
-                statuses.forEach(status => {
+            .then(function ([result, options]) {
+                result.statuses.forEach(status => {
                     sel_statuses.appendChild(new Option({
                         value:    (options.id_only ? status.status_id : `"status_id":"${status.status_id}"`),
                         text:     status.status,

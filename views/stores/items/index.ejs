@@ -13,7 +13,7 @@
 		<div class="col-12 col-lg-5 mx-auto">
 			<%- include(`${partials}/inputs/select`, {id: 'sel_genders', 	  title: 'Genders', spinner_id: 'genders', reload_id: 'reload_genders'}) %>
 			<%- include(`${partials}/inputs/text`,   {id: 'item_description', title: 'Description'}) %>
-			<%- include(`${partials}/filter/sort`, {table: 'items'}) %>
+			<%- include(`${partials}/sort`, {table: 'items'}) %>
 	        <table class='table table-sm table-hover'>
 				<thead class='thead-dark'>
 					<th class='w-100'>Description</th>

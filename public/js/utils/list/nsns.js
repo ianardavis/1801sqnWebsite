@@ -6,13 +6,13 @@ function getNSNGroups(options = {}) {
             selected:                options.selected,
             selected_classification: options.selected_classification || null
         })
-        .then(function ([nsn_groups, options]) {
+        .then(function ([result, options]) {
             sel_nsn_groups.appendChild(new Option({
                 text: 'Select Group Code',
                 selected: (options.selected === null)
             }).e);
             let selected = options.selected;
-            nsn_groups.forEach(e => {
+            result.nsn_groups.forEach(e => {
                 if (!options.selected && e.code === 84) selected = true
                 sel_nsn_groups.appendChild(
                     new Option({
@@ -36,14 +36,14 @@ function getNSNClassifications(options = {}) {
                 where: {nsn_group_id: group.value},
                 selected: options.selected || null
             })
-            .then(function ([nsn_classes, options]) {
+            .then(function ([result, options]) {
                 sel_nsn_classes.appendChild(
                     new Option({
                         text: 'Select Classification Code',
                         selected: (options.selected === null)
                     }).e
                 );
-                nsn_classes.forEach(e => {
+                result.nsn_classes.forEach(e => {
                     sel_nsn_classes.appendChild(
                         new Option({
                             text:     `${String(e.code).padStart(2, '0')} | ${e.class}`,
@@ -63,11 +63,11 @@ function getNSNCountries(options = {}) {
             table:    'nsn_countries',
             selected: options.selected
         })
-        .then(function ([nsn_countries, options]) {
+        .then(function ([result, options]) {
             sel_nsn_countries.appendChild(
                 new Option({text: 'Select Country Code'}).e
             );
-            nsn_countries.forEach(e => {
+            result.nsn_countries.forEach(e => {
                 sel_nsn_countries.appendChild(
                     new Option({
                         text:     `${String(e.code).padStart(2, '0')} | ${e.country}`,

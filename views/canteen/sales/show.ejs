@@ -16,7 +16,7 @@
             <%- include(`${partials}/inputs/display`, {id: 'sale_status',    title: 'Status'}) %>
         </div>
         <div class="tab-pane fade" id="lines" role="tabpanel" aria-labelledby="lines-tab">
-            <%- include(`${partials}/filter/sort`, {table: 'sale_lines'}) %>
+            <%- include(`${partials}/sort`, {table: 'sale_lines'}) %>
 	        <table class="table table-sm table-hover">
                 <thead class="thead-dark">
 					<th class='w-35'>Date/Time</th>
@@ -31,7 +31,7 @@
             <%- include(`${partials}/limit`, {table: 'sale_lines'}) %>
         </div>
         <div class="tab-pane fade" id="payments" role="tabpanel" aria-labelledby="payments-tab">
-            <%- include(`${partials}/filter/sort`, {table: 'payments'}) %>
+            <%- include(`${partials}/sort`, {table: 'payments'}) %>
 	        <table class="table table-sm table-hover">
                 <thead class="thead-dark">
 					<th class='w-40'>Date/Time</th>

@@ -5,7 +5,7 @@ function listLocations(options = {}) {
             table: 'locations',
             ...options
         })
-        .then(function ([locations, options]) {
+        .then(function ([result, options]) {
             if (options.blank) {
                 sel_location.appendChild(
                     new Option({
@@ -14,7 +14,7 @@ function listLocations(options = {}) {
                     }).e
                 );
             };
-            locations.forEach(location => {
+            result.locations.forEach(location => {
                 sel_location.appendChild(
                     new Option({
                         text: location.location,

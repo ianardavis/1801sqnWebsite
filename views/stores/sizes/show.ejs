@@ -30,7 +30,7 @@
                 </span>
             </div>
             <div id="div_details">
-                <%- include(`${partials}/filter/sort`, {table: 'details'}) %>
+                <%- include(`${partials}/sort`, {table: 'details'}) %>
 	            <table class='table table-sm table-hover w-100'>
                     <thead class='thead-dark'>
                         <th class='w-30'>Name </th>
@@ -48,7 +48,7 @@
             </div>
         </div>
         <div     id="nsns"    role="tabpanel" aria-labelledby="nsns-tab"    class="tab-pane fade">
-            <%- include(`${partials}/filter/sort`, {table: 'nsns'}) %>
+            <%- include(`${partials}/sort`, {table: 'nsns'}) %>
 	        <% if (permissions.stores_stock_admin) { %><form id='form_nsn_default'><% } %>
             <table class='table table-sm table-hover'>
                 <thead class='thead-dark'>
@@ -67,7 +67,7 @@
             </div>
         </div>
         <div     id="serials" role="tabpanel" aria-labelledby="serials-tab" class="tab-pane fade">
-            <%- include(`${partials}/filter/sort`, {table: 'serials'}) %>
+            <%- include(`${partials}/sort`, {table: 'serials'}) %>
 	        <table class='table table-sm table-hover'>
                 <thead class='thead-dark'>
 					<th class='w-50'>Serial #</th>
@@ -84,7 +84,7 @@
             </div>
         </div>
         <div     id="stocks"  role="tabpanel" aria-labelledby="stocks-tab"  class="tab-pane fade">
-            <%- include(`${partials}/filter/sort`, {table: 'stocks'}) %>
+            <%- include(`${partials}/sort`, {table: 'stocks'}) %>
 	        <table class='table table-sm table-hover'>
                 <thead class='thead-dark'>
 					<th class='w-80'>Location</th>
@@ -103,7 +103,7 @@
         <% if (permissions.stores_stock_admin) { %>
             <div id="orders"  role="tabpanel" aria-labelledby="orders-tab"  class="tab-pane fade">
                 <%- include(`${partials}/inputs/select`, {id: 'sel_order_status', title: 'Status', options: [{text: 'All'}, {text: 'Cancelled', value: '"status":0'}, {text: 'Placed', value: '"status":1'}, {text: 'Demanded', value: '"status":2'}, {text: 'Received', value: '"status":3'}]}) %>
-                <%- include(`${partials}/filter/sort`, {table: 'orders'}) %>
+                <%- include(`${partials}/sort`, {table: 'orders'}) %>
 	            <table class='table table-sm table-hover'>
                     <thead class='thead-dark'>
                         <th class='w-50'>Date</th>
@@ -123,7 +123,7 @@
         <% } %>
         <div     id="issues"  role="tabpanel" aria-labelledby="issues-tab"  class="tab-pane fade">
             <%- include(`${partials}/inputs/select`, {id: 'sel_issue_status', title: 'Status', options: [{text: 'All'}, {text: 'Cancelled/Declined', value: '"status":0'}, {text: 'Requested', value: '"status":1'}, {text: 'Approved', value: '"status":2'}, {text: 'Ordered', value: '"status":3'}, {text: 'Issued', value: '"status":4'}, {text: 'Returned', value: '"status":5'}]}) %>
-            <%- include(`${partials}/filter/sort`, {table: 'issues'}) %>
+            <%- include(`${partials}/sort`, {table: 'issues'}) %>
 	        <table class='table table-sm table-hover'>
                 <thead class='thead-dark'>
 					<th class='w-20'>Date</th>
