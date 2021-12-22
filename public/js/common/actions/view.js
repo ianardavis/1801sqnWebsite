@@ -6,11 +6,12 @@ function getActions() {
             where: {
                 _table: path[1],
                 id:     path[2]
-            }
+            },
+            func: getActions
         })
-        .then(function ([actions, options]) {
-            set_count('action', actions.length);
-            actions.forEach(action => {
+        .then(function ([result, options]) {
+            set_count('action', result.count);
+            result.actions.forEach(action => {
                 let row = tbl_actions.insertRow(-1);
                 add_cell(row, table_date(action.createdAt));
                 add_cell(row, {text: action.action});

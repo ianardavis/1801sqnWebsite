@@ -3,11 +3,12 @@ function getSizes() {
     .then(tbl_sizes => {
         get({
             table: 'sizes',
-            where: {item_id: path[2]}
+            where: {item_id: path[2]},
+            func: getSizes
         })
-        .then(function ([sizes, options]) {
-            set_count('size', sizes.length);
-            sizes.forEach(size => {
+        .then(function ([result, options]) {
+            set_count('size', result.count);
+            result.sizes.forEach(size => {
                 let row = tbl_sizes.insertRow(-1);
                 add_cell(row, {text: size.size1});
                 add_cell(row, {text: size.size2});

@@ -4,11 +4,12 @@ function getMovements() {
         get({
             table: 'movements_holding',
             spinner: 'movements',
-            where: {holding_id: path[2]}
+            where: {holding_id: path[2]},
+            func: getMovements
         })
-        .then(function ([movements, options]) {
-            set_count('movement', movements.length);
-            movements.forEach(movement => {
+        .then(function ([result, options]) {
+            set_count('movement', result.count);
+            result.movements.forEach(movement => {
                 let row = tbl_movements.insertRow(-1);
                 add_cell(row, {text: print_date(movement.createdAt)});
                 add_cell(row, {text: (movement.holding_id_to === path[2] ? 'In' : (movement.holding_id_from === path[2] ? 'Out' : '?'))});

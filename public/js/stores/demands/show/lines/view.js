@@ -7,12 +7,13 @@ function getLines() {
         if (sel_status.value !== '') where.status = sel_status.value;
         get({
             table: 'demand_lines',
-            where: where
+            where: where,
+            func: getLines
         })
-        .then(function ([lines, options]) {
+        .then(function ([result, options]) {
             let row_index = 0;
-            set_count('line', lines.length);
-            lines.forEach(line => {
+            set_count('line', resul.count);
+            result.lines.forEach(line => {
                 try {
                     let row = tbl_lines.insertRow(-1);
                     add_cell(row, {text: line.size.item.description});

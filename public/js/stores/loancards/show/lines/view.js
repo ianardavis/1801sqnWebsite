@@ -8,12 +8,13 @@ function getLines() {
         if (sel_status.value !== '') where.status = sel_status.value;
         get({
             table: 'loancard_lines',
-            where: where
+            where: where,
+            func: getLines
         })
-        .then(function ([lines, options]) {
-            set_count('line', lines.length);
+        .then(function ([result, options]) {
+            set_count('line', resul.count);
             let row_index = 0;
-            lines.forEach(line => {
+            result.lines.forEach(line => {
                 try {
                     let row = tbl_lines.insertRow(-1);
                     add_cell(row, {text: line.size.item.description});

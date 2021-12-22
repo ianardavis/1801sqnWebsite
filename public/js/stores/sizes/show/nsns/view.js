@@ -3,11 +3,12 @@ function getNSNs() {
     .then(tbl_nsns => {
         get({
             table: 'nsns',
-            where: {size_id: path[2]}
+            where: {size_id: path[2]},
+            func: getNSNs
         })
-        .then(function ([nsns, options]) {
-            set_count('nsn', nsns.length);
-            nsns.forEach(nsn => {
+        .then(function ([result, options]) {
+            set_count('nsn', result.count);
+            result.nsns.forEach(nsn => {
                 try {
                     let row = tbl_nsns.insertRow(-1);
                     add_cell(row, {text: print_nsn(nsn)});

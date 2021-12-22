@@ -4,11 +4,12 @@ function getOrders() {
     .then(tbl_orders => {
         get({
             table: 'orders',
-            where: {size_id: path[2]}
+            where: {size_id: path[2]},
+            func: getOrders
         })
-        .then(function ([orders, options]) {
-            set_count('order', orders.length);
-            orders.forEach(order => {
+        .then(function ([result, options]) {
+            set_count('order', result.count);
+            result.orders.forEach(order => {
                 try {
                     let row = tbl_orders.insertRow(-1);
                     add_cell(row, table_date(order.createdAt));

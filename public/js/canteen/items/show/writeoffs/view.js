@@ -3,11 +3,12 @@ function getWriteoffs() {
     .then(tbl_writeoffs => {
         get({
             table: 'writeoffs',
-            where: {item_id: path[2]}
+            where: {item_id: path[2]},
+            func: getWriteoffs
         })
-        .then(function ([writeoffs, options]) {
-            set_count('writeoff', writeoffs.length);
-            writeoffs.forEach(writeoff => {
+        .then(function ([result, options]) {
+            set_count('writeoff', result.count);
+            result.writeoffs.forEach(writeoff => {
                 try {
                     let row = tbl_writeoffs.insertRow(-1);
                     add_cell(row, table_date(writeoff.createdAt));

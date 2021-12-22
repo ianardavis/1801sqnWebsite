@@ -268,7 +268,7 @@ function Card(options = {}) {
         subtitle = document.createElement('p');
     this.e.classList.add('col-12', 'col-sm-6', 'col-lg-4', 'col-xl-3');
     if (options.href) a.setAttribute('href', options.href);
-    a.classList.add('card', 'm-3', 'text-start');
+    a.classList.add('card', 'mb-3', 'text-start');
     header.classList.add('card-header');
     if (options.head_100) header.classList.add('h-100-px');
     title.classList.add('card-title');

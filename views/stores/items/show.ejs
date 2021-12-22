@@ -12,24 +12,28 @@
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
+            <div class="input-group mb-1">
+                <span class="input-group-text w-30">Actions</span>
+                <%- include(`${partials}/button/modal/open`, {text: 'Edit', type: 'warning', modal: 'item_edit', small: true, classes: ['ms-1']}) %>
+                <%- include(`${partials}/button/delete`) %>
+            </div>
             <%- include(`${partials}/inputs/display`, {id: 'item_description', title: 'Description'}) %>
             <%- include(`${partials}/inputs/display`, {id: 'item_size_text1',  title: 'Size Text 1'}) %>
             <%- include(`${partials}/inputs/display`, {id: 'item_size_text2',  title: 'Size Text 2'}) %>
             <%- include(`${partials}/inputs/display`, {id: 'item_size_text3',  title: 'Size Text 3'}) %>
             <%- include(`${partials}/inputs/display`, {id: 'item_gender',      title: 'Gender'}) %>
-            <div id="div_details_menu" class="mb-1">
-                <span class="float-start">
-                    <%- include(`${partials}/button/modal/open`, {icon: 'pencil-alt', type: 'warning', modal: 'item_edit'}) %>
-                </span>
-                <span class="float-end">
-                    <%- include(`${partials}/button/delete`) %>
-                </span>
-            </div>
         </div>
         <div class="tab-pane fade" id="categories" role="tabpanel" aria-labelledby="categories-tab">
             <div class="row">
                 <div class="col-12 col-lg-5 mx-auto">
-                    <%- include(`${partials}/sort`, {table: 'categories'}) %>
+                    <div class="row">
+                        <div class="col-12 mb-1">
+                            <%- include(`${partials}/button/modal/open`, {text: 'New Category', type: 'success', modal: 'category_add', classes: ['w-100'], small: true}) %>
+                        </div>
+                        <div class="col-12 mb-1 justify-content-center">
+                            <%- include(`${partials}/sort`, {table: 'item_categories', small: true}) %>
+                        </div>
+                    </div>
 	                <table class='table table-sm table-hover w-100'>
                         <thead class='thead-dark'>
                             <th class='w-100'>Category</th>
@@ -37,19 +41,21 @@
                         </thead>
                         <tbody id='tbl_categories'></tbody>
                     </table>
-                    <%- include(`${partials}/limit`, {table: 'categories'}) %>
-                    <div id="div_categories_menu" class="mb-1">
-                        <span class="float-start">
-                            <%- include(`${partials}/button/modal/open`, {icon: 'plus-square', type: 'success', modal: 'category_add'}) %>
-                        </span>
-                    </div>
+                    <%- include(`${partials}/limit`, {table: 'item_categories'}) %>
                 </div>
             </div>
         </div>
         <div class="tab-pane fade" id="sizes" role="tabpanel" aria-labelledby="sizes-tab">
             <div class="row">
                 <div class="col-12 col-lg-6 mx-auto">
-                    <%- include(`${partials}/sort`, {table: 'sizes'}) %>
+                    <div class="row">
+                        <div class="col-12 mb-1">
+                            <%- include(`${partials}/button/modal/open`, {text: 'New Size', type: 'success', modal: 'size_add', classes: ['w-100'], small: true}) %>
+                        </div>
+                        <div class="col-12 mb-1 justify-content-center">
+                            <%- include(`${partials}/sort`, {table: 'sizes', small: true}) %>
+                        </div>
+                    </div>
 	                <table class='table table-sm table-hover w-100'>
                         <thead class='thead-dark'>
                             <th class='w-35' id='size_text1_sizes_table'></th>
@@ -60,11 +66,6 @@
                         <tbody id='tbl_sizes'></tbody>
                     </table>
                     <%- include(`${partials}/limit`, {table: 'sizes'}) %>
-                    <div id="div_sizes_menu" class="mb-1">
-                        <span class="float-start">
-                            <%- include(`${partials}/button/modal/open`, {icon: 'plus-square', type: 'success', modal: 'size_add'}) %>
-                        </span>
-                    </div>
                 </div>
             </div>
         </div>

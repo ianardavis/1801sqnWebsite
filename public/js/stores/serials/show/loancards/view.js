@@ -3,11 +3,12 @@ function getLoancards() {
     .then(tbl_loancards => {
         get({
             table: 'loancard_lines',
-            where: {serial_id: path[2]}
+            where: {serial_id: path[2]},
+            func: getLoancards
         })
-        .then(function ([lines, options]) {
-            set_count('loancard', lines.length);
-            lines.forEach(line => {
+        .then(function ([result, options]) {
+            set_count('loancard', result.count);
+            result.lines.forEach(line => {
                 let row = tbl_loancards.insertRow(-1);
                 add_cell(row, table_date(line.createdAt));
                 add_cell(row, {text: print_user(line.loancard.user_loancard)});

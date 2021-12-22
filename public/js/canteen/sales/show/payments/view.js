@@ -3,11 +3,12 @@ function getPayments() {
     .then(tbl_payments => {
         get({
             table: 'payments',
-            where: {sale_id: path[2]}
+            where: {sale_id: path[2]},
+            func: getPayments
         })
-        .then(function ([payments, options]) {
-            set_count('payment', payments.length);
-            payments.forEach(payment => {
+        .then(function ([result, options]) {
+            set_count('payment', result.count);
+            result.payments.forEach(payment => {
                 try {
                     let row = tbl_payments.insertRow(-1);
                     add_cell(row, table_date(payment.createdAt));

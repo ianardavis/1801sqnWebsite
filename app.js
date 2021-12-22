@@ -14,7 +14,7 @@ port_check()
     m = require(`${process.env.ROOT}/database/models`);
     require(`${process.env.ROOT}/database/associations`)(m);
     bb.extend(app, {
-        arrayLimit:  1000,
+        arrayLimit:  200,
         upload:      true,
         path:        `${process.env.ROOT}/public/uploads`,
         allowedPath: /./

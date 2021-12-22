@@ -3,11 +3,12 @@ function getCategories() {
     .then(tbl_categories => {
         get({
             table: 'item_categories',
-            where: {item_id: path[2]}
+            where: {item_id: path[2]},
+            func:  getCategories
         })
-        .then(function ([categories, options]) {
-            set_count('category', categories.length);
-            categories.forEach(category => {
+        .then(function ([result, options]) {
+            set_count('category', result.count);
+            result.categories.forEach(category => {
                 let row = tbl_categories.insertRow(-1);
                 add_cell(row, {text: category.category.category});
                 add_cell(row, {append: new Button({
@@ -34,11 +35,11 @@ function viewCategory(category_id) {
 };
 addReloadListener(getCategories);
 sort_listeners(
-    'categories',
+    'item_categories',
     getCategories,
     [
-        {value: 'createdAt', text: 'Created'},
-        {value: 'category',  text: 'Category', selected: true}
+        {value: 'createdAt', text: 'Created', selected: true},
+        {value: 'category',  text: 'Category'}
     ]
 );
 window.addEventListener('load', function () {

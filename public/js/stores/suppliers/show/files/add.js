@@ -12,6 +12,10 @@ function getFileDescriptions() {
         });
     });
 };
+function reset_FileAdd() {
+    set_value('file_upload');
+    set_value('file_description_add');
+};
 window.addEventListener("load", function () {
     modalOnShow('file_add', getFileDescriptions);
     enable_button('file_add');
@@ -19,6 +23,9 @@ window.addEventListener("load", function () {
         'file_add',
         'POST',
         '/files',
-        {onComplete: getFiles}
+        {onComplete: [
+            getFiles,
+            reset_FileAdd
+        ]}
     );
 });

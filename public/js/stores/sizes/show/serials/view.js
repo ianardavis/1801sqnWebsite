@@ -3,11 +3,12 @@ function getSerials() {
     .then(tbl_serials => {
         get({
             table: 'serials',
-            where: {size_id: path[2]}
+            where: {size_id: path[2]},
+            func: getSerials
         })
-        .then(function ([serials, options]) {
-            set_count('serial', serials.length);
-                serials.forEach(serial => {
+        .then(function ([result, options]) {
+            set_count('serial', result.count);
+                result.serials.forEach(serial => {
                 try {
                     let row = tbl_serials.insertRow(-1);
                     add_cell(row, {text: serial.serial});

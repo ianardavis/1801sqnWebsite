@@ -1,11 +1,24 @@
 <div class="tab-pane fade" id="notes" role="tabpanel">
+    <div class="row mb-1">
+        <div class="col-12 col-md-4 mb-1">
+            <%- include(`${partials}/button/modal/open`, {text: 'New Note', type: 'success', modal: 'note_add', classes: ['w-100'], small: true}) %>
+        </div>
+        <div class="col-12 col-md-4 mb-1">
+            <select class='form-select form-select-sm' id='sel_system'>
+                <option                     >Include System Notes</option>
+                <option value='"system":"0"'>Exclude System Notes</option>
+                <option value='"system":"1"'>Only System Notes</option>
+            </select>
+        </div>
+        <div class="col-12 col-md-4 mb-1 justify-content-center">
+            <%- include(`${partials}/sort`, {table: 'notes', small: true}) %>
+        </div>
+    </div>
     <div id="div_notes_menu" class="mb-1">
         <span class="float-start">
-            <%- include(`${partials}/button/modal/open`, {icon: 'plus-square', type: 'success', modal: 'note_add'}) %>
+            
         </span>
     </div>
-    <%- include(`${partials}/inputs/select`, {id: 'sel_system', title: 'System Notes', options: [{text: 'Include', value: ''}, {text: 'Exclude', value: '"system":"0"', selected: true}, {text: 'Only', value: '"system":"1"'}]}) %>
-    <%- include(`${partials}/sort`, {table: 'notes'}) %>
 	<table class="table table-sm table-hover">
         <thead class="thead-dark">
             <th class='w-30'>Date</th>

@@ -3,11 +3,12 @@ function getStocks() {
     .then(tbl_stocks => {
         get({
             table: 'stocks',
-            where: {size_id: path[2]}
+            where: {size_id: path[2]},
+            func: getStocks
         })
-        .then(function ([stocks, options]) {
-            set_count('stock', stocks.length);
-            stocks.forEach(stock => {
+        .then(function ([result, options]) {
+            set_count('stock', result.count);
+            result.stocks.forEach(stock => {
                 try {
                     let row = tbl_stocks.insertRow(-1);
                     add_cell(row, {text: stock.location.location});

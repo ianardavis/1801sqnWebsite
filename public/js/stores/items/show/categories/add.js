@@ -3,18 +3,18 @@ function reset_categories_add() {
     if (sub_categories) sub_categories.innerHTML = '';
     listCategories('1');
 };
-function listCategories(select, parent_id = '') {
+function listCategories(select, parent_id = null) {
     clear(`sel_category_${select}`)
     .then(sel_category => {
         get({
             table: 'categories',
             where: {category_id_parent: parent_id}
         })
-        .then(function ([categories, options]) {
-            if (categories.length === 0) sel_category.remove();
+        .then(function ([result, options]) {
+            if (result.count === 0) sel_category.remove();
             else {
                 sel_category.appendChild(new Option({text: '... Select Category', selected: true}).e);
-                categories.forEach(category => {
+                result.categories.forEach(category => {
                     sel_category.appendChild(
                         new Option({
                             text:  category.category,

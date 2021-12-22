@@ -9,11 +9,12 @@ function getNotes() {
         if (sel_system.value !== '') where.system = (sel_system.value === '1');
         get({
             table: 'notes',
-            where: where
+            where: where,
+            func: getNotes
         })
-        .then(function ([notes, options]) {
-            set_count('note', notes.length);
-            notes.forEach(note => {
+        .then(function ([result, options]) {
+            set_count('note', result.count);
+            result.notes.forEach(note => {
                 let row = tbl_notes.insertRow(-1);
                 add_cell(row, table_date(note.createdAt));
                 add_cell(row, {text: note.note, ellipsis: true});

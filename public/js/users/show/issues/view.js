@@ -7,12 +7,13 @@ function getIssues () {
         if (statuses) where.status = statuses;
         get({
             table: 'issues',
-            where: where
+            where: where,
+            func: getIssues
         })
-        .then(function ([issues, options]) {
+        .then(function ([result, options]) {
             let row_index = 0;
-            set_count('issue', issues.length);
-            issues.forEach(issue => {
+            set_count('issue', result.count);
+            result.issues.forEach(issue => {
                 let row = tbl_issues.insertRow(-1);
                 add_cell(row, table_date(issue.createdAt));
                 add_cell(row, {text: (issue.size ? (issue.size.item ? issue.size.item.description : '') : '')});

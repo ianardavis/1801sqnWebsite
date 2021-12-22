@@ -7,11 +7,12 @@ function getLoancards () {
         if (sel_status.value !== '') where.status = sel_status.value;
         get({
             table: 'loancards',
-            where: where
+            where: where,
+            func: getLoancards
         })
-        .then(function ([loancards, options]) {
-            set_count('loancards', loancards.length);
-            loancards.forEach(loancard => {
+        .then(function ([result, options]) {
+            set_count('loancards', result.count);
+            result.loancards.forEach(loancard => {
                 let row = tbl_loancards.insertRow(-1);
                 add_cell(row, table_date(loancard.createdAt));
                 add_cell(row, {text: loancard.lines.length || '0'});

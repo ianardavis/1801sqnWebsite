@@ -1,23 +1,16 @@
-<div class="float-end mb-1">
+<div class="float-end w-100 mb-1">
     <div class="row">
-        <div class="col-6">
-            <span>
-                <label for="sort_<%= table %>">Sort By:</label>
-            </span>
-            <span>
-                <select class='form-select form-select-sm' id='sort_<%= table %>'></select>
-            </span>
+        <div class="col-3 align-self-center">
+            <label for="sort_<%= table %>">Sort By:</label>
         </div>
-        <div class="col-6">
-            <span>
-                <label for="sort_<%= table %>_dir">Direction:</label>
-            </span>
-            <span>
-                <select class='form-select form-select-sm' id='sort_<%= table %>_dir'>
-                    <option value="ASC" >Ascending</option>
-                    <option value="DESC">Descending</option>
-                </select>
-            </span>
+        <div class="col-5">
+            <select class='form-select w-100<% if (locals.large) { %> form-select-lg<% } else if (locals.small) { %> form-select-sm<% } %>' id='sort_<%= table %>'></select>
+        </div>
+        <div class="col-4">
+            <select class='form-select w-100<% if (locals.large) { %> form-select-lg<% } else if (locals.small) { %> form-select-sm<% } %>' id='sort_<%= table %>_dir'>
+                <option value="ASC" >Ascending</option>
+                <option value="DESC">Descending</option>
+            </select>
         </div>
     </div>
 </div>

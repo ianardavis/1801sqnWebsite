@@ -7,10 +7,11 @@ function getIssues() {
         if (status.value !== '') where.status = status.value;
         get({
             table: 'issues',
-            where: where
+            where: where,
+            func: getIssues
         })
         .then(function ([result, options]) {
-            set_count('issue', result.issues.length);
+            set_count('issue', result.count);
             result.issues.forEach(issue => {
                 try {
                     let row = tbl_issues.insertRow(-1);

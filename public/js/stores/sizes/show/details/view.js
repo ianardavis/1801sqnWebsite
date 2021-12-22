@@ -6,8 +6,8 @@ function getDetails() {
             where: {size_id: path[2]},
             func: getDetails
         })
-        .then(function ([details, options]) {
-            details.forEach(detail => {
+        .then(function ([result, options]) {
+            result.details.forEach(detail => {
                 let row = tbl_details.insertRow(-1);
                 add_cell(row, {text: detail.name});
                 add_cell(row, {text: detail.value});

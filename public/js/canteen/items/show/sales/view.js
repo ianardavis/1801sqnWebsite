@@ -3,11 +3,12 @@ function getSales() {
     .then(tbl_sales => {
         get({
             table: 'sale_lines',
-            where: {item_id: path[2]}
+            where: {item_id: path[2]},
+            func: getSales
         })
-        .then(function ([lines, options]) {
-            set_count('sale', lines.length);
-            lines.forEach(line => {
+        .then(function ([result, options]) {
+            set_count('sale', result.count);
+            result.lines.forEach(line => {
                 try {
                     let row = tbl_sales.insertRow(-1);
                     add_cell(row, table_date(line.createdAt));
