@@ -68,7 +68,7 @@ module.exports = (app, m, fn) => {
                             include: [m.ranks]
                         }
                     ];
-                if (query.where.status && query.where.status.length > 0) where.status = {[fn.op.or]: query.where.status};
+                if (query.where.status && query.where.status.length > 0) where.status = {[fn.op.or]: (Array.isArray(query.where.status) ? query.where.status : [query.where.status])};
                 if (query.gt || query.lt) {
                     if (query.gt && query.lt) {
                         where.createdAt = {[fn.op.between]: [query.gt.value, query.lt.value]}
@@ -76,7 +76,7 @@ module.exports = (app, m, fn) => {
                     if (query.gt && !query.lt) {
                         where.createdAt = {[fn.op.gt]: query.gt.value}
                     };
-                    if (!querygt && querylt) {
+                    if (!query.gt && query.lt) {
                         where.createdAt = {[fn.op.lt]: query.lt.value}
                     };
                 };

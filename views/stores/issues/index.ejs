@@ -13,7 +13,7 @@
 			<%- include(`${partials}/button/button`, {id: 'action_lines', type: 'success', text: 'Action Selected Issues', classes: ['w-100', 'mb-1'], form: 'issue_edit', disabled: true}) %>
 		</div>
 	</div>
-	<%- include(`${partials}/filter/stores/issues/collapse`, {user: true}) %>
+	<%- include(`${partials}/filter/stores/issues`, {user: true}) %>
 	<%- include(`${partials}/sort`, {table: 'issues'}) %>
 	<% if (permissions.issuer) { %><form id='form_issue_edit'><% } %>
 		<table class="table table-sm table-hover">
@@ -77,9 +77,9 @@
 <script src="/js/users/select/showWindow.js"></script>
 <script src="/js/stores/sizes/select/showWindow.js"></script>
 <% if (permissions.issuer) { %>
-	<script src='/js/stores/issues/edit/issuer.js'></script>
+	<script src='/js/stores/issues/issuer.js'></script>
 	<% if (permissions.stores_stock_admin) { %>
-		<script src='/js/stores/issues/edit/stock_admin.js'></script>
+		<script src='/js/stores/issues/stock_admin.js'></script>
 	<% } %>
 <% } %>
 <%- include(`${partials}/foot/components/htmlClose`) %>

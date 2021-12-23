@@ -58,6 +58,15 @@ function viewLine(action_id) {
     });
 };
 addReloadListener(getActions);
+sort_listeners(
+    'actions',
+    getActions,
+    [
+        {value: 'createdAt', text: 'Created', selected: true},
+        {value: 'action',    text: 'Note'},
+        {value: 'user_id',   text: 'User'}
+    ]
+);
 window.addEventListener('load', function () {
     modalOnShow('action_view', function (event) {viewLine(event.relatedTarget.dataset.id)});
     modalOnShow('action_view', function (event) {getLinks(event.relatedTarget.dataset.id)});

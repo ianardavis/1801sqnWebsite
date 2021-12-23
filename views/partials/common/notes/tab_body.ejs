@@ -5,19 +5,14 @@
         </div>
         <div class="col-12 col-md-4 mb-1">
             <select class='form-select form-select-sm' id='sel_system'>
-                <option                     >Include System Notes</option>
-                <option value='"system":"0"'>Exclude System Notes</option>
-                <option value='"system":"1"'>Only System Notes</option>
+                <option value="" >Include System Notes</option>
+                <option value="0">Exclude System Notes</option>
+                <option value="1">Only System Notes</option>
             </select>
         </div>
         <div class="col-12 col-md-4 mb-1 justify-content-center">
             <%- include(`${partials}/sort`, {table: 'notes', small: true}) %>
         </div>
-    </div>
-    <div id="div_notes_menu" class="mb-1">
-        <span class="float-start">
-            
-        </span>
     </div>
 	<table class="table table-sm table-hover">
         <thead class="thead-dark">

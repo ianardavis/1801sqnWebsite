@@ -5,6 +5,7 @@ function approve_radio(issue_id, index) {
         classes:     ['radio_decline'],
         colour:      'danger',
         html:        '<i class="fas fa-times-circle"></i>',
+        small:   true,
         attributes: [
             {field: 'name',  value: `issues[][${index}][status]`},
             {field: 'value', value: '2'}
@@ -128,8 +129,8 @@ function issue_options() {
                             where: {size_id: issue.size_id},
                             index: options.index
                         })
-                        .then(function ([nsns, options]) {
-                            nsns.forEach(e => nsn_select.appendChild(new Option({
+                        .then(function ([result, options]) {
+                            result.nsns.forEach(e => nsn_select.appendChild(new Option({
                                 text: print_nsn(e),
                                 value: e.nsn_id
                             }).e));
@@ -141,9 +142,9 @@ function issue_options() {
                             where: {size_id: issue.size_id},
                             index: options.index
                         })
-                        .then(function ([serials, options]) {
+                        .then(function ([result, options]) {
                             let serial_options = [{text: 'Select Serial #'}];
-                            serials.forEach(e => serial_options.push({text: e.serial, value: e.serial_id}));
+                            result.serials.forEach(e => serial_options.push({text: e.serial, value: e.serial_id}));
                             for (let i = 0; i < issue.qty; i++) {
                                 div_details.appendChild(new Select({
                                     small: true,
@@ -198,11 +199,10 @@ function add_stock_select(div_details, index, size_id) {
     div_details.appendChild(stock_select);
     get({
         table: 'stocks',
-        where: {size_id: size_id},
-        query: [`"size_id":"${size_id}"`]
+        where: {size_id: size_id}
     })
-    .then(function ([stocks, options]) {
-        stocks.forEach(e => stock_select.appendChild(new Option({
+    .then(function ([result, options]) {
+        result.stocks.forEach(e => stock_select.appendChild(new Option({
             text: `${e.location.location} | Qty: ${e.qty}`,
             value: e.stock_id
         }).e));
@@ -234,8 +234,8 @@ function loancard_options() {
                         where: {size_id: issue.size_id},
                         index: options.index
                     })
-                    .then(function ([stocks, options]) {
-                        stocks.forEach(e => stock_select.appendChild(new Option({
+                    .then(function ([result, options]) {
+                        resultstocks.forEach(e => stock_select.appendChild(new Option({
                             text: `${e.location.location} | Qty: ${e.qty}`,
                             value: e.stock_id
                         }).e));

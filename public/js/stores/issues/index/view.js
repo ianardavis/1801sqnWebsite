@@ -37,7 +37,7 @@ function getIssues() {
     clear('tbl_issues')
     .then(tbl_issues => {
         get({
-            table:  'issues',
+            table: 'issues',
             ...query(),
             func: getIssues
         })
@@ -85,7 +85,6 @@ function getIssues() {
                 if (issue.status === 2 || issue.status === 3) {
                     if (typeof issue_radio   === 'function') radios.push(issue_radio(  issue.issue_id, row_index));
                 };
-                let div = new Div({attributes: [{field: 'id', value: `${issue.issue_id}_details`}]}).e;
                 if (issue.status === 4 ) {
                     if (typeof loancard_radio === 'function') {
                         get({
@@ -105,12 +104,12 @@ function getIssues() {
                         });
                     };
                 };
-                radios.push(div);
+                radios.push(new Div({attributes: [{field: 'id', value: `${issue.issue_id}_details`}]}).e);
                 add_cell(row, {
                     id: `${issue.issue_id}_row`,
                     append: radios
                 });
-                add_cell(row, {append: new Link({href: `/issues/${issue.issue_id}`, large: true}).e});
+                add_cell(row, {append: new Link({href: `/issues/${issue.issue_id}`}).e});
                 row_index ++;
             });
             hide_spinner('issues');
@@ -142,6 +141,7 @@ sort_listeners(
         {value: 'status',        text: 'Status'}
     ]
 );
+getUsers();
 window.addEventListener('load', function () {
     addListener('filter_issues_user', getIssues, 'input');
     addListener('status_issues_0', getIssues, 'input');

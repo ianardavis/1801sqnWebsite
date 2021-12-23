@@ -7,25 +7,23 @@
     <ul class="nav nav-tabs" id="mainTab" role="tablist">
         <%- include(`${partials}/tab_head`, {id: 'details',   title: 'Details',   spinner: 'nsn'}) %>
         <%- include(`${partials}/tab_head`, {id: 'loancards', title: 'Loancards', spinner: 'loancards', count_id: 'loancard'}) %>
+        <%- include(`${partials}/common/actions/tab_head`) %>
         <%- include(`${partials}/common/notes/tab_head`) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
+            <div class="input-group mb-1">
+                <span class="input-group-text w-30">Actions</span>
+                <%- include(`${partials}/button/modal/open`, {text: 'Edit', type: 'warning', modal: 'nsn_edit', small: true, classes: ['ms-1']}) %>
+                <%- include(`${partials}/button/delete`) %>
+            </div>
             <%- include(`${partials}/inputs/display`, {id: 'nsn_group',   title: 'Group'}) %>
             <%- include(`${partials}/inputs/display`, {id: 'nsn_class',   title: 'Classification'}) %>
             <%- include(`${partials}/inputs/display`, {id: 'nsn_country', title: 'Country'}) %>
             <%- include(`${partials}/inputs/display`, {id: 'item_number', title: 'Item Number'}) %>
-            <div id="div_details_menu" class="mb-1">
-                <span class="float-start">
-                    <%- include(`${partials}/button/modal/open`, {icon: 'pencil-alt', type: 'warning', modal: 'nsn_edit'}) %>
-                </span>
-                <span class="float-end">
-                    <%- include(`${partials}/button/delete`) %>
-                </span>
-            </div>
         </div>
         <div class="tab-pane fade" id="loancards" role="tabpanel" aria-labelledby="loancards-tab">
-            <%- include(`${partials}/sort`, {table: 'loancards'}) %>
+            <%- include(`${partials}/sort`, {table: 'loancard_lines'}) %>
 	        <table class='table table-sm table-hover w-100'>
                 <thead class='thead-dark'>
 					<th class='w-40'>Date</th>
@@ -35,7 +33,7 @@
                 </thead>
                 <tbody id='tbl_loancards'></tbody>
             </table>
-            <%- include(`${partials}/limit`, {table: 'loancards'}) %>
+            <%- include(`${partials}/limit`, {table: 'loancard_lines'}) %>
         </div>
         <%- include(`${partials}/common/actions/tab_body`) %>
         <%- include(`${partials}/common/notes/tab_body`) %>
@@ -44,7 +42,7 @@
         <%- include(`${partials}/common/notes/modals`) %>
         <%- include(`${partials}/common/actions/modals`) %>
         <% if (permissions.stores_stock_admin) { %>
-            <div id='mdl_nsn_edit' class="modal fade" tabindex="-1" role="dialog">
+            <div id='mdl_nsn_edit'      class="modal fade" tabindex="-1" role="dialog">
                 <div class="modal-dialog" role="document">
                     <form class="modal-content" id='form_nsn_edit'>
                         <div class="modal-header">
@@ -63,7 +61,7 @@
                 </div>
             </div>
         <% } %>
-        <div     id='mdl_loancard_view'  class="modal fade" tabindex="-1" role="dialog">
+        <div     id='mdl_loancard_view' class="modal fade" tabindex="-1" role="dialog">
             <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -106,13 +104,10 @@
 <%- include(`${partials}/common/notes/scripts`) %>
 <%- include(`${partials}/common/actions/scripts`) %>
 <script src='/js/stores/nsns/show/view.js'></script>
-<script async>getNSN()</script>
 <% if (permissions.stores_stock_admin) { %>
     <script src="/js/utils/list/nsns.js"></script>
     <script src='/js/stores/nsns/show/edit.js'></script>
     <script src="/js/stores/nsns/show/delete.js"></script>
 <% } %>
-
 <script src='/js/stores/nsns/show/loancards/view.js'></script>
-<script async>getLoancards()</script>
 <%- include(`${partials}/foot/components/htmlClose`) %>

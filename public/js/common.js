@@ -245,6 +245,7 @@ function add_page_links(count, limit, offset, table, func) {
             func();
         };
         if (!offset) offset = 0;
+        limit = Number(limit);
         let max = limit * (Number(offset) + 1);
         if (max > count) max = count;
         set_innerText(`${table}_page_low`, (limit * offset) + 1);
@@ -280,7 +281,6 @@ function sort_listeners(table, func, options) {
     window.addEventListener('load', function () {
         let limit_func = function (e) {
             let limit = document.querySelector(`.limit_${table} .active`);
-            console.log(limit);
             limit.classList.remove('active');
             e.target.parentNode.classList.add('active');
             func();

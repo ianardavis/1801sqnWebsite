@@ -11,3 +11,4 @@ function getNSN() {
         set_innerText('item_number', `${nsn.item_number}`);
     });
 };
+window.addEventListener('load', getNSN);

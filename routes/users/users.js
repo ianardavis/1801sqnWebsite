@@ -27,7 +27,7 @@ module.exports = (app, m, fn) => {
     });
     app.get('/get/users',         fn.loggedIn(), fn.permissions.check('access_users', true), (req, res) => {
         if (!req.allowed) req.query.user_id = req.user.user_id;
-        m.users.findAdCountAll({
+        m.users.findAndCountAll({
             where:      req.query.where,
             include:    [fn.inc.users.rank(), fn.inc.users.status()],
             attributes: user_attributes,

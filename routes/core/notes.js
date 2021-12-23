@@ -1,11 +1,11 @@
 module.exports = (app, m, fn) => {
     app.get('/get/notes',    fn.loggedIn(), (req, res) => {
-        m.notes.findAll({
+        m.notes.findAndCountAll({
             where:   req.query.where,
             include: [fn.inc.users.user()],
             ...fn.pagination(req.query)
         })
-        .then(notes => res.send({success: true, result: notes}))
+        .then(results => fn.send_res('notes', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/note',     fn.loggedIn(), (req, res) => {

@@ -5,30 +5,20 @@
 <%- include(`${partials}/head/components/close`) %>
 <section class="container">
 	<ul class="nav nav-tabs" id="mainTab" role="tablist">
-        <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="optionsDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Menu
-            </a>
-            <div class="dropdown-menu" aria-labelledby="optionsDropdown">
-				<%- include(`${partials}/menu/button`, {id: 'delete', text: 'Delete', btn_form: {permission: 'issuer'}}) %>
-            </div>
-        </li>
         <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'issue'}) %>
         <%- include(`${partials}/common/actions/tab_head`) %>
         <%- include(`${partials}/common/notes/tab_head`) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
+            <div class="input-group mb-1">
+                <span class="input-group-text w-30">Actions</span>
+                <%- include(`${partials}/button/modal/open`, {id: 'size_edit', text: 'Edit Size', type: 'warning', modal: 'size_edit', disabled: true}) %>
+                <%- include(`${partials}/button/delete`) %>
+            </div>
 			<%- include(`${partials}/inputs/display`, {id: 'issue_user_issue', title: 'For',  link: true}) %>
 			<%- include(`${partials}/inputs/display`, {id: 'issue_item',	   title: 'Item', link: true}) %>
-			<div class="input-group mb-1">
-                <span class="input-group-text w-30">Size</span>
-                <p class="form-control mb-0" id='issue_size'></p>
-                <button type='button' class='btn btn-warning' id='issue_size_edit' data-bs-toggle="modal" data-bs-target="#mdl_size_edit">
-                    <i class="fas fa-pencil-alt"></i>
-                </button>
-                <a class='btn btn-primary' id='issue_size_link' ><i class="fas fa-search"></i></a>
-            </div>
+			<%- include(`${partials}/inputs/display`, {id: 'issue_size',	   title: 'Size', link: true}) %>
 			<%- include(`${partials}/inputs/display`, {id: 'issue_qty',	 	   title: 'Quantity'}) %>
 			<%- include(`${partials}/inputs/display`, {id: 'issue_createdAt',  title: 'Date Raised'}) %>
 			<%- include(`${partials}/inputs/display`, {id: 'issue_updatedAt',  title: 'Last Updated'}) %>

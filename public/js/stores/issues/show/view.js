@@ -1,5 +1,6 @@
 let statuses = {'0': 'Cancelled', '1': 'Requested', '2': 'Approved', '3': 'Ordered', '4': 'Issued', '5': 'Returned'};
 function getIssue() {
+    disable_button('size_edit');
     get({
         table: 'issue',
         where: {issue_id: path[2]}
@@ -18,7 +19,10 @@ function getIssue() {
         set_href('issue_user_issue_link', `/users/${issue.user_id_issue}`);
         set_href('issue_size_link',       `/sizes/${issue.size_id}`);
         set_href('issue_item_link',       `/items/${issue.size.item_id}`);
-        set_data('issue_size_edit', 'item_id', issue.size.item_id);
+        if (issue.status === 1 || issue.status === 2) {
+            enable_button('size_edit');
+            set_data('btn_size_edit', 'item_id', issue.size.item_id);
+        };
     })
     .catch(err => window.location.href = '/issues');
 };

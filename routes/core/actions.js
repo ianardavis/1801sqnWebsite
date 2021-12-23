@@ -1,5 +1,5 @@
 module.exports = (app, m, fn) => {
-    app.get('/get/actions',      fn.loggedIn(), fn.permissions.check('access_stores'), (req, res) => {
+    app.get('/get/actions',      fn.loggedIn(), (req, res) => {
         m.actions.findAndCountAll({
             include: [{
                 model: m.action_links,
@@ -11,7 +11,7 @@ module.exports = (app, m, fn) => {
         .then(results => fn.send_res('actions', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/action',       fn.loggedIn(), fn.permissions.check('access_stores'), (req, res) => {
+    app.get('/get/action',       fn.loggedIn(), (req, res) => {
         fn.get(
             'actions',
             req.query.where,
@@ -20,7 +20,7 @@ module.exports = (app, m, fn) => {
         .then(action => res.send({success: true, result: action}))
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/action_links', fn.loggedIn(), fn.permissions.check('access_stores'), (req, res) => {
+    app.get('/get/action_links', fn.loggedIn(), (req, res) => {
         m.action_links.findAll({
             where: req.query.where,
             ...fn.pagination(req.query)
@@ -28,7 +28,7 @@ module.exports = (app, m, fn) => {
         .then(links => res.send({success: true, result: links}))
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/action_link',  fn.loggedIn(), fn.permissions.check('access_stores'), (req, res) => {
+    app.get('/get/action_link',  fn.loggedIn(), (req, res) => {
         fn.get(
             'action_links',
             req.query.where

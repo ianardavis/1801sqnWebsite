@@ -34,8 +34,7 @@ function getPrinters() {
                     attributes: [
                         {field: 'name',  value: 'printer'},
                         {field: 'value', value: printer.deviceId}
-                    ],
-                    small: true
+                    ]
                 }).e});
                 add_cell(row, {text: printer.deviceId});
             });
