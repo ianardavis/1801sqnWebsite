@@ -1,65 +1,85 @@
+function getItems() {
+    clear('sel_items')
+    .then(sel_items => {
+        get({table: 'items'})
+        .then(function ([result, options]) {
+            sel_items.appendChild(new Option({text: 'Select Item...'}).e);
+            result.items.forEach(item => {
+                sel_items.appendChild(new Option({value: item.item_id, text: item.description}).e);
+            });
+        });
+    });
+};
 function getSizes() {
-    disable_button('action');
-    clear('form_sizes')
-    .then(form => {
-        let p           = document.createElement('p'),
-            supplier_id = document.querySelector('#sel_suppliers') || {value: ''},
-            where = {orderable: true};
-        if (supplier_id.value !== '') where.supplier_id = supplier_id.value;
-        p.setAttribute('id', 'col_headers');
-        form.appendChild(p);
-        get({
-            table: 'sizes',
-            where: where
-        })
-        .then(function ([sizes, options]) {
-            let row_index = 0;
-            sizes.forEach(size => {
-                let tbl = document.querySelector(`#tbl_${size.item_id}`);
-                if (!tbl) tbl = addItem(form, p, size.item_id, size.item.description);
-                let row = tbl.insertRow(-1);
-                add_cell(row, {text: print_size(size)});
-                add_cell(row, {id: `stock-${size.size_id}`});
-                add_cell(row, {id: `order-${size.size_id}`});
-                add_cell(row, {id: `demanded-${size.size_id}`});
-                add_cell(row, {append: [
-                    new Input({
-                        attributes: [
-                            {field: 'type', value: 'number'},
-                            {field: 'name', value: `orders[][${row_index}][qty]`},
-                            {field: 'min',  value: '0'}
-                        ],
-                        small: true
-                    }).e,
-                    new Input({
-                        attributes: [
-                            {field: 'type',  value: 'hidden'},
-                            {field: 'name',  value: `orders[][${row_index}][size_id]`},
-                            {field: 'value', value: size.size_id}
+    clear('tbl_sizes')
+    .then(tbl_sizes => {
+        let item_id = document.querySelector('#sel_items') || {value: ''};
+        if (item_id.value) {
+            let supplier_id = document.querySelector('#sel_suppliers') || {value: ''},
+                where = {
+                    item_id:   item_id.value,
+                    orderable: true
+                };
+            if (supplier_id.value !== '') where.supplier_id = supplier_id.value;
+            get({
+                table: 'sizes',
+                where: where
+            })
+            .then(function ([result, options]) {
+                let row_index = 0;
+                result.sizes.forEach(size => {
+                    let row = tbl_sizes.insertRow(-1);
+                    add_cell(row, {
+                        text: size.size1,
+                        append: [
+                            new Input({
+                                attributes: [
+                                    {field: 'type',  value: 'hidden'},
+                                    {field: 'name',  value: `orders[][${row_index}][size_id]`},
+                                    {field: 'value', value: size.size_id}
+                                ]
+                            }).e
                         ]
-                    }).e
-                ]});
-                add_cell(row, {append: new Link({href: `/sizes/${size.size_id}`}).e});
-                row_index++;
-                get_stock(size.size_id)
-                .then(stock => set_innerText(`stock-${size.size_id}`, stock || '0'));
-                sum({
-                    table: 'orders',
-                    query: [`size_id=${size.size_id}`, 'status=1']
-                })
-                .then(function([orders, options]) {
-                    set_innerText(`order-${size.size_id}`, orders || '0');
-                });
-                sum({
-                    table: 'demand_lines',
-                    query: [`size_id=${size.size_id}`, 'status=1', 'status=2']
-                })
-                .then(function([demands, options]) {
-                    set_innerText(`demanded-${size.size_id}`, demands || '0');
+                    });
+                    add_cell(row, {text: size.size2});
+                    add_cell(row, {text: size.size3});
+                    add_cell(row, {id: `${size.size_id}_stocks`});
+                    add_cell(row, {id: `${size.size_id}_orders`});
+                    add_cell(row, {id: `${size.size_id}_demands`});
+                    add_cell(row, {id: `${size.size_id}_issues`});
+                    add_cell(row, {append: [
+                        new Input({
+                            attributes: [
+                                {field: 'type', value: 'number'},
+                                {field: 'name', value: `orders[][${row_index}][qty]`},
+                                {field: 'min',  value: '0'}
+                            ],
+                            small: true
+                        }).e
+                    ]});
+                    add_cell(row, {append: new Link({href: `/sizes/${size.size_id}`}).e});
+                    row_index++;
+                    get_stock(size.size_id)
+                    .then(stock => set_innerText(`${size.size_id}_stocks`, stock || '0'));
+
+                    sum({
+                        table: 'orders',
+                        query: [`size_id=${size.size_id}`, 'status=1']
+                    })
+                    .then(function([orders, options]) {
+                        set_innerText(`${size.size_id}_orders`, orders || '0');
+                    });
+
+                    sum({
+                        table: 'demand_lines',
+                        query: [`size_id=${size.size_id}`, 'status=1', 'status=2']
+                    })
+                    .then(function([demands, options]) {
+                        set_innerText(`${size.size_id}_demands`, demands || '0');
+                    });
                 });
             });
-            enable_button('action');
-        });
+        };
     })
 };
 function getSuppliers() {
@@ -69,60 +89,29 @@ function getSuppliers() {
         id_only: true
     });
 };
-function addItem(form, p, item_id, description) {
-    let div = document.createElement('div'),
-        btn = document.createElement('button'),
-        div_h = document.createElement('h5'),
-        div_table      = document.createElement('table'),
-        div_table_head = document.createElement('thead'),
-        div_table_body = document.createElement('tbody'),
-        div_table_head_col1 = document.createElement('th'),
-        div_table_head_col2 = document.createElement('th'),
-        div_table_head_col3 = document.createElement('th'),
-        div_table_head_col4 = document.createElement('th'),
-        div_table_head_col5 = document.createElement('th'),
-        div_table_head_col6 = document.createElement('th');
-    div.setAttribute('id', `item-${item_id}`)
-    div.classList.add('collapse');
-    div_h.innerText = description;
-    div_table.classList.add('table', 'table-sm', 'table-hover');
-    div_table_head.classList.add('thead-dark');
-    div_table_head_col1.innerText = 'Size';
-    div_table_head_col1.classList.add('w-55');
-    div_table_head_col2.innerText = 'In Stock';
-    div_table_head_col2.classList.add('w-10');
-    div_table_head_col3.innerText = 'On Order';
-    div_table_head_col3.classList.add('w-10');
-    div_table_head_col4.innerText = 'Demanded';
-    div_table_head_col4.classList.add('w-10');
-    div_table_head_col5.innerText = 'Order';
-    div_table_head_col5.classList.add('w-15');
-    div_table_head_col6.innerHTML = '<i class="fas fa-search"></i>';
-    div_table_body.setAttribute('id', `tbl_${item_id}`);
-    div_table_head.appendChild(div_table_head_col1);
-    div_table_head.appendChild(div_table_head_col2);
-    div_table_head.appendChild(div_table_head_col3);
-    div_table_head.appendChild(div_table_head_col4);
-    div_table_head.appendChild(div_table_head_col5);
-    div_table_head.appendChild(div_table_head_col6);
-    div_table.appendChild(div_table_head);
-    div_table.appendChild(div_table_body);
-    div.appendChild(div_h);
-    div.appendChild(div_table);
-    btn.classList.add('btn', 'm-1', 'collapsed');
-    btn.setAttribute('type', 'button');
-    btn.setAttribute('data-bs-toggle', 'collapse');
-    btn.setAttribute('data-bs-target', `#item-${item_id}`);
-    btn.setAttribute('aria-expanded', 'false');
-    btn.setAttribute('aria-controls', `item-${item_id}`);
-    btn.innerText = description;
-    form.appendChild(div);
-    p.appendChild(btn);
-    return div_table_body;
-};
 addReloadListener(getSizes);
+sort_listeners(
+    'items',
+    getItems,
+    [
+        {value: 'createdAt',   text: 'Created'},
+        {value: 'description', text: 'Description', selected: true}
+    ]
+);
+sort_listeners(
+    'sizes',
+    getSizes,
+    [
+        {value: 'createdAt', text: 'Created'},
+        {value: 'size1',     text: 'Size 1', selected: true},
+        {value: 'size2',     text: 'Size 2'},
+        {value: 'size3',     text: 'Size 3'}
+    ]
+);
 window.addEventListener('load', function () {
-    addListener('sel_suppliers', getSizes, 'change');
+    getItems();
+    addListener('sel_suppliers', getSizes, 'input');
+    addListener('sel_items',     getSizes, 'input');
     addFormListener(
         'sizes',
         'POST',

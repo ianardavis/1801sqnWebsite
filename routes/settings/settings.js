@@ -96,7 +96,7 @@ module.exports = (app, m, fn) => {
             {setting_id: req.params.id}
         )
         .then(setting => {
-            return setting.destroy()
+            setting.destroy()
             .then(result => {
                 if (!result) fn.send_error(res, 'Setting not deleted')
                 else         res.send({success: true,  message: 'Setting deleted'})

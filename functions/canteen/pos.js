@@ -15,7 +15,7 @@ module.exports = function (m, fn) {
             .then(([layout, created]) => {
                 if (created) resolve(true);
                 else {
-                    return fn.update(
+                    fn.update(
                         layout,
                         {
                             item_id: layout.item_id,

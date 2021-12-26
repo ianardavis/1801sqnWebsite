@@ -39,7 +39,7 @@ module.exports = (app, m, fn) => {
                     )
                 );
             });
-            return Promise.allSettled(actions)
+            Promise.allSettled(actions)
             .then(results => {
                 if (results.filter(e => e.status === 'rejected').length > 0) {
                     console.log(results)

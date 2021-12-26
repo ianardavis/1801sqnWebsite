@@ -26,12 +26,12 @@ module.exports = (app, m, fn) => {
             {supplier_id: req.body.supplier_id}
         )
         .then(supplier => {
-            return m.addresses.findOrCreate({
+            m.addresses.findOrCreate({
                 where:    req.body.address,
                 defaults: {type: req.body.type}
             })
             .then(([address, created]) => {
-                return m.supplier_addresses.create({
+                m.supplier_addresses.create({
                     supplier_id: supplier.supplier_id,
                     address_id: address.address_id
                 })
@@ -51,7 +51,7 @@ module.exports = (app, m, fn) => {
         .then(address => {
             if (!address.address) fn.send_error(res, 'No address for this record')
             else {
-                return fn.update(address.address, req.body.address)
+                fn.update(address.address, req.body.address)
                 .then(result => res.send({success: true, message: 'Address updated'}))
                 .catch(err => fn.send_error(res, err));
             };
@@ -68,7 +68,7 @@ module.exports = (app, m, fn) => {
             let actions = [];
             if (address.address) actions.push(address.address.destroy());
             actions.push(address.destroy())
-            return Promise.all(actions)
+            Promise.all(actions)
             .then(result => res.send({success: true, message: 'Address deleted'}))
             .catch(err => fn.send_error(res, err));
         })

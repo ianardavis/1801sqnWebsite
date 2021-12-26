@@ -26,7 +26,7 @@ module.exports = (app, m, fn) => {
     ];
     function permissions_allowed(user_id, allowed) {
         return new Promise((resolve, reject) => {
-            return fn.allowed(user_id, 'edit_own_permissions', true)
+            fn.allowed(user_id, 'edit_own_permissions', true)
             .then(edit_own => {
                 if (!allowed && !edit_own) reject(new Error('Permission denied'))
                 else resolve(true)
@@ -37,11 +37,12 @@ module.exports = (app, m, fn) => {
     app.get('/get/permissions', fn.loggedIn(), fn.permissions.check('user_admin', true), (req, res) => {
         permissions_allowed(req.user.user_id, req.allowed)
         .then(allowed => {
-            return m.permissions.findAll({
+            m.permissions.findAndCountAll({
                 where: req.query.where,
                 ...fn.pagination(req.query)
             })
-            .then(permissions => res.send({success: true, result: {permissions: permissions, tree: permission_tree}}))
+            .then(results => fn.send_res('permissions', res, results, req.query, [{name: 'tree', obj: permission_tree}])
+            )
             .catch(err => fn.send_error(res, err));
         })
         .catch(err => fn.send_error(res, err));
@@ -49,12 +50,12 @@ module.exports = (app, m, fn) => {
     app.put('/permissions/:id', fn.loggedIn(), fn.permissions.check('user_admin', true), (req, res) => {
         permissions_allowed(req.user.user_id, req.allowed)
         .then(allowed => {
-            return fn.get(
+            fn.get(
                 'users',
                 {user_id: req.params.id}
             )
             .then(user => {
-                return m.permissions.findAll({
+                m.permissions.findAll({
                     where:      {user_id: user.user_id},
                     attributes: ['permission_id', 'permission']
                 })
@@ -77,7 +78,7 @@ module.exports = (app, m, fn) => {
                             })
                         );
                     });
-                    return Promise.allSettled(actions)
+                    Promise.allSettled(actions)
                     .then(results => res.send({success: true, message: 'Permissions edited'}))
                     .catch(err => fn.send_error(res, err));
                 })

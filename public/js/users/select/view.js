@@ -24,8 +24,8 @@ function getUsers() {
             table: 'users_current',
             where: where
         })
-        .then(function ([users, options]) {
-            users.forEach(user => {
+        .then(function ([result, options]) {
+            result.users.forEach(user => {
                 let row = tbl_users.insertRow(-1);
                 add_cell(row, {append: new Checkbox({
                     small: true,

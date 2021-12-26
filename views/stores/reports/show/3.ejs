@@ -5,13 +5,30 @@
 <%- include(`${partials}/spinner`,    {id: 'sizes'}) %>
 <%- include(`${partials}/head/components/close`) %>
 <section class='container'>
-    <button id='btn_action' class='btn btn-success w-100 mb-2' form='form_sizes' disabled>Create Orders</button>
+    <button id='btn_action' class='btn btn-success w-100 mb-2' form='form_sizes'>Create Orders</button>
     <%- include(`${partials}/inputs/select`, {id: 'sel_suppliers', title: 'Supplier'}) %>
-    <form id="form_sizes"></form>
+    <%- include(`${partials}/sort`, {table: 'items', small: true}) %>
+    <%- include(`${partials}/inputs/select`, {id: 'sel_items',     title: 'Items'}) %>
+    <%- include(`${partials}/sort`, {table: 'sizes', small: true}) %>
+    <form id="form_sizes">
+        <table class="table table-sm table-hover">
+            <thead class="thead-dark">
+                <th class='w-20'>Size 1</th>
+                <th class='w-15'>Size 2</th>
+                <th class='w-15'>Size 3</th>
+                <th class='w-10'>Current Stock</th>
+                <th class='w-10'>Placed Orders</th>
+                <th class='w-10'>Open Demands</th>
+                <th class='w-10'>Open Issues</th>
+                <th class='w-10'>Order Qty</th>
+                <th><i class="fas fa-search"></i></th>
+            </thead>
+            <tbody id="tbl_sizes"></tbody>
+        </table>
+    </form>
 </section>
 <%- include(`${partials}/foot/app`) %>
 <script src="/js/utils/list/suppliers.js"></script>
 <script src="/js/stores/reports/3/view.js"></script>
 <script async>getSuppliers()</script>
-<script async>getSizes()</script>
 <%- include(`${partials}/foot/components/htmlClose`) %>

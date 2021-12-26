@@ -59,6 +59,19 @@ function filter(tbl_issues) {
     });
 };
 addReloadListener(getIssues);
+sort_listeners(
+    'issues',
+    getIssues,
+    [
+        {value: 'createdAt',   text: 'Created', selected: true},
+        {value: 'description', text: 'Description'},
+        {value: 'size1',       text: 'Size 1'},
+        {value: 'size2',       text: 'Size 2'},
+        {value: 'size3',       text: 'Size 3'},
+        {value: 'qty',         text: 'Qty'},
+        {value: 'status',      text: 'Status'}
+    ]
+);
 window.addEventListener('load', function () {
     addListener('sel_status_issues', getIssues, 'change');
     addListener('status_0',          getIssues, 'change');

@@ -50,9 +50,9 @@ module.exports = (app, m, fn) => {
                 {size_id: req.body.serial.size_id}
             )
             .then(size => {
-                return m.locations.findOrCreate({where: {location: req.body.location}})
+                m.locations.findOrCreate({where: {location: req.body.location}})
                 .then(([location, created]) => {
-                    return m.serials.findOrCreate({
+                    m.serials.findOrCreate({
                         where: {
                             size_id: size.size_id,
                             serial:  req.body.serial.serial
@@ -76,9 +76,9 @@ module.exports = (app, m, fn) => {
             {serial_id: req.params.id}
         )
         .then(serial => {
-            return m.locations.findOrCreate({where: {location: req.body.location}})
+            m.locations.findOrCreate({where: {location: req.body.location}})
             .then(([location, created]) => {
-                return fn.update(serial, {
+                fn.update(serial, {
                     serial:      req.body.serial.serial,
                     location_id: location.location_id
                 })
@@ -96,15 +96,15 @@ module.exports = (app, m, fn) => {
             {serial_id: req.params.id}
         )
         .then(serial => {
-            return m.actions.findOne({where: {serial_id: serial.serial_id}})
+            m.actions.findOne({where: {serial_id: serial.serial_id}})
             .then(action => {
                 if (action) fn.send_error(res, 'Cannot delete a serial with actions')
                 else {
-                    return m.loancards.findOne({where: {serial_id: serial.serial_id}})
+                    m.loancards.findOne({where: {serial_id: serial.serial_id}})
                     .then(action => {
                         if (action) fn.send_error(res, 'Cannot delete a serial with loancards')
                         else {
-                            return serial.destroy()
+                            serial.destroy()
                             .then(result => res.send({success: true, message: 'Serial deleted'}))
                             .catch(err => fn.send_error(res, err));
                         };

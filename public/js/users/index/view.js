@@ -10,8 +10,8 @@ function getUsers() {
             table: 'users',
             where: where
         })
-        .then(function ([users, options]) {
-            users.forEach(user => {
+        .then(function ([result, options]) {
+            result.users.forEach(user => {
                 let row = tbl.insertRow(-1);
                 add_cell(row, {text: user.service_number});
                 add_cell(row, {text: user.rank.rank});
@@ -27,17 +27,30 @@ function getStatuses() {
     return listStatuses({
         select: 'sel_statuses',
         blank: true,
-        blank_text: 'All'
+        blank_text: 'All',
+        id_only: true
     });
 };
 function getRanks() {
     return listRanks({
         select: 'sel_ranks',
         blank: true,
-        blank_text: 'All'
+        blank_text: 'All',
+        id_only: true
     });
 };
 addReloadListener(getUsers);
+sort_listeners(
+    'users',
+    getUsers,
+    [
+        {value: 'createdAt',      text: 'Created'},
+        {value: 'service_number', text: 'Service #/Bader #', selected: true},
+        {value: 'rank_id',        text: 'Rank'},
+        {value: 'surname',        text: 'Surname'},
+        {value: 'first_name',     text: 'First Name'}
+    ]
+);
 window.addEventListener("load", function () {
     addListener('sel_statuses', getUsers, 'change');
     addListener('sel_ranks',    getUsers, 'change');

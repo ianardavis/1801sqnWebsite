@@ -40,29 +40,39 @@ module.exports = (app, m, fn) => {
     });
 
     app.post('/orders',                 fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
-        // if (!req.body.orders || req.body.orders.length === 0) fn.send_error(res, 'No orders submitted')
-        // else {
-        //     let actions = [];
-        //     req.body.orders.forEach(order => {
-        //         if (order.qty && order.qty > 0) actions.push(fn.orders.create(order, req.user.user_id));
-        //     });
-        //     Promise.all(actions)
-        //     .then(result => res.send({success: true, message: 'Orders placed'}))
-        //     .catch(err => fn.send_error(res, err));
-        // };
         fn.orders.createBulk(req.body.orders, req.user.user_id)
         .then(result => res.send({success: true, message: 'Orders placed'}))
         .catch(err => fn.send_error(res, err));
     });
     
     app.put('/orders',                  fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
-        let actions  = [],
-            cancels  = req.body.orders.filter(e => e.status === '0'),
-            demands  = req.body.orders.filter(e => e.status === '2'),
-            receipts = req.body.orders.filter(e => e.status === '3');
-        if (demands  && demands.length  > 0) actions.push(fn.orders.demand(demands, req.user.user_id));
-        if (cancels  && cancels.length  > 0) cancels .forEach(order => actions.push(fn.orders.cancel( order.order_id)));
-        if (receipts && receipts.length > 0) receipts.forEach(order => actions.push(fn.orders.receive(order.order_id)));
+        let actions = [],
+            demands = req.body.orders.filter(e => e.status === '2');
+        req.body.orders.filter(e => e.status === '-1').forEach(order => {
+            actions.push(
+                fn.orders.restore({
+                    order_id: order.order_id,
+                    user_id:  req.user.user_id
+                })
+            );
+        })
+        req.body.orders.filter(e => e.status === '0').forEach(order => {
+            actions.push(
+                fn.orders.cancel({
+                    order_id: order.order_id,
+                    user_id:  req.user.user_id
+                })
+            );
+        });
+        req.body.orders.filter(e => e.status === '3').forEach(order => {
+            actions.push(
+                fn.orders.receive({
+                    order_id: order.order_id,
+                    user_id:  req.user.user_id
+                })
+            );
+        });
+        if (demands && demands.length > 0) actions.push(fn.orders.demand(demands, req.user.user_id));
         Promise.allSettled(actions)
         .then(results => {
             if (results.filter(e => e.status === 'rejected').length > 0) {
@@ -79,11 +89,11 @@ module.exports = (app, m, fn) => {
         )
         .then(order => {
             if (['1', '2', '3'].includes(req.params.status)) {
-                return order.update({status: req.params.status})
+                order.update({status: req.params.status})
                 .then(result => {
                     let status = (req.params.status === '1' ? 'PLACED' : (req.params.status === '2' ? 'DEMANDED' : 'RECEIVED'));
                     fn.actions.create(
-                        `${status} | Set manually`,
+                        `ORDER | ${status} | Set manually`,
                         req.user.user_id,
                         [{table: 'orders', id: order.order_id}]
                     )
@@ -110,9 +120,9 @@ module.exports = (app, m, fn) => {
         .then(order => {
             if (order.status !== 1) fn.send_error(res, 'Only placed orders can be cancelled');
             else {
-                return fn.update(order, {status: 0})
+                fn.update(order, {status: 0})
                 .then(results => {
-                    return m.actions.findAll({
+                    m.actions.findAll({
                         where:      {order_id: order_id},
                         attributes: ['action_id'],
                         include: [fn.inc.stores.issue()]
@@ -123,7 +133,7 @@ module.exports = (app, m, fn) => {
                             if (issue.issue.status === 3) {
                                 issue_actions.push(fn.update(issue.issue, {status: 2}));
                                 issue_actions.push(fn.actions.create(
-                                    'Order cancelled',
+                                    'ORDER | CANCELLED',
                                     req.user.user_id,
                                     [
                                         {table: 'issues', id: issue.issue_id},
@@ -132,7 +142,7 @@ module.exports = (app, m, fn) => {
                                 ));
                             };
                         });
-                        return Promise.allSettled(issue_actions)
+                        Promise.allSettled(issue_actions)
                         .then(results => {
                             if (results.filter(e => e.status === 'rejected').length > 0) res.send({success: true,  message: 'Order cancelled, some issue actions have failed'})
                             else                                                         res.send({success: true,  message: 'Order cancelled'});

@@ -9,7 +9,7 @@ module.exports = (app, m, fn) => {
         )
         .then(loancard => {
             if (!loancard.filename) {
-                return fn.loancards.createPDF(loancard.loancard_id)
+                fn.loancards.createPDF(loancard.loancard_id)
                 .then(filename => {
                     fn.download('loancards', filename, res)
                     .catch(err => fn.send_error(res, err));
@@ -29,7 +29,7 @@ module.exports = (app, m, fn) => {
         )
         .then(loancard => {
             if (!loancard.filename) {
-                return fn.loancards.createPDF(loancard.loancard_id)
+                fn.loancards.createPDF(loancard.loancard_id)
                 .then(filename => {
                     fn.print_pdf(`${process.env.ROOT}/public/res/loancards/${filename}`)
                     .then(result => res.send({success: true, message: 'Loancard sent to printer'}))
@@ -142,7 +142,7 @@ module.exports = (app, m, fn) => {
             ],
             ...fn.pagination(req.query)
         })
-        .then(results => fn.send_res('issues', res, results, req.query))
+        .then(results => fn.send_res('lines', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });
 
@@ -176,7 +176,7 @@ module.exports = (app, m, fn) => {
             date_due: req.body.date_due || fn.add_years(7)
         })
         .then(result => {
-            return fn.loancards.createPDF(req.params.id)
+            fn.loancards.createPDF(req.params.id)
             .then(filename => res.send({success: true, message: `Loancard completed. Filename: ${filename}`}))
             .catch(err => {
                 console.log(err);
@@ -196,7 +196,7 @@ module.exports = (app, m, fn) => {
             results.filter(e => e.status === 'fulfilled').forEach(e => {if (!loancards.includes(e.value)) loancards.push(e.value)});
             loancards.forEach(loancard => {
                 loancard_checks.push(new Promise((resolve, reject) => {
-                    return fn.get(
+                    fn.get(
                         'loancards',
                         {loancard_id: loancard},
                         [{
@@ -210,13 +210,13 @@ module.exports = (app, m, fn) => {
                         if      (loancard.status === 0) reject(new Error('Loancard has already been cancelled'))
                         else if (loancard.status === 1) {
                             if (!loancard.lines || loancard.lines.length === 0) {
-                                return fn.loancards.cancel({loancard_id: loancard.loancard_id, user_id: req.user.user_id, noforce: true})
+                                fn.loancards.cancel({loancard_id: loancard.loancard_id, user_id: req.user.user_id, noforce: true})
                                 .then(result => resolve(result))
                                 .catch(err => reject(err));
                             } else resolve(false);
                         } else if (loancard.status === 2) {
                             if (!loancard.lines || loancard.lines.length === 0) {
-                                return fn.loancards.close({loancard_id: loancard.loancard_id, user_id: req.user.user_id})
+                                fn.loancards.close({loancard_id: loancard.loancard_id, user_id: req.user.user_id})
                                 .then(result => resolve(result))
                                 .catch(err => reject(err));
                             } else resolve(false);
@@ -229,7 +229,7 @@ module.exports = (app, m, fn) => {
                     });
                 }));
             });
-            return Promise.allSettled(loancard_checks)
+            Promise.allSettled(loancard_checks)
             .then(results => res.send({success: true, message: 'Lines actioned'}))
             .catch(err => fn.send_error(res, err));
         })

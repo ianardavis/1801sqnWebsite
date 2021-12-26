@@ -2,7 +2,7 @@ module.exports = function (m, fn) {
     fn.payments = {};
     fn.payments.create = function (sale_id, amount, user_id, type = 'Cash') {
         return new Promise((resolve, reject) => {
-            return m.payments.create({
+            m.payments.create({
                 sale_id: sale_id,
                 amount:  amount,
                 type:    type,

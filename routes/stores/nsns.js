@@ -60,22 +60,22 @@ module.exports = (app, m, fn) => {
             {size_id: req.body.nsn.size_id}
         )
         .then(size => {
-            return fn.get(
+            fn.get(
                 'nsn_groups',
                 {nsn_group_id: req.body.nsn.nsn_group_id}
             )
             .then(nsn_group => {
-                return fn.get(
+                fn.get(
                     'nsn_classes',
                     {nsn_class_id: req.body.nsn.nsn_class_id}
                 )
                 .then(nsn_class => {
-                    return fn.get(
+                    fn.get(
                         'nsn_countries',
                         {nsn_country_id: req.body.nsn.nsn_country_id}
                     )
                     .then(nsn_country => {
-                        return m.nsns.findOrCreate({
+                        m.nsns.findOrCreate({
                             where: {
                                 nsn_group_id:   nsn_group.nsn_group_id,
                                 nsn_class_id:   nsn_class.nsn_class_id,
@@ -87,7 +87,7 @@ module.exports = (app, m, fn) => {
                         .then(([nsn, created]) => {
                             if (!created) fn.send_error(res, 'NSN already exists')
                             else if (req.body.default === '1') {
-                                return fn.update(size, {nsn_id: nsn.nsn_id})
+                                fn.update(size, {nsn_id: nsn.nsn_id})
                                 .then(result => res.send({success: true,  message: `NSN added and set to default`}))
                                 .catch(err => {
                                     console.log(err);
@@ -113,22 +113,22 @@ module.exports = (app, m, fn) => {
             [fn.inc.stores.size()]
         )
         .then(nsn => {
-            return fn.get(
+            fn.get(
                 'nsn_groups',
                 {nsn_group_id: req.body.nsn.nsn_group_id}
             )
             .then(nsn_group => {
-                return fn.get(
+                fn.get(
                     'nsn_classes',
                     {nsn_class_id: req.body.nsn.nsn_class_id}
                 )
                 .then(nsn_class => {
-                    return fn.get(
+                    fn.get(
                         'nsn_countries',
                         {nsn_country_id: req.body.nsn.nsn_country_id}
                     )
                     .then(nsn_country => {
-                        return fn.update(nsn, {
+                        fn.update(nsn, {
                             nsn_group_id:   nsn_group  .nsn_group_id,
                             nsn_class_id:   nsn_class  .nsn_class_id,
                             nsn_country_id: nsn_country.nsn_country_id,
@@ -152,7 +152,7 @@ module.exports = (app, m, fn) => {
             {nsn_id: req.params.id}
         )
         .then(nsn => {
-            return m.action_links.findOne({
+            m.action_links.findOne({
                 where: {
                     _table: 'nsns',
                     id: nsn.nsn_id
@@ -161,15 +161,15 @@ module.exports = (app, m, fn) => {
             .then(action => {
                 if (action) fn.send_error(res, 'NSN has actions and cannot be deleted')
                 else {
-                    return m.loancard_lines.findOne({
+                    m.loancard_lines.findOne({
                         where: {nsn_id: nsn.nsn_id}
                     })
                     .then(line => {
                         if (line) fn.send_error(res, 'NSN has loancards and cannot be deleted')
                         else {
-                            return nsn.destroy()
+                            nsn.destroy()
                             .then(result => {
-                                return m.sizes.update(
+                                m.sizes.update(
                                     {nsn_id: null},
                                     {where: {nsn_id: req.params.id}}
                                 )

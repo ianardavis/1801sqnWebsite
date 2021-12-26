@@ -6,11 +6,13 @@
 <%- include(`${partials}/head/components/close`) %>
 <section class='container'>
 	<div class="row">
-		<div class="col-6">
+		<div class="col-12 col-md-6 mb-1">
 			<%- include(`${partials}/filter/button`, {id: 'order'}) %>
 		</div>
-		<div class="col-6">
-			<%- include(`${partials}/button/button`, {id: 'action_lines', type: 'success', text: 'Action Selected Issues', classes: ['w-100', 'mb-1'], form: 'order_edit', disabled: true}) %>
+		<div class="col-12 col-md-6 mb-1">
+			<button class="btn btn-success w-100" form="form_order_edit">
+				Action Selected Orders
+			</button>
 		</div>
 	</div>
 	<%- include(`${partials}/filter/stores/orders`) %>

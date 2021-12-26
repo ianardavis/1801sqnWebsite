@@ -41,7 +41,7 @@ module.exports = function (m, fn) {
                             return Promise.all(actions)
                             .then(result => {
                                 return fn.actions.create(
-                                    'COMPLETED',
+                                    'DEMAND | COMPLETED',
                                     user.user_id,
                                     [{table: 'demands', id: demand.demand_id}]
                                 )
@@ -116,7 +116,7 @@ module.exports = function (m, fn) {
                                 if (!result) reject(new Error('Demand not updated'))
                                 else {
                                     return fn.actions.create(
-                                        'CANCELLED',
+                                        'DEMAND | CANCELLED',
                                         user_id,
                                         [{table: 'demands', id: demand.demand_id}]
                                     )
@@ -215,7 +215,7 @@ module.exports = function (m, fn) {
                             return fn.update(demand, {status: 3})
                             .then(result => {
                                 return fn.actions.create(
-                                    'CLOSED',
+                                    'DEMAND | CLOSED',
                                     user_id,
                                     [{table: 'demands', id: demand.demand_id}]
                                 )
@@ -273,7 +273,7 @@ module.exports = function (m, fn) {
                                     return fn.increment(line, options.qty)
                                     .then(result => {
                                         return fn.actions.create(
-                                            `Demand line incremented by ${options.qty}${(options.order_id ? ' by order' : '')}`,
+                                            `DEMAND LINE | INCREMENTED | By ${options.qty}${(options.order_id ? ' from order' : '')}`,
                                             options.user_id,
                                             [
                                                 {table: 'demand_lines', id: line.demand_line_id},
@@ -426,7 +426,7 @@ module.exports = function (m, fn) {
                                         return fn.update(order, {status: 2})
                                         .then(result => {
                                             fn.actions.create(
-                                                'Demand line cancelled',
+                                                'DEMAND LINE | CANCELLED',
                                                 user_id,
                                                 [{table: 'orders', id: action.order_id}]
                                             )
@@ -443,7 +443,7 @@ module.exports = function (m, fn) {
                             return Promise.allSettled(order_actions)
                             .then(results => {
                                 fn.actions.create(
-                                    'CANCELLED',
+                                    'DEMAND LINE | CANCELLED',
                                     user_id,
                                     [{table: 'demand_lines', id: line.demand_line_id}]
                                 )
@@ -705,13 +705,13 @@ module.exports = function (m, fn) {
             let serial_actions = [];
             serials.forEach(serial => {
                 serial_actions.push(
-                    fn.serials.receive({
-                        serial:   serial.serial,
-                        size_id:  line.size_id,
-                        location: serial.location,
-                        user_id:  user_id,
-                        links:    [{table: 'demand_lines', id: line.demand_line_id}]
-                    })
+                    fn.serials.receive(
+                        serial.location,
+                        serial.serial,
+                        line.size_id,
+                        user_id,
+                        [{table: 'demand_lines', id: line.demand_line_id}]   
+                    )
                 );
             });
             return Promise.allSettled(serial_actions)
@@ -766,16 +766,16 @@ module.exports = function (m, fn) {
         return new Promise((resolve, reject) => {
             if (options.receipt_qty !== options.line.qty) {
                 let variance = options.receipt_qty - options.line.qty;
-                return fn.update(options.line, {qty: options.receipt_qty})
+                fn.update(options.line, {qty: options.receipt_qty})
                 .then(result => {
                     let actions = [fn.actions.create(
-                        `Quantity ${(variance < 0 ? 'decreased' : 'increased')} by ${Math.abs(variance)} due to ${(variance < 0 ? 'under' : 'over')} receipt`,
+                        `DEMAND LINE | Quantity ${(variance < 0 ? 'DECREMENTED' : 'INCREMENTED')} | By ${Math.abs(variance)} | ${(variance < 0 ? 'Under' : 'Over')} receipt`,
                         options.user_id,
                         [{table: 'demand_lines', id: options.line.demand_line_id}]
                     )];
                     if (options.receipt_qty < options.line.qty) {
                         actions.push(new Promise((resolve, reject) => {
-                            return m.demand_lines.create({
+                            m.demand_lines.create({
                                 demand_id: options.line.demand_id,
                                 size_id:   options.line.size_id,
                                 qty:       Math.abs(variance),
@@ -783,21 +783,11 @@ module.exports = function (m, fn) {
                                 user_id:   options.user_id
                             })
                             .then(new_line => {
-                                return Promise.allSettled([
-                                    fn.actions.create(
-                                        'Created from under receipt',
-                                        options.user_id,
-                                        [{table: 'demand_lines', id: new_line.demand_line_id}]
-                                    ),
-                                    fn.actions.create(
-                                        'Under receipt',
-                                        options.user_id,
-                                        [
-                                            {table: 'demand_lines', id: options.line.demand_line_id},
-                                            {table: 'demand_lines', id: new_line.demand_line_id}
-                                        ]
-                                    )
-                                ])
+                                fn.actions.create(
+                                    'DEMAND LINE | CREATED | From under receipt',
+                                    options.user_id,
+                                    [{table: 'demand_lines', id: new_line.demand_line_id}]
+                                )
                                 .then(action => resolve(true))
                                 .catch(err => {
                                     console.log(err);
@@ -807,7 +797,7 @@ module.exports = function (m, fn) {
                             .catch(err => reject(err));
                         }));
                     };
-                    return Promise.all(actions)
+                    Promise.all(actions)
                     .then(result => resolve(true))
                     .catch(err => reject(err));
                 })

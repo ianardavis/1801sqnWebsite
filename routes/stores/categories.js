@@ -47,11 +47,11 @@ module.exports = (app, m, fn) => {
             ['category_id']
         )
         .then(category => {
-            return m.item_categories.destroy(
+            m.item_categories.destroy(
                 {where: {category_id: category.category_id}}
             )
             .then(result => {
-                return category.destroy()
+                category.destroy()
                 .then(result => {
                     if (!result) fn.send_error(res, 'Category not deleted')
                     else         res.send({success: true,  message: 'Category deleted'})

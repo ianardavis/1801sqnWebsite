@@ -140,7 +140,7 @@ function clear(id) {
     return new Promise((resolve, reject) => {
         let e = document.getElementById(id);
         if (!e) {
-            console.log('Element not found');
+            console.log(`Element not found: ${id}`);
             reject(new Error('Element not found'));
         } else {
             e.innerHTML = '';
@@ -168,6 +168,10 @@ function modalHide(id) {
 function modalOnShow(id, func) {
     let e = document.querySelector(`#mdl_${id}`);
     if (e) e.addEventListener('show.bs.modal', function (event){func(event)});
+};
+function modalOnShown(id, func, args = []) {
+    let e = document.querySelector(`#mdl_${id}`);
+    if (e) e.addEventListener('shown.bs.modal', function (){func(...args)});
 };
 function modalOnHide(id, func) {
     let e = document.querySelector(`#mdl_${id}`);
@@ -245,15 +249,14 @@ function add_page_links(count, limit, offset, table, func) {
             func();
         };
         if (!offset) offset = 0;
-        limit = Number(limit);
+        limit = Number(limit || 0);
+        offset = Number(offset || 0);
+        count = Number(count);
         let max = limit * (Number(offset) + 1);
         if (max > count) max = count;
         set_innerText(`${table}_page_low`, (limit * offset) + 1);
         set_innerText(`${table}_page_high`, max);
         set_innerText(`${table}_page_max`,  count);
-        count  = Number(count);
-        limit  = Number(limit);
-        offset = Number(offset || 0);
         let page_count = Math.ceil(count/limit);
         if (page_count < offset) offset = 0;
         if (limit) {
@@ -281,9 +284,11 @@ function sort_listeners(table, func, options) {
     window.addEventListener('load', function () {
         let limit_func = function (e) {
             let limit = document.querySelector(`.limit_${table} .active`);
-            limit.classList.remove('active');
-            e.target.parentNode.classList.add('active');
-            func();
+            if (limit) {
+                limit.classList.remove('active');
+                e.target.parentNode.classList.add('active');
+                if (func) func();
+            };
         };
         addListener(`limit_${table}_10`,  limit_func);
         addListener(`limit_${table}_20`,  limit_func);
@@ -294,7 +299,7 @@ function sort_listeners(table, func, options) {
         clear(`sort_${table}`)
         .then(sort => options.forEach(o => sort.appendChild(new Option({value: o.value, text: o.text, selected: o.selected}).e)))
         .catch(err => console.log(err))
-        .finally(() => func());
+        .finally(() => {if (func) func()});
     });
 };
 let path = window.location.pathname.toString().split('/');

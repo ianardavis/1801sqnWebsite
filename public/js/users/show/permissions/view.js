@@ -3,11 +3,12 @@ function getPermissions () {
     .then(tbl_permissions => {
         get({
             table: 'permissions',
-            where: {user_id: path[2]}
+            where: {user_id: path[2]},
+            func: getPermissions
         })
-        .then(function ([permissions, options]) {
-            set_count('permission', permissions.permissions.length);
-            permissions.permissions.forEach(e => {
+        .then(function ([result, options]) {
+            set_count('permission', result.count);
+            result.permissions.forEach(e => {
                 let row = tbl_permissions.insertRow(-1);
                 add_cell(row, {text: e.permission.replaceAll('_', ' ')});
             });
@@ -15,3 +16,10 @@ function getPermissions () {
     });
 };
 addReloadListener(getPermissions);
+sort_listeners(
+    'permissions',
+    getPermissions,
+    [
+        {value: 'permission', text: 'Permission', selected: true}
+    ]
+);

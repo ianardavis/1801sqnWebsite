@@ -3,7 +3,7 @@ module.exports = (app, m, fn) => {
     app.get("/galleries/:id",                    fn.permissions.get('', true),          (req, res) => res.render("site/galleries/show"));
 
     app.get('/get/galleries',                                                           (req, res) => {
-        return m.galleries.findAll({
+        m.galleries.findAll({
             where:   req.query.where,
             include: [fn.inc.users.user()],
             ...fn.pagination(req.query)
@@ -22,7 +22,7 @@ module.exports = (app, m, fn) => {
     });
     
     app.get('/get/gallery_images',                                                      (req, res) => {
-        return m.gallery_images.findAll({
+        m.gallery_images.findAll({
             where:   req.query.where,
             include: [fn.inc.users.user()],
             ...fn.pagination(req.query)
@@ -80,7 +80,7 @@ module.exports = (app, m, fn) => {
             let actions = [];
             actions.push(fn.rm(`${process.env.ROOT}/public/res/images/${image.src}`))
             actions.push(image.destroy())
-            return Promise.allSettled(actions)
+            Promise.allSettled(actions)
             .then(results => res.send({success: true, message: 'Image deleted'}))
             .catch(err => fn.send_error(res, err));
         })

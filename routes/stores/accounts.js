@@ -1,6 +1,6 @@
 module.exports = (app, m, fn) => {
     app.get('/get/accounts',    fn.loggedIn(), fn.permissions.check('access_stores'),  (req, res) => {
-        return m.accounts.findAndCountAll({
+        m.accounts.findAndCountAll({
             where:   req.query.where,
             include: [fn.inc.users.user()],
             ...fn.pagination(req.query)
@@ -43,11 +43,11 @@ module.exports = (app, m, fn) => {
             {account_id: req.params.id}
         )
         .then(account => {
-            return account.destroy()
+            account.destroy()
             .then(result => {
                 if (!result) fn.send_error(res, 'Account not deleted')
                 else {
-                    return m.suppliers.update(
+                    m.suppliers.update(
                         {account_id: null},
                         {where: {account_id: account.account_id}}
                     )

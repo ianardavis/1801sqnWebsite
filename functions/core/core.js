@@ -12,12 +12,13 @@ module.exports = function (m, fn) {
         if (err.message) console.log(err);
         res.send({success: false, message: err.message || err});
     };
-    fn.send_res = function (table, res, result, query) {
+    fn.send_res = function (table, res, result, query, inc = []) {
         let _return = {success: true, result: {}};
         _return.result[table] = result.rows;
         _return.result.count  = result.count;
         _return.result.limit  = query.limit;
         _return.result.offset = query.offset;
+        inc.forEach(i => _return.result[i.name] = i.obj);
         res.send(_return);
     };
     fn.add_years = function (years = 0) {
@@ -26,7 +27,7 @@ module.exports = function (m, fn) {
     };
     fn.allowed = function (user_id, _permission, allow = false) {
         return new Promise((resolve, reject) => {
-            return m.permissions.findOne({
+            m.permissions.findOne({
                 where: {
                     permission: _permission,
                     user_id:    user_id
@@ -105,7 +106,7 @@ module.exports = function (m, fn) {
             })
             .then(barcode => {
                 fs.writeFile(`${process.env.ROOT}/public/res/barcodes/${uuid}_128.png`, barcode, () => {
-                    return bwipjs.toBuffer({
+                    bwipjs.toBuffer({
                         bcid:        'qrcode', // Barcode type
                         text:        uuid,     // Text to encode
                         scale:       3,        // 3x scaling factor
@@ -133,7 +134,7 @@ module.exports = function (m, fn) {
     };
     fn.print_pdf = function (file) {
         return new Promise((resolve, reject) => {
-            return fn.settings.get('printer')
+            fn.settings.get('printer')
             .then(printers => {
                 if (printers.length > 1) reject(new Error('Multiple printers found'))
                 else {
@@ -173,7 +174,7 @@ module.exports = function (m, fn) {
     };
     fn.upload_file = function (options = {}) {
         return new Promise((resolve, reject) => {
-            return fn.get(
+            fn.get(
                 'suppliers',
                 {supplier_id: options.supplier_id}
             )
@@ -183,7 +184,7 @@ module.exports = function (m, fn) {
                     `${process.env.ROOT}/public/res/files/${options.filename}`
                 )
                 .then(result => {
-                    return m.files.findOrCreate({
+                    m.files.findOrCreate({
                         where: {filename: options.filename},
                         defaults: {
                             user_id: options.user_id,
@@ -241,7 +242,7 @@ module.exports = function (m, fn) {
                 record = fn.nullify(record);
                 fn.get(table, where)
                 .then(result => {
-                    return fn.update(result, record)
+                    fn.update(result, record)
                     .then(result => resolve(true))
                     .catch(err => reject(err));
                 })
@@ -251,7 +252,7 @@ module.exports = function (m, fn) {
     };
     fn.update = function (model, fields) {
         return new Promise((resolve, reject) => {
-            return model.update(fields)
+            model.update(fields)
             .then(result => {
                 if (!result) reject(new Error('Record not updated'))
                 else resolve(true);
@@ -261,7 +262,7 @@ module.exports = function (m, fn) {
     };
     fn.increment = function (model, by, column = 'qty') {
         return new Promise((resolve, reject) => {
-            return model.increment(column, {by: by})
+            model.increment(column, {by: by})
             .then(result => {
                 if (!result) reject(new Error('Record not incremented'))
                 else resolve(true);
@@ -271,7 +272,7 @@ module.exports = function (m, fn) {
     };
     fn.decrement = function (model, by, column = 'qty') {
         return new Promise((resolve, reject) => {
-            return model.decrement(column, {by: by})
+            model.decrement(column, {by: by})
             .then(result => {
                 if (!result) reject(new Error('Record not decremented'))
                 else resolve(true);

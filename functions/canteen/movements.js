@@ -20,12 +20,12 @@ module.exports = function (m, fn) {
                             {holding_id: movement.holding_id_to}
                         )
                         .then(holding_to => {
-                            return Promise.all([
+                            Promise.all([
                                 fn.decrement(holding_from, movement.amount, 'cash'),
                                 fn.increment(holding_to,   movement.amount, 'cash')
                             ])
                             .then(result => {
-                                return m.movements.create({
+                                m.movements.create({
                                     ...movement,
                                     type: 'Cash',
                                     user_id: user_id

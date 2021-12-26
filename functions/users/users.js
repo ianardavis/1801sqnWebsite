@@ -60,7 +60,7 @@ module.exports = function (m, fn) {
                     let actions = [];
                     actions.push(m.permissions.destroy({where: {user_id: user.user_id}}));
                     actions.push(user.destroy());
-                    return Promise.all(actions)
+                    Promise.all(actions)
                     .then(result => resolve(true))
                     .catch(err => reject(err));
                 };
@@ -100,7 +100,7 @@ module.exports = function (m, fn) {
             .then(user => {
                 if (user.password === fn.users.password.encrypt(password, user.salt).password) reject(new Error('That is the current password!'))
                 else {
-                    return fn.update(user, fn.users.password.encrypt(password))
+                    fn.update(user, fn.users.password.encrypt(password))
                     .then(result => resolve(true))
                     .catch(err => reject(err));
                 };

@@ -26,7 +26,7 @@ module.exports = (app, m, fn) => {
     });
     function issues_allowed(allowed_stores, user_id_issue, user_id) {
         return new Promise((resolve, reject) => {
-            return fn.allowed(user_id, 'access_users', true)
+            fn.allowed(user_id, 'access_users', true)
             .then(allowed_users => {
                 if (!allowed_users || !allowed_stores) {
                     if (user_id_issue && user_id_issue !== '') {
@@ -38,7 +38,7 @@ module.exports = (app, m, fn) => {
             .catch(err => reject(err));
         });
     };
-    app.get('/get/issues',        fn.loggedIn(), fn.permissions.check('access_stores', true), (req, res) => {
+    app.get('/get/issues',         fn.loggedIn(), fn.permissions.check('access_stores', true), (req, res) => {
         try {
             let query = req.query;
             if (!query.where) query.where = {};
@@ -80,7 +80,7 @@ module.exports = (app, m, fn) => {
                         where.createdAt = {[fn.op.lt]: query.lt.value}
                     };
                 };
-                return m.issues.findAndCountAll({
+                m.issues.findAndCountAll({
                     where: where,
                     include: include,
                     ...fn.pagination(query)
@@ -136,7 +136,7 @@ module.exports = (app, m, fn) => {
         .then(link => {
             if (!link) fn.send_error(res, new Error('Loancard not found'))
             else {
-                return fn.get(
+                fn.get(
                     'loancard_lines',
                     {loancard_line_id: link.id}
                 )
@@ -147,48 +147,6 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
 
-    app.post('/users/:id/issue',   fn.loggedIn(), fn.permissions.check('issuer',        true), (req, res) => {
-        let actions = [];
-        if (req.body.lines) {
-            req.body.lines.forEach(line => {
-                actions.push(
-                    create_line(
-                        {
-                            user_id_issue: req.params.id,
-                            size_id:       Object.keys(line)[0],
-                            status:        (req.allowed ? 2 : 1),
-                            qty:           line.qty
-                        },
-                        req.user.user_id
-                    )
-                );
-            });
-        } else fn.send_error(res, 'No lines');
-        Promise.all(actions)
-        .then(result => res.send({success: true, message: 'Issues created'}))
-        .catch(err => fn.send_error(res, err));
-    });
-    app.post('/sizes/:id/issue',   fn.loggedIn(), fn.permissions.check('issuer',        true), (req, res) => {
-        let actions = [];
-        if (req.body.lines) {
-            req.body.lines.forEach(line => {
-                actions.push(
-                    create_line(
-                        {
-                            user_id_issue: Object.keys(line)[0],
-                            size_id:       req.params.id,
-                            status:        (req.allowed ? 2 : 1),
-                            qty:           line.qty
-                        },
-                        req.user.user_id
-                    )
-                );
-            });
-        } else fn.send_error(res, 'No lines');
-        Promise.all(actions)
-        .then(result => res.send({success: true, message: 'Issues created'}))
-        .catch(err => fn.send_error(res, err));
-    });
     app.post('/issues',            fn.loggedIn(), fn.permissions.check('issuer',        true), (req, res) => {
         if      (!req.body.issues)                                             fn.send_error(res, 'No users or sizes entered')
         else if (!req.body.issues.users || req.body.issues.users.length === 0) fn.send_error(res, 'No users entered')
@@ -198,12 +156,13 @@ module.exports = (app, m, fn) => {
             req.body.issues.users.forEach(user => {
                 req.body.issues.sizes.forEach(size => {
                     actions.push(
-                        fn.issues.create({
-                            ...size,
-                            ...user,
-                            user_id: req.user.user_id,
-                            status: (req.allowed ? 2 : 1)
-                        })
+                        fn.issues.create(
+                            user.user_id_issue,
+                            size.size_id,
+                            size.qty,
+                            req.user.user_id,
+                            (req.allowed ? 2 : 1)
+                        )
                     );
                 });
             });
@@ -294,10 +253,10 @@ module.exports = (app, m, fn) => {
             .then(size => {
                 if      (size.item_id !== issue.size.item_id) fn.send_error(res, new Error('New size is for a different item'))
                 else if (issue.status === 1 || issue.status === 2) {
-                    return fn.update(issue, {size_id: size.size_id})
+                    fn.update(issue, {size_id: size.size_id})
                     .then(result => {
                         fn.actions.create(
-                            `SIZE EDITED | From: ${fn.print_size(issue.size)} | To: ${fn.print_size(size)}`,
+                            `ISSUE | UPDATED | Size changed From: ${fn.print_size(issue.size)} to: ${fn.print_size(size)}`,
                             req.user.user_id,
                             [{table: 'issues', id: issue.issue_id}]
                         )

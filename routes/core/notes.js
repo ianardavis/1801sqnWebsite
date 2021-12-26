@@ -38,7 +38,7 @@ module.exports = (app, m, fn) => {
         .then(note => {
             if (note.system) fn.send_error(res, 'System generated notes can not be edited')
             else {
-                return fn.update(note, req.body.note)
+                fn.update(note, req.body.note)
                 .then(note => res.send({success: true, message: 'Note saved'}))
                 .catch(err => fn.send_error(res, err));
             };
@@ -54,7 +54,7 @@ module.exports = (app, m, fn) => {
         .then(note => {
             if (note.system) fn.send_error(res, 'System generated notes can not be deleted')
             else {
-                return note.destroy()
+                note.destroy()
                 .then(result => res.send({success: true, message: 'Note deleted'}))
                 .catch(err => fn.send_error(res, err));
             };

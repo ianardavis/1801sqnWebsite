@@ -151,8 +151,8 @@ window.addEventListener('load', function () {
     addListener('status_issues_4', getIssues, 'input');
     addListener('status_issues_5', getIssues, 'input');
     addListener('filter_issues_createdAt_from', getIssues, 'input');
-    addListener('filter_issues_createdAt_to', getIssues, 'input');
-    addListener('filter_issues_item', getIssues, 'input');
+    addListener('filter_issues_createdAt_to',   getIssues, 'input');
+    addListener('filter_issues_item',   getIssues, 'input');
     addListener('filter_issues_size_1', getIssues, 'input');
     addListener('filter_issues_size_2', getIssues, 'input');
     addListener('filter_issues_size_3', getIssues, 'input');

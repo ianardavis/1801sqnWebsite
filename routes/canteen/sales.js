@@ -27,7 +27,7 @@ module.exports = (app, m, fn) => {
         .then(sessions => {
             if (sessions.length !== 1) fn.send_error(res, `${sessions.length} session(s) open`)
             else {
-                return m.sales.findOrCreate({
+                m.sales.findOrCreate({
                     where: {
                         session_id: sessions[0].session_id,
                         user_id:    req.user.user_id,

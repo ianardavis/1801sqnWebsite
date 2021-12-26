@@ -122,7 +122,7 @@ module.exports = (app, m, fn) => {
             {file_id: req.body.detail.file_id}
         )
         .then(file => {
-            return m.file_details.findOrCreate({
+            m.file_details.findOrCreate({
                 where: {
                     file_id: req.body.detail.file_id,
                     name:    req.body.detail.name
@@ -135,7 +135,7 @@ module.exports = (app, m, fn) => {
             .then(([detail, created]) => {
                 if (created) res.send({success: true, message: 'Detail added'})
                 else {
-                    return fn.update(detail, {
+                    fn.update(detail, {
                         value:   req.body.detail.value,
                         user_id: req.user.user_id
                     })
@@ -156,7 +156,7 @@ module.exports = (app, m, fn) => {
         .then(file => {
             file.destroy()
             .then(result => {
-                return fn.rm(`${process.env.ROOT}/public/res/files/${file.filename}`)
+                fn.rm(`${process.env.ROOT}/public/res/files/${file.filename}`)
                 .then(result => res.send({success: true, message: 'File deleted'}))
                 .catch(err =>   res.send({success: true, message: `Error deleting file: ${err.message}`}));
             })

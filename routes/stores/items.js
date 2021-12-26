@@ -20,8 +20,7 @@ module.exports = (app, m, fn) => {
                 required: true,
                 include: [{
                     model: m.categories,
-                    where: {category: 'Uniform'},
-                    required: true
+                    where: {category: 'Uniform'}
                 }]
             }],
             ...fn.pagination(req.query)
@@ -78,7 +77,7 @@ module.exports = (app, m, fn) => {
         let actions = [];
         req.body.category.category_id.filter(e => e !== '').forEach(category_id => {
             actions.push(new Promise((resolve, reject) => {
-                return m.item_categories.findOrCreate({
+                m.item_categories.findOrCreate({
                     where: {
                         item_id:     req.body.category.item_id,
                         category_id: category_id
@@ -106,7 +105,7 @@ module.exports = (app, m, fn) => {
         .then(sizes => {
             if (sizes) fn.send_error(res, 'Cannot delete item while it has sizes assigned')
             else {
-                return m.items.destroy({where: {item_id: req.params.id}})
+                m.items.destroy({where: {item_id: req.params.id}})
                 .then(result => {
                     if (!result) fn.send_error(res, 'Item not deleted')
                     else res.send({success: true, message: 'Item deleted'});

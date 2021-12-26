@@ -6,11 +6,13 @@
 <%- include(`${partials}/head/components/close`) %>
 <section class="container">
 	<div class="row">
-		<div class="col-6">
+		<div class="col-12 col-md-6 mb-1">
 			<%- include(`${partials}/filter/button`, {id: 'issue'}) %>
 		</div>
-		<div class="col-6">
-			<%- include(`${partials}/button/button`, {id: 'action_lines', type: 'success', text: 'Action Selected Issues', classes: ['w-100', 'mb-1'], form: 'issue_edit', disabled: true}) %>
+		<div class="col-12 col-md-6 mb-1">
+			<button class="btn btn-success w-100" form="form_issue_edit">
+				Action Selected Issues
+			</button>
 		</div>
 	</div>
 	<%- include(`${partials}/filter/stores/issues`, {user: true}) %>
@@ -32,50 +34,16 @@
 		<%- include(`${partials}/limit`, {table: 'issues'}) %>
 	<% if (permissions.issuer) { %></form><% } %>
 	<div id="div_modals">
-		<div class="modal fade" id="mdl_issue_add" tabindex="-1" aria-hidden="true">
-			<div class="modal-dialog modal-xl">
-				<form class="modal-content" id='form_issue_add'>
-					<div class="modal-header">
-						<h5 class="modal-title">Add Issue(s)</h5>
-					</div>
-					<div class="modal-body">
-						<%- include(`${partials}/button/button`, {type: 'success', type_att: true, id: 'issue_users', text: 'Add User(s)', classes: ['w-100']}) %>
-						<table class="table table-sm table-hover">
-							<thead class="thead-dark">
-								<th class="w-40">Service #</th>
-								<th class="w-60">User</th>
-								<th><i class="fas fa-trash-alt"></i></th>
-							</thead>
-							<tbody id="tbl_issue_users_add"></tbody>
-						</table>
-						<%- include(`${partials}/inputs/number`, {title: 'Quantity', value: '1', min: '1', id: 'issue_add_qty'}) %>
-						<%- include(`${partials}/button/button`, {type: 'success', type_att: true, id: 'issue_sizes', text: 'Add Item(s)', classes: ['w-100']}) %>
-						<table class="table table-sm table-hover">
-							<thead class="thead-dark">
-								<th class="w-40">Item</th>
-								<th class="w-40">Size</th>
-								<th class="w-20">Quantity</th>
-								<th><i class="fas fa-trash-alt"></i></th>
-							</thead>
-							<tbody id="tbl_issue_sizes_add"></tbody>
-						</table>
-					</div>
-					<div class="modal-footer">
-						<input type="submit" class="btn btn-success w-100" value='Add Issues'>
-						<%- include(`${partials}/button/modal/close`) %>
-					</div>
-				</form>
-			</div>
-		</div>
+		<%- include(`${partials}/modals/stores/issue_add`) %>
 	</div>
 </section>
 <%- include(`${partials}/foot/app`) %>
 <script src='/js/utils/list/users.js'></script>
 <script src='/js/search/select.js'></script>
 <script src='/js/stores/issues/index/view.js'></script>
-<script src='/js/stores/issues/index/add.js'></script>
-<script src="/js/users/select/showWindow.js"></script>
-<script src="/js/stores/sizes/select/showWindow.js"></script>
+<!-- <script src='/js/stores/issues/add.js'></script> -->
+<!-- <script src="/js/users/select/showWindow.js"></script>
+<script src="/js/stores/sizes/select/showWindow.js"></script> -->
 <% if (permissions.issuer) { %>
 	<script src='/js/stores/issues/issuer.js'></script>
 	<% if (permissions.stores_stock_admin) { %>

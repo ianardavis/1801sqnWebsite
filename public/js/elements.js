@@ -139,6 +139,7 @@ function Checkbox(options = {}) {
     label.innerHTML = _check();
     if (options.small) label.classList.add('btn-sm');
     if (options.float) this.e.classList.add('float-end');
+    if (options.listener) checkbox.addEventListener('input', options.listener);
     this.e.appendChild(checkbox);
     this.e.appendChild(label);
 };

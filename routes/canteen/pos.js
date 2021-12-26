@@ -37,7 +37,7 @@ module.exports = (app, m, fn) => {
     app.delete('/pos_layouts/:id', fn.loggedIn(), fn.permissions.check('pos_supervisor'), (req, res) => {
         fn.get('pos_layouts', {pos_layout_id: req.params.id})
         .then(layout => {
-            return layout.destroy()
+            layout.destroy()
             .then(result => {
                 if (!result) fn.send_error(res, 'Layout not deleted')
                 else res.send({success: true, message: 'Layout deleted'});

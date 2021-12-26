@@ -4,14 +4,16 @@ function reset_issue_add() {
     set_value('issue_add_qty', '1');
 };
 let row_count_sizes = 0;
+let row_count_users = 0;
 function selectedSizes(sizes) {
     if (sizes) {
+        if (!Array.isArray(sizes)) sizes = [sizes];
         let tbl_issue_sizes_add = document.querySelector('#tbl_issue_sizes_add'),
-            qty           = document.querySelector('#issue_add_qty') || {value: '1'};
-            sizes.forEach(size => {
+            qty = document.querySelector('#issue_add_qty') || {value: '1'};
+            sizes.forEach(size_id => {
                 get({
                     table: 'size',
-                    where: {size_id: size},
+                    where: {size_id: size_id},
                     spinner: 'line_add'
                 })
                 .then(function([size, options]) {
@@ -20,7 +22,7 @@ function selectedSizes(sizes) {
                         row.setAttribute('id', `size-${size.size_id}`);
                         add_cell(row, {text: size.item.description});
                         add_cell(row, {
-                            text: print_size(size),
+                            text: size.size1,
                             append: new Input({
                                 attributes: [
                                     {field: 'type',  value: 'hidden'},
@@ -29,6 +31,8 @@ function selectedSizes(sizes) {
                                 ]
                             }).e
                         });
+                        add_cell(row, {text: size.size2});
+                        add_cell(row, {text: size.size3});
                         add_cell(row, {append: new Input({
                             small: true,
                             attributes: [
@@ -52,9 +56,9 @@ function selectedSizes(sizes) {
             });
     };
 };
-let row_count_users = 0;
 function selectedUsers(users) {
     if (users) {
+        if (!Array.isArray(users)) users = [users];
         let tbl_issue_users_add = document.querySelector('#tbl_issue_users_add'),
             qty           = document.querySelector('#issue_add_qty') || {value: '1'};
         users.forEach(user => {

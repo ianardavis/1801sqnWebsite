@@ -25,12 +25,12 @@ module.exports = (app, m, fn) => {
             {supplier_id: req.body.supplier_id}
         )
         .then(supplier => {
-            return m.contacts.findOrCreate({
+            m.contacts.findOrCreate({
                 where:    req.body.contact,
                 defaults: {type: req.body.type}
             })
             .then(([contact, created]) => {
-                return m.supplier_contacts.create({
+                m.supplier_contacts.create({
                     supplier_id: supplier.supplier_id,
                     contact_id: contact.contact_id
                 })
@@ -50,7 +50,7 @@ module.exports = (app, m, fn) => {
         .then(contact => {
             if (!contact.contact) fn.send_error(res, 'No contact for this record')
             else {
-                return fn.update(contact.contact, req.body.contact)
+                fn.update(contact.contact, req.body.contact)
                 .then(result => res.send({success: true, message: 'Contact updated'}))
                 .catch(err => fn.send_error(res, err));
             };
@@ -67,7 +67,7 @@ module.exports = (app, m, fn) => {
             let actions = [];
             if (contact.contact) actions.push(contact.contact.destroy());
             actions.push(contact.destroy())
-            return Promise.all(actions)
+            Promise.all(actions)
             .then(result => res.send({success: true, message: 'Contact deleted'}))
             .catch(err => fn.send_error(res, err));
         })

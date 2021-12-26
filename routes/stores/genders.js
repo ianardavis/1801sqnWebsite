@@ -38,12 +38,12 @@ module.exports = (app, m, fn) => {
             {gender_id: req.params.id}
         )
         .then(gender => {
-            return m.items.update(
+            m.items.update(
                 {gender_id: null},
                 {where: {gender_id: gender.gender_id}}
             )
             .then(result => {
-                return gender.destroy()
+                gender.destroy()
                 .then(result => {
                     if (!result) fn.send_error(res, 'Gender not deleted')
                     else         res.send({success: true,  message: 'Gender deleted'})

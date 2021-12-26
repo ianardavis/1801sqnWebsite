@@ -47,14 +47,14 @@ module.exports = (app, m, fn) => {
             {supplier_id: req.params.id}
         )
         .then(supplier => {
-            return supplier.destroy({where: {supplier_id: req.params.id}})
+            supplier.destroy({where: {supplier_id: req.params.id}})
             .then(result => {
-                return m.settings.findOne({where: {name: 'default_supplier'}})
+                m.settings.findOne({where: {name: 'default_supplier'}})
                 .then(setting => {
                     if (!setting)           res.send({success: true, message: 'Supplier deleted'})
                     else {
                         if (Number(setting.value) === Number(req.params.id)) {
-                            return setting.destroy()
+                            setting.destroy()
                             .then(result => {
                                 if (result) res.send({success: true, message: 'Default supplier deleted, settings updated'})
                                 else        res.send({success: true, message: 'Default supplier deleted, settings NOT updated'});

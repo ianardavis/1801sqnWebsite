@@ -1,10 +1,10 @@
 module.exports = function (m, fn) {
     fn.locations = {};
-    fn.locations.create = function (options = {}) {
+    fn.locations.create = function (location) {
         return new Promise((resolve, reject) => {
-            if (options.location) {
-                return m.locations.findOrCreate({
-                    where: {location: options.location}
+            if (location) {
+                m.locations.findOrCreate({
+                    where: {location: location}
                 })
                 .then(([location, created]) => {
                     if (created) resolve({location_id: location.location_id})

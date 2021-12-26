@@ -178,14 +178,41 @@ function receive_options() {
                             div_details.appendChild(new Select({
                                 small: true,
                                 attributes: [
-                                    {field: 'name',     value: `orders[][${options.index}][serials][]`},
-                                    {field: 'required', value: true}
+                                    {field: 'name',     value: `orders[][${options.index}][serials][][${i}][serial]`},
+                                    {field: 'required', value: true},
+                                    {field: 'placeholder', value: `Serial ${i + 1}`}
+                                ]
+                            }).e);
+                            div_details.appendChild(new Select({
+                                small: true,
+                                attributes: [
+                                    {field: 'name',     value: `orders[][${options.index}][serials][][${i}][location]`},
+                                    {field: 'required', value: true},
+                                    {field: 'placeholder', value: `Location ${i + 1}`}
                                 ]
                             }).e);
                         };
                     } else {
-                        add_stock_input(div_details, options.index, order.size_id);
-                        let stock_qty = new Input({
+                        let list = document.createElement('datalist');
+                        list.setAttribute('id', `loc_list_${index}`);
+                        div_details.appendChild(new Input({
+                            small: true,
+                            attributes: [
+                                {field: 'name',     value: `orders[][${options.index}][location]`},
+                                {field: 'required', value: true},
+                                {field: 'list',     value: `loc_list_${options.index}`},
+                                {field: 'placeholder', value: 'Enter Location...'}
+                            ]
+                        }).e);
+                        div_details.appendChild(list);
+                        get({
+                            table: 'stocks',
+                            where: {size_id: order.size_id}
+                        })
+                        .then(function ([result, options]) {
+                            result.stocks.forEach(e => list.appendChild(new Option({value: e.location.location}).e));
+                        });
+                        div_details.appendChild(new Input({
                             small: true,
                             attributes: [
                                 {field: 'type',        value: 'number'},
@@ -195,36 +222,12 @@ function receive_options() {
                                 {field: 'required',    value: true},
                                 {field: 'value',       value: order.qty}
                             ]
-                        }).e;
-                        div_details.appendChild(stock_qty);
+                        }).e);
                     };
                 };
                 remove_spinner(order.order_id);
             });
         };
-    });
-};
-function add_stock_input(div_details, index, size_id) {
-    let stock_input = new Input({
-        small: true,
-        attributes: [
-            {field: 'name',     value: `orders[][${index}][stock_id]`},
-            {field: 'required', value: true},
-            {field: 'list',     value: `loc_list_${index}`},
-            {field: 'placeholder', value: 'Enter Location...'}
-        ],
-        options: [{text: 'Select Location'}]
-    }).e,
-        list = document.createElement('datalist');
-    list.setAttribute('id', `loc_list_${index}`);
-    div_details.appendChild(stock_input);
-    div_details.appendChild(list);
-    get({
-        table: 'stocks',
-        where: {size_id: size_id}
-    })
-    .then(function ([result, options]) {
-        result.stocks.forEach(e => list.appendChild(new Option({value: e.location.location}).e));
     });
 };
 addReloadListener(getOrders);
@@ -242,13 +245,14 @@ sort_listeners(
     ]
 );
 window.addEventListener('load', function () {
-    addListener('sel_status', getOrders, 'change');
     addListener('status_orders_0', getOrders, 'input');
     addListener('status_orders_1', getOrders, 'input');
     addListener('status_orders_2', getOrders, 'input');
     addListener('status_orders_3', getOrders, 'input');
-    addListener('createdAt_from', function (){filter()}, 'change');
-    addListener('createdAt_to',   function (){filter()}, 'change');
-    addListener('item',           function (){filter()}, 'input');
-    addListener('size',           function (){filter()}, 'input');
+    addListener('filter_orders_createdAt_from', getOrders, 'input');
+    addListener('filter_orders_createdAt_to',   getOrders, 'input');
+    addListener('filter_orders_item',   getOrders, 'input');
+    addListener('filter_orders_size_1', getOrders, 'input');
+    addListener('filter_orders_size_2', getOrders, 'input');
+    addListener('filter_orders_size_3', getOrders, 'input');
 });

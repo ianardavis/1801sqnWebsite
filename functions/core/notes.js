@@ -2,7 +2,7 @@ module.exports = function (m, fn) {
     fn.notes = {};
     fn.notes.create = function (note, user_id, id, table, system = true) {
         return new Promise((resolve, reject) => {
-            return m.notes.create({
+            m.notes.create({
                 note:    note,
                 id:      id,
                 _table:  table,

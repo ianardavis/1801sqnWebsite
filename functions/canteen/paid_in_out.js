@@ -19,14 +19,14 @@ module.exports = function (m, fn) {
                         {user_id: paid_in_out.user_id_paid_in_out}
                     )
                     .then(user_id_paid_in_out => {
-                        return m.paid_in_outs.create({
+                        m.paid_in_outs.create({
                             ...paid_in_out,
                             user_id: user_id,
                             ...(paid_in_out.paid_in === '1' ? {status: 2} : {})
                         })
                         .then(paid_in_out => {
                             if (paid_in_out.paid_in === '1') {
-                                return fn.increment(holding, paid_in_out.amount, 'cash')
+                                fn.increment(holding, paid_in_out.amount, 'cash')
                                 .then(result => resolve(true))
                                 .catch(err => reject(err));
                             } else resolve(true);
@@ -54,12 +54,12 @@ module.exports = function (m, fn) {
                     if     (!paid_in_out.holding)                                           reject(new Error('Invalid holding'))
                     else if (Number(paid_in_out.holding.cash) < Number(paid_in_out.amount)) reject(new Error('Not enough in holding'))
                     else {
-                        return fn.decrement(paid_in_out.holding, paid_in_out.amount, 'cash')
+                        fn.decrement(paid_in_out.holding, paid_in_out.amount, 'cash')
                         .then(result => {
-                            return fn.update(paid_in_out, {status: 2})
+                            fn.update(paid_in_out, {status: 2})
                             .then(result => {
-                                return fn.actions.create(
-                                    'COMPLETED',
+                                fn.actions.create(
+                                    'PAID OUT | COMPLETED',
                                     user_id,
                                     [{table: 'paid_in_outs', id: paid_in_out.paid_in_out_id}]
                                 )
@@ -89,10 +89,10 @@ module.exports = function (m, fn) {
                 else if (paid_in_out.status === 0) reject(new Error('This pay out has been cancelled'))
                 else if (paid_in_out.status === 2) reject(new Error('This pay out is already complete'))
                 else if (paid_in_out.status === 1) {
-                    return fn.update(paid_in_out, {status: 0})
+                    fn.update(paid_in_out, {status: 0})
                     .then(result => {
-                        return fn.actions.create(
-                            'CANCELLED',
+                        fn.actions.create(
+                            'PAID OUT | CANCELLED',
                             user_id,
                             [{table: 'paid_in_outs', id: paid_in_out.paid_in_out_id}]
                         )

@@ -317,32 +317,7 @@
             </div>
         </div>
         <% if (permissions.issuer) { %>
-            <div id='mdl_issue_add'   class="modal fade" tabindex="-1" role="dialog">
-                <div class="modal-dialog modal-lg" role="document">
-                    <form class="modal-content" id='form_issue_add'>
-                        <div class="modal-header">
-                            <h5 class="modal-title">Issue Item</h5>
-                        </div>
-                        <div class="modal-body">
-                            <%- include(`${partials}/inputs/number`, {title: 'Quantity', value: '1', min: '1', id: 'issue_add_qty'}) %>
-                            <button type='button' class='btn btn-success w-100 mb-1' id='btn_issue_users'>Add Users</button>
-                            <table class='table table-sm table-hover'>
-                                <thead class='thead-dark'>
-                                    <th class='w-30'>Service Number</th>
-                                    <th class='w-60'>User</th>
-                                    <th class='w-20'>Quantity</th>
-                                    <th><i class='fas fa-trash-alt'></i></th>
-                                </thead>
-                                <tbody id='tbl_issue_add'></tbody>
-                            </table>
-                        </div>
-                        <div class="modal-footer">
-                            <input type="submit" class="btn btn-success w-100" value='Issue'>
-                            <%- include(`${partials}/button/modal/close`) %>
-                        </div>
-                    </form>
-                </div>
-            </div>
+            <%- include(`${partials}/modals/stores/issue_add`) %>
         <% } %>
 
         <div     id='mdl_nsn_view'    class="modal fade" tabindex="-1" role="dialog">
@@ -461,8 +436,5 @@
 <% } %>
 
 <script src="/js/stores/sizes/show/issues/view.js"></script>
-<% if (permissions.issuer) { %>
-    <script src="/js/users/select/showWindow.js"></script>
-    <script src="/js/stores/sizes/show/issues/add.js"></script>
-<% } %>
+<script src="/js/stores/sizes/show/issues/add.js"></script>
 <%- include(`${partials}/foot/components/htmlClose`) %>

@@ -5,12 +5,12 @@ module.exports = function (m, fn) {
             if      (!receipt.qty)  reject(new Error('No quantity submitted'))
             else if (!receipt.cost) reject(new Error('No cost submitted'))
             else {
-                return fn.get(
+                fn.get(
                     'canteen_items',
                     {item_id: receipt.item_id}
                 )
                 .then(item => {
-                    return m.receipts.create({
+                    m.receipts.create({
                         item_id: item.item_id,
                         qty:     receipt.qty,
                         cost:    receipt.cost,
@@ -29,11 +29,11 @@ module.exports = function (m, fn) {
                             });
                         };
                         let qty_current = (item.qty < 0 ? 0 : item.qty)
-                        return fn.increment(item, receipt_qty)
+                        fn.increment(item, receipt_qty)
                         .then(result => {
                             if (item.cost !== receipt.cost) {
                                 let cost_new    = Number(((qty_current * item.cost) + (receipt.qty * receipt.cost)) / (qty_current + receipt.qty));
-                                return item.update({cost: cost_new})
+                                item.update({cost: cost_new})
                                 .then(result => {
                                     if (!result) resolve(true);
                                     else {

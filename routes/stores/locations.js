@@ -22,11 +22,11 @@ module.exports = (app, m, fn) => {
         .then(location => {
             if (!location) fn.send_error(res, 'Location not found')
             else {
-                return m.locations.findOne({where: {location: req.body.location}})
+                m.locations.findOne({where: {location: req.body.location}})
                 .then(new_location => {
                     if (new_location && location.location_id !== new_location.location_id) fn.send_error(res, 'Location already exists') ///merge???
                     else {
-                        return fn.update(location, {location: req.body.location})
+                        fn.update(location, {location: req.body.location})
                         .then(result => res.send({success: true, message: 'Location saved'}))
                         .catch(err => fn.send_error(res, err));
                     };
@@ -37,8 +37,8 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.post('/locations',    fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
-        fn.locations.create({location: req.body.location})
-        .then(location => res.send({success: true, message: 'Location created'}))
+        fn.locations.create(req.body.location)
+        .then(location_id => res.send({success: true, message: 'Location created'}))
         .catch(err => fn.send_error(res, err));
     });
 };

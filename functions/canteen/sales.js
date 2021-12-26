@@ -2,9 +2,9 @@ module.exports = function (m, fn) {
     fn.sales = {lines: {}, payments: {}};
     function debit_account(sale_id, account, amount, user_id) {
         return new Promise((resolve, reject) => {
-            return fn.decrement(account, amount, 'credit')
+            fn.decrement(account, amount, 'credit')
             .then(result => {
-                return fn.payments.create(
+                fn.payments.create(
                     sale_id,
                     amount,
                     user_id,
@@ -18,14 +18,14 @@ module.exports = function (m, fn) {
     };
     function credit_account(user_id_credit, amount) {
         return new Promise(resolve => {
-            return m.credits.findOrCreate({
+            m.credits.findOrCreate({
                 where: {user_id: user_id_credit},
                 defaults: {credit: amount}
             })
             .then(([credit, created]) => {
                 if (created) resolve(0)
                 else {
-                    return fn.increment(credit, amount, 'credit')
+                    fn.increment(credit, amount, 'credit')
                     .then(result => resolve(0))
                     .catch(err => {
                         console.log(err)
@@ -41,7 +41,7 @@ module.exports = function (m, fn) {
     };
     function get_sale_total(sale_id) {
         return new Promise((resolve, reject) => {
-            return m.sale_lines.findAll({
+            m.sale_lines.findAll({
                 where: {sale_id: sale_id}
             })
             .then(lines => {
@@ -58,24 +58,24 @@ module.exports = function (m, fn) {
     };
     function get_payment_total(sale_id) {
         return new Promise((resolve, reject) => {
-            return m.payments.sum('amount', {where: {sale_id: sale_id}})
+            m.payments.sum('amount', {where: {sale_id: sale_id}})
             .then(paid => resolve(paid))
             .catch(err => reject(err));
         });
     };
     function process_account_payment(user_id_debit, balance, sale_id, user_id) {
         return new Promise((resolve, reject) => {
-            return fn.get(
+            fn.get(
                 'credits',
                 {user_id: user_id_debit}
             )
             .then(account => {
                 if (balance <= account.credit) {
-                    return debit_account(sale_id, account, balance, user_id)
+                    debit_account(sale_id, account, balance, user_id)
                     .then(result => resolve(true))
                     .catch(err => reject(err));
                 } else {
-                    return debit_account(sale_id, account, account.credit, user_id)
+                    debit_account(sale_id, account, account.credit, user_id)
                     .then(result => resolve(true))
                     .catch(err => reject(err));
                 };
@@ -85,7 +85,7 @@ module.exports = function (m, fn) {
     };
     function confirm_payments(sale_id) {
         return new Promise((resolve, reject) => {
-            return m.payments.update({status: 2}, {where: {sale_id: sale_id, status: 1}})
+            m.payments.update({status: 2}, {where: {sale_id: sale_id, status: 1}})
             .then(result => {
                 if (!result) reject(new Error('Payments not confirmed'))
                 else resolve(true);
@@ -95,32 +95,32 @@ module.exports = function (m, fn) {
     };
     function process_payments(sale_id, sale, user_id) {
         return new Promise((resolve, reject) => {
-            return Promise.all( //Process cash payments first
+            Promise.all( //Process cash payments first
                 (sale.tendered && sale.tendered > 0 ?
                     [fn.payments.create(sale_id, sale.tendered, user_id)] :
                     []
                 )
             )
             .then(result => {
-                return get_payment_total(sale_id) //Check total payments made
+                get_payment_total(sale_id) //Check total payments made
                 .then(paid => {
-                    return get_sale_total(sale_id)
+                    get_sale_total(sale_id)
                     .then(total => {
                         let balance = Number(total - paid);
-                        return Promise.all(
+                        Promise.all(
                             (paid < total && sale.user_id_debit ? 
                                 [process_account_payment(sale.user_id_debit, balance, sale_id, user_id)] : 
                                 []
                             )
                         )
                         .then(result => {
-                            return get_payment_total(sale_id)
+                            get_payment_total(sale_id)
                             .then(paid => {
                                 if (paid >= total) {
-                                    return confirm_payments(sale_id)
+                                    confirm_payments(sale_id)
                                     .then(result => {
                                         if (sale.user_id_credit) {
-                                            return credit_account(sale.user_id_credit, Number(paid - total))
+                                            credit_account(sale.user_id_credit, Number(paid - total))
                                             .then(change => resolve(change))
                                             .catch(err => {
                                                 console.log(err);
@@ -149,7 +149,7 @@ module.exports = function (m, fn) {
                 {item_id: item_id}
             )
             .then(item => {
-                return fn.decrement(item, qty)
+                fn.decrement(item, qty)
                 .then(result => resolve(true))
                 .catch(err => reject(err));
             })
@@ -166,11 +166,11 @@ module.exports = function (m, fn) {
                 if      (sale.status === 0) reject(new Error('Sale has been cancelled'))
                 else if (sale.status === 2) reject(new Error('Sale has already been completed'))
                 else if (sale.status === 1) {
-                    return process_payments(sale.sale_id, _sale, user_id)
+                    process_payments(sale.sale_id, _sale, user_id)
                     .then(change => {
                         let actions = [fn.update(sale, {status: 2})];
                         lines.forEach(line => actions.push(subtract_sold_qty_from_stock(line.item_id, line.qty)))
-                        return Promise.all(actions)
+                        Promise.all(actions)
                         .then(result => resolve(change))
                         .catch(err => reject(err));
                     })
@@ -218,12 +218,12 @@ module.exports = function (m, fn) {
             else {
                 check_sale(line.sale_id)
                 .then(sale => {
-                    return fn.get(
+                    fn.get(
                         'canteen_items',
                         {item_id: line.item_id}
                     )
                     .then(item => {
-                        return m.sale_lines.findOrCreate({
+                        m.sale_lines.findOrCreate({
                             where: {
                                 sale_id: sale.sale_id,
                                 item_id: item.item_id
@@ -236,7 +236,7 @@ module.exports = function (m, fn) {
                         .then(([sale_line, created]) => {
                             if (created) resolve(true)
                             else {
-                                return fn.increment(sale_line, line.qty || 1)
+                                fn.increment(sale_line, line.qty || 1)
                                 .then(result => resolve(true))
                                 .catch(err => reject(err));
                             };
@@ -253,13 +253,13 @@ module.exports = function (m, fn) {
         return new Promise((resolve, reject) => {
             check_sale_line(_line.sale_line_id)
             .then(line => {
-                return fn.increment(line, _line.qty)
+                fn.increment(line, _line.qty)
                 .then(result => {
-                    return line.reload()
+                    line.reload()
                     .then(result => {
                         if (result) {
                             if (line.qty <= 0) {
-                                return line.destroy()
+                                line.destroy()
                                 .then(result => { 
                                     if (result) resolve(true)
                                     else reject(new Error('Line not updated'));
@@ -277,7 +277,7 @@ module.exports = function (m, fn) {
 
     fn.sales.payments.delete = function (payment_id) {
         return new Promise((resolve, reject) => {
-            return fn.get(
+            fn.get(
                 'payments',
                 {payment_id: payment_id}
             )
@@ -285,7 +285,7 @@ module.exports = function (m, fn) {
                 if      (payment.status === 0) reject(new Error('Payment has been cancelled'))
                 else if (payment.status === 2) reject(new Error('Payment has already been confirmed'))
                 else if (payment.status === 1) {
-                    return payment.destroy()
+                    payment.destroy()
                     .then(result => resolve(true))
                     .catch(err => reject(err));
                 } else reject(new Error('Unknown payment status'));

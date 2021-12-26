@@ -12,8 +12,8 @@ module.exports = function (m, fn) {
                 .then(([holding, created]) => {
                     if (!created) reject(new Error('This holding already exists'))
                     else {
-                        return fn.actions.create(
-                            `CREATED: Opening balance: £${Number(holding.cash).toFixed(2)}`,
+                        fn.actions.create(
+                            `HOLDING | CREATED: Opening balance: £${Number(holding.cash).toFixed(2)}`,
                             user_id,
                             [{table: 'holdings', id: holding.holding_id}]
                         )
@@ -36,10 +36,10 @@ module.exports = function (m, fn) {
             )
             .then(holding => {
                 let cash = fn.sessions.countCash(balance);
-                return fn.update(holding, {cash: cash})
+                fn.update(holding, {cash: cash})
                 .then(result => {
-                    return fn.actions.create(
-                        `COUNT: £${Number(cash).toFixed(2)}. Holding ${(cash === holding.cash ? ' correct' : `${(holding.cash < cash ? 'under by' : 'over by')} £${Math.abs(holding.cash - cash)}`)}`,
+                    fn.actions.create(
+                        `HOLDING | COUNT: £${Number(cash).toFixed(2)}. Holding ${(cash === holding.cash ? ' correct' : `${(holding.cash < cash ? 'under by' : 'over by')} £${Math.abs(holding.cash - cash)}`)}`,
                         user_id,
                         [{table: 'holdings', id: holding.holding_id}]
                     )

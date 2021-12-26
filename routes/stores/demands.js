@@ -8,7 +8,7 @@ module.exports = (app, m, fn) => {
         )
         .then(demand => {
             if (!demand.filename) {
-                return fn.demands.raise(demand.demand_id, req.user)
+                fn.demands.raise(demand.demand_id, req.user)
                 .then(file => {
                     fn.download('demands', file, res);
                 })
