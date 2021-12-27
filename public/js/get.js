@@ -133,7 +133,14 @@ function sum(options) {
             XHR_Error(event, 'summing', options.spinner || options.table || '');
             reject(event);
         });
-        XHR.open('GET', `/sum/${options.table}?${options.query.join('&')}`);
+
+        let queries = [];
+        if (options.where) queries.push(`where=${JSON.stringify(options.where)}`);
+        if (options.like ) queries.push(`like=${ JSON.stringify(options.like)}`);
+        if (options.lt   ) queries.push(`lt=${   JSON.stringify(options.lt)}`);
+        if (options.gt   ) queries.push(`gt=${   JSON.stringify(options.gt)}`);
+
+        XHR.open('GET', `/sum/${options.location || options.table}?${queries.join('&')}`);
         XHR.send();
     });
 };

@@ -159,15 +159,13 @@ module.exports = function (m, fn) {
                     else if (!issue.size.orderable) reject(new Error('This size can not be ordered'))
                     else {
                         fn.orders.create(
-                            {
-                                size_id: issue.size_id,
-                                qty:     issue.qty
-                            },
+                            issue.size_id,
+                            issue.qty,
                             options.user_id,
                             issue.issue_id
                         )
-                        .then(order => {
-                            update_issue(issue, 3, options.user_id, 'ORDERED')
+                        .then(result => {
+                            fn.update(issue, {status: 3})
                             .then(result => resolve({success: true, message: 'Issue ordered'}))
                             .catch(err => {
                                 console.log(err);

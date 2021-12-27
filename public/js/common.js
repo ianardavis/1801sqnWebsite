@@ -207,7 +207,7 @@ function get_stock(size_id) {
     return new Promise(resolve => {
         sum({
             table: 'stocks',
-            query: [`size_id=${size_id}`]
+            where: {size_id: size_id}
         })
         .then(([stock, options]) => resolve(stock))
         .catch(err => {

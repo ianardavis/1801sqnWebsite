@@ -1,13 +1,29 @@
 <%- include(`${partials}/head/app`, {text: 'Stores'}) %>
 <%- include(`${partials}/breadcrumb`, {text: 'Reports', href: '/reports'}) %>
-<%- include(`${partials}/breadcrumb`, {text: 'Stock - By Item'}) %>
+<%- include(`${partials}/breadcrumb`, {text: 'Stock - By Location'}) %>
 <%- include(`${partials}/reload`) %>
-<%- include(`${partials}/spinner`,    {id: 'sizes'}) %>
+<%- include(`${partials}/spinner`,    {id: 'stocks'}) %>
 <%- include(`${partials}/head/components/close`) %>
 <section class='container'>
-    <div id="div_sizes"></div>
+    <form id="form_stocks">
+        <input type="hidden" name='location_id' id='location_id'>
+        <button id='btn_action' class='btn btn-success w-100 mb-1'>Action Counts</button>
+        <select class='form-select mb-1' id="sel_location"></select>
+        <table class="table table-sm table-hover">
+            <thead class="thead-dark">
+                <th class='w-35'>Item</th>
+                <th class='w-15'>Size 1</th>
+                <th class='w-15'>Size 2</th>
+                <th class='w-15'>Size 3</th>
+                <th class='w-10'>Stock Qty</th>
+                <th class='w-10'>Count</th>
+                <th><i class="fas fa-search"></i></th>
+            </thead>
+            <tbody id="tbl_stocks"></tbody>
+        </table>
+    </form>
 </section>
 <%- include(`${partials}/foot/app`) %>
 <script src="/js/stores/reports/4/view.js"></script>
-<script async>getSizes()</script>
+<script async>getLocations()</script>
 <%- include(`${partials}/foot/components/htmlClose`) %>

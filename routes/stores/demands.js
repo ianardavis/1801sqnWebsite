@@ -30,7 +30,7 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/sum/demand_lines',     fn.loggedIn(), fn.permissions.check('stores_stock_admin'),  (req, res) => {
-        m.demand_lines.sum('qty', {where: req.query})
+        m.demand_lines.sum('qty', {where: req.query.where})
         .then(sum => res.send({success: true, result: sum}))
         .catch(err => fn.send_error(res, err));
     });

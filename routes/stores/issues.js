@@ -24,6 +24,11 @@ module.exports = (app, m, fn) => {
         .then(count => res.send({success: true, result: count}))
         .catch(err => fn.send_error(res, err));
     });
+    app.get('/sum/issues',         fn.loggedIn(), fn.permissions.check('issuer'),              (req, res) => {
+        m.issues.sum('qty', {where: req.query.where})
+        .then(sum => res.send({success: true, result: sum}))
+        .catch(err => fn.send_error(res, err));
+    });
     function issues_allowed(allowed_stores, user_id_issue, user_id) {
         return new Promise((resolve, reject) => {
             fn.allowed(user_id, 'access_users', true)

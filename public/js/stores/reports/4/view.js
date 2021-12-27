@@ -1,64 +1,65 @@
-function getSizes() {
-    clear('div_sizes')
-    .then(div_sizes => {
-        let p_head = new P({attributes: [{field: 'id', value: 'col_headers'}]}).e,
-            p_body = new P({attributes: [{field: 'id', value: 'col_body'}]}).e,
-            div_row = new Div({classes: ['row']}).e,
-            div_col = new Div({classes: ['col-12', 'col-md-8', 'mx-auto']}).e;
-        div_sizes.appendChild(p_head);
-        div_col.appendChild(p_body);
-        div_row.appendChild(div_col);
-        div_sizes.appendChild(div_row);
-        get({
-            table: 'sizes',
-            where: {orderable: true}
-        })
-        .then(function ([sizes, options]) {
-            sizes.forEach(size => {
-                let tbl = document.querySelector(`#tbl_${size.item_id}`);
-                if (!tbl) tbl = addItem(p_head, p_body, size.item);
-                let row = tbl.insertRow(-1);
-                add_cell(row, {text: size.size1});
-                add_cell(row, {text: size.size2});
-                add_cell(row, {text: size.size3});
-                add_cell(row, {id: `stock-${size.size_id}`});
-                add_cell(row, {append: new Link({href: `/sizes/${size.size_id}`}).e});
-                get_stock(size.size_id)
-                .then(stock => set_innerText(`stock-${size.size_id}`, stock || '0'));
+function getLocations() {
+    clear('tbl_stocks');
+    clear('sel_location')
+    .then(sel_location => {
+        sel_location.appendChild(new Option({text: '...Select a location', selected: true}).e);
+        get({table: 'locations'})
+        .then(function ([locations, options]) {
+            locations.forEach(location => {
+                sel_location.appendChild(new Option({text: location.location, value: location.location_id}).e);
             });
         });
     });
 };
-function addItem(p_head, p_body, item) {
-    let div = new Div({
-            attributes: [{field: 'id', value: `item-${item.item_id}`}],
-            classes: ['collapse']
-        }).e,
-        table = new Table().e,
-        head  = new THEAD().e,
-        body  = new TBODY(item.item_id).e;
-    head.appendChild(new TH({text: item.size_text1, width: '25'}).e);
-    head.appendChild(new TH({text: item.size_text2, width: '25'}).e);
-    head.appendChild(new TH({text: item.size_text3, width: '25'}).e);
-    head.appendChild(new TH({text: 'In Stock', width: '25'}).e);
-    head.appendChild(new TH({html: '<i class="fas fa-search"></i>'}).e);
-    table.appendChild(head);
-    table.appendChild(body);
-    div.appendChild(new H5({text: item.description}).e);
-    div.appendChild(table);
-    p_body.appendChild(div);
-    p_head.appendChild(new Button({
-        classes: ['m-1', 'collapsed'],
-        data: [
-            {field: 'bs-toggle', value: 'collapse'},
-            {field: 'bs-target', value: `#item-${item.item_id}`}
-        ],
-        attributes: [
-            {field: 'aria-expanded', value: 'false'},
-            {field: 'aria-controls', value: `item-${item.item_id}`}
-        ],
-        text: item.description
-    }).e);
-    return body;
+function getStocks(location_id) {
+    clear('tbl_stocks')
+    .then(tbl_stocks => {
+        set_value('location_id', location_id)
+        if (location_id) {
+            get({
+                table: 'stocks',
+                where: {location_id: location_id}
+            })
+            .then(function ([stocks, options]) {
+                let row_index = 0;
+                stocks.forEach(stock => {
+                    let row = tbl_stocks.insertRow(-1);
+                    add_cell(row, {text: stock.size.item.description});
+                    add_cell(row, {text: stock.size.size1});
+                    add_cell(row, {text: stock.size.size2});
+                    add_cell(row, {text: stock.size.size3});
+                    add_cell(row, {text: stock.qty || '0'});
+                    add_cell(row, {append: [
+                        new Input({
+                            attributes: [
+                                {field: 'type', value: 'number'},
+                                {field: 'name', value: `counts[][${row_index}][qty]`},
+                                {field: 'min',  value: '0'}
+                            ],
+                            small: true
+                        }).e,
+                        new Input({
+                            attributes: [
+                                {field: 'type',  value: 'hidden'},
+                                {field: 'name',  value: `counts[][${row_index}][stock_id]`},
+                                {field: 'value', value: stock.stock_id}
+                            ]
+                        }).e
+                    ]});
+                    add_cell(row, {append: new Link(`/stocks/${stock.stock_id}`).e});
+                    row_index++;
+                });
+            });
+        };
+    });
 };
-addReloadListener(getSizes);
+addReloadListener(getLocations);
+window.addEventListener('load', function () {
+    addListener('sel_location', function (e) {getStocks(e.target.value)}, 'input');
+    addFormListener(
+        'stocks',
+        'PUT',
+        '/stocks/counts',
+        {onComplete: function (e) {getStocks(e.result)}}
+    );
+});

@@ -64,7 +64,10 @@ function getSizes() {
 
                     sum({
                         table: 'orders',
-                        query: [`size_id=${size.size_id}`, 'status=1']
+                        where: {
+                            size_id: size.size_id,
+                            status: 1
+                        }
                     })
                     .then(function([orders, options]) {
                         set_innerText(`${size.size_id}_orders`, orders || '0');
@@ -72,10 +75,24 @@ function getSizes() {
 
                     sum({
                         table: 'demand_lines',
-                        query: [`size_id=${size.size_id}`, 'status=1', 'status=2']
+                        where: {
+                            size_id: size.size_id,
+                            status: [1, 2]
+                        }
                     })
                     .then(function([demands, options]) {
                         set_innerText(`${size.size_id}_demands`, demands || '0');
+                    });
+
+                    sum({
+                        table: 'issues',
+                        where: {
+                            size_id: size.size_id,
+                            status: [1, 2]
+                        }
+                    })
+                    .then(function([issues, options]) {
+                        set_innerText(`${size.size_id}_issues`, issues || '0');
                     });
                 });
             });
