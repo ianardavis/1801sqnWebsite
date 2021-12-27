@@ -4,7 +4,7 @@ module.exports = (app, m, fn) => {
     app.get('/orders/:id',              fn.loggedIn(), fn.permissions.get('stores_stock_admin'),   (req, res) => res.render('stores/orders/show'));
     
     app.get('/count/orders',            fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
-        m.orders.count({where: req.query})
+        m.orders.count({where: req.query.where})
         .then(count => res.send({success: true, result: count}))
         .catch(err => fn.send_error(res, err));
     });
@@ -88,10 +88,24 @@ module.exports = (app, m, fn) => {
             {order_id: req.params.id}
         )
         .then(order => {
-            if (['1', '2', '3'].includes(req.params.status)) {
+            if (['0', '1', '2', '3'].includes(req.params.status)) {
                 order.update({status: req.params.status})
                 .then(result => {
-                    let status = (req.params.status === '1' ? 'PLACED' : (req.params.status === '2' ? 'DEMANDED' : 'RECEIVED'));
+                    let status;
+                    switch (req.params.status) {
+                        case '0':
+                            status = 'CANCELLED'
+                            break;
+                        case '1':
+                            status = 'PLACED'
+                            break;
+                        case '2':
+                            status = 'DEMANDED'
+                            break;
+                        case '3':
+                            status = 'RECEIVED'
+                            break;
+                    };
                     fn.actions.create(
                         `ORDER | ${status} | Set manually`,
                         req.user.user_id,

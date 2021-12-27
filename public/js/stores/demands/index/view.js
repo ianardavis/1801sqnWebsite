@@ -1,54 +1,64 @@
 let demand_statuses = {"0": "Cancelled", "1": "Draft", "2": "Complete", "3":"Closed"};
+function query() {
+    let where = null,
+        like  = null,
+        gt    = null,
+        lt    = null;
+    
+    let sel_statuses = checked_statuses();
+    if (sel_statuses) where = {status: sel_statuses};
+
+    let date_from = document.querySelector(`#filter_demands_createdAt_from`) || {value: ''},
+        date_to   = document.querySelector(`#filter_demands_createdAt_to`)   || {value: ''};
+    if (date_from && date_from.value !== '') gt = {column: 'createdAt', value: date_from.value};
+    if (date_to   && date_to.value   !== '') lt = {column: 'createdAt', value: date_to  .value};
+
+    let item  = document.querySelector('#filter_demands_item')   || {value: ''},
+        size1 = document.querySelector('#filter_demands_size_1') || {value: ''},
+        size2 = document.querySelector('#filter_demands_size_2') || {value: ''},
+        size3 = document.querySelector('#filter_demands_size_3') || {value: ''};
+    if (item.value || size1.value || size2.value || size3.value) like = {};
+    if (item .value !=='') like.description = item.value;
+    if (size1.value !=='') like.size1       = size1.value;
+    if (size2.value !=='') like.size2       = size2.value;
+    if (size3.value !=='') like.size3       = size3.value;
+
+    return {
+        where: where,
+        like:  like,
+        gt:    gt,
+        lt:    lt
+    };
+};
 function getDemands() {
     clear('tbl_demands')
     .then(tbl_demands => {
-        let sel_suppliers = document.querySelector('#sel_suppliers') || {value: ''},
-            statuses = checked_statuses(),
-            where = {};
-        if (statuses) where.status = statuses;
-        if (sel_suppliers && sel_suppliers.value !== '') where.supplier_id = sel_suppliers.value;
         get({
             table: 'demands',
-            where: where
+            ...query(),
+            func: getDemands
         })
-        .then(function ([demands, options]) {
-            demands.forEach(demand => {
+        .then(function ([result, options]) {
+            result.demands.forEach(demand => {
                 let row = tbl_demands.insertRow(-1);
                 add_cell(row, table_date(demand.createdAt));
                 add_cell(row, {text: demand.supplier.name});
-                add_cell(row, {classes: ['demand'], data: [{field: 'id', value: demand.demand_id}]});
+                let line_cell = add_cell(row, {id: `${demand.demand_id}_lines`});
                 add_cell(row, {text: demand_statuses[demand.status]});
                 add_cell(row, {append: new Link({href: `/demands/${demand.demand_id}`}).e});
-            });
-            return tbl_demands;
-        })
-        .then(tbl_demands => {
-            document.querySelectorAll('.demand').forEach(e => {
                 count({
                     table: 'demand_lines',
-                    query: [`demand_id=${e.dataset.id}`]
+                    where: {
+                        demand_id: demand.demand_id,
+                        status: [1, 2]
+                    }
                 })
                 .then(function ([count, options]) {
-                    e.innerText = count || '0';
-                    e.removeAttribute('data-id');
-                    e.classList.remove('demand');
+                    line_cell.innerText = count || '0';
                 });
             });
             return tbl_demands;
-        })
-        .then(tbl_demands => filter(tbl_demands));
-    });
-};
-function filter(tbl_demands) {
-    if (!tbl_demands) tbl_demands = document.querySelector('#tbl_demands');
-    let from = new Date(document.querySelector('#createdAt_from').value).getTime() || '',
-        to   = new Date(document.querySelector('#createdAt_to').value)  .getTime() || '';
-    tbl_demands.childNodes.forEach(row => {
-        if (
-            (!from || row.childNodes[0].dataset.sort > from) &&
-            (!to   || row.childNodes[0].dataset.sort < to)
-        )    row.classList.remove('hidden')
-        else row.classList.add(   'hidden');
+        });
     });
 };
 function getSuppliers() {
@@ -57,9 +67,19 @@ function getSuppliers() {
         blank_text: 'All'
     })
     .then(result => getDemands())
-    .catch(err =>   getDemands());
+    .catch(err =>   getDemands())
 };
-addReloadListener(getDemands)
+addReloadListener(getDemands);
+sort_listeners(
+    'demands',
+    getDemands,
+    [
+        {value: 'createdAt',   text: 'Date', selected: true},
+        {value: 'supplier_id', text: 'Supplier'},
+        {value: 'status',      text: 'Status'}
+    ],
+    false
+);
 window.addEventListener('load', function () {
     addListener('reload_suppliers', getSuppliers);
     addListener('sel_suppliers',    getDemands, 'change');

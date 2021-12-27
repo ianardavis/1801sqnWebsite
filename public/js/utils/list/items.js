@@ -4,7 +4,7 @@ function listItems(options = {}) {
         .then(tbl_items => {
             if (options.blank) tbl_items.appendChild(new Option({
                 selected: (!options.selected),
-                text: options.blank_text || ''
+                text: options.blank.text || ''
             }).e);
             get({
                 table: 'items',

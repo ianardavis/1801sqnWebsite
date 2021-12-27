@@ -222,15 +222,17 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
-    fn.get = function (table, where, include = []) {
+    fn.get = function (table, where, include = [], resolveErr = false) {
         return new Promise((resolve, reject) => {
             m[table].findOne({
                 where:   where,
                 include: include
             })
             .then(result => {
-                if (!result) reject(new Error(`No ${table.replace('_', ' ')} found`))
-                else resolve(result);
+                if (!result) {
+                    if (resolveErr) resolve(false)
+                    else reject(new Error(`No ${table.replace('_', ' ')} found`));
+                } else resolve(result);
             })
             .catch(err => reject(err));
         });
@@ -308,5 +310,22 @@ module.exports = function (m, fn) {
         if (query.limit ) pagination.limit  = query.limit;
         if (query.offset) pagination.offset = query.offset * query.limit || 0;
         return pagination;
+    };
+    fn.build_query = function (query) {
+        let where = {};
+        if (!query.where) query.where = {};
+        if (query.where.status && query.where.status.length > 0) where.status = {[fn.op.or]: (Array.isArray(query.where.status) ? query.where.status : [query.where.status])};
+        if (query.gt || query.lt) {
+            if (query.gt && query.lt) {
+                where.createdAt = {[fn.op.between]: [query.gt.value, query.lt.value]}
+            };
+            if (query.gt && !query.lt) {
+                where.createdAt = {[fn.op.gt]: query.gt.value}
+            };
+            if (!query.gt && query.lt) {
+                where.createdAt = {[fn.op.lt]: query.lt.value}
+            };
+        };
+        return where;
     };
 };

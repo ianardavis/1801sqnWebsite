@@ -1,3 +1,11 @@
+function build_query(options) {
+    let queries = [];
+    if (options.where) queries.push(`where=${JSON.stringify(options.where)}`);
+    if (options.like ) queries.push(`like=${ JSON.stringify(options.like)}`);
+    if (options.lt   ) queries.push(`lt=${   JSON.stringify(options.lt)}`);
+    if (options.gt   ) queries.push(`gt=${   JSON.stringify(options.gt)}`);
+    return queries;
+};
 function get(options) {
     return new Promise((resolve, reject) => {
         show_spinner(options.spinner || options.table || '');
@@ -49,11 +57,7 @@ function get(options) {
             order_dir = document.querySelector(`#sort_${options.table}_dir`),
             pagination = get_pagination(options.table);
         if (order_col && order_dir) options.order = {col: order_col.value, dir: order_dir.value};
-        let queries = [];
-        if (options.where )  queries.push(`where=${ JSON.stringify(options.where)}`);
-        if (options.like  )  queries.push(`like=${  JSON.stringify(options.like)}`);
-        if (options.lt    )  queries.push(`lt=${    JSON.stringify(options.lt)}`);
-        if (options.gt    )  queries.push(`gt=${    JSON.stringify(options.gt)}`);
+        let queries = build_query(options);
         if (options.order )  queries.push(`order=${ JSON.stringify(options.order)}`);
         if (pagination.limit && pagination.limit !== 'All') queries.push(`limit=${ JSON.stringify(pagination.limit)}`);
         if (pagination.offset) queries.push(`offset=${JSON.stringify(pagination.offset)}`);
@@ -97,7 +101,7 @@ function count(options) {
             XHR_Error(event, 'counting', options.spinner || options.table || '');
             reject(event);
         });
-        XHR.open('GET', `/count/${options.table}?${options.query.join('&')}`);
+        XHR.open('GET', `/count/${options.location || options.table}?${build_query(options).join('&')}`);
         XHR.send();
     });
 };
@@ -134,17 +138,10 @@ function sum(options) {
             reject(event);
         });
 
-        let queries = [];
-        if (options.where) queries.push(`where=${JSON.stringify(options.where)}`);
-        if (options.like ) queries.push(`like=${ JSON.stringify(options.like)}`);
-        if (options.lt   ) queries.push(`lt=${   JSON.stringify(options.lt)}`);
-        if (options.gt   ) queries.push(`gt=${   JSON.stringify(options.gt)}`);
-
-        XHR.open('GET', `/sum/${options.location || options.table}?${queries.join('&')}`);
+        XHR.open('GET', `/sum/${options.location || options.table}?${build_query(options).join('&')}`);
         XHR.send();
     });
 };
-
 function addFormListener(form_id, method, location, options = {reload: false}) {
     try {
         let form = document.querySelector(`#form_${form_id}`);

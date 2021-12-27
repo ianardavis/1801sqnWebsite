@@ -4,8 +4,8 @@ function getLocations() {
     .then(sel_location => {
         sel_location.appendChild(new Option({text: '...Select a location', selected: true}).e);
         get({table: 'locations'})
-        .then(function ([locations, options]) {
-            locations.forEach(location => {
+        .then(function ([result, options]) {
+            result.locations.forEach(location => {
                 sel_location.appendChild(new Option({text: location.location, value: location.location_id}).e);
             });
         });
@@ -20,9 +20,9 @@ function getStocks(location_id) {
                 table: 'stocks',
                 where: {location_id: location_id}
             })
-            .then(function ([stocks, options]) {
+            .then(function ([result, options]) {
                 let row_index = 0;
-                stocks.forEach(stock => {
+                result.stocks.forEach(stock => {
                     let row = tbl_stocks.insertRow(-1);
                     add_cell(row, {text: stock.size.item.description});
                     add_cell(row, {text: stock.size.size1});
@@ -54,6 +54,14 @@ function getStocks(location_id) {
     });
 };
 addReloadListener(getLocations);
+sort_listeners(
+    'locations',
+    getLocations,
+    [
+        {value: 'createdAt', text: 'Created'},
+        {value: 'location',  text: 'Location', selected: true}
+    ]
+);
 window.addEventListener('load', function () {
     addListener('sel_location', function (e) {getStocks(e.target.value)}, 'input');
     addFormListener(

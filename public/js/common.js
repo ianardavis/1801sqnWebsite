@@ -280,7 +280,7 @@ function add_page_links(count, limit, offset, table, func) {
         );
     });
 };
-function sort_listeners(table, func, options) {
+function sort_listeners(table, func, options, getOnLoad = true) {
     window.addEventListener('load', function () {
         let limit_func = function (e) {
             let limit = document.querySelector(`.limit_${table} .active`);
@@ -297,9 +297,9 @@ function sort_listeners(table, func, options) {
         addListener(`sort_${ table}`,     func, 'input');
         addListener(`sort_${ table}_dir`, func, 'input');
         clear(`sort_${table}`)
-        .then(sort => options.forEach(o => sort.appendChild(new Option({value: o.value, text: o.text, selected: o.selected}).e)))
+        .then(sort => options.forEach(o => sort.appendChild(new Option(o).e)))
         .catch(err => console.log(err))
-        .finally(() => {if (func) func()});
+        .finally(() => {if (func && getOnLoad) func()});
     });
 };
 let path = window.location.pathname.toString().split('/');

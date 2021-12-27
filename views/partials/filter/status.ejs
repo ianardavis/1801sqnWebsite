@@ -4,7 +4,7 @@
     </div>
     <% if (locals.statuses) { %>
         <% statuses.forEach(status => { %>
-            <div class="col-6 col-sm-4">
+            <div class="col-6 col-sm-3">
                 <%- include(`${partials}/inputs/checkbox`, {title: status.text, id: `status_${table}_${status.value}`, value: status.value, colour: status.colour, classes: ['status'], checked: status.checked || false}) %>
             </div>
         <% }) %>

@@ -5,12 +5,25 @@
 <%- include(`${partials}/spinner`,    {id: 'items'}) %>
 <%- include(`${partials}/head/components/close`) %>
 <section class='container'>
-    <form id="form_items">
-        <button id='btn_save' class='btn btn-success w-100 mb-2' form='form_items'>Save Items</button>
-        <div id="div_items"></div>
+    <button id='btn_action' class='btn btn-success w-100 mb-2' form='form_sizes'>Save Details</button>
+    <%- include(`${partials}/sort`, {table: 'items', small: true}) %>
+    <%- include(`${partials}/inputs/select`, {id: 'sel_items', title: 'Items'}) %>
+    <%- include(`${partials}/sort`, {table: 'sizes', small: true}) %>
+    <form id="form_sizes">
+        <table class="table table-sm table-hover">
+            <thead class="thead-dark">
+                <th class='w-20'>Size 1</th>
+                <th class='w-20'>Size 2</th>
+                <th class='w-20'>Size 3</th>
+                <th class='w-20'>Demand Page</th>
+                <th class='w-20'>Demand Cell</th>
+                <th><i class="fas fa-search"></i></th>
+            </thead>
+            <tbody id="tbl_sizes"></tbody>
+        </table>
     </form>
 </section>
 <%- include(`${partials}/foot/app`) %>
+<script src="/js/utils/list/items.js"></script>
 <script src="/js/stores/reports/5/view.js"></script>
-<script async>getItems()</script>
 <%- include(`${partials}/foot/components/htmlClose`) %>

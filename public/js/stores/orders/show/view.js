@@ -20,9 +20,15 @@ function showOrder() {
     .catch(err => window.location.href = '/orders');
 };
 window.addEventListener('load', function () {
-    enable_button('mark_placed');
-    enable_button('mark_demanded');
-    enable_button('mark_received');
+    addFormListener(
+        'mark_cancelled',
+        'PUT',
+        `/orders/${path[2]}/mark/0`,
+        {onComplete: [
+            showOrder,
+            getActions
+        ]}
+    );
     addFormListener(
         'mark_placed',
         'PUT',

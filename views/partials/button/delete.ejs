@@ -1,2 +1,2 @@
-<button class="btn btn-danger ms-4" form='form_delete'>Delete</button>
+<button class="btn btn-danger <% if (!locals.no_ms4) { %>ms-4<% } %>" form='form_delete'><%= locals.text || 'Delete' %></button>
 <form id="form_delete"></form>

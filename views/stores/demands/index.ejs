@@ -4,44 +4,16 @@
 <%- include(`${partials}/spinner`, {id: 'demands'}) %>
 <%- include(`${partials}/head/components/close`) %>
 <section class='container'>
-	<button class="btn btn-primary w-100 mb-1" type="button" data-bs-toggle="collapse" data-bs-target="#col-filter" aria-expanded="false" aria-controls="col-filter">
-		Filter
-	</button>
-	<div class="collapse mb-3" id="col-filter">
-		<%- include(`${partials}/inputs/select`, {title: 'Supplier', id: 'sel_suppliers', spinner_id: 'suppliers', reload_id: 'reload_suppliers'}) %>
-		<h5 class='text-start'>Status:</h5>
-		<div class="row">
-			<div class="col-6 col-sm-3">
-				<%- include(`${partials}/inputs/checkbox`, {title: 'Cancelled', id: 'status_0', value: '0', colour: 'secondary', classes: ['status']}) %>
-			</div>
-			<div class="col-6 col-sm-3">
-				<%- include(`${partials}/inputs/checkbox`, {title: 'Draft', 	id: 'status_1', value: '1', colour: 'info', 	 classes: ['status'], checked: true}) %>
-			</div>
-			<div class="col-6 col-sm-3">
-				<%- include(`${partials}/inputs/checkbox`, {title: 'Complete', 	id: 'status_2', value: '2', colour: 'primary',   classes: ['status'], checked: true}) %>
-			</div>
-			<div class="col-6 col-sm-3">
-				<%- include(`${partials}/inputs/checkbox`, {title: 'Closed', 	id: 'status_3', value: '3', colour: 'success',   classes: ['status']}) %>
-			</div>
-		</div>
-		<div class="row">
-			<div class="col-sm-6">
-				<h5 class='text-start'>Date From:</h5>
-				<input type="date" class='form-control' id='createdAt_from'>
-			</div>
-			<div class="col-sm-6">
-				<h5 class='text-start'>Date To:</h5>
-				<input type="date" class='form-control' id='createdAt_to'>
-			</div>
-		</div>
-		<hr>
+	<div class="mb-1">
+		<%- include(`${partials}/filter/button`, {id: 'demands'}) %>
 	</div>
+	<%- include(`${partials}/filter/stores/demands`) %>
 	<%- include(`${partials}/sort`, {table: 'demands'}) %>
 	<table class="table table-sm table-hover">
 		<thead class="thead-dark">
 			<th class='w-30'>Date</th>
 			<th class='w-30'>Supplier</th>
-			<th class='w-15'>Description</th>
+			<th class='w-15'>Lines</th>
 			<th class='w-25'>Status</th>
 			<th><i class="fas fa-search"></i></th>
 		</thead>

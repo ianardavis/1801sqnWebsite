@@ -1,13 +1,8 @@
 function getItems() {
-    clear('sel_items')
-    .then(sel_items => {
-        get({table: 'items'})
-        .then(function ([result, options]) {
-            sel_items.appendChild(new Option({text: 'Select Item...'}).e);
-            result.items.forEach(item => {
-                sel_items.appendChild(new Option({value: item.item_id, text: item.description}).e);
-            });
-        });
+    listItems({
+        select:  'sel_items',
+        blank:   {text: 'Select Item...'},
+        id_only: true
     });
 };
 function getSizes() {

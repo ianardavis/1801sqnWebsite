@@ -20,12 +20,12 @@ module.exports = (app, m, fn) => {
     app.get('/demand_lines/:id',     fn.loggedIn(), fn.permissions.get(  'stores_stock_admin'),  (req, res) => res.render('stores/demand_lines/show'));
     
     app.get('/count/demands',        fn.loggedIn(), fn.permissions.check('stores_stock_admin'),  (req, res) => {
-        m.demands.count({where: req.query})
+        m.demands.count({where: req.query.where})
         .then(count => res.send({success: true, result: count}))
         .catch(err => fn.send_error(res, err));
     });
     app.get('/count/demand_lines',   fn.loggedIn(), fn.permissions.check('stores_stock_admin'),  (req, res) => {
-        m.demand_lines.count({where: req.query})
+        m.demand_lines.count({where: req.query.where})
         .then(count => res.send({success: true, result: count}))
         .catch(err => fn.send_error(res, err));
     });
@@ -48,8 +48,9 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/demands',          fn.loggedIn(), fn.permissions.check('stores_stock_admin'),  (req, res) => {
+        let where = fn.build_query(req.query)
         m.demands.findAndCountAll({
-            where:   req.query.where,
+            where:   where,
             include: [
                 fn.inc.users.user(),
                 fn.inc.stores.supplier()

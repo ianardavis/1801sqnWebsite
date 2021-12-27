@@ -46,7 +46,7 @@ module.exports = (app, m, fn) => {
     });
 
     app.get('/count/loancards',              fn.loggedIn(), fn.permissions.check('access_stores'),       (req, res) => {
-        m.loancards.count({where: req.query})
+        m.loancards.count({where: req.query.where})
         .then(count => res.send({success: true, result: count}))
         .catch(err => fn.send_error(res, err));
     });

@@ -19,8 +19,8 @@ module.exports = (app, m, fn) => {
     });
 
     app.get('/count/issues',       fn.loggedIn(), fn.permissions.check('access_stores', true), (req, res) => {
-        if (!req.allowed) req.query.user_id_issue = req.user.user_id;
-        m.issues.count({where: req.query})
+        if (!req.allowed) req.query.where.user_id_issue = req.user.user_id;
+        m.issues.count({where: req.query.where})
         .then(count => res.send({success: true, result: count}))
         .catch(err => fn.send_error(res, err));
     });
@@ -52,7 +52,7 @@ module.exports = (app, m, fn) => {
                 if (!query.offset || isNaN(query.offset)) query.offset = 0;
                 if (isNaN(query.limit))                   delete query.limit;
                 if (add_user_id_issue) query.where.user_id_issue = req.user.user_id;
-                let where   = {},
+                let where   = fn.build_query(req.query),
                     include = [
                         {
                             model: m.sizes,
@@ -73,18 +73,6 @@ module.exports = (app, m, fn) => {
                             include: [m.ranks]
                         }
                     ];
-                if (query.where.status && query.where.status.length > 0) where.status = {[fn.op.or]: (Array.isArray(query.where.status) ? query.where.status : [query.where.status])};
-                if (query.gt || query.lt) {
-                    if (query.gt && query.lt) {
-                        where.createdAt = {[fn.op.between]: [query.gt.value, query.lt.value]}
-                    };
-                    if (query.gt && !query.lt) {
-                        where.createdAt = {[fn.op.gt]: query.gt.value}
-                    };
-                    if (!query.gt && query.lt) {
-                        where.createdAt = {[fn.op.lt]: query.lt.value}
-                    };
-                };
                 m.issues.findAndCountAll({
                     where: where,
                     include: include,

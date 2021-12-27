@@ -5,29 +5,33 @@
 <%- include(`${partials}/head/components/close`) %>
 <section class='container'>
 	<ul class="nav nav-tabs" id="mainTab" role="tablist">
-		<li class="nav-item dropdown">
-			<a class="nav-link dropdown-toggle" href="#" id="optionsDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-				Menu
-			</a>
-			<div class="dropdown-menu" aria-labelledby="optionsDropdown">
-				<%- include(`${partials}/menu/button`, {id: 'delete', 		 text: 'Cancel', 		   btn_form: true}) %>
-				<%- include(`${partials}/menu/button`, {id: 'mark_placed', 	 text: 'Mark as Placed',   btn_form: true}) %>
-				<%- include(`${partials}/menu/button`, {id: 'mark_demanded', text: 'Mark as Demanded', btn_form: true}) %>
-				<%- include(`${partials}/menu/button`, {id: 'mark_received', text: 'Mark as Received', btn_form: true}) %>
-			</div>
-		</li>
         <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'order'}) %>
         <%- include(`${partials}/common/actions/tab_head`) %>
 		<%- include(`${partials}/common/notes/tab_head`) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
+            <div class="input-group mb-1">
+                <span class="input-group-text w-30">Actions</span>
+                <%- include(`${partials}/button/delete`, {text: 'Cancel', no_ms4: true}) %>
+            </div>
 			<%- include(`${partials}/inputs/display`, {id: 'item_name', title: 'Item', link: true}) %>
 			<%- include(`${partials}/inputs/display`, {id: 'size_desc', title: 'Size', link: true}) %>
 			<%- include(`${partials}/inputs/display`, {id: 'qty',	 	title: 'Quantity'}) %>
 			<%- include(`${partials}/inputs/display`, {id: 'createdAt', title: 'Date'}) %>
 			<%- include(`${partials}/inputs/display`, {id: 'updatedAt', title: 'Last Updated'}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'status',  	title: 'Status'}) %>
+			<div class="input-group mb-1">
+				<span class="input-group-text w-30">Status</span>
+				<p class="form-control mb-0" id='status'></p>
+				<%- include(`${partials}/button/button`, {id: 'mark_cancelled', text: '0', type: 'danger', 	  form: 'mark_cancelled', tip: 'Mark as cancelled'}) %>
+				<%- include(`${partials}/button/button`, {id: 'mark_placed', 	text: '1', type: 'success',	  form: 'mark_placed',    tip: 'Mark as placed'}) %>
+				<%- include(`${partials}/button/button`, {id: 'mark_demanded',  text: '2', type: 'warning',	  form: 'mark_demanded',  tip: 'Mark as demanded'}) %>
+				<%- include(`${partials}/button/button`, {id: 'mark_received',  text: '3', type: 'secondary', form: 'mark_received',  tip: 'Mark as received'}) %>
+			</div>
+			<form id="form_mark_cancelled"></form>
+			<form id="form_mark_placed"	  ></form>
+			<form id="form_mark_demanded" ></form>
+			<form id="form_mark_received" ></form>
 			<%- include(`${partials}/inputs/display`, {id: 'user', 	    title: 'Raised By', link: true}) %>
 		</div>
         <%- include(`${partials}/common/actions/tab_body`) %>

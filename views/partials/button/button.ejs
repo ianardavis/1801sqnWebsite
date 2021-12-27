@@ -4,6 +4,10 @@
     <% if (locals.id)       { %>id='btn_<%= id %>'<% } %>
     <% if (locals.form)     { %>form='form_<%= form %>'<% } %>
     <% if (locals.disabled) { %>disabled<% } %>
+    <% if (locals.tip)      { %>
+        data-bs-toggle='tooltip'
+        title='<%= tip %>'
+    <% } %>
 >
     <%= text %>
 </button>
