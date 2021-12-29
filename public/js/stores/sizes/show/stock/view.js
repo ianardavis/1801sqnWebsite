@@ -24,8 +24,8 @@ sort_listeners(
     'stocks',
     getStocks,
     [
-        {value: 'createdAt',   text: 'Created', selected: true},
-        {value: 'qty',         text: 'Qty'},
-        {value: 'location_id', text: 'Location'}
+        {value: '["createdAt"]',   text: 'Created', selected: true},
+        {value: '["qty"]',         text: 'Qty'},
+        {value: '["location_id"]', text: 'Location'}
     ]
 );

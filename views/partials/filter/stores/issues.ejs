@@ -1,4 +1,4 @@
-<div class="collapse mb-1" id="issue-filter">
+<div class="collapse border p-2 mb-1" id="issue-filter">
     <% if (locals.user === true) { %><%- include(`${partials}/filter/user`, {append: '_issue', table: 'issues'}) %><% } %>
     <%- include(`${partials}/filter/status`, {table: 'issues', statuses: [{text: 'Cancelled', value: '0', colour: 'secondary'}, {text: 'Requested', value: '1', colour: 'warning', checked: true}, {text: 'Approved', value: '2', colour: 'success', checked: true}, {text: 'Ordered', value: '3', colour: 'primary', checked: true}, {text: 'Issued', value: '4', colour: 'info'}, {text: 'Returned', value: '5', colour: 'secondary'}]}) %>
     <%- include(`${partials}/filter/date`,   {table: 'issues', field: 'createdAt'}) %>

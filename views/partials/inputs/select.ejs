@@ -1,5 +1,5 @@
 <% if (!locals.permission || permissions[permission]) { %>
-    <div class="input-group mb-1">
+    <div class="input-group<% if (locals.small) { %> input-group-sm<% } %> mb-1">
         <span class="input-group-text w-30">
             <%= title %>
             <% if (locals.spinner_id) { %><%- include(`${partials}/spinner`, {id: locals.spinner_id, small: true}) %><% } %>

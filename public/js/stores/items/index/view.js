@@ -28,8 +28,8 @@ sort_listeners(
     'items',
     getItems,
     [
-        {value: 'createdAt',   text: 'Created'},
-        {value: 'description', text: 'Description', selected: true}
+        {value: '["createdAt"]',   text: 'Created'},
+        {value: '["description"]', text: 'Description', selected: true}
     ]
 );
 window.addEventListener('load', function () {

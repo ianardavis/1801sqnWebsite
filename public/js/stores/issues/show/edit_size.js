@@ -10,14 +10,16 @@ function getSizes(event) {
                 get({
                     table: 'sizes',
                     where:{
-                        item_id: event.relatedTarget.dataset.item_id,
+                        item_id: issue.size.item_id,
                         orderable: true
                     }
                 })
-                .then(function ([sizes, options]) {
-                    sizes.forEach(size => {
+                .then(function ([result, options]) {
+                    result.sizes.forEach(size => {
                         let row = tbl_sizes.insertRow(-1);
-                        add_cell(row, {text: print_size(size)});
+                        add_cell(row, {text: size.size1});
+                        add_cell(row, {text: size.size2});
+                        add_cell(row, {text: size.size3});
                         add_cell(row, {append: new Radio({
                             attributes: [
                                 {field: 'name', value: 'size_id'},
@@ -32,6 +34,17 @@ function getSizes(event) {
         .catch(err => console.log(err));
     });
 }
+sort_listeners(
+    'sizes',
+    getSizes,
+    [
+        {value: '["createdAt"]', text: 'Created'},
+        {value: '["size1"]',     text: 'Size 1', selected: true},
+        {value: '["size2"]',     text: 'Size 2'},
+        {value: '["size3"]',     text: 'Size 3'}
+    ],
+    false
+);
 window.addEventListener('load', function () {
     modalOnShow('size_edit', getSizes);
     addFormListener(

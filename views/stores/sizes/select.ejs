@@ -3,6 +3,7 @@
     <h1>Select Size...</h1>
     <div id="div_items">
         <%- include(`${partials}/inputs/text`,   {title: 'Filter Items', id: 'filter_items'}) %>
+        <%- include(`${partials}/sort`, {table: 'items'}) %>
         <%- include(`${partials}/inputs/select`, {title: 'Items',        id: 'sel_items', size: 10}) %>
     </div>
     <div id="div_sizes" class=''>

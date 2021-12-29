@@ -1,16 +1,8 @@
 function getRanks() {
-    listRanks({
-        select: 'sel_ranks',
-        blank: true,
-        blank_text: 'All'
-    })
+    listRanks({blank: {text: 'All'}})
 };
 function getStatuses() {
-    listStatuses({
-        select: 'sel_statuses',
-        blank: true,
-        blank_text: 'All'
-    })
+    listStatuses({blank: {text: 'All'}})
 };
 function getUsers() {
     clear('tbl_users')
@@ -18,10 +10,11 @@ function getUsers() {
         let ranks     = document.querySelector('#sel_ranks')    || {value: ''},
             statuses  = document.querySelector('#sel_statuses') || {value: ''},
             where = {};
-        if (ranks   .value !== '') where.rank_id = ranks.value;
+        if (ranks   .value !== '') where.rank_id   = ranks.value;
         if (statuses.value !== '') where.status_id = statuses.value;
         get({
-            table: 'users_current',
+            table: 'users',
+            location: 'users/current',
             where: where
         })
         .then(function ([result, options]) {
@@ -54,6 +47,17 @@ function selectUsers() {
         window.opener.selectedUsers(users);
     } else alert_toast('Source window not found');
 };
+sort_listeners(
+    'users',
+    getUsers,
+    [
+        {value: '["createdAt"]',      text: 'Created'},
+        {value: '["service_number"]', text: 'Service #/Bader #', selected: true},
+        {value: '["rank_id"]',        text: 'Rank'},
+        {value: '["surname"]',        text: 'Surname'},
+        {value: '["first_name"]',     text: 'First Name'}
+    ]
+);
 window.addEventListener('load', function () {
     addListener('tbl_users', toggle_checkbox_on_row_click);
     addListener('reload_ranks',    getRanks);

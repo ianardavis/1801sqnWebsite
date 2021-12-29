@@ -54,10 +54,15 @@ function get(options) {
         });
         
         let order_col = document.querySelector(`#sort_${options.table}`),
-            order_dir = document.querySelector(`#sort_${options.table}_dir`),
+            order_dir = document.querySelector(`#sort_${options.table}_dir`)
+            
+        if (order_col && order_dir) {
+            let order_col_parsed = JSON.parse(order_col.value);
+            options.order = order_col_parsed.concat([order_dir.value]);//{col: order_col.value, dir: order_dir.value};
+        };
+
+        let queries    = build_query(options),
             pagination = get_pagination(options.table);
-        if (order_col && order_dir) options.order = {col: order_col.value, dir: order_dir.value};
-        let queries = build_query(options);
         if (options.order )  queries.push(`order=${ JSON.stringify(options.order)}`);
         if (pagination.limit && pagination.limit !== 'All') queries.push(`limit=${ JSON.stringify(pagination.limit)}`);
         if (pagination.offset) queries.push(`offset=${JSON.stringify(pagination.offset)}`);

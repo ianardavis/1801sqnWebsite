@@ -1,9 +1,9 @@
 function getItems() {
+    clear('tbl_sizes');
+    let filter_items = document.querySelector('#filter_items') || {value: ''};
     listItems({
-        select: 'sel_items',
-        id_only: true
-    })
-    .catch(err => console.log(err));
+        ...(filter_items.value !== '' ? {like:  {description: filter_items.value}} : {})
+    });
 };
 function getSizes() {
     clear('tbl_sizes')
@@ -53,18 +53,26 @@ function selectSizes() {
     } else alert_toast('Source window not found');
 };
 sort_listeners(
+    'items',
+    getItems,
+    [
+        {value: '["createdAt"]',   text: 'Created'},
+        {value: '["description"]', text: 'Description', selected: true}
+    ]
+);
+sort_listeners(
     'sizes',
     getSizes,
     [
-        {value: 'createdAt', text: 'Created'},
-        {value: 'size1',     text: 'Size 1', selected: true},
-        {value: 'size2',     text: 'Size 2'},
-        {value: 'size3',     text: 'Size 3'}
+        {value: '["createdAt"]', text: 'Created'},
+        {value: '["size1"]',     text: 'Size 1', selected: true},
+        {value: '["size2"]',     text: 'Size 2'},
+        {value: '["size3"]',     text: 'Size 3'}
     ]
 );
 window.addEventListener('load', function () {
-    addListener('tbl_sizes', toggle_checkbox_on_row_click)
-    addListener('btn_select', selectSizes);
-    addListener('sel_items',  getSizes, 'change');
-    addListener('filter_items', function () {filter_select('filter_items', 'sel_items')}, 'input');
+    addListener('tbl_sizes', toggle_checkbox_on_row_click);
+    addListener('btn_select',   selectSizes);
+    addListener('sel_items',    getSizes, 'input');
+    addListener('filter_items', getItems, 'input');
 });

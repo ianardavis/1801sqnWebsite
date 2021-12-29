@@ -48,9 +48,8 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/demands',          fn.loggedIn(), fn.permissions.check('stores_stock_admin'),  (req, res) => {
-        let where = fn.build_query(req.query)
         m.demands.findAndCountAll({
-            where:   where,
+            where:   fn.build_query(req.query),
             include: [
                 fn.inc.users.user(),
                 fn.inc.stores.supplier()
@@ -124,10 +123,12 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.put('/demand_lines',         fn.loggedIn(), fn.permissions.check('authorised_demander'), (req, res) => {
-        if (!req.body.actions || req.body.actions.length === 0) fn.send_error(res, 'No lines submitted')
+        if (!req.body.lines || req.body.lines.length === 0) fn.send_error(res, 'No lines submitted')
         else {
+            console.log(req.body.lines);
+            res.send({success: true, message: 'Lines actioned'});
             let actions = [];
-            req.body.actions
+            req.body.lines
             .filter(e => e.status === '0')
             .forEach(line => {
                 actions.push(
@@ -136,7 +137,16 @@ module.exports = (app, m, fn) => {
                         req.user.user_id)
                 );
             });
-            req.body.actions
+            req.body.lines
+            .filter(e => e.status === '-1')
+            .forEach(line => {
+                actions.push(
+                    fn.demands.lines.restore(
+                        line.demand_line_id,
+                        req.user.user_id)
+                );
+            });
+            req.body.lines
             .filter(e => e.status === '3')
             .forEach(line => {
                 actions.push(

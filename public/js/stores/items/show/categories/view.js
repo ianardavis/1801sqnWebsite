@@ -38,8 +38,8 @@ sort_listeners(
     'item_categories',
     getCategories,
     [
-        {value: 'createdAt', text: 'Created', selected: true},
-        {value: 'category',  text: 'Category'}
+        {value: '["createdAt"]', text: 'Created', selected: true},
+        {value: '["category"]',  text: 'Category'}
     ]
 );
 window.addEventListener('load', function () {

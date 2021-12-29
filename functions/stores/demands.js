@@ -1,13 +1,14 @@
 module.exports = function (m, fn) {
+    let line_status = {0: "Cancelled", 1: "Pending", 2: "Open", 3: "Closed"};
     fn.demands = {lines: {}};
     fn.demands.create   = function (options = {}) {
         return new Promise((resolve, reject) => {
-            return fn.get(
+            fn.get(
                 'suppliers',
                 {supplier_id: options.supplier_id}
             )
             .then(supplier => {
-                return m.demands.findOrCreate({
+                m.demands.findOrCreate({
                     where: {
                         supplier_id: supplier.supplier_id,
                         status:     1
@@ -22,31 +23,31 @@ module.exports = function (m, fn) {
     };
     fn.demands.complete = function (demand_id, user) {
         return new Promise((resolve, reject) => {
-            return fn.get(
+            fn.get(
                 'demands',
                 {demand_id: demand_id}
             )
             .then(demand => {
                 if  (demand.status !== 1) reject(new Error('This demand is not in draft'))
                 else {
-                    return getDemandLines({
+                    getDemandLines({
                         demand_id: demand.demand_id,
                         status: 1
                     })
                     .then(lines => {
-                        return fn.update(demand, { status: 2})
+                        fn.update(demand, { status: 2})
                         .then(result => {
                             let actions = [];
                             lines.forEach(line => actions.push(fn.update(line, {status: 2})))
-                            return Promise.all(actions)
+                            Promise.all(actions)
                             .then(result => {
-                                return fn.actions.create(
+                                fn.actions.create(
                                     'DEMAND | COMPLETED',
                                     user.user_id,
                                     [{table: 'demands', id: demand.demand_id}]
                                 )
                                 .then(action => {
-                                    return fn.demands.raise(demand.demand_id, user)
+                                    fn.demands.raise(demand.demand_id, user)
                                     .then(filename => resolve({success: true, message: `Demand completed. Filename: ${filename}`}))
                                     .catch(err => {
                                         console.log(err);
@@ -67,7 +68,7 @@ module.exports = function (m, fn) {
     };
     function cancel_open_demand_lines(demand_id, user_id) {
         return new Promise((resolve, reject) => {
-            return m.demand_lines.findAll({
+            m.demand_lines.findAll({
                 where: {
                     demand_id: demand_id,
                     status: {[fn.op.or]: [1, 2]}
@@ -92,14 +93,14 @@ module.exports = function (m, fn) {
     };
     fn.demands.cancel   = function (demand_id, user_id) {
         return new Promise((resolve, reject) => {
-            return fn.get(
+            fn.get(
                 'demands',
                 {demand_id: demand_id}
             )
             .then(demand => {
                 if ([0, 3].includes(demand.status)) reject(new Error(`This demand has already been ${(demand.status === 0 ? 'cancelled' : 'closed')}`))
                 else {
-                    return m.demand_lines.findOne({
+                    m.demand_lines.findOne({
                         where: {
                             demand_id: demand.demand_id,
                             status:    3
@@ -108,14 +109,14 @@ module.exports = function (m, fn) {
                     .then(line => {
                         if (line) reject(new Error('You can not cancel a demand with received lines'))
                         else {
-                            return Promise.all([
+                            Promise.all([
                                 fn.update(demand, {status: 0}),
                                 cancel_open_demand_lines(demand.demand_id, user_id)
                             ])
                             .then(result => {
                                 if (!result) reject(new Error('Demand not updated'))
                                 else {
-                                    return fn.actions.create(
+                                    fn.actions.create(
                                         'DEMAND | CANCELLED',
                                         user_id,
                                         [{table: 'demands', id: demand.demand_id}]
@@ -138,7 +139,7 @@ module.exports = function (m, fn) {
     };
     fn.demands.raise    = function (demand_id, user) {
         return new Promise((resolve, reject) => {
-            return fn.get(
+            fn.get(
                 'demands',
                 {demand_id: demand_id}
             )
@@ -146,9 +147,9 @@ module.exports = function (m, fn) {
                 if      (demand.status !== 2)                       reject(new Error('This demand is not complete'))
                 else if (demand.filename && demand.filename !== '') resolve(demand.filename)
                 else {
-                    return get_template(demand.supplier_id)
+                    get_template(demand.supplier_id)
                     .then(([template, account, supplier_id]) => {
-                        return getDemandLines(
+                        getDemandLines(
                             {
                                 demand_id: demand.demand_id,
                                 status: 2
@@ -156,19 +157,19 @@ module.exports = function (m, fn) {
                             [fn.inc.stores.size({details: true})]
                         )
                         .then(demand_lines => {
-                            return get_orders_for_demand_lines(demand_lines)
+                            get_orders_for_demand_lines(demand_lines)
                             .then(order_ids => {
-                                return get_sizes(demand_lines, supplier_id)
+                                get_sizes(demand_lines, supplier_id)
                                 .then(sizes => {
-                                    return get_users(order_ids)
+                                    get_users(order_ids)
                                     .then(users => {
-                                        return create_file(template.filename, demand.demand_id)
+                                        create_file(template.filename, demand.demand_id)
                                         .then(file => {
-                                            return write_cover_sheet(template, account, file, users, user)
+                                            write_cover_sheet(template, account, file, users, user)
                                             .then(result => {
-                                                return write_items(file, sizes)
+                                                write_items(file, sizes)
                                                 .then(fails => {
-                                                    return fn.update(demand, {filename: file})
+                                                    fn.update(demand, {filename: file})
                                                     .then(result => resolve(file))
                                                     .catch(err => resolve(file));
                                                 })
@@ -194,14 +195,14 @@ module.exports = function (m, fn) {
     };
     fn.demands.close    = function (demand_id, user_id) {
         return new Promise((resolve, reject) => {
-            return fn.get(
+            fn.get(
                 'demands',
                 {demand_id: demand_id}
             )
             .then(demand => {
                 if (demand.status !== 2) reject(new Error('This demand is not complete'))
                 else {
-                    return getDemandLines(
+                    getDemandLines(
                         {
                             demand_id: demand_id,
                             status: {[fn.op.or]: [1, 2]}
@@ -212,9 +213,9 @@ module.exports = function (m, fn) {
                     .then(lines => {
                         if (lines && lines.length > 0) reject(new Error('This demand has pending or open lines'))
                         else {
-                            return fn.update(demand, {status: 3})
+                            fn.update(demand, {status: 3})
                             .then(result => {
-                                return fn.actions.create(
+                                fn.actions.create(
                                     'DEMAND | CLOSED',
                                     user_id,
                                     [{table: 'demands', id: demand.demand_id}]
@@ -237,7 +238,7 @@ module.exports = function (m, fn) {
     
     fn.demands.lines.create  = function (options = {}) {
         return new Promise((resolve, reject) => {
-            return fn.get(
+            fn.get(
                 'sizes',
                 {size_id: options.size_id},
                 [fn.inc.stores.details({
@@ -249,7 +250,7 @@ module.exports = function (m, fn) {
                 else if (!size.details.filter(e => e.name === 'Demand Page')) reject(new Error('No demand page for this size'))
                 else if (!size.details.filter(e => e.name === 'Demand Cell')) reject(new Error('No demand cell for this size'))
                 else {
-                    return fn.get(
+                    fn.get(
                         'demands',
                         {demand_id: options.demand_id}
                     )
@@ -257,7 +258,7 @@ module.exports = function (m, fn) {
                         if      (demand.status    !== 1)                  reject(new Error('Lines can only be added to draft demands'))
                         else if (size.supplier_id !== demand.supplier_id) reject(new Error('Size is not from this supplier'))
                         else {
-                            return m.demand_lines.findOrCreate({
+                            m.demand_lines.findOrCreate({
                                 where: {
                                     demand_id: demand.demand_id,
                                     size_id:   size.size_id
@@ -270,9 +271,9 @@ module.exports = function (m, fn) {
                             .then(([line, created]) => {
                                 if (created) resolve(line.demand_line_id)
                                 else {
-                                    return fn.increment(line, options.qty)
+                                    fn.increment(line, options.qty)
                                     .then(result => {
-                                        return fn.actions.create(
+                                        fn.actions.create(
                                             `DEMAND LINE | INCREMENTED | By ${options.qty}${(options.order_id ? ' from order' : '')}`,
                                             options.user_id,
                                             [
@@ -299,7 +300,7 @@ module.exports = function (m, fn) {
         return new Promise((resolve, reject) => {
             if (!line.receipt) reject(new Error('No receipt details'))
             else {
-                return fn.get(
+                fn.get(
                     'demand_lines',
                     {demand_line_id: line.demand_line_id}
                 )
@@ -307,7 +308,7 @@ module.exports = function (m, fn) {
                     if      (demand_line.status === 3) reject(new Error('This line has already been received'))
                     else if (demand_line.status === 1) reject(new Error('This line is still in draft'))
                     else {
-                        return fn.get(
+                        fn.get(
                             'sizes',
                             {size_id: demand_line.size_id}
                         )
@@ -322,14 +323,14 @@ module.exports = function (m, fn) {
                             };
                             Promise.all(actions)
                             .then(results => {
-                                return get_orders_for_demand_lines([{demand_line_id: demand_line.demand_line_id}])
+                                get_orders_for_demand_lines([{demand_line_id: demand_line.demand_line_id}])
                                 .then(orders => {
                                     let order_update_actions = [];
                                     orders.forEach(order_id => {
                                         order_update_actions.push(new Promise((resolve, reject) => {
                                             fn.get('orders', {order_id: order_id})
                                             .then(order => {
-                                                return order.update({status: 3})
+                                                order.update({status: 3})
                                                 .then(result => {
                                                     if (!result) resolve(false)
                                                     else resolve(true);
@@ -354,104 +355,59 @@ module.exports = function (m, fn) {
             };
         });
     };
-
-    function get_orders_for_demand_line(demand_line_id, id_only = false) {
+    fn.demands.lines.restore = function (demand_line_id, user_id) {
         return new Promise((resolve, reject) => {
-            return m.action_links.findAll({
-                where: {_table: 'orders'},
-                include: [{
-                    model: m.actions,
-                    where: {action: 'Order added to demand'},
-                    required: true,
-                    include: [{
-                        model: m.action_links,
-                        as: 'links',
-                        where: {
-                            _table: 'demand_lines',
-                            id: demand_line_id
-                        },
-                        required: true
-                    }]
-                }]
-            })
-            .then(links => {
-                let order_actions = [];
-                links.forEach(link => {
-                    order_actions.push(new Promise(resolve => {
-                        return m.orders.findOne({where: {order_id: link.id}})
-                        .then(order => resolve((id_only ? order.order_id : order)))
-                        .catch(err => {
-                            console.log(err);
-                            resolve((id_only ? '' : {}));
-                        });
-                    }));
-                });
-                return Promise.all(order_actions)
-                .then(orders => resolve(orders || []))
-                .catch(err => reject(err));
-            })
-            .catch(err => reject(err));
-        });
-    }
-    function get_orders_for_demand_lines(lines) {
-        return new Promise((resolve, reject) => {
-            let actions = [];
-            lines.forEach(line => actions.push(get_orders_for_demand_line(line.demand_line_id, true)));
-            Promise.all(actions)
-            .then(results => {
-                let orders = [];
-                results.forEach(e => orders = orders.concat(e));
-                resolve(orders);
-            })
-            .catch(err => reject(err));
-        });
-    };
-    fn.demands.lines.cancel  = function (demand_line_id, user_id) {
-        return new Promise ((resolve, reject) => {
-            return fn.get(
+            fn.get(
                 'demand_lines',
-                {demand_line_id: demand_line_id}
+                {demand_line_id: demand_line_id},
+                [m.demands]
             )
             .then(line => {
-                if ([0, 3].includes(line.status)) reject(new Error(`This line has already been ${(line.status === 0 ? 'cancelled' : 'closed')}`))
+                if      (line.status !== 0)        reject(new Error('Line is not currently cancelled'))
+                else if (line.demand.status !== 1) reject(new Error('Only lines on draft demands can be restored'))
                 else {
-                    fn.update(line, {status: 0})
+                    fn.update(line, {status: 1})
                     .then(result => {
-                        return get_orders_for_demand_line(line.demand_line_id)
-                        .then(orders => {
-                            let order_actions = [];
-                            orders.forEach(order => {
-                                order_actions.push(new Promise((resolve, reject) => {
-                                    if (order.status === 3) {
-                                        return fn.update(order, {status: 2})
-                                        .then(result => {
-                                            fn.actions.create(
-                                                'DEMAND LINE | CANCELLED',
-                                                user_id,
-                                                [{table: 'orders', id: action.order_id}]
-                                            )
-                                            .then(result => resolve(true))
-                                            .catch(err => {
-                                                console.log(err);
-                                                resolve(false);
-                                            })
-                                        })
-                                        .catch(err => reject(err));
-                                    } else resolve(false);
-                                }));
-                            });
-                            return Promise.allSettled(order_actions)
-                            .then(results => {
-                                fn.actions.create(
-                                    'DEMAND LINE | CANCELLED',
-                                    user_id,
-                                    [{table: 'demand_lines', id: line.demand_line_id}]
-                                )
-                                .then(result => resolve(true))
-                                .catch(err => {
-                                    console.log(err);
-                                    resolve(false);
+                        //Set the lines status to Pending
+                        fn.update(line, {status: 1})
+                        .then(result => {
+                            //Get the order for this demand
+                            get_orders_for_demand_line(line.demand_line_id)
+                            .then(result => {
+                                let order_actions = [];
+                                result.orders.forEach(order => {
+                                    //For each order, if its status is Placed, change to Demanded and return order id
+                                    order_actions.push(new Promise((resolve, reject) => {
+                                        if (order.status === 2) {
+                                            fn.update(order, {status: 3})
+                                            .then(result => resolve(order.order_id))
+                                            .catch(err => reject(err));
+                                        } else reject(new Error(`Non-allowed order status: ${order.status}`));
+                                    }));
                                 });
+                                Promise.allSettled(order_actions)
+                                .then(results => {
+                                    //Change the demand line link to non active
+                                    fn.update(result.link, {active: true})
+                                    .then(result => {
+                                        let order_links = [];
+                                        //get an array of all the orders updated
+                                        results.forEach(e => order_links.push({table: 'orders', id: e.value}));
+                                        //create the canclled action record
+                                        fn.actions.create(
+                                            'DEMAND LINE | RESTORED',
+                                            user_id,
+                                            [{table: 'demand_lines', id: line.demand_line_id}].concat(order_links)
+                                        )
+                                        .then(result => resolve(true))
+                                        .catch(err => {
+                                            console.log(err);
+                                            resolve(false);
+                                        });
+                                    })
+                                    .catch(err => reject(err));
+                                })
+                                .catch(err => reject(err));
                             })
                             .catch(err => reject(err));
                         })
@@ -459,7 +415,122 @@ module.exports = function (m, fn) {
                     })
                     .catch(err => reject(err));
                 };
+            })
+            .catch(err => reject(err));
+        });
+    };
 
+    function get_orders_for_demand_line(demand_line_id, options = {}) {
+        return new Promise((resolve, reject) => {
+            m.action_links.findOne({
+                where: {
+                    _table: 'demand_lines',
+                    id:     demand_line_id,
+                    ...(options.active_only ? {active: true}: {})
+                },
+                include: [{
+                    model: m.actions,
+                    where: {action: 'ORDER | DEMANDED'},
+                    include: [{
+                        model: m.action_links,
+                        as: 'links',
+                        where: {
+                            _table: 'orders',
+                            ...(options.active_only ? {active: true}: {})
+                        }
+                    }]
+                }]
+            })
+            .then(link => {
+                if (link) {
+                    let order_actions = [];
+                    link.action.links.forEach(link => {
+                        order_actions.push(new Promise(resolve => {
+                            m.orders.findOne({where: {order_id: link.id}})
+                            .then(order => resolve((options.id_only ? order.order_id : order)))
+                            .catch(err => {
+                                console.log(err);
+                                resolve((options.id_only ? '' : {}));
+                            });
+                        }));
+                    });
+                    return Promise.all(order_actions)
+                    .then(orders => resolve({link: link, orders: orders}))
+                    .catch(err => reject(err));
+                } else resolve({link: null, orders: []});
+            })
+            .catch(err => reject(err));
+        });
+    }
+    function get_orders_for_demand_lines(lines) {
+        return new Promise((resolve, reject) => {
+            let actions = [];
+            lines.forEach(line => actions.push(get_orders_for_demand_line(line.demand_line_id, {id_only: true, active_only: true})));
+            Promise.all(actions)
+            .then(results => {
+                let orders = [];
+                results.forEach(e => orders = orders.concat(e.orders));
+                resolve(orders);
+            })
+            .catch(err => reject(err));
+        });
+    };
+    fn.demands.lines.cancel  = function (demand_line_id, user_id) {
+        return new Promise ((resolve, reject) => {
+            //Get the line to be canclled
+            fn.get(
+                'demand_lines',
+                {demand_line_id: demand_line_id}
+            )
+            .then(line => {
+                //Check it is Pending or Open
+                if (line.status !== 1 && line.status !== 2) reject(new Error(`This line is ${line_status[line.status]}, only pending or open lines can be cancelled`))
+                else {
+                    //Set the lines status to cancelled
+                    fn.update(line, {status: 0})
+                    .then(result => {
+                        //Get the order for this demand
+                        get_orders_for_demand_line(line.demand_line_id, {active_only: true})
+                        .then(result => {
+                            let order_actions = [];
+                            result.orders.forEach(order => {
+                                //For each order, if its status is demanded, change to Placed and return order id
+                                order_actions.push(new Promise((resolve, reject) => {
+                                    if (order.status === 3) {
+                                        fn.update(order, {status: 2})
+                                        .then(result => resolve(order.order_id))
+                                        .catch(err => reject(err));
+                                    } else reject(new Error(`Non-allowed order status: ${order.status}`));
+                                }));
+                            });
+                            Promise.allSettled(order_actions)
+                            .then(results => {
+                                //Change the demand line link to non active
+                                fn.update(result.link, {active: false})
+                                .then(result => {
+                                    let order_links = [];
+                                    //get an array of all the orders updated
+                                    results.forEach(e => order_links.push({table: 'orders', id: e.value}));
+                                    //create the canclled action record
+                                    fn.actions.create(
+                                        'DEMAND LINE | CANCELLED',
+                                        user_id,
+                                        [{table: 'demand_lines', id: line.demand_line_id}].concat(order_links)
+                                    )
+                                    .then(result => resolve(true))
+                                    .catch(err => {
+                                        console.log(err);
+                                        resolve(false);
+                                    });
+                                })
+                                .catch(err => reject(err));
+                            })
+                            .catch(err => reject(err));
+                        })
+                        .catch(err => reject(err));
+                    })
+                    .catch(err => reject(err));
+                };
             })
             .catch(err => reject(err));
         });
@@ -467,7 +538,7 @@ module.exports = function (m, fn) {
 
     function getDemandLines(where = {}, include = [], options = {}) {
         return new Promise((resolve, reject) => {
-            return m.demand_lines.findAll({
+            m.demand_lines.findAll({
                 where:   where,
                 include: include
             })
@@ -484,7 +555,7 @@ module.exports = function (m, fn) {
 
     function get_template(supplier_id) {
         return new Promise((resolve, reject) => {
-            return fn.get(
+            fn.get(
                 'suppliers',
                 {supplier_id: supplier_id},
                 [fn.inc.stores.files({
@@ -714,14 +785,14 @@ module.exports = function (m, fn) {
                     )
                 );
             });
-            return Promise.allSettled(serial_actions)
+            Promise.allSettled(serial_actions)
             .then(results => {
                 let success_count = results.filter(e => e.status === 'fulfilled').length;
                 if (success_count === 0) reject(new Error('No successful lines'))
                 else {
-                    return fn.update(line, {status: 3})
+                    fn.update(line, {status: 3})
                     .then(result => {
-                        return check_for_over_under_receipt({
+                        check_for_over_under_receipt({
                             line:        line,
                             receipt_qty: success_count,
                             user_id:     user_id
@@ -737,7 +808,7 @@ module.exports = function (m, fn) {
     };
     function receive_stocks(receipt, line, user_id) {
         return new Promise((resolve, reject) => {
-            return fn.stocks.receive({
+            fn.stocks.receive({
                 stock: {
                     size_id:  line.size_id,
                     location: receipt.location,
@@ -747,9 +818,9 @@ module.exports = function (m, fn) {
                 action_links: [{table: 'demand_lines', id: line.demand_line_id}]
             })
             .then(result => {
-                return line.update({status: 3})
+                line.update({status: 3})
                 .then(result => {
-                    return check_for_over_under_receipt({
+                    check_for_over_under_receipt({
                         line:        line,
                         receipt_qty: receipt.qty,
                         user_id:     user_id

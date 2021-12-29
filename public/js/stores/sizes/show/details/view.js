@@ -39,9 +39,9 @@ sort_listeners(
     'details',
     getDetails,
     [
-        {value: 'createdAt', text: 'Created'},
-        {value: 'name',      text: 'Name', selected: true},
-        {value: 'value',     text: 'Value'}
+        {value: '["createdAt"]', text: 'Created'},
+        {value: '["name"]',      text: 'Name', selected: true},
+        {value: '["value"]',     text: 'Value'}
     ]
 );
 window.addEventListener('load', function () {

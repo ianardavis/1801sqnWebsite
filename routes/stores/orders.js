@@ -45,10 +45,10 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     
-    app.put('/orders',                  fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
+    app.put('/orders',                  fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {5
         let actions = [],
-            demands = req.body.orders.filter(e => e.status === '2');
-        req.body.orders.filter(e => e.status === '-1').forEach(order => {
+            demands = req.body.lines.filter(e => e.status === '2');
+        req.body.lines.filter(e => e.status === '-1').forEach(order => {
             actions.push(
                 fn.orders.restore({
                     order_id: order.order_id,
@@ -56,7 +56,7 @@ module.exports = (app, m, fn) => {
                 })
             );
         })
-        req.body.orders.filter(e => e.status === '0').forEach(order => {
+        req.body.lines.filter(e => e.status === '0').forEach(order => {
             actions.push(
                 fn.orders.cancel({
                     order_id: order.order_id,
@@ -64,7 +64,7 @@ module.exports = (app, m, fn) => {
                 })
             );
         });
-        req.body.orders.filter(e => e.status === '3').forEach(order => {
+        req.body.lines.filter(e => e.status === '3').forEach(order => {
             actions.push(
                 fn.orders.receive({
                     order_id: order.order_id,

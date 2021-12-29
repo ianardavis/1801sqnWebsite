@@ -25,7 +25,7 @@ sort_listeners(
     'suppliers',
     getSuppliers,
     [
-        {value: 'createdAt', text: 'Created'},
-        {value: 'name',      text: 'Name', selected: true}
+        {value: '["createdAt"]', text: 'Created'},
+        {value: '["name"]',      text: 'Name', selected: true}
     ]
 );

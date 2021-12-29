@@ -51,9 +51,9 @@ sort_listeners(
     'orders',
     getOrders,
     [
-        {value: 'createdAt', text: 'Created', selected: true},
-        {value: 'qty',       text: 'Qty'},
-        {value: 'status',    text: 'Status'}
+        {value: '["createdAt"]', text: 'Created', selected: true},
+        {value: '["qty"]',       text: 'Qty'},
+        {value: '["status"]',    text: 'Status'}
     ]
 );
 window.addEventListener('load', function () {

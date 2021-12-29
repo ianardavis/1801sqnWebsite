@@ -48,10 +48,10 @@ sort_listeners(
     'notes',
     getNotes,
     [
-        {value: 'createdAt', text: 'Created', selected: true},
-        {value: 'note',      text: 'Note'},
-        {value: 'user_id',   text: 'User'},
-        {value: 'system',    text: 'System Generated'}
+        {value: '["createdAt"]', text: 'Created', selected: true},
+        {value: '["note"]',      text: 'Note'},
+        {value: '["user_id"]',   text: 'User'},
+        {value: '["system"]',    text: 'System Generated'}
     ]
 );
 window.addEventListener('load', function () {

@@ -36,17 +36,17 @@ module.exports = (app, m, fn) => {
         .then(results => fn.send_res('users', res, results, req.query))
         .catch(err =>  fn.send_error(res, err));
     });
-    app.get('/get/users_current', fn.loggedIn(), fn.permissions.check('access_users', true), (req, res) => {
-        let where = null
-        if (!req.allowed) where = {user_id: req.user.user_id};
+    app.get('/get/users/current', fn.loggedIn(), fn.permissions.check('access_users', true), (req, res) => {
+        let where = req.query.where;
+        if (!req.allowed) user_id = req.user.user_id;
         m.users.findAndCountAll({
             where: where,
-            include:    [
-                fn.inc.users.rank(),
-                fn.inc.users.status({
-                    where: {status: {[fn.op.substring]: 'Current'}},
-                    required: true
-                })
+            include: [
+                m.ranks,
+                {
+                    model: m.statuses,
+                    where: {status: {[fn.op.substring]: 'Current'}}
+                }
             ],
             attributes: user_attributes,
             ...fn.pagination(req.query)

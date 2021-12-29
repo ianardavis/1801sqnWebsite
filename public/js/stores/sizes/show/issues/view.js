@@ -56,10 +56,10 @@ sort_listeners(
     'issues',
     getIssues,
     [
-        {value: 'createdAt',     text: 'Created'},
-        {value: 'user_id_issue', text: 'Issued To', selected: true},
-        {value: 'qty',           text: 'Qty'},
-        {value: 'status',        text: 'Status'}
+        {value: '["createdAt"]',     text: 'Created'},
+        {value: '["user_id_issue"]', text: 'Issued To', selected: true},
+        {value: '["qty"]',           text: 'Qty'},
+        {value: '["status"]',        text: 'Status'}
     ]
 );
 window.addEventListener('load', function () {

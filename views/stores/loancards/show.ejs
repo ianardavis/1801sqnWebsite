@@ -14,7 +14,7 @@
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
 			<%- include(`${partials}/inputs/display`, {id: 'loancard_user_loancard', title: 'User',  	 link: true}) %>
 			<%- include(`${partials}/inputs/display`, {id: 'loancard_createdAt', 	 title: 'Date'}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'loancard_date_due', 	 title: 'Date Due',  edit: true, modal: 'due_edit'}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'loancard_date_due', 	 title: 'Date Due',  edit:{modal: 'due_edit'}}) %>
 			<%- include(`${partials}/inputs/display`, {id: 'loancard_updatedAt', 	 title: 'Last Updated'}) %>
 			<%- include(`${partials}/inputs/display`, {id: 'loancard_status',   	 title: 'Status'}) %>
 			<div class="input-group mb-1">
@@ -110,7 +110,8 @@
 	</div>
 </section>
 <%- include(`${partials}/foot/app`) %>
-<script src="/js/search/select.js"></script>
+<script src="/js/common/radios/nil_cancel.js"></script>
+<script src="/js/common/radios/return.js"></script>
 <script>show_tab('<%= tab %>')</script>
 <%- include(`${partials}/common/notes/scripts`) %>
 <%- include(`${partials}/common/actions/scripts`) %>

@@ -22,60 +22,23 @@ function getLines() {
                     add_cell(row, {text: line.qty});
                     add_cell(row, {
                         text: line_statuses[line.status],
-                        append: new Input({
+                        append: new Hidden({
                             attributes: [
-                                {field: 'type',  value: 'hidden'},
                                 {field: 'name',  value: `lines[][${row_index}][loancard_line_id]`},
                                 {field: 'value', value: line.loancard_line_id}
                             ]
                         }).e
                     });
-                    let radios = [];
-                    if (line.status === 1 || line.status === 2) radios.push(
-                        new Radio({
-                            id: `${line.loancard_line_id}_nil`,
-                            float_start: true,
-                            classes: ['radio_nil'],
-                            colour: 'primary',
-                            html: '<i class="fas fa-question"></i>',
-                            listener: {event: 'input', func: function () {clear(`${line.loancard_line_id}_details`)}},
-                            attributes: [
-                                {field: 'name',     value: `lines[][${row_index}][status]`},
-                                {field: 'checked',  value: true},
-                                {field: 'disabled', value: true}
-                            ]
-                        }).e
-                    );
-                    if (line.status === 1) radios.push(
-                        new Radio({
-                            id: `${line.loancard_line_id}_cancel`,
-                            float_start: true,
-                            classes: ['radio_cancel'],
-                            colour: 'danger',
-                            html: '<i class="fas fa-trash-alt"></i>',
-                            attributes: [
-                                {field: 'name',     value: `lines[][${row_index}][status]`},
-                                {field: 'value',    value: '0'},
-                                {field: 'disabled', value: true}
-                            ]
-                        }).e
-                    );
-                    if (line.status === 2) radios.push(
-                        new Radio({
-                            id: `${line.loancard_line_id}_return`,
-                            float_start: true,
-                            classes: ['radio_return'],
-                            html: '<i class="fas fa-undo-alt"></i>',
-                            attributes: [
-                                {field: 'name',                  value: `lines[][${row_index}][status]`},
-                                {field: 'value',                 value: '3'},
-                                {field: 'data-loancard_line_id', value: line.loancard_line_id},
-                                {field: 'data-index',            value: row_index},
-                                {field: 'disabled',              value: true}
-                            ],
-                            ...(typeof return_options === 'function' ? {listener: {event: 'input', func: return_options}}: {})
-                        }).e
-                    );
+                    let radios = [], args = [line.loancard_line_id, row_index, return_options];
+                    if (line.status === 1 || line.status === 2) {
+                        if (typeof nil_radio    === 'function') radios.push(nil_radio(   ...args));
+                    };
+                    if (line.status === 1) {
+                        if (typeof cancel_radio === 'function') radios.push(cancel_radio(...args));
+                    };
+                    if (line.status === 2) {
+                        if (typeof return_radio === 'function') radios.push(return_radio(...args));
+                    };
                     radios.push(new Div({attributes: [{field: 'id', value: `${line.loancard_line_id}_details`}]}).e);
                     add_cell(row, {append: radios});
                     add_cell(row, {append: 

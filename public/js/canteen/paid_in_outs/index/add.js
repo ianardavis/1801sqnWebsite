@@ -16,10 +16,8 @@ function getHoldings() {
 };
 function getUsers() {
     listUsers({
-        blank:      true,
-        blank_text: 'Select User...',
-        table:      'users_current',
-        id_only:    true
+        blank: {text: 'Select User...'},
+        table: 'users_current'
     });
 };
 window.addEventListener('load', function () {

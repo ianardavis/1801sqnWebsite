@@ -306,7 +306,7 @@ module.exports = function (m, fn) {
     };
     fn.pagination = function (query) {
         let pagination = {};
-        if (query.order ) pagination.order  = [[query.order.col, query.order.dir]];
+        if (query.order ) pagination.order  = [query.order];//[[query.order.col, query.order.dir]];
         if (query.limit ) pagination.limit  = query.limit;
         if (query.offset) pagination.offset = query.offset * query.limit || 0;
         return pagination;
@@ -314,7 +314,15 @@ module.exports = function (m, fn) {
     fn.build_query = function (query) {
         let where = {};
         if (!query.where) query.where = {};
-        if (query.where.status && query.where.status.length > 0) where.status = {[fn.op.or]: (Array.isArray(query.where.status) ? query.where.status : [query.where.status])};
+        
+        if (query.where.status && query.where.status.length > 0) {
+            where.status = {[fn.op.or]: (Array.isArray(query.where.status) ? query.where.status : [query.where.status])};
+        };
+        
+        if (query.where.supplier_id) where.supplier_id = query.where.supplier_id;
+        
+        if (query.where.user_id_issue) where.user_id_issue = query.where.user_id_issue;
+
         if (query.gt || query.lt) {
             if (query.gt && query.lt) {
                 where.createdAt = {[fn.op.between]: [query.gt.value, query.lt.value]}

@@ -1,8 +1,8 @@
 function listStatuses(options = {}) {
     return new Promise((resolve, reject) => {
-        clear(options.select)
+        clear(options.select || 'sel_statuses')
         .then(sel_statuses => {
-            if (options.blank === true) sel_statuses.appendChild(new Option({selected: (!options.selected), text: options.blank_text || ''}).e);
+            if (options.blank) sel_statuses.appendChild(new Option({selected: (!options.selected), text: options.blank.text || ''}).e);
             get({
                 table: 'statuses',
                 ...options
@@ -10,7 +10,7 @@ function listStatuses(options = {}) {
             .then(function ([result, options]) {
                 result.statuses.forEach(status => {
                     sel_statuses.appendChild(new Option({
-                        value:    (options.id_only ? status.status_id : `"status_id":"${status.status_id}"`),
+                        value:    status.status_id,
                         text:     status.status,
                         selected: (options.selected === status.status_id)
                     }).e);

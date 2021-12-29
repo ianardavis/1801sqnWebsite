@@ -4,10 +4,10 @@
             <label for="sort_<%= table %>">Sort By:</label>
         </div>
         <div class="col-5">
-            <select class='form-select w-100<% if (locals.large) { %> form-select-lg<% } else if (locals.small) { %> form-select-sm<% } %>' id='sort_<%= table %>'></select>
+            <select class='form-select w-100 form-select-sm' id='sort_<%= table %>'></select>
         </div>
         <div class="col-4">
-            <select class='form-select w-100<% if (locals.large) { %> form-select-lg<% } else if (locals.small) { %> form-select-sm<% } %>' id='sort_<%= table %>_dir'>
+            <select class='form-select w-100 form-select-sm' id='sort_<%= table %>_dir'>
                 <option value="ASC" >Ascending</option>
                 <option value="DESC">Descending</option>
             </select>

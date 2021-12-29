@@ -30,10 +30,10 @@ sort_listeners(
     'demands',
     getDemands,
     [
-        {value: 'createdAt', text: 'Created'},
-        {value: 'status',    text: 'Status'},
-        {value: 'filename',  text: 'Filename'},
-        {value: 'user_id',   text: 'User'}
+        {value: '["createdAt"]', text: 'Created'},
+        {value: '["status"]',    text: 'Status'},
+        {value: '["filename"]',  text: 'Filename'},
+        {value: '["user_id"]',   text: 'User'}
     ]
 );
 window.addEventListener('load', function () {

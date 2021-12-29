@@ -33,6 +33,7 @@ function addCategorySelect() {
     if (sub_categories) {
         sub_categories.appendChild(
             new Select({
+                large: true,
                 attributes: [
                     {field: 'id',   value: `sel_category_${select}`},
                     {field: 'name', value: 'category[category_id][]'}

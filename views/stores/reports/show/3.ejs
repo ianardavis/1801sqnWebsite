@@ -7,9 +7,9 @@
 <section class='container'>
     <button id='btn_action' class='btn btn-success w-100 mb-2' form='form_sizes'>Create Orders</button>
     <%- include(`${partials}/inputs/select`, {id: 'sel_suppliers', title: 'Supplier'}) %>
-    <%- include(`${partials}/sort`, {table: 'items', small: true}) %>
+    <%- include(`${partials}/sort`, {table: 'items'}) %>
     <%- include(`${partials}/inputs/select`, {id: 'sel_items',     title: 'Items'}) %>
-    <%- include(`${partials}/sort`, {table: 'sizes', small: true}) %>
+    <%- include(`${partials}/sort`, {table: 'sizes'}) %>
     <form id="form_sizes">
         <table class="table table-sm table-hover">
             <thead class="thead-dark">

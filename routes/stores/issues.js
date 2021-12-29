@@ -114,7 +114,7 @@ module.exports = (app, m, fn) => {
             where: {_table: 'loancard_lines'},
             include: [{
                 model: m.actions,
-                where: {action: {[fn.op.or]: ['ISSUED | Added to loancard', 'Issue added to loancard']}}, //'ISSUED | Added to loancard'},
+                where: {action: {[fn.op.or]: ['ISSUED | Added to loancard', 'Issue added to loancard']}},
                 include: [{
                     model: m.action_links,
                     as: 'links',
@@ -166,65 +166,33 @@ module.exports = (app, m, fn) => {
     });
 
     app.put('/issues',             fn.loggedIn(), fn.permissions.check('issuer'),              (req, res) => {
-        if (!req.body.issues || req.body.issues.filter(e => e.status !== '').length === 0) fn.send_error(res, 'No lines submitted')
+        if (!req.body.lines || req.body.lines.filter(e => e.status !== '').length === 0) fn.send_error(res, 'No lines submitted')
         else {
             let actions = [];
-            req.body.issues.filter(e => e.status === '-3') .forEach(issue => {
-                actions.push(
-                    fn.issues.restore({
-                        issue_id: issue.issue_id,
-                        user_id:  req.user.user_id
-                    })
-                );
+            req.body.lines.filter(e => e.status === '-3') .forEach(issue => {
+                actions.push(fn.issues.restore(issue.issue_id, req.user.user_id));
             });
-            req.body.issues.filter(e => e.status === '-2') .forEach(issue => {
-                actions.push(
-                    fn.issues.remove_from_loancard({
-                        issue_id: issue.issue_id,
-                        user_id:  req.user.user_id
-                    })
-                );
+            req.body.lines.filter(e => e.status === '-2') .forEach(issue => {
+                actions.push(fn.issues.remove_from_loancard(issue.issue_id, req.user.user_id));
             });
-            req.body.issues.filter(e => e.status === '-1').forEach(issue => {
-                actions.push(
-                    fn.issues.decline({
-                        ...issue,
-                        user_id: req.user.user_id
-                    })
-                );
+            req.body.lines.filter(e => e.status === '-1').forEach(issue => {
+                actions.push(fn.issues.decline(issue.issue_id, req.user.user_id));
             });
-            req.body.issues.filter(e => e.status === '0') .forEach(issue => {
-                actions.push(
-                    fn.issues.cancel({
-                        ...issue,
-                        user_id: req.user.user_id
-                    })
-                );
+            req.body.lines.filter(e => e.status === '0') .forEach(issue => {
+                actions.push(fn.issues.cancel(issue.issue_id, req.user.user_id));
             });
-            req.body.issues.filter(e => e.status === '2') .forEach(issue => {
-                actions.push(
-                    fn.issues.approve({
-                        ...issue,
-                        user_id: req.user.user_id
-                    })
-                );
+            req.body.lines.filter(e => e.status === '2') .forEach(issue => {
+                actions.push(fn.issues.approve(issue.issue_id, req.user.user_id));
             });
-            req.body.issues.filter(e => e.status === '3') .forEach(issue => {
-                actions.push(
-                    fn.issues.order({
-                        ...issue,
-                        user_id: req.user.user_id
-                    })
-                );
+            req.body.lines.filter(e => e.status === '3') .forEach(issue => {
+                actions.push(fn.issues.order(issue.issue_id, req.user.user_id));
             });
             actions.push(
-                fn.issues.issue({
-                    issues:  req.body.issues.filter(e => e.status === '4'),
-                    user_id: req.user.user_id
-                })
+                fn.issues.issue(req.body.lines.filter(e => e.status === '4'), req.user.user_id)
             );
             Promise.allSettled(actions)
             .then(results => {
+                results.filter(e => e.status === 'rejected').forEach(e => console.log(e));
                 if (results.filter(e => e.status === 'rejected').length > 0) {
                     res.send({success: true, message: 'Some lines failed'});
                 } else res.send({success: true, message: 'Lines actioned'});
@@ -233,45 +201,13 @@ module.exports = (app, m, fn) => {
         };
     });
     app.put('/issues/:id/size',    fn.loggedIn(), fn.permissions.check('issuer'),              (req, res) => {
-        fn.get(
-            'issues',
-            {issue_id: req.params.id},
-            [m.sizes]
-        )
-        .then(issue => {
-            fn.get(
-                'sizes',
-                {size_id: req.body.size_id}
-            )
-            .then(size => {
-                if      (size.item_id !== issue.size.item_id) fn.send_error(res, new Error('New size is for a different item'))
-                else if (issue.status === 1 || issue.status === 2) {
-                    fn.update(issue, {size_id: size.size_id})
-                    .then(result => {
-                        fn.actions.create(
-                            `ISSUE | UPDATED | Size changed From: ${fn.print_size(issue.size)} to: ${fn.print_size(size)}`,
-                            req.user.user_id,
-                            [{table: 'issues', id: issue.issue_id}]
-                        )
-                        .then(result => res.send({success: true, message: 'Size edited'}))
-                        .catch(err => {
-                            console.log(err);
-                            res.send({success: true, message: 'Size edited'})
-                        });
-                    })
-                    .catch(err => fn.send_error(res, err));
-                } else fn.send_error(res, new Error('Only requested and approved issues can have their size edited'));
-            })
-            .catch(err => fn.send_error(res, err));
-        })
+        fn.issues.change_size(req.params.id, req.body.size_id, req.user.user_id)
+        .then(result => res.send({success: true, message: 'Size updated'}))
         .catch(err => fn.send_error(res, err));
     });
 
     app.delete('/issues/:id',      fn.loggedIn(), fn.permissions.check('issuer',        true), (req, res) => {
-        fn.issues.cancel({
-            issue_id: req.params.id,
-            user_id:  req.user.user_id
-        })
+        fn.issues.cancel(req.params.id, req.user.user_id)
         .then(result => res.send({success: true, message: 'Issue cancelled'}))
         .catch(err => fn.send_error(res, err));
     });

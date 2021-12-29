@@ -1,11 +1,8 @@
 function listRanks(options = {}) {
     return new Promise((resolve, reject) => {
-        clear(options.select)
+        clear(options.select || 'sel_ranks')
         .then(sel_ranks => {
-            if (options.blank) sel_ranks.appendChild(new Option({
-                selected: (!options.selected),
-                text: options.blank_text || ''
-            }).e);
+            if (options.blank) sel_ranks.appendChild(new Option({selected: (!options.selected), text: options.blank.text || ''}).e);
             get({
                 table: 'ranks',
                 ...options
@@ -13,7 +10,7 @@ function listRanks(options = {}) {
             .then(function ([result, options]) {
                 result.ranks.forEach(rank => {
                     sel_ranks.appendChild(new Option({
-                        value:    (options.id_only ? rank.rank_id : `"rank_id":"${rank.rank_id}"`),
+                        value:    rank.rank_id,
                         text:     rank.rank,
                         selected: (options.selected === rank.rank_id)
                     }).e);

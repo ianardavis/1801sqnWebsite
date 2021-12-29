@@ -5,19 +5,6 @@
 <%- include(`${partials}/head/components/close`) %>
 <section class='container'>
 	<ul class="nav nav-tabs" id="mainTab" role="tablist">
-		<li class="nav-item dropdown">
-			<a class="nav-link dropdown-toggle" href="#" id="optionsDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-				Menu
-			</a>
-			<div class="dropdown-menu" aria-labelledby="optionsDropdown">
-                <%- include(`${partials}/menu/button`, {id: 'line_add', text: 'Add Item(s)',  modal: 'line_add'}) %>
-				<%- include(`${partials}/menu/button`, {id: 'complete',	text: 'Complete',	  btn_form: true}) %>
-				<%- include(`${partials}/menu/button`, {id: 'action',	text: 'Action Lines', form:  'action'}) %>
-				<%- include(`${partials}/menu/button`, {id: 'close',	text: 'Close',	 	  btn_form: true}) %>
-				<%- include(`${partials}/menu/button`, {id: 'download',	text: 'Download', 	  btn_form: true}) %>
-				<%- include(`${partials}/menu/button`, {id: 'delete',	text: 'Cancel',	  	  btn_form: true}) %>
-			</div>
-		</li>
         <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'demand'}) %>
         <%- include(`${partials}/tab_head`, {id: 'lines',   title: 'Lines',	  spinner: 'demand_lines',  count_id: 'line'}) %>
         <%- include(`${partials}/common/actions/tab_head`) %>
@@ -25,23 +12,46 @@
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
+            <div class="input-group mb-1">
+                <span class="input-group-text w-30">Actions</span>
+				<%- include(`${partials}/button/button`, {id: 'complete', text: 'Complete', type: 'success', form: 'complete'}) %>
+				<%- include(`${partials}/button/button`, {id: 'close', 	  text: 'Close', 	type: 'warning', form: 'close', classes: ['ms-1']}) %>
+                <%- include(`${partials}/button/delete`, {text: 'Cancel'}) %>
+            </div>
+			<form id="form_complete"></form>
+			<form id="form_close"></form>
 			<%- include(`${partials}/inputs/display`, {id: 'demand_supplier',  title: 'Supplier',  link: true}) %>
 			<%- include(`${partials}/inputs/display`, {id: 'demand_user',	   title: 'Raised By', link: true}) %>
 			<%- include(`${partials}/inputs/display`, {id: 'demand_createdAt', title: 'Date'}) %>
 			<%- include(`${partials}/inputs/display`, {id: 'demand_updatedAt', title: 'Last Updated'}) %>
 			<%- include(`${partials}/inputs/display`, {id: 'demand_status',    title: 'Status'}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'demand_file',      title: 'Filename'}) %>
+            <div class="input-group mb-1">
+                <span class="input-group-text w-30">Filename</span>
+				<p class='form-control mb-0' id="demand_file"></p>
+				<%- include(`${partials}/button/button`, {id: 'download', icon: '<i class="fas fa-file-download"></i>', type: 'success', form: 'download'}) %>
+            </div>
+			<form id="form_download"></form>
 		</div>
 		<div class="tab-pane fade" id="lines" role="tabpanel" aria-labelledby="lines-tab">
-			<%- include(`${partials}/inputs/select`, {title: 'Status', id: 'sel_status', options: [{text: 'All', selected: true}, {value: '"status":0', text: 'Cancelled'}, {value: '"status":1', text: 'Pending'}, {value: '"status":2', text: 'Open'}, {value: '"status":3', text: 'Received'}]}) %>
-			<%- include(`${partials}/sort`, {table: 'demand_lines'}) %>
-	        <form id='form_action'>
+			<div class="row">
+				<div class="col-12 col-md-4">
+					<%- include(`${partials}/inputs/select`, {title: 'Status', small: true, id: 'sel_status', options: [{text: 'All', selected: true}, {value: '"status":0', text: 'Cancelled'}, {value: '"status":1', text: 'Pending'}, {value: '"status":2', text: 'Open'}, {value: '"status":3', text: 'Received'}]}) %>
+				</div>
+				<div class="col-12 col-md-4">
+					<button class="btn btn-sm btn-success w-100" form='form_lines'>Action Lines</button>
+				</div>
+				<div class="col-12 col-md-4">
+					<%- include(`${partials}/sort`, {table: 'demand_lines'}) %>
+				</div>
+			</div>
+	        <form id='form_lines'>
 				<table class='table table-sm table-hover'>
 					<thead class='thead-dark'>
-						<th class='w-30'>Item</th>
-						<th class='w-40'>Size</th>
+						<th class='w-25'>Item</th>
+						<th class='w-30'>Size</th>
 						<th class='w-10'>Qty</th>
-						<th class='w-20'>Status</th>
+						<th class='w-15'>Status</th>
+						<th class='w-20'>Action</th>
 						<th><i class='fas fa-search'></i></th>
 					</thead>
 					<tbody id='tbl_lines'></tbody>
@@ -56,40 +66,11 @@
         <%- include(`${partials}/common/notes/modals`) %>
         <%- include(`${partials}/common/actions/modals`) %>
 		<%- include(`${partials}/modals/stores/mdl_line_view`, {table: 'Demand'}) %>
-		<div id='mdl_line_add' class="modal fade" tabindex="-1" role="dialog">
-			<div class="modal-dialog" role="document">
-				<form class="modal-content" id='form_line_add'>
-					<div class="modal-header">
-						<h5 class="modal-title">
-							Add Line(s)
-							<%- include(`${partials}/spinner`, {id: 'line_add'}) %>
-						</h5>
-					</div>
-					<div class="modal-body">
-						<input type="hidden" class='demand_id' name='demand_id'>
-						<%- include(`${partials}/inputs/number`, {title: 'Quantity', value: '1', min: '1', id: 'line_add_qty'}) %>
-						<%- include(`${partials}/button/button`, {type: 'success', id: 'line_sizes', text: 'Add Item(s)', type_att: true, classes: ['w-100']}) %>
-						<table class='table table-sm table-hover'>
-							<thead class='thead-dark'>
-								<th class='w-30'>Item</th>
-								<th class='w-60'>Size</th>
-								<th class='w-20'>Qty </th>
-								<th><i class='fas fa-trash-alt'></i></th>
-							</thead>
-							<tbody id='tbl_line_add'></tbody>
-						</table>
-					</div>
-					<div class="modal-footer">
-						<input type="submit" class="btn btn-success w-100" value='Add Lines'>
-						<%- include(`${partials}/button/modal/close`) %>
-					</div>
-				</form>
-			</div>
-		</div>
 	</div>
 </section>
 <%- include(`${partials}/foot/app`) %>
-<script src="/js/search/select.js"></script>
+<script src="/js/common/radios/nil_cancel.js"></script>
+<script src="/js/common/radios/receive.js"></script>
 <script>show_tab('<%= tab %>')</script>
 <%- include(`${partials}/common/notes/scripts`) %>
 <%- include(`${partials}/common/actions/scripts`) %>
@@ -99,10 +80,6 @@
 <script src="/js/stores/demands/show/edit.js"></script>
 <script src="/js/stores/demands/show/delete.js"></script>
 <script src="/js/stores/demands/show/lines/view.js"></script>
-<script async>getLines()</script>
-<script src="/js/stores/sizes/select/showWindow.js"></script>
-<script src="/js/stores/demands/show/lines/add.js"></script>
 <script src="/js/stores/stocks/list.js"></script>
 <script src="/js/stores/serials/list.js"></script>
-<script src="/js/stores/demands/show/lines/edit.js"></script>
 <%- include(`${partials}/foot/components/htmlClose`) %>

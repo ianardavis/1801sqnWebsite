@@ -45,16 +45,16 @@ sort_listeners(
     'items',
     getItems,
     [
-        {value: 'description', text: 'Description', selected: true}
+        {value: '["description"]', text: 'Description', selected: true}
     ]
 );
 sort_listeners(
     'sizes',
     getSizes,
     [
-        {value: 'size1', text: 'Size 1'},
-        {value: 'size2', text: 'Size 2'},
-        {value: 'size3', text: 'Size 3'},
+        {value: '["size1"]', text: 'Size 1'},
+        {value: '["size2"]', text: 'Size 2'},
+        {value: '["size3"]', text: 'Size 3'},
     ]
 );
 window.addEventListener('load', function () {

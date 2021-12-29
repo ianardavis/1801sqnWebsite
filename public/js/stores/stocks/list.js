@@ -1,6 +1,6 @@
 function getStock(size_id, line_id, cell, entry = false) {
     let _cell = document.querySelector(`#${cell}_${line_id}`);
-    add_spinner(_cell, {id: `stocks_${line_id}`});
+    _cell.appendChild(new Spinner(`stocks_${line_id}`).e);
     get({
         table: 'stocks',
         where: {size_id: size_id}
@@ -14,7 +14,6 @@ function getStock(size_id, line_id, cell, entry = false) {
                     {field: 'name',     value: `actions[${line_id}][stock_id]`},
                     {field: 'required', value: (entry === false)}
                 ],
-                small: true,
                 options: locations
             }).e
         );
@@ -24,8 +23,7 @@ function getStock(size_id, line_id, cell, entry = false) {
                     attributes: [
                         {field: 'name',        value: `actions[${line_id}][location]`},
                         {field: 'placeholder', value: 'Enter Location'}
-                    ],
-                    small: true
+                    ]
                 }).e
             );
         };

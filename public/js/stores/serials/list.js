@@ -1,6 +1,6 @@
 function getSerials(size_id, line_id, cell, entry = false) {
     let _cell = document.querySelector(`#${cell}_${line_id}`);
-    add_spinner(_cell, {id: `serials_${line_id}`});
+    _cell.appendChild(new Spinner(`serials_${line_id}`).e);
     get({
         table: 'serials',
         where: {size_id: size_id}
@@ -14,7 +14,6 @@ function getSerials(size_id, line_id, cell, entry = false) {
                     {field: 'name',     value: `actions[${line_id}][serial_id]`},
                     {field: 'required', value: (entry === false)}
                 ],
-                small: true,
                 options: _serials
             }).e
         );
@@ -24,8 +23,7 @@ function getSerials(size_id, line_id, cell, entry = false) {
                     attributes: [
                         {field: 'name',        value: `actions[${line_id}][serial]`},
                         {field: 'placeholder', value: 'Enter Serial #'}
-                    ],
-                    small: true
+                    ]
                 }).e
             );
         };

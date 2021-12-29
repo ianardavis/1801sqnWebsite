@@ -57,7 +57,6 @@ function addInput(size_id, _cell, index) {
         })
         .then(function ([detail, options]) {
             cell.appendChild(new Input({
-                small: true,
                 attributes: [
                     {field: 'name',  value: `sizes[][${index}][${_cell}]`},
                     {field: 'value', value: detail.value ||''}
@@ -66,7 +65,6 @@ function addInput(size_id, _cell, index) {
         })
         .catch(err => {
             cell.appendChild(new Input({
-                small: true,
                 attributes: [{field: 'name',  value: `sizes[][${index}][${_cell}]`}]
             }).e);
         });
@@ -77,18 +75,18 @@ sort_listeners(
     'items',
     getItems,
     [
-        {value: 'createdAt',   text: 'Created'},
-        {value: 'description', text: 'Description', selected: true}
+        {value: '["createdAt"]',   text: 'Created'},
+        {value: '["description"]', text: 'Description', selected: true}
     ]
 );
 sort_listeners(
     'sizes',
     getSizes,
     [
-        {value: 'createdAt', text: 'Created'},
-        {value: 'size1',     text: 'Size 1', selected: true},
-        {value: 'size2',     text: 'Size 2'},
-        {value: 'size3',     text: 'Size 3'}
+        {value: '["createdAt"]', text: 'Created'},
+        {value: '["size1"]',     text: 'Size 1', selected: true},
+        {value: '["size2"]',     text: 'Size 2'},
+        {value: '["size3"]',     text: 'Size 3'}
     ]
 );
 window.addEventListener('load', function () {

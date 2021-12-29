@@ -24,7 +24,6 @@ function getLineActions() {
                         {field: 'name', value: `actions[${e.dataset.index}][status]`},
                         {field: 'id',   value: `sel_${line.demand_line_id}`}
                     ],
-                    small:      true,
                     options:    opts
                 }).e;
                 status.addEventListener("change", function () {
@@ -34,7 +33,7 @@ function getLineActions() {
                         let div_details = document.querySelector(`#details_${line.demand_line_id}`);
                         if (div_details) {
                             div_details.innerHTML = '';
-                            add_spinner(div_details, {id: line.demand_line_id});
+                            div_details.appendChild(new Spinner(line.demand_line_id).e);
                             get({
                                 table: 'size',
                                 where: {size_id: line.size_id}
@@ -66,8 +65,7 @@ function addSerialEntry(div_details, index, qty) {
                 attributes: [
                     {field: 'name',        value: `actions[${index}][serials][${i}][location]`},
                     {field: 'placeholder', value: `Enter Location (${i + 1})`}
-                ],
-                small: true
+                ]
             }).e
         );
         div_details.appendChild(
@@ -75,15 +73,14 @@ function addSerialEntry(div_details, index, qty) {
                 attributes: [
                     {field: 'name',        value: `actions[${index}][serials][${i}][serial]`},
                     {field: 'placeholder', value: `Enter Serial # (${i + 1})`}
-                ],
-                small: true
+                ]
             }).e
         );
         div_details.appendChild(document.createElement('hr'));
     };
 };
 function addStockEntry(div_details, index, qty, size_id) {
-    add_spinner(div_details, {id: `stocks_${index}`});
+    div_details.appendChild(new Spinner(`stocks_${index}`).e);
     get({
         table: 'stocks',
         where: {size_id: size_id}
@@ -101,8 +98,7 @@ function addStockEntry(div_details, index, qty, size_id) {
                     {field: 'list',         value: `locations_${index}`},
                     {field: 'autocomplete', value: 'off'},
                     {field: 'placeholder',  value: 'Location'}
-                ],
-                small: true
+                ]
             }).e
         );
         div_details.appendChild(
@@ -113,8 +109,7 @@ function addStockEntry(div_details, index, qty, size_id) {
                     {field: 'required',     value: true},
                     {field: 'autocomplete', value: 'off'},
                     {field: 'placeholder',  value: 'Quantity'}
-                ],
-                small: true
+                ]
             }).e
         );
         remove_spinner(`stocks_${index}`);

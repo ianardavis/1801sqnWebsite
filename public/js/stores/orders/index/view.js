@@ -48,30 +48,29 @@ function getOrders() {
                 add_cell(row, {text: order.qty});
                 add_cell(row, {
                     text: order_statuses[order.status] || 'Unknown',
-                    append: new Input({
+                    append: new Hidden({
                         attributes: [
-                            {field: 'type',  value: 'hidden'},
-                            {field: 'name',  value: `orders[][${row_index}][order_id]`},
+                            {field: 'name',  value: `lines[][${row_index}][order_id]`},
                             {field: 'value', value: order.order_id}
                         ]
                     }).e
                 });
-                let radios = [];
+                let radios = [], args = [order.order_id, row_index, receive_options];
                 if (
                     order.status === 0 ||
                     order.status === 1 ||
                     order.status === 2
                 ) {
-                    radios.push(nil_radio(order.order_id, row_index));
+                    if (typeof nil_radio     === 'function') radios.push(nil_radio(    ...args));
                 };
                 if (order.status === 0) {
-                    radios.push(restore_radio(order.order_id, row_index));
+                    if (typeof restore_radio === 'function') radios.push(restore_radio(...args));
                 };
                 if (order.status === 1) {
-                    radios.push(demand_radio(order.order_id, row_index));
+                    if (typeof demand_radio  === 'function') radios.push(demand_radio( ...args));
                 };
                 if (order.status === 1 || order.status === 2) {
-                    radios.push(receive_radio(order.order_id, row_index));
+                    if (typeof receive_radio === 'function') radios.push(receive_radio(...args));
                 };
                 radios.push(new Div({attributes: [{field: 'id', value: `${order.order_id}_details`}]}).e);
                 add_cell(row, {
@@ -86,89 +85,14 @@ function getOrders() {
         });
     });
 };
-function restore_radio(order_id, index) {
-    return new Radio({
-        id:          `${order_id}_restore`,
-        float_start: true,
-        classes:     ['radio_restore'],
-        colour:      'success',
-        html:        '<i class="fas fa-trash-restore-alt"></i>',
-        attributes: [
-            {field: 'name',          value: `orders[][${index}][status]`},
-            {field: 'value',         value: '-1'},
-            {field: 'data-order_id', value: order_id}
-        ]
-    }).e;
-};
-function nil_radio(order_id, index) {
-    return new Radio({
-        id:          `${order_id}_nil`,
-        float_start: true,
-        classes:     ['radio_nil'],
-        colour:      'primary',
-        html:        '<i class="fas fa-question"></i>',
-        attributes: [
-            {field: 'name',          value: `orders[][${index}][status]`},
-            {field: 'data-order_id', value: order_id},
-            {field: 'checked',       value: true}
-        ],
-        listener: {event: 'input', func: function () {clear(`${this.dataset.order_id}_details`)}}
-    }).e;
-};
-function cancel_radio(order_id, index) {
-    return new Radio({
-        id:          `${order_id}_cancel`,
-        float_start: true,
-        classes:     ['radio_cancel'],
-        colour:      'danger',
-        html:        '<i class="fas fa-trash-alt"></i>',
-        attributes: [
-            {field: 'name',          value: `orders[][${index}][status]`},
-            {field: 'value',         value: '0'},
-            {field: 'data-order_id', value: order_id}
-        ],
-        listener: {event: 'input', func: function () {clear(`${this.dataset.order_id}_details`)}}
-    }).e;
-};
-function demand_radio(order_id, index) {
-    return new Radio({
-        id:          `${order_id}_demand`,
-        float_start: true,
-        classes:     ['radio_demand'],
-        colour:      'warning',
-        html:        '<i class="fas fa-industry"></i>',
-        attributes: [
-            {field: 'name',          value: `orders[][${index}][status]`},
-            {field: 'data-order_id', value: order_id},
-            {field: 'value',         value: '2'}
-        ],
-        listener: {event: 'input', func: function () {console.log(this.dataset);clear(`${this.dataset.order_id}_details`)}}
-    }).e;
-};
-function receive_radio(order_id, index) {
-    return new Radio({
-        id:          `${order_id}_receive`,
-        float_start: true,
-        classes:     ['radio_receive'],
-        colour:      'success',
-        html:        '<i class="fas fa-receipt"></i>',
-        attributes: [
-            {field: 'name',          value: `orders[][${index}][status]`},
-            {field: 'value',         value: '3'},
-            {field: 'data-order_id', value: order_id},
-            {field: 'data-index',    value: index}
-        ],
-        listener: {event: 'input', func: receive_options}
-    }).e;
-};
 function receive_options() {
-    clear(`${this.dataset.order_id}_details`)
+    clear(`${this.dataset.id}_details`)
     .then(div_details => {
-        div_details.appendChild(new Spinner({id: this.dataset.order_id}).e);
+        div_details.appendChild(new Spinner(this.dataset.id).e);
         if (this.value === '3') {
             get({
                 table: 'order',
-                where: {order_id: this.dataset.order_id},
+                where: {order_id: this.dataset.id},
                 index: this.dataset.index
             })
             .then(function ([order, options]) {
@@ -176,17 +100,15 @@ function receive_options() {
                     if (order.size.has_serials) {
                         for (let i = 0; i < order.qty; i++) {
                             div_details.appendChild(new Select({
-                                small: true,
                                 attributes: [
-                                    {field: 'name',     value: `orders[][${options.index}][serials][][${i}][serial]`},
+                                    {field: 'name',     value: `lines[][${options.index}][serials][][${i}][serial]`},
                                     {field: 'required', value: true},
                                     {field: 'placeholder', value: `Serial ${i + 1}`}
                                 ]
                             }).e);
                             div_details.appendChild(new Select({
-                                small: true,
                                 attributes: [
-                                    {field: 'name',     value: `orders[][${options.index}][serials][][${i}][location]`},
+                                    {field: 'name',     value: `lines[][${options.index}][serials][][${i}][location]`},
                                     {field: 'required', value: true},
                                     {field: 'placeholder', value: `Location ${i + 1}`}
                                 ]
@@ -194,11 +116,10 @@ function receive_options() {
                         };
                     } else {
                         let list = document.createElement('datalist');
-                        list.setAttribute('id', `loc_list_${index}`);
+                        list.setAttribute('id', `loc_list_${options.index}`);
                         div_details.appendChild(new Input({
-                            small: true,
                             attributes: [
-                                {field: 'name',     value: `orders[][${options.index}][location]`},
+                                {field: 'name',     value: `lines[][${options.index}][location]`},
                                 {field: 'required', value: true},
                                 {field: 'list',     value: `loc_list_${options.index}`},
                                 {field: 'placeholder', value: 'Enter Location...'}
@@ -213,12 +134,11 @@ function receive_options() {
                             result.stocks.forEach(e => list.appendChild(new Option({value: e.location.location}).e));
                         });
                         div_details.appendChild(new Input({
-                            small: true,
                             attributes: [
                                 {field: 'type',        value: 'number'},
                                 {field: 'min',         value: '1'},
                                 {field: 'Placeholder', value: 'Receipt Quantity'},
-                                {field: 'name',        value: `orders[][${options.index}][qty]`},
+                                {field: 'name',        value: `lines[][${options.index}][qty]`},
                                 {field: 'required',    value: true},
                                 {field: 'value',       value: order.qty}
                             ]
@@ -235,13 +155,13 @@ sort_listeners(
     'orders',
     getOrders,
     [
-        {value: 'createdAt',   text: 'Date', selected: true},
-        {value: 'description', text: 'Description'},
-        {value: 'size1',       text: 'Size 1'},
-        {value: 'size2',       text: 'Size 2'},
-        {value: 'size3',       text: 'Size 3'},
-        {value: 'qty',         text: 'Qty'},
-        {value: 'status',      text: 'Status'}
+        {value: '["createdAt"]',                 text: 'Date', selected: true},
+        {value: '["size","item","description"]', text: 'Description'},
+        {value: '["size","size1"]',              text: 'Size 1'},
+        {value: '["size","size2"]',              text: 'Size 2'},
+        {value: '["size","size3"]',              text: 'Size 3'},
+        {value: '["qty"]',                       text: 'Qty'},
+        {value: '["status"]',                    text: 'Status'}
     ]
 );
 window.addEventListener('load', function () {
@@ -255,4 +175,10 @@ window.addEventListener('load', function () {
     addListener('filter_orders_size_1', getOrders, 'input');
     addListener('filter_orders_size_2', getOrders, 'input');
     addListener('filter_orders_size_3', getOrders, 'input');
+    addFormListener(
+        'order_edit',
+        'PUT',
+        '/orders',
+        {onComplete: getOrders}
+    );
 });

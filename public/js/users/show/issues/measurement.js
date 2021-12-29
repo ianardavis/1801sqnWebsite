@@ -101,7 +101,6 @@ function get_sizes(event) {
                 })
                 .then(function ([result, options]) {
                     qty_cell.appendChild(new Input({
-                        small: true,
                         attributes: [
                             {field: 'name',        value: `issues[sizes][][${options.index}][qty]`},
                             {field: 'value',       value: '1'},
@@ -110,7 +109,6 @@ function get_sizes(event) {
                         ]
                     }).e);
                     let sel_sizes = new Select({
-                        small: true,
                         attributes: [
                             {field: 'name',     value: `issues[sizes][][${options.index}][size_id]`},
                             {field: 'required', value: true}
@@ -132,9 +130,9 @@ sort_listeners(
     'sizes',
     null,
     [
-        {value: 'size1',     text: 'Size 1', selected: true},
-        {value: 'size2',     text: 'Size 2'},
-        {value: 'size3',     text: 'Size 3'}
+        {value: '["size1"]',     text: 'Size 1', selected: true},
+        {value: '["size2"]',     text: 'Size 2'},
+        {value: '["size3"]',     text: 'Size 3'}
     ]
 );
 window.addEventListener( "load", function () {

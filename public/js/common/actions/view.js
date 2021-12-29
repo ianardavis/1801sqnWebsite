@@ -13,8 +13,8 @@ function getActions() {
             set_count('action', result.count);
             result.actions.forEach(action => {
                 let row = tbl_actions.insertRow(-1);
-                add_cell(row, table_date(action.createdAt));
-                add_cell(row, {text: action.action});
+                add_cell(row, table_date(action.createdAt, true));
+                add_cell(row, {text: action.action, classes: ['text-start']});
                 add_cell(row, {append: new Button({
                     modal: 'action_view',
                     small: true,
@@ -35,6 +35,7 @@ function getLinks(action_id) {
             links.forEach(link => {
                 let row = tbl_links.insertRow(-1);
                 add_cell(row, {text: link._table});
+                add_cell(row, {html: (link.active ? _check() : '')});
                 add_cell(row, (
                     link._table === path[1] && link.id === path[2] ?
                     {text: 'This record'} : 
@@ -62,9 +63,9 @@ sort_listeners(
     'actions',
     getActions,
     [
-        {value: 'createdAt', text: 'Created', selected: true},
-        {value: 'action',    text: 'Note'},
-        {value: 'user_id',   text: 'User'}
+        {value: '["createdAt"]', text: 'Created', selected: true},
+        {value: '["action"]',    text: 'Action'},
+        {value: '["user_id"]',   text: 'User'}
     ]
 );
 window.addEventListener('load', function () {

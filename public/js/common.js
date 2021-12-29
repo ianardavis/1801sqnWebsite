@@ -196,9 +196,6 @@ function hide_spinner(id) {
     let spn_results = document.querySelector(`#spn_${id}`);
     if (spn_results) spn_results.classList.add('hidden');
 };
-function add_spinner(obj, options = {}) {
-    obj.appendChild(new Spinner(options).e);
-};
 function remove_spinner(id) {
     let spinner = document.querySelector(`#spn_${id}`);
     if (spinner) spinner.remove();
@@ -227,7 +224,7 @@ function checked_statuses() {
     return selected
 };
 function selected_user(id = 'sel_users') {
-    let sel_users = document.querySelector(`#${id}`) || {value: ''};
+    let sel_users = document.querySelector(`#${id}`);
     if (sel_users && sel_users.value !== '') return sel_users.value;
     else return null
 };
@@ -301,5 +298,41 @@ function sort_listeners(table, func, options, getOnLoad = true) {
         .catch(err => console.log(err))
         .finally(() => {if (func && getOnLoad) func()});
     });
+};
+function build_filter_query(table) {
+    let where = null,
+        like  = null,
+        gt    = null,
+        lt    = null;
+    let sel_statuses = checked_statuses(),
+        sel_user     = selected_user(`filter_${table}_user`);
+    if (sel_statuses || sel_user) where = {};
+    if (sel_statuses) where.status        = sel_statuses;
+    if (sel_user)     where.user_id_issue = sel_user;
+
+    let supplier = document.querySelector(`#filter_${table}_supplier`);
+    if (supplier && supplier.value !== '') where.supplier_id = supplier.value;
+
+    let date_from = document.querySelector(`#filter_${table}_createdAt_from`),
+        date_to   = document.querySelector(`#filter_${table}_createdAt_to`);
+    if (date_from && date_from.value !== '') gt = {column: 'createdAt', value: date_from.value};
+    if (date_to   && date_to.value   !== '') lt = {column: 'createdAt', value: date_to  .value};
+    
+    let item  = document.querySelector(`#filter_${table}_item`),
+        size1 = document.querySelector(`#filter_${table}_size_1`),
+        size2 = document.querySelector(`#filter_${table}_size_2`),
+        size3 = document.querySelector(`#filter_${table}_size_3`);
+    if ((item && item.value) || (size1 && size1.value) || (size2 && size2.value) || (size3 && size3.value)) like = {};
+    if (item  && item .value !=='') like.item  = item.value;
+    if (size1 && size1.value !=='') like.size1 = size1.value;
+    if (size2 && size2.value !=='') like.size2 = size2.value;
+    if (size3 && size3.value !=='') like.size3 = size3.value;
+
+    return {
+        where: where,
+        like:  like,
+        gt:    gt,
+        lt:    lt
+    };
 };
 let path = window.location.pathname.toString().split('/');

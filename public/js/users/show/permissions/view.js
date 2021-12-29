@@ -20,6 +20,6 @@ sort_listeners(
     'permissions',
     getPermissions,
     [
-        {value: 'permission', text: 'Permission', selected: true}
+        {value: '["permission"]', text: 'Permission', selected: true}
     ]
 );

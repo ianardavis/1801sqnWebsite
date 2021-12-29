@@ -26,8 +26,8 @@ sort_listeners(
     'serials',
     getSerials,
     [
-        {value: 'createdAt',   text: 'Created', selected: true},
-        {value: 'serial',      text: 'Serial #'},
-        {value: 'location_id', text: 'Location'}
+        {value: '["createdAt"]',   text: 'Created', selected: true},
+        {value: '["serial"]',      text: 'Serial #'},
+        {value: '["location_id"]', text: 'Location'}
     ]
 );

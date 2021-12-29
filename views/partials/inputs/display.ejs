@@ -1,54 +1,18 @@
 <% if (!locals.permission || permissions[permission]) { %>
-    <div
-        <% if (locals.inp_id) { %>id='<%= inp_id %>' <% } %>
-        class="input-group mb-1<% if (locals.inp_classes) inp_classes.forEach(e => { %> <%= e %><% }) %>"
-    >
+    <div class="input-group mb-1">
         <span class="input-group-text w-30"><%= title %></span>
-        <% if (locals.html) { %>
-            <%- html %>
-        <% } else { %>
-            <p
-                class="form-control mb-0<% if (locals.classes) { locals.classes.forEach(e => {%> <%= e %><% })%><% } %>"
-                <% if (locals.id)   { %>id='<%= id %>'<% } %>
-            >
-                <% if (locals.text) { %><%= text %><% } %>
-            </p>
-        <% } %>
-        <% if (locals.download) { %>
-            <button
-                class='btn btn-success'
-                id='<%= id %>_download'
-                form='form_download'
-            >
-                <i class="fas fa-file-download"></i>
-            </button>
-        <% } %>
-        <% if (locals.print) { %>
-            <button
-                class='btn btn-warning'
-                id='<%= id %>_print'
-                form='form_print'
-            >
-                <i class="fas fa-print"></i>
-            </button>
-        <% } %>
-        <% if (locals.delete) { %>
-            <button
-                class='btn btn-danger'
-                id='<%= id %>_delete'
-                form='form_delete_file'
-            >
-                <i class="fas fa-trash-alt"></i>
-            </button>
-        <% } %>
+        <p
+            class="form-control mb-0<% if (locals.classes) { locals.classes.forEach(e => {%> <%= e %><% })%><% } %>"
+            <% if (locals.id)   { %>id='<%= id %>'<% } %>
+        ></p>
         <% if (locals.edit) { %>
             <button
                 type='button'
                 class='btn btn-warning'
                 id='<%= id %>_edit'
-                <% if (locals.modal) { %>
+                <% if (edit.modal) { %>
                     data-bs-toggle="modal"
-                    data-bs-target="#mdl_<%= modal %>"
+                    data-bs-target="#mdl_<%= edit.modal %>"
                 <% } %>
             >
                 <i class="fas fa-pencil-alt"></i>
@@ -58,9 +22,9 @@
             <a
                 class='btn btn-primary'
                 id='<%= id %>_link'
-                <% if (locals.modal) { %>
+                <% if (link.modal) { %>
                     data-bs-toggle="modal"
-                    data-bs-target="#mdl_<%= modal %>"
+                    data-bs-target="#mdl_<%= link.modal %>"
                 <% } %>
             >
                 <i class="fas fa-search"></i>

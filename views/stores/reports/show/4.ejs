@@ -8,7 +8,7 @@
     <form id="form_stocks">
         <input type="hidden" name='location_id' id='location_id'>
         <button id='btn_action' class='btn btn-success w-100 mb-1'>Action Counts</button>
-        <%- include(`${partials}/sort`, {table: 'locations', small: true}) %>
+        <%- include(`${partials}/sort`, {table: 'locations'}) %>
         <select class='form-select mb-1' id="sel_location"></select>
         <table class="table table-sm table-hover">
             <thead class="thead-dark">

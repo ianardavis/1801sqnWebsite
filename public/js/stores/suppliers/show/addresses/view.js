@@ -47,14 +47,14 @@ sort_listeners(
     'addresses',
     getAddresses,
     [
-        {value: 'type',        text: 'Type', selected: true},
-        {value: 'unit_number', text: 'Unit Number'},
-        {value: 'street',      text: 'Street'},
-        {value: 'town',        text: 'Town'},
-        {value: 'county',      text: 'County'},
-        {value: 'country',     text: 'Country'},
-        {value: 'postcode',    text: 'Postcode'},
-        {value: 'createdAt',   text: 'Created'}
+        {value: '["type"]',        text: 'Type', selected: true},
+        {value: '["unit_number"]', text: 'Unit Number'},
+        {value: '["street"]',      text: 'Street'},
+        {value: '["town"]',        text: 'Town'},
+        {value: '["county"]',      text: 'County'},
+        {value: '["country"]',     text: 'Country'},
+        {value: '["postcode"]',    text: 'Postcode'},
+        {value: '["createdAt"]',   text: 'Created'}
     ]
 );
 window.addEventListener('load', function () {

@@ -25,7 +25,7 @@
                 <%- include(`${partials}/button/delete`) %>
             </div>
             <%- include(`${partials}/inputs/display`, {id: 'supplier_name',       title: 'Name'}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'supplier_account',    title: 'Account', link: true, modal: 'account_view'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'supplier_account',    title: 'Account', link: {modal: 'account_view'}}) %>
             <%- include(`${partials}/inputs/display`, {id: 'supplier_is_stores',  title: 'RAF Stores'}) %>
             <% if (permissions.access_settings) { %>
                 <div class="input-group mb-1">
@@ -35,7 +35,7 @@
             <% } %>
         </div>
         <div class="tab-pane fade" id="files"     role="tabpanel" aria-labelledby="files-tab">
-            <%- include(`${partials}/sort`, {table: 'files', small: true}) %>
+            <%- include(`${partials}/sort`, {table: 'files'}) %>
 	        <table class="table table-sm table-hover">
                 <thead class="thead-dark">
 					<th class='w-50'>Filename   </th>
@@ -67,7 +67,7 @@
                     <%- include(`${partials}/button/modal/open`, {text: 'New Address', type: 'success', modal: 'address_add', classes: ['w-100'], small: true}) %>
                 </div>
                 <div class="col-12 col-md-6 mb-1 justify-content-center">
-                    <%- include(`${partials}/sort`, {table: 'addresses', small: true}) %>
+                    <%- include(`${partials}/sort`, {table: 'addresses'}) %>
                 </div>
             </div>
 	        <table class="table table-sm table-hover">
@@ -87,7 +87,7 @@
                     <%- include(`${partials}/button/modal/open`, {text: 'New Contact', type: 'success', modal: 'contact_add', classes: ['w-100'], small: true}) %>
                 </div>
                 <div class="col-12 col-md-6 mb-1 justify-content-center">
-                    <%- include(`${partials}/sort`, {table: 'contacts', small: true}) %>
+                    <%- include(`${partials}/sort`, {table: 'contacts'}) %>
                 </div>
             </div>
 	        <table class="table table-sm table-hover">
@@ -108,9 +108,9 @@
         <div class="tab-pane fade" id="items"     role="tabpanel" aria-labelledby="items-tab">
             <div class="row">
                 <div class="col-12 col-md-6 mx-auto">
-                    <%- include(`${partials}/sort`, {table: 'items', small: true}) %>
+                    <%- include(`${partials}/sort`, {table: 'items'}) %>
 	                <select class='form-select mb-1' id="sel_items"></select>
-                    <%- include(`${partials}/sort`, {table: 'sizes', small: true}) %>
+                    <%- include(`${partials}/sort`, {table: 'sizes'}) %>
                     <table class="table table-sm table-hover">
                         <thead class="thead-dark">
                             <th class='w-35'>Size 1</th>
@@ -138,7 +138,7 @@
                         </select>
                     </div>
                     <div class="col-12 col-md-6 mb-1 justify-content-center">
-                        <%- include(`${partials}/sort`, {table: 'demands', small: true}) %>
+                        <%- include(`${partials}/sort`, {table: 'demands'}) %>
                     </div>
                 </div>
                 <table class="table table-sm table-hover">

@@ -63,13 +63,13 @@ sort_listeners(
     'issues',
     getIssues,
     [
-        {value: 'createdAt',   text: 'Created', selected: true},
-        {value: 'description', text: 'Description'},
-        {value: 'size1',       text: 'Size 1'},
-        {value: 'size2',       text: 'Size 2'},
-        {value: 'size3',       text: 'Size 3'},
-        {value: 'qty',         text: 'Qty'},
-        {value: 'status',      text: 'Status'}
+        {value: '["createdAt"]',                 text: 'Created', selected: true},
+        {value: '["size","item","description"]', text: 'Description'},
+        {value: '["size","size1"]',              text: 'Size 1'},
+        {value: '["size","size2"]',              text: 'Size 2'},
+        {value: '["size","size3"]',              text: 'Size 3'},
+        {value: '["qty"]',                       text: 'Qty'},
+        {value: '["status"]',                    text: 'Status'}
     ]
 );
 window.addEventListener('load', function () {

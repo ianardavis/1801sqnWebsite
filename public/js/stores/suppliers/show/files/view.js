@@ -42,8 +42,8 @@ sort_listeners(
     'files',
     getFiles,
     [
-        {value: 'filename',    text: 'Filename', selected: true},
-        {value: 'description', text: 'Description'}
+        {value: '["filename"]',    text: 'Filename', selected: true},
+        {value: '["description"]', text: 'Description'}
     ]
 );
 window.addEventListener('load', function () {

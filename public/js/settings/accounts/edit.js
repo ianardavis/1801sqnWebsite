@@ -23,7 +23,6 @@ function viewAccountEdit(account_id) {
         set_value('account_number_edit', account.number);
         listUsers({
             select:   'sel_account_user_edit',
-            id_only:  true,
             selected: account.user_id_account
         })
     });

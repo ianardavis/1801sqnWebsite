@@ -27,9 +27,8 @@ function getSizes() {
                     add_cell(row, {
                         text: size.size1,
                         append: [
-                            new Input({
+                            new Hidden({
                                 attributes: [
-                                    {field: 'type',  value: 'hidden'},
                                     {field: 'name',  value: `orders[][${row_index}][size_id]`},
                                     {field: 'value', value: size.size_id}
                                 ]
@@ -48,8 +47,7 @@ function getSizes() {
                                 {field: 'type', value: 'number'},
                                 {field: 'name', value: `orders[][${row_index}][qty]`},
                                 {field: 'min',  value: '0'}
-                            ],
-                            small: true
+                            ]
                         }).e
                     ]});
                     add_cell(row, {append: new Link({href: `/sizes/${size.size_id}`}).e});
@@ -106,18 +104,18 @@ sort_listeners(
     'items',
     getItems,
     [
-        {value: 'createdAt',   text: 'Created'},
-        {value: 'description', text: 'Description', selected: true}
+        {value: '["createdAt"]',   text: 'Created'},
+        {value: '["description"]', text: 'Description', selected: true}
     ]
 );
 sort_listeners(
     'sizes',
     getSizes,
     [
-        {value: 'createdAt', text: 'Created'},
-        {value: 'size1',     text: 'Size 1', selected: true},
-        {value: 'size2',     text: 'Size 2'},
-        {value: 'size3',     text: 'Size 3'}
+        {value: '["createdAt"]', text: 'Created'},
+        {value: '["size1"]',     text: 'Size 1', selected: true},
+        {value: '["size2"]',     text: 'Size 2'},
+        {value: '["size3"]',     text: 'Size 3'}
     ]
 );
 window.addEventListener('load', function () {

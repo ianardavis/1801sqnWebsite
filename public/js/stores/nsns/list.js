@@ -1,6 +1,6 @@
 function getNSNs(size_id, line_id, cell, nsn_id = null) {
     let _cell = document.querySelector(`#${cell}_${line_id}`);
-    add_spinner(_cell, {id: `nsns_${line_id}`});
+    _cell.appendChild(new Spinner(`nsns_${line_id}`).e);
     get({
         table: 'nsns',
         where: {size_id: size_id}
@@ -19,7 +19,6 @@ function getNSNs(size_id, line_id, cell, nsn_id = null) {
                     {field: 'name',     value:  `actions[${line_id}][nsn_id]`},
                     {field: 'required', value: true}
                 ],
-                small:    true,
                 options:  opts
             }).e
         );

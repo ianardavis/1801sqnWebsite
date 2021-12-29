@@ -43,9 +43,9 @@ sort_listeners(
     'contacts',
     getContacts,
     [
-        {value: 'type',        text: 'Type', selected: true},
-        {value: 'description', text: 'Description'},
-        {value: 'contact',     text: 'Contact'}
+        {value: '["type"]',        text: 'Type', selected: true},
+        {value: '["description"]', text: 'Description'},
+        {value: '["contact"]',     text: 'Contact'}
     ]
 );
 window.addEventListener('load', function () {

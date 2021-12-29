@@ -13,10 +13,8 @@ window.addEventListener('load', function () {
     );
     modalOnShow('account_add', function (event) {
         listUsers({
-            select:    'sel_account_user_add',
-            id_only:   true,
-            blank:     true,
-            blank_opt: {text: '... Select Owner', selected: true}
+            select: 'sel_account_user_add',
+            blank:  {text: '... Select Owner'}
         })
     });
 });

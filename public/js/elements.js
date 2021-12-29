@@ -172,9 +172,8 @@ function Hidden(options = {}) {
 function Input(options = {}) {
     this.e = document.createElement('input');
     this.e.setAttribute('type', 'text');
-    this.e.classList.add('form-control');
-    this.e.setAttribute('autocomplete', options.autocomplete || 'off')
-    if (options.small)      this.e.classList.add('form-control-sm');
+    this.e.classList.add('form-control', 'form-control-sm');
+    this.e.setAttribute('autocomplete', options.autocomplete || 'off');
     if (options.classes)    options.classes.forEach(e => this.e.classList.add(e));
     if (options.attributes) options.attributes.forEach(a => this.e.setAttribute(a.field, a.value));
 };
@@ -232,7 +231,7 @@ function Button(options = {}) {
 function Select(options = {}) {
     this.e = document.createElement('select');
     this.e.classList.add('form-select');
-    if (options.small)      this.e.classList.add('form-select-sm');
+    if (!options.large)     this.e.classList.add('form-select-sm');
     if (options.classes)    options.classes.forEach(e => this.e.classList.add(e));
     if (options.options)    options.options.forEach(e => {if (e) this.e.appendChild(new Option(e).e)});
     if (options.attributes) options.attributes.forEach(a => this.e.setAttribute(a.field, a.value));
@@ -252,9 +251,9 @@ function Option(options = {}) {
     else               this.e.setAttribute('value', '');
     this.e.innerText = `${pre_text}${options.text || ''}${_text}`;
 };
-function Spinner(options = {}) {
+function Spinner(id = null) {
     this.e = document.createElement('div');
-    this.e.setAttribute('id', `spn_${options.id || random_id}`);
+    this.e.setAttribute('id', `spn_${id || random_id}`);
     this.e.classList.add('spinner-border', 'spinner-border-sm', 'text-primary');
     this.e.setAttribute('role', 'status');
     this.e.innerHTML = '<span class="sr-only">Loading...</span>';

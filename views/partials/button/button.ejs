@@ -9,5 +9,9 @@
         title='<%= tip %>'
     <% } %>
 >
+<% if (locals.text) { %>
     <%= text %>
+<% } else if (locals.icon) { %>
+    <%- icon %>
+<% } %>
 </button>

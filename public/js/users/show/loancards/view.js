@@ -28,8 +28,8 @@ sort_listeners(
     'loancards',
     getLoancards,
     [
-        {value: 'createdAt', text: 'Created', selected: true},
-        {value: 'status',    text: 'Status'}
+        {value: '["createdAt"]', text: 'Created', selected: true},
+        {value: '["status"]',    text: 'Status'}
     ]
 );
 window.addEventListener('load', function () {

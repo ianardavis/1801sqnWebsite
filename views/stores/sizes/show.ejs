@@ -28,7 +28,7 @@
             <%- include(`${partials}/inputs/display`, {id: 'has_nsns',    title: 'Has NSNs'}) %>
             <%- include(`${partials}/inputs/display`, {id: 'supplier',    title: 'Supplier', link: true}) %>
             <div id="div_details">
-                <%- include(`${partials}/sort`, {table: 'details', small: true}) %>
+                <%- include(`${partials}/sort`, {table: 'details'}) %>
 	            <table class='table table-sm table-hover w-100'>
                     <thead class='thead-dark'>
                         <th class='w-30'>Name </th>
@@ -46,7 +46,7 @@
                     <%- include(`${partials}/button/modal/open`, {text: 'New NSN', type: 'success', modal: 'nsn_add', classes: ['w-100'], small: true}) %>
                 </div>
                 <div class="col-12 col-md-6 mb-1 justify-content-center">
-                    <%- include(`${partials}/sort`, {table: 'nsns', small: true}) %>
+                    <%- include(`${partials}/sort`, {table: 'nsns'}) %>
                 </div>
             </div>
 	        <% if (permissions.stores_stock_admin) { %><form id='form_nsn_default'><% } %>
@@ -67,7 +67,7 @@
                     <%- include(`${partials}/button/modal/open`, {text: 'New Serial', type: 'success', modal: 'serial_add', classes: ['w-100'], small: true}) %>
                 </div>
                 <div class="col-12 col-md-6 mb-1 justify-content-center">
-                    <%- include(`${partials}/sort`, {table: 'serials', small: true}) %>
+                    <%- include(`${partials}/sort`, {table: 'serials'}) %>
                 </div>
             </div>
 	        <table class='table table-sm table-hover'>
@@ -86,7 +86,7 @@
                     <%- include(`${partials}/button/modal/open`, {text: 'New Stock Location', type: 'success', modal: 'stock_add', classes: ['w-100'], small: true}) %>
                 </div>
                 <div class="col-12 col-md-6 mb-1 justify-content-center">
-                    <%- include(`${partials}/sort`, {table: 'stocks', small: true}) %>
+                    <%- include(`${partials}/sort`, {table: 'stocks'}) %>
                 </div>
             </div>
 	        <table class='table table-sm table-hover'>
@@ -115,7 +115,7 @@
                         </select>
                     </div>
                     <div class="col-12 col-md-4 mb-1 justify-content-center">
-                        <%- include(`${partials}/sort`, {table: 'orders', small: true}) %>
+                        <%- include(`${partials}/sort`, {table: 'orders'}) %>
                     </div>
                 </div>
                 <table class='table table-sm table-hover'>
@@ -147,7 +147,7 @@
                     </select>
                 </div>
                 <div class="col-12 col-md-4 mb-1 justify-content-center">
-                    <%- include(`${partials}/sort`, {table: 'issues', small: true}) %>
+                    <%- include(`${partials}/sort`, {table: 'issues'}) %>
                 </div>
             </div>
             <table class='table table-sm table-hover'>

@@ -39,15 +39,16 @@
 </section>
 <%- include(`${partials}/foot/app`) %>
 <script src='/js/utils/list/users.js'></script>
-<script src='/js/search/select.js'></script>
-<script src='/js/stores/issues/index/view.js'></script>
-<!-- <script src='/js/stores/issues/add.js'></script> -->
-<!-- <script src="/js/users/select/showWindow.js"></script>
-<script src="/js/stores/sizes/select/showWindow.js"></script> -->
 <% if (permissions.issuer) { %>
-	<script src='/js/stores/issues/issuer.js'></script>
+	<script src="/js/common/radios/nil_cancel.js"></script>
+	<script src="/js/common/radios/approve_decline.js"></script>
+	<script src="/js/common/radios/restore.js"></script>
+	<script src="/js/common/radios/issue_loancard.js"></script>
+
+	<script src='/js/stores/issues/options.js'></script>
 	<% if (permissions.stores_stock_admin) { %>
-		<script src='/js/stores/issues/stock_admin.js'></script>
+		<script src="/js/common/radios/order.js"></script>
 	<% } %>
 <% } %>
+<script src='/js/stores/issues/index/view.js'></script>
 <%- include(`${partials}/foot/components/htmlClose`) %>

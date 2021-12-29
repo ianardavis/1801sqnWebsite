@@ -38,7 +38,7 @@
         </div>
         <% if (permissions.user_admin || permissions.edit_own_permissions) { %>
             <div class="tab-pane fade" id="permissions" role="tabpanel" aria-labelledby="permissions-tab">
-                <%- include(`${partials}/sort`, {table: 'permissions', small: true}) %>
+                <%- include(`${partials}/sort`, {table: 'permissions'}) %>
 	            <table class="table table-sm table-hover">
                     <thead class="thead-dark">
                         <th class='w-100'>Permission</th>
@@ -62,7 +62,7 @@
                     <%- include(`${partials}/button/modal/open`, {text: 'New Issue By Measurement', type: 'success', modal: 'issue_measurement', classes: ['w-100'], small: true}) %>
                 </div>
                 <div class="col-12">
-                    <%- include(`${partials}/sort`, {table: 'issues', small: true}) %>
+                    <%- include(`${partials}/sort`, {table: 'issues'}) %>
                 </div>
             </div>
             <div class="collapse mb-1" id="col-filter">
@@ -139,7 +139,7 @@
         </div>
         <div class="tab-pane fade" id="loancards" role="tabpanel" aria-labelledby="loancards-tab">
             <%- include(`${partials}/inputs/select`, {title: 'Status', id: 'sel_status_loancards', options: [{text: 'All'}, {value: '0', text: 'Cancelled'}, {value: '1', text: 'Draft'}, {value: '2', text: 'Open', selected: true}, {value: '3', text: 'Closed'}]}) %>
-            <%- include(`${partials}/sort`, {table: 'loancards', small: true}) %>
+            <%- include(`${partials}/sort`, {table: 'loancards'}) %>
 	        <table class='table table-sm table-hover'>
                 <thead class="thead-dark">
                     <th class="w-40">Date</th>
@@ -249,7 +249,7 @@
                             <%- include(`${partials}/inputs/number`, {title: 'Inside Leg',   classes:['measurement'], data: {field: 'measurement', value: 'Inside Leg'}}) %>
                             <%- include(`${partials}/inputs/number`, {title: 'Skirt Length', classes:['measurement'], data: {field: 'measurement', value: 'Skirt Length'}}) %>
                             <%- include(`${partials}/inputs/number`, {title: 'Height',       classes:['measurement'], data: {field: 'measurement', value: 'Height'}}) %>
-                            <%- include(`${partials}/sort`, {table: 'sizes', small: true}) %>
+                            <%- include(`${partials}/sort`, {table: 'sizes'}) %>
                             <div id="div_select_items">
                                 <h5>Select Items</h5>
                                 <table class='table table-sm table-hover'>

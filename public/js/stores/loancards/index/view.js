@@ -39,11 +39,7 @@ function filter(tbl_loancards) {
     });
 };
 function getUsers() {
-    listUsers({
-        blank: true,
-        blank_text: 'All',
-        append: '_loancard'
-    })  
+    listUsers({blank: {text: 'All'}})  
 };
 function gotoLoancard(loancard_id) {
     window.location.assign(`/loancards/${loancard_id}`);

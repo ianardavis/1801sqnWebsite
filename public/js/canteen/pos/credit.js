@@ -1,10 +1,8 @@
 function getUsers() {
     listUsers({
-        table:      'users_current',
-        spinner:    'users_credit',
-        blank:      true,
-        blank_text: 'Select User',
-        id_only:    true
+        table:   'users_current',
+        spinner: 'users_credit',
+        blank:   {text: 'Select User'}
     });
 };
 window.addEventListener('load', function () {

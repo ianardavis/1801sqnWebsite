@@ -44,11 +44,11 @@ sort_listeners(
     'users',
     getUsers,
     [
-        {value: 'createdAt',      text: 'Created'},
-        {value: 'service_number', text: 'Service #/Bader #', selected: true},
-        {value: 'rank_id',        text: 'Rank'},
-        {value: 'surname',        text: 'Surname'},
-        {value: 'first_name',     text: 'First Name'}
+        {value: '["createdAt"]',      text: 'Created'},
+        {value: '["service_number"]', text: 'Service #/Bader #', selected: true},
+        {value: '["rank_id"]',        text: 'Rank'},
+        {value: '["surname"]',        text: 'Surname'},
+        {value: '["first_name"]',     text: 'First Name'}
     ]
 );
 window.addEventListener("load", function () {

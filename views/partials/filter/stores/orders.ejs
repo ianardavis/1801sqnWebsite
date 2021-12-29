@@ -1,4 +1,4 @@
-<div class="collapse mb-1" id="order-filter">
+<div class="collapse border p-2 mb-1" id="order-filter">
     <%- include(`${partials}/filter/status`, {table: 'orders', statuses: [{text: 'Cancelled', value: '0', colour: 'secondary'}, {text: 'Placed', value: '1', colour: 'warning', checked: true}, {text: 'Demanded', value: '2', colour: 'success', checked: true}, {text: 'Received', value: '3', colour: 'secondary'}]}) %>
     <%- include(`${partials}/filter/date`,   {table: 'orders', field: 'createdAt'}) %>
     <%- include(`${partials}/filter/size`,   {table: 'orders'}) %>

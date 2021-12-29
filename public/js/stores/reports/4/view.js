@@ -35,12 +35,10 @@ function getStocks(location_id) {
                                 {field: 'type', value: 'number'},
                                 {field: 'name', value: `counts[][${row_index}][qty]`},
                                 {field: 'min',  value: '0'}
-                            ],
-                            small: true
+                            ]
                         }).e,
-                        new Input({
+                        new Hidden({
                             attributes: [
-                                {field: 'type',  value: 'hidden'},
                                 {field: 'name',  value: `counts[][${row_index}][stock_id]`},
                                 {field: 'value', value: stock.stock_id}
                             ]
@@ -58,8 +56,8 @@ sort_listeners(
     'locations',
     getLocations,
     [
-        {value: 'createdAt', text: 'Created'},
-        {value: 'location',  text: 'Location', selected: true}
+        {value: '["createdAt"]', text: 'Created'},
+        {value: '["location"]',  text: 'Location', selected: true}
     ]
 );
 window.addEventListener('load', function () {

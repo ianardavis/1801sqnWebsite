@@ -56,9 +56,9 @@ sort_listeners(
     'loancard_lines',
     getLoancards,
     [
-        {value: 'createdAt', text: 'Created', selected: true},
-        {value: 'action',    text: 'Note'},
-        {value: 'user_id',   text: 'User'}
+        {value: '["createdAt"]', text: 'Created', selected: true},
+        {value: '["action"]',    text: 'Note'},
+        {value: '["user_id"]',   text: 'User'}
     ]
 );
 addReloadListener(getLoancards);
