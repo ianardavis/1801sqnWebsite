@@ -75,10 +75,8 @@ module.exports = (app, m, fn) => {
         if (demands && demands.length > 0) actions.push(fn.orders.demand(demands, req.user.user_id));
         Promise.allSettled(actions)
         .then(results => {
-            if (results.filter(e => e.status === 'rejected').length > 0) {
-                console.log(results);
-                res.send({success: true, message: 'Some lines failed'});
-            } else res.send({success: true, message: 'Lines actioned'});
+            if (fn.allSettledResults(results)) res.send({success: true, message: 'Lines actioned'})
+            else res.send({success: true, message: 'Some lines failed'});
         })
         .catch(err => fn.send_error(res, err));
     });
@@ -127,47 +125,50 @@ module.exports = (app, m, fn) => {
     });
     
     app.delete('/orders/:id',           fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
-        fn.get(
-            'orders',
-            {order_id: req.params.id}
-        )
-        .then(order => {
-            if (order.status !== 1) fn.send_error(res, 'Only placed orders can be cancelled');
-            else {
-                fn.update(order, {status: 0})
-                .then(results => {
-                    m.actions.findAll({
-                        where:      {order_id: order_id},
-                        attributes: ['action_id'],
-                        include: [fn.inc.stores.issue()]
-                    })
-                    .then(issues => {
-                        let issue_actions = [];
-                        issues.forEach(issue => {
-                            if (issue.issue.status === 3) {
-                                issue_actions.push(fn.update(issue.issue, {status: 2}));
-                                issue_actions.push(fn.actions.create(
-                                    'ORDER | CANCELLED',
-                                    req.user.user_id,
-                                    [
-                                        {table: 'issues', id: issue.issue_id},
-                                        {table: 'orders', id: order.order_id}
-                                    ]
-                                ));
-                            };
-                        });
-                        Promise.allSettled(issue_actions)
-                        .then(results => {
-                            if (results.filter(e => e.status === 'rejected').length > 0) res.send({success: true,  message: 'Order cancelled, some issue actions have failed'})
-                            else                                                         res.send({success: true,  message: 'Order cancelled'});
-                        })
-                        .catch(err => fn.send_error(res, err));
-                    })
-                    .catch(err => fn.send_error(res, err));
-                })
-                .catch(err => fn.send_error(res, err));
-            };
-        })
+        fn.orders.cancel(req.params.id, req.user.user_id)
+        .then(result => res.send({success: true,  message: 'Order cancelled'}))
         .catch(err => fn.send_error(res, err));
+        // fn.get(
+        //     'orders',
+        //     {order_id: req.params.id}
+        // )
+        // .then(order => {
+        //     if (order.status !== 1) fn.send_error(res, 'Only placed orders can be cancelled');
+        //     else {
+        //         fn.update(order, {status: 0})
+        //         .then(results => {
+        //             m.actions.findAll({
+        //                 where:      {order_id: order_id},
+        //                 attributes: ['action_id'],
+        //                 include: [fn.inc.stores.issue()]
+        //             })
+        //             .then(issues => {
+        //                 let issue_actions = [];
+        //                 issues.forEach(issue => {
+        //                     if (issue.issue.status === 3) {
+        //                         issue_actions.push(fn.update(issue.issue, {status: 2}));
+        //                         issue_actions.push(fn.actions.create(
+        //                             'ORDER | CANCELLED',
+        //                             req.user.user_id,
+        //                             [
+        //                                 {table: 'issues', id: issue.issue_id},
+        //                                 {table: 'orders', id: order.order_id}
+        //                             ]
+        //                         ));
+        //                     };
+        //                 });
+        //                 Promise.allSettled(issue_actions)
+        //                 .then(results => {
+        //                     if (results.filter(e => e.status === 'rejected').length > 0) res.send({success: true,  message: 'Order cancelled, some issue actions have failed'})
+        //                     else                                                         res.send({success: true,  message: 'Order cancelled'});
+        //                 })
+        //                 .catch(err => fn.send_error(res, err));
+        //             })
+        //             .catch(err => fn.send_error(res, err));
+        //         })
+        //         .catch(err => fn.send_error(res, err));
+        //     };
+        // })
+        // .catch(err => fn.send_error(res, err));
     });
 };

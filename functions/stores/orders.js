@@ -53,12 +53,102 @@ module.exports = function (m, fn) {
                     if      (order.status === 0) reject(new Error('Order has already been cancelled'))
                     else if (order.status === 3) reject(new Error('Order has already been received'))
                     else if (order.status === 1 || order.status === 2) {
-                        update_order_status(order, 0, user_id, 'ORDER | CANCELLED')
-                        .then(action => resolve(true))
+                        update_order_status(order, 0, user_id)
+                        .then(action => {
+                            get_issues_for_order(order.order_id)
+                            .then(result => {
+                                let oa = [];
+                                result.order_links.forEach(e => oa.push(fn.update(e, {active: false})));
+                                Promise.allSettled(oa)
+                                .then(update_result => {
+                                    let actions = [];
+                                    result.issue_ids.forEach(issue_id => {
+                                        actions.push(new Promise((resolve, reject) => {
+                                            fn.get(
+                                                'issues',
+                                                {issue_id: issue_id}
+                                            )
+                                            .then(issue => {
+                                                if (issue.status === 3) {
+                                                    fn.update(issue, {status: 2})
+                                                    .then(result => resolve(issue.issue_id))
+                                                    .catch(err => reject(err));
+                                                } else reject(new Error('Order is not in "ordered" status'));
+                                            })
+                                            .catch(err => reject(err));
+                                        }));
+                                    });
+                                    Promise.allSettled(actions)
+                                    .then(results => {
+                                        links = [];
+                                        results.filter(e => e.status === 'fulfilled').forEach(issue => {
+                                            links.push({table: 'issues', id: issue.value})
+                                        });
+                                        fn.actions.create(
+                                            'ORDER | CANCELLED',
+                                            user_id,
+                                            [{table: 'orders', id: order.order_id}].concat(links)
+                                        )
+                                        .then(action => resolve(true))
+                                        .catch(err => {
+                                            console.log(err);
+                                            resolve(false);
+                                        });
+    
+                                    })
+                                    .catch(err => {
+                                        console.log(err);
+                                        resolve(false);
+                                    });
+                                })
+                                .catch(err => {
+                                    console.log(err);
+                                    resolve(false);
+                                });
+                            })
+                            .catch(err => {
+                                console.log(err);
+                                resolve(false);
+                            });
+                        })
                         .catch(err => reject(err));
                     };
                 })
                 .catch(err => reject(err));
+            })
+            .catch(err => reject(err));
+        });
+    };
+    function get_issues_for_order(order_id) {
+        return new Promise((resolve, reject) => {
+            m.action_links.findAll({
+                where: {
+                    _table: 'orders',
+                    id:     order_id,
+                    active: true
+                },
+                include: [{
+                    model: m.actions,
+                    where: {
+                        action: {[fn.op.or]: [
+                            {[fn.op.startsWith]: 'ORDER | CREATED'},
+                            {[fn.op.startsWith]: 'ORDER | INCREMENTED'}
+                        ]}
+                    },
+                    include: [{
+                        model: m.action_links,
+                        as: 'links',
+                        where: {
+                            _table: 'issues',
+                            active: true
+                        }
+                    }]
+                }]
+            })
+            .then(links => {
+                let issue_ids = [];
+                links.forEach(link => link.action.links.forEach(e => issue_ids.push(e.id)));
+                resolve({order_links: links, issue_ids: issue_ids});
             })
             .catch(err => reject(err));
         });
@@ -102,11 +192,9 @@ module.exports = function (m, fn) {
                     })
                     .then(([order, created]) => {
                         if (!Array.isArray(issue_ids)) issue_ids = [issue_ids]
-                        let issue_links = [];
+                        let links = [];
                         if (issue_ids && issue_ids.length > 0) {
-                            issue_ids.forEach(issue_id => {
-                                issue_links.push({table: 'issues', id: issue_id})
-                            });
+                            issue_ids.forEach(id => links.push({table: 'issues', id: id}));
                         };
                         if (created) {
                             fn.actions.create(
@@ -114,7 +202,7 @@ module.exports = function (m, fn) {
                                 user_id,
                                 [
                                     {table: 'orders', id: order.order_id}
-                                ].concat(issue_links)
+                                ].concat(links)
                             )
                             .then(action => resolve(true))
                             .catch(err => resolve(true));
@@ -126,7 +214,7 @@ module.exports = function (m, fn) {
                                     user_id,
                                     [
                                         {table: 'orders', id: order.order_id}
-                                    ].concat(issue_links)
+                                    ].concat(links)
                                 )
                                 .then(action => resolve(true))
                                 .catch(err => resolve(true));

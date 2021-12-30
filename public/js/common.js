@@ -335,4 +335,15 @@ function build_filter_query(table) {
         lt:    lt
     };
 };
+function toProperCase(str) {
+    return str.replace(
+      /\w\S*/g,
+      function(txt) {
+        return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+      }
+    );
+  }
 let path = window.location.pathname.toString().split('/');
+window.addEventListener('load', function() {
+    document.title = `${toProperCase(path[1])} | 1801 (Alnwick) Sqn ATC`;
+});

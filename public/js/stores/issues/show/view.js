@@ -27,3 +27,59 @@ function getIssue() {
     .catch(err => window.location.href = '/issues');
 };
 addReloadListener(getIssue);
+window.addEventListener('load', function () {
+    addFormListener(
+        'mark_cancelled',
+        'PUT',
+        `/issues/${path[2]}/mark/0`,
+        {onComplete: [
+            getIssue,
+            getActions
+        ]}
+    );
+    addFormListener(
+        'mark_requested',
+        'PUT',
+        `/issues/${path[2]}/mark/1`,
+        {onComplete: [
+            getIssue,
+            getActions
+        ]}
+    );
+    addFormListener(
+        'mark_approved',
+        'PUT',
+        `/issues/${path[2]}/mark/2`,
+        {onComplete: [
+            getIssue,
+            getActions
+        ]}
+    );
+    addFormListener(
+        'mark_ordered',
+        'PUT',
+        `/issues/${path[2]}/mark/3`,
+        {onComplete: [
+            getIssue,
+            getActions
+        ]}
+    );
+    addFormListener(
+        'mark_issued',
+        'PUT',
+        `/issues/${path[2]}/mark/4`,
+        {onComplete: [
+            getIssue,
+            getActions
+        ]}
+    );
+    addFormListener(
+        'mark_returned',
+        'PUT',
+        `/issues/${path[2]}/mark/5`,
+        {onComplete: [
+            getIssue,
+            getActions
+        ]}
+    );
+});

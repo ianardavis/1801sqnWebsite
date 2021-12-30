@@ -408,171 +408,6 @@ module.exports = function (m, fn) {
         });
     };
 
-    function check_nsn(size, options = {}) {
-        return new Promise((resolve, reject) => {
-            if      (!size.has_nsns)  resolve(null)
-            else if (!options.nsn_id) reject(new Error('No NSN ID submitted'))
-            else {
-                fn.get(
-                    'nsns',
-                    {nsn_id: options.nsn_id}
-                )
-                .then(nsn => {
-                    if (nsn.size_id !== size.size_id) reject(new Error('NSN is not for this size'))
-                    else resolve(nsn.nsn_id);
-                })
-                .catch(err => reject(err));
-            };
-        });
-    };
-    function check_serial(size, options = {}) {
-        return new Promise((resolve, reject) => {
-            if (!options.serial_id) reject(new Error('No Serial ID submitted'))
-            else {
-                fn.get(
-                    'serials',
-                    {serial_id: options.serial_id}
-                )
-                .then(serial => {
-                    if (serial.size_id !== size.size_id) reject(new Error('Serial # is not for this size'))
-                    else resolve(serial);
-                })
-                .catch(err => reject(err));
-            };
-        });
-    };
-    function check_stock(size, options = {}) {
-        return new Promise((resolve, reject) => {
-            if (!options.stock_id) reject(new Error('No Stock ID submitted'))
-            else {
-                fn.get(
-                    'stocks',
-                    {stock_id: options.stock_id}
-                )
-                .then(stock => {
-                    if (stock.size_id !== size.size_id) reject(new Error('Stock record is not for this size'))
-                    else resolve(stock);
-                })
-                .catch(err => reject(err));
-            };
-        });
-    };
-    function add_serial(size, nsn_id, loancard_id, options) {
-        return new Promise((resolve, reject) => {
-            check_serial(size, options)
-            .then(serial => {
-                m.loancard_lines.create({
-                    loancard_id: loancard_id,
-                    serial_id:   serial.serial_id,
-                    size_id:     size.size_id,
-                    nsn_id:      nsn_id,
-                    qty:         1,
-                    user_id:     options.user_id
-                })
-                .then(loancard_line => {
-                    fn.update(serial, {
-                        issue_id: options.issue_id,
-                        location_id: null
-                    })
-                    .then(result => resolve([
-                        {table: 'serials', id: serial.serial_id},
-                        {table: 'loancard_lines', id: loancard_line.loancard_line_id}
-                    ]))
-                    .catch(err => reject(err));
-                })
-                .catch(err => reject(err));
-            })
-            .catch(err => reject(err));
-        });
-    };
-    function add_stock(size, nsn_id, loancard_id, options) {
-        return new Promise((resolve, reject) => {
-            check_stock(size, options)
-            .then(stock => {
-                m.loancard_lines.findOrCreate({
-                    where: {
-                        loancard_id: loancard_id,
-                        status:      1,
-                        size_id:     size.size_id,
-                        nsn_id:      nsn_id
-                    },
-                    defaults: {
-                        qty:     options.qty,
-                        user_id: options.user_id,
-                    }
-                })
-                .then(([loancard_line, created]) => {
-                    fn.decrement(stock, options.qty)
-                    .then(result => {
-                        if (created) {
-                            resolve([
-                                {table: 'stocks', id: stock.stock_id},
-                                {table: 'loancard_lines', id: loancard_line.loancard_line_id}
-                            ]);
-                        } else {
-                            fn.increment(loancard_line, options.qty)
-                            .then(result => {
-                                resolve([
-                                    {table: 'stocks', id: stock.stock_id},
-                                    {table: 'loancard_lines', id: loancard_line.loancard_line_id}
-                                ]);
-                            })
-                            .catch(err => reject(err));
-                        };
-                    })
-                    .catch(err => reject(err));
-                })
-                .catch(err => reject(err));
-            })
-            .catch(err => reject(err));
-        });
-    };
-    function get_loancard_link(table, loancard_line_id) {
-        return new Promise((resolve, reject) => {
-            fn.get(
-                'action_links',
-                {_table: table},
-                [{
-                    model: m.actions,
-                    where: {action: {[fn.op.or]: ['ISSUED | Added to loancard', 'Issue added to loancard']}}, //'ISSUED | Added to loancard'},
-                    include: [{
-                        model: m.action_links,
-                        as: 'links',
-                        where: {
-                            _table: 'loancard_lines',
-                            id: loancard_line_id
-                        }
-                    }]
-                }]
-            )
-            .then(link => resolve(link))
-            .catch(err => reject(err));
-        });
-    };
-    function get_loancard_links(table, loancard_line_id) {
-        return new Promise((resolve, reject) => {
-            m.action_links.findAll({
-                where: {_table: table},
-                include: [{
-                    model: m.actions,
-                    where: {action: {[fn.op.or]: ['ISSUED | Added to loancard', 'Issue added to loancard']}}, //'ISSUED | Added to loancard'},
-                    include: [{
-                        model: m.action_links,
-                        as: 'links',
-                        where: {
-                            _table: 'loancard_lines',
-                            id: loancard_line_id
-                        }
-                    }]
-                }]
-            })
-            .then(link => {
-                if (!link) reject(new Error(`No link found for ${table}`))
-                else resolve(link)
-            })
-            .catch(err => reject(err));
-        });
-    };
     fn.loancards.lines.cancel = function (options = {}) {
         return new Promise((resolve, reject) => {
             fn.get(
@@ -673,45 +508,60 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
-
-    fn.loancards.lines.create = function(options = {}) {
+    function get_loancard_link(table, loancard_line_id) {
         return new Promise((resolve, reject) => {
             fn.get(
-                'issues',
-                {issue_id: options.issue_id}
+                'action_links',
+                {_table: table},
+                [{
+                    model: m.actions,
+                    where: {action: {[fn.op.or]: ['ISSUED | Added to loancard', 'Issue added to loancard']}}, //'ISSUED | Added to loancard'},
+                    include: [{
+                        model: m.action_links,
+                        as: 'links',
+                        where: {
+                            _table: 'loancard_lines',
+                            id: loancard_line_id
+                        }
+                    }]
+                }]
             )
-            .then(issue => {
+            .then(link => resolve(link))
+            .catch(err => reject(err));
+        });
+    };
+
+    fn.loancards.lines.create = function(loancard_id, issue, user_id, line) {
+        return new Promise((resolve, reject) => {
+            fn.get(
+                'loancards',
+                {loancard_id: loancard_id}
+            )
+            .then(loancard => {
                 fn.get(
-                    'loancards',
-                    {loancard_id: options.loancard_id}
+                    'sizes',
+                    {size_id: issue.size_id}
                 )
-                .then(loancard => {
-                    fn.get(
-                        'sizes',
-                        {size_id: issue.size_id}
-                    )
-                    .then(size => {
-                        check_nsn(size, options)
-                        .then(nsn_id => {
-                            let action = null;
-                            if (size.has_serials) action = add_serial(size, nsn_id, loancard.loancard_id, options)
-                            else                  action = add_stock( size, nsn_id, loancard.loancard_id, options);
-                            action
-                            .then(action_links => {
-                                fn.update(issue, {status: 4})
-                                .then(result => {
-                                    fn.actions.create(
-                                        'ISSUE | ADDED TO LOANCARD',
-                                        options.user_id,
-                                        [
-                                            {table: 'issues', id: issue.issue_id},
-                                            (nsn_id ? {table: 'nsns', id: nsn_id} : {})
-                                        ].concat(action_links)
-                                    )
-                                    .then(action => resolve(true))
-                                    .catch(err =>   resolve(false));
-                                })
-                                .catch(err => reject(err));
+                .then(size => {
+                    check_nsn(size, line)
+                    .then(nsn_id => {
+                        let action = null;
+                        if (size.has_serials) action = add_serial(size, nsn_id, loancard.loancard_id, line)
+                        else                  action = add_stock( size, nsn_id, loancard.loancard_id, line);
+                        action
+                        .then(action_links => {
+                            fn.update(issue, {status: 4})
+                            .then(result => {
+                                fn.actions.create(
+                                    'ISSUE | ADDED TO LOANCARD',
+                                    user_id,
+                                    [
+                                        {table: 'issues', id: issue.issue_id},
+                                        (nsn_id ? {table: 'nsns', id: nsn_id} : {})
+                                    ].concat(action_links)
+                                )
+                                .then(action => resolve(true))
+                                .catch(err =>   resolve(false));
                             })
                             .catch(err => reject(err));
                         })
@@ -724,6 +574,126 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         })
     };
+    function add_serial(size, nsn_id, loancard_id, options) {
+        return new Promise((resolve, reject) => {
+            check_serial(size, options)
+            .then(serial => {
+                m.loancard_lines.create({
+                    loancard_id: loancard_id,
+                    serial_id:   serial.serial_id,
+                    size_id:     size.size_id,
+                    nsn_id:      nsn_id,
+                    qty:         1,
+                    user_id:     options.user_id
+                })
+                .then(loancard_line => {
+                    fn.update(serial, {
+                        issue_id: options.issue_id,
+                        location_id: null
+                    })
+                    .then(result => resolve([
+                        {table: 'serials', id: serial.serial_id},
+                        {table: 'loancard_lines', id: loancard_line.loancard_line_id}
+                    ]))
+                    .catch(err => reject(err));
+                })
+                .catch(err => reject(err));
+            })
+            .catch(err => reject(err));
+        });
+    };
+    function check_serial(size, options = {}) {
+        return new Promise((resolve, reject) => {
+            if (!options.serial_id) reject(new Error('No Serial ID submitted'))
+            else {
+                fn.get(
+                    'serials',
+                    {serial_id: options.serial_id}
+                )
+                .then(serial => {
+                    if (serial.size_id !== size.size_id) reject(new Error('Serial # is not for this size'))
+                    else resolve(serial);
+                })
+                .catch(err => reject(err));
+            };
+        });
+    };
+    function add_stock(size, nsn_id, loancard_id, options) {
+        return new Promise((resolve, reject) => {
+            check_stock(size, options)
+            .then(stock => {
+                m.loancard_lines.findOrCreate({
+                    where: {
+                        loancard_id: loancard_id,
+                        status:      1,
+                        size_id:     size.size_id,
+                        nsn_id:      nsn_id
+                    },
+                    defaults: {
+                        qty:     options.qty,
+                        user_id: options.user_id,
+                    }
+                })
+                .then(([loancard_line, created]) => {
+                    fn.decrement(stock, options.qty)
+                    .then(result => {
+                        if (created) {
+                            resolve([
+                                {table: 'stocks', id: stock.stock_id},
+                                {table: 'loancard_lines', id: loancard_line.loancard_line_id}
+                            ]);
+                        } else {
+                            fn.increment(loancard_line, options.qty)
+                            .then(result => {
+                                resolve([
+                                    {table: 'stocks', id: stock.stock_id},
+                                    {table: 'loancard_lines', id: loancard_line.loancard_line_id}
+                                ]);
+                            })
+                            .catch(err => reject(err));
+                        };
+                    })
+                    .catch(err => reject(err));
+                })
+                .catch(err => reject(err));
+            })
+            .catch(err => reject(err));
+        });
+    };
+    function check_stock(size, options = {}) {
+        return new Promise((resolve, reject) => {
+            if (!options.stock_id) reject(new Error('No Stock ID submitted'))
+            else {
+                fn.get(
+                    'stocks',
+                    {stock_id: options.stock_id}
+                )
+                .then(stock => {
+                    if (stock.size_id !== size.size_id) reject(new Error('Stock record is not for this size'))
+                    else resolve(stock);
+                })
+                .catch(err => reject(err));
+            };
+        });
+    };
+    function check_nsn(size, options = {}) {
+        return new Promise((resolve, reject) => {
+            if      (!size.has_nsns)  resolve(null)
+            else if (!options.nsn_id) reject(new Error('No NSN ID submitted'))
+            else {
+                fn.get(
+                    'nsns',
+                    {nsn_id: options.nsn_id}
+                )
+                .then(nsn => {
+                    if (nsn.size_id !== size.size_id) reject(new Error('NSN is not for this size'))
+                    else resolve(nsn.nsn_id);
+                })
+                .catch(err => reject(err));
+            };
+        });
+    };
+    
     fn.loancards.lines.return = function (options = {}) {
         return new Promise((resolve, reject) => {
             fn.get(
@@ -856,6 +826,30 @@ module.exports = function (m, fn) {
                     })
                     .catch(err => reject(err));
                 } else reject(new Error('Unknown line status'));
+            })
+            .catch(err => reject(err));
+        });
+    };
+    function get_loancard_links(table, loancard_line_id) {
+        return new Promise((resolve, reject) => {
+            m.action_links.findAll({
+                where: {_table: table},
+                include: [{
+                    model: m.actions,
+                    where: {action: {[fn.op.or]: ['ISSUED | Added to loancard', 'Issue added to loancard']}}, //'ISSUED | Added to loancard'},
+                    include: [{
+                        model: m.action_links,
+                        as: 'links',
+                        where: {
+                            _table: 'loancard_lines',
+                            id: loancard_line_id
+                        }
+                    }]
+                }]
+            })
+            .then(link => {
+                if (!link) reject(new Error(`No link found for ${table}`))
+                else resolve(link)
             })
             .catch(err => reject(err));
         });

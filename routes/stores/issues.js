@@ -1,6 +1,6 @@
 module.exports = (app, m, fn) => {
-    app.get('/issues',             fn.loggedIn(), fn.permissions.get(  'access_stores', true), (req, res) => res.render('stores/issues/index'));
-    app.get('/issues/:id',         fn.loggedIn(), fn.permissions.get(  'access_stores', true), (req, res) => {
+    app.get('/issues',                  fn.loggedIn(), fn.permissions.get(  'access_stores', true), (req, res) => res.render('stores/issues/index'));
+    app.get('/issues/:id',              fn.loggedIn(), fn.permissions.get(  'access_stores', true), (req, res) => {
         fn.get(
             'issues',
             {issue_id: req.params.id}
@@ -18,13 +18,13 @@ module.exports = (app, m, fn) => {
         })
     });
 
-    app.get('/count/issues',       fn.loggedIn(), fn.permissions.check('access_stores', true), (req, res) => {
+    app.get('/count/issues',            fn.loggedIn(), fn.permissions.check('access_stores', true), (req, res) => {
         if (!req.allowed) req.query.where.user_id_issue = req.user.user_id;
         m.issues.count({where: req.query.where})
         .then(count => res.send({success: true, result: count}))
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/sum/issues',         fn.loggedIn(), fn.permissions.check('issuer'),              (req, res) => {
+    app.get('/sum/issues',              fn.loggedIn(), fn.permissions.check('issuer'),              (req, res) => {
         m.issues.sum('qty', {where: req.query.where})
         .then(sum => res.send({success: true, result: sum}))
         .catch(err => fn.send_error(res, err));
@@ -43,7 +43,7 @@ module.exports = (app, m, fn) => {
             .catch(err => reject(err));
         });
     };
-    app.get('/get/issues',         fn.loggedIn(), fn.permissions.check('access_stores', true), (req, res) => {
+    app.get('/get/issues',              fn.loggedIn(), fn.permissions.check('access_stores', true), (req, res) => {
         try {
             let query = req.query;
             if (!query.where) query.where = {};
@@ -86,7 +86,7 @@ module.exports = (app, m, fn) => {
             fn.send_error(res, err);
         };
     });
-    app.get('/get/issue',          fn.loggedIn(), fn.permissions.check('access_stores', true), (req, res) => {
+    app.get('/get/issue',               fn.loggedIn(), fn.permissions.check('access_stores', true), (req, res) => {
         fn.allowed(req.user.user_id, 'access_users', true)
         .then(allowed_users => {
             fn.get(
@@ -109,7 +109,7 @@ module.exports = (app, m, fn) => {
         })
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/issue_loancard', fn.loggedIn(), fn.permissions.check('access_stores', true), (req, res) => {
+    app.get('/get/issue_loancard',      fn.loggedIn(), fn.permissions.check('access_stores', true), (req, res) => {
         m.action_links.findOne({
             where: {_table: 'loancard_lines'},
             include: [{
@@ -140,7 +140,7 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
 
-    app.post('/issues',            fn.loggedIn(), fn.permissions.check('issuer',        true), (req, res) => {
+    app.post('/issues',                 fn.loggedIn(), fn.permissions.check('issuer',        true), (req, res) => {
         if      (!req.body.issues)                                             fn.send_error(res, 'No users or sizes entered')
         else if (!req.body.issues.users || req.body.issues.users.length === 0) fn.send_error(res, 'No users entered')
         else if (!req.body.issues.sizes || req.body.issues.sizes.length === 0) fn.send_error(res, 'No sizes entered')
@@ -165,7 +165,7 @@ module.exports = (app, m, fn) => {
         };
     });
 
-    app.put('/issues',             fn.loggedIn(), fn.permissions.check('issuer'),              (req, res) => {
+    app.put('/issues',                  fn.loggedIn(), fn.permissions.check('issuer'),              (req, res) => {
         if (!req.body.lines || req.body.lines.filter(e => e.status !== '').length === 0) fn.send_error(res, 'No lines submitted')
         else {
             let actions = [];
@@ -184,15 +184,19 @@ module.exports = (app, m, fn) => {
             req.body.lines.filter(e => e.status === '2') .forEach(issue => {
                 actions.push(fn.issues.approve(issue.issue_id, req.user.user_id));
             });
-            req.body.lines.filter(e => e.status === '3') .forEach(issue => {
-                actions.push(fn.issues.order(issue.issue_id, req.user.user_id));
-            });
-            actions.push(
-                fn.issues.issue(req.body.lines.filter(e => e.status === '4'), req.user.user_id)
-            );
+            if (req.body.lines.filter(e => e.status === '3').length > 0) {
+                actions.push(
+                    fn.issues.order(req.body.lines.filter(e => e.status === '3'), req.user.user_id)
+                );
+            };
+            if (req.body.lines.filter(e => e.status === '4').length > 0) {
+                actions.push(
+                    fn.issues.issue(req.body.lines.filter(e => e.status === '4'), req.user.user_id)
+                );
+            };
             Promise.allSettled(actions)
             .then(results => {
-                results.filter(e => e.status === 'rejected').forEach(e => console.log(e));
+                fn.allSettledResults(results);
                 if (results.filter(e => e.status === 'rejected').length > 0) {
                     res.send({success: true, message: 'Some lines failed'});
                 } else res.send({success: true, message: 'Lines actioned'});
@@ -200,13 +204,62 @@ module.exports = (app, m, fn) => {
             .catch(err => fn.send_error(res, err));
         };
     });
-    app.put('/issues/:id/size',    fn.loggedIn(), fn.permissions.check('issuer'),              (req, res) => {
+    app.put('/issues/:id/size',         fn.loggedIn(), fn.permissions.check('issuer'),              (req, res) => {
         fn.issues.change_size(req.params.id, req.body.size_id, req.user.user_id)
         .then(result => res.send({success: true, message: 'Size updated'}))
         .catch(err => fn.send_error(res, err));
     });
+    app.put('/issues/:id/mark/:status', fn.loggedIn(), fn.permissions.check('issuer'),              (req, res) => {
+        fn.get(
+            'issues',
+            {issue_id: req.params.id}
+        )
+        .then(issue => {
+            if (['0', '1', '2', '3', '4', '5'].includes(req.params.status)) {
+                issue.update({status: req.params.status})
+                .then(result => {
+                    let status;
+                    switch (req.params.status) {
+                        case '0':
+                            status = 'CANCELLED'
+                            break;
+                        case '1':
+                            status = 'REQUESTED'
+                            break;
+                        case '2':
+                            status = 'APPROVED'
+                            break;
+                        case '3':
+                            status = 'ORDERED'
+                            break;
+                        case '4':
+                            status = 'ISSUED'
+                            break;
+                        case '5':
+                            status = 'RETURNED'
+                            break;
+                    };
+                    fn.actions.create(
+                        `ISSUE | ${status} | Set manually`,
+                        req.user.user_id,
+                        [{table: 'issues', id: issue.issue_id}]
+                    )
+                    .then(result => res.send({success: true, message: `Issue marked as ${status.toLowerCase()}`}))
+                    .catch(err => {
+                        console.log(err);
+                        res.send({success: true, message: `Issue marked as ${status.toLowerCase()}`});
+                    });
+                })
+                .catch(err => {
+                    console.log(err);
+                    fn.send_error(res, err);
+                });
+            } else fn.send_error(res, new Error('Invalid status'));
+        })
+        .catch(err => fn.send_error(res, err));
+    });
 
-    app.delete('/issues/:id',      fn.loggedIn(), fn.permissions.check('issuer',        true), (req, res) => {
+    app.delete('/issues/:id',           fn.loggedIn(), fn.permissions.check('issuer',        true), (req, res) => {
         fn.issues.cancel(req.params.id, req.user.user_id)
         .then(result => res.send({success: true, message: 'Issue cancelled'}))
         .catch(err => fn.send_error(res, err));

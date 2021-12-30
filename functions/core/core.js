@@ -336,4 +336,12 @@ module.exports = function (m, fn) {
         };
         return where;
     };
+    fn.allSettledResults = function (results) {
+        let errors = false;
+        results.filter(e => e.status === 'rejected').forEach(e => {
+            errors = true;
+            console.log(e);
+        });
+        return errors;
+    };
 };
