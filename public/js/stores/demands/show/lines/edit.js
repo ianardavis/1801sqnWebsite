@@ -27,8 +27,8 @@ function getLineActions() {
                     options:    opts
                 }).e;
                 status.addEventListener("change", function () {
-                    clearElement(`action_${line.demand_line_id}`);
-                    clearElement(`details_${line.demand_line_id}`);
+                    clear(`action_${line.demand_line_id}`);
+                    clear(`details_${line.demand_line_id}`);
                     if (this.value === '3') {
                         let div_details = document.querySelector(`#details_${line.demand_line_id}`);
                         if (div_details) {

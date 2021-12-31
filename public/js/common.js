@@ -11,12 +11,10 @@ function returnDate(_date) {
     return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 };
 function removeID(id) {
-    if (typeof id === 'string') document.querySelector(`#${id}`).remove();
-    else id.remove();
-};
-function clearElement(id) {
-    let e = document.querySelector(`#${id}`);
-    if (e) e.innerHTML = '';
+    if (typeof id === 'string') {
+        let e = document.querySelector(`#${id}`);
+        if (e) e.remove();
+    } else id.remove();
 };
 function yesno(boolean) {
     if (boolean) return 'Yes'
@@ -37,10 +35,6 @@ function set_count(id, count) {
 function set_innerText(id, text = '') {
     let e = document.querySelector(`#${id}`);
     if (e) e.innerText = text;
-};
-function set_innerHTML(id, html = '') {
-    let e = document.querySelector(`#${id}`);
-    if (e) e.innerHTML = html;
 };
 function set_breadcrumb(text, id = 'breadcrumb', href = null) {
     let e = document.querySelector(`#${id}`);
@@ -202,7 +196,8 @@ function remove_spinner(id) {
 };
 function get_stock(size_id) {
     return new Promise(resolve => {
-        sum({
+        get({
+            action: 'sum',
             table: 'stocks',
             where: {size_id: size_id}
         })
@@ -227,14 +222,6 @@ function selected_user(id = 'sel_users') {
     let sel_users = document.querySelector(`#${id}`);
     if (sel_users && sel_users.value !== '') return sel_users.value;
     else return null
-};
-function get_pagination(table) {
-    let limit  = document.querySelector(`.limit_${ table} .active`),
-        offset = document.querySelector(`.offset_${table} .active`),
-        _return = {};
-    if (limit ) _return.limit  = limit .dataset.value;
-    if (offset) _return.offset = offset.dataset.value;
-    return _return;
 };
 function add_page_links(count, limit, offset, table, func) {
     clear(`page_buttons_${table}`)

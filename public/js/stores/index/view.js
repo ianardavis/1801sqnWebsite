@@ -1,7 +1,8 @@
-function getCount(table, query, options) {
-    count({
+function getCount(table, status, options) {
+    get({
+        action: 'count',
         table: table,
-        query: query,
+        where: {status: status},
         ...options
     })
     .then(function ([count, options]) {

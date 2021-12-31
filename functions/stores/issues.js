@@ -1,16 +1,13 @@
 module.exports = function (m, fn) {
     fn.issues = {};
+    fn.issues.get = function (issue_id) {
+        return fn.get('issues', {issue_id: issue_id}, [m.sizes])
+    };
     fn.issues.create  = function (user_id_issue, size_id, qty, user_id, status = 1) {
         return new Promise((resolve, reject) => {
-            fn.get(
-                'users',
-                {user_id: user_id_issue}
-            )
+            fn.users.get(user_id_issue)
             .then(user => {
-                fn.get(
-                    'sizes',
-                    {size_id: size_id}
-                )
+                fn.sizes.get(size_id)
                 .then(size => {
                     if (!size.issueable) reject(new Error('Size can not be issued'))
                     else {
@@ -26,26 +23,20 @@ module.exports = function (m, fn) {
                             }
                         })
                         .then(([issue, created]) => {
-                            let actionArgs = [user_id, [{table: 'issues', id: issue.issue_id}]];
-                            if (created) {
+                            let args = [user_id, [{table: 'issues', id: issue.issue_id}]],
+                                action = null;
+                            if (created) action = new Promise(r => r(true))
+                            else         action = fn.increment(issue, qty)
+                            action
+                            .then(result => {
                                 fn.actions.create(
-                                    'ISSUE | CREATED',
-                                    ...actionArgs
+                                    `ISSUE | ${(created ? 'CREATED' : `INCREMENTED | By ${qty}`)}`,
+                                    ...args
                                 )
                                 .then(action => resolve(issue.issue_id))
                                 .catch(err => resolve(issue.issue_id));
-                            } else {
-                                fn.increment(issue, qty)
-                                .then(result => {
-                                    fn.actions.create(
-                                        `ISSUE | INCREMENTED | By ${qty}`,
-                                        ...actionArgs
-                                    )
-                                    .then(action => resolve(issue.issue_id))
-                                    .catch(err => resolve(issue.issue_id));
-                                })
-                                .catch(err => reject(err));
-                            };
+                            })
+                            .catch(err => reject(err));
                         })
                         .catch(err => reject(err));
                     };
@@ -57,21 +48,28 @@ module.exports = function (m, fn) {
     };
     fn.issues.decline = function (issue_id, user_id) {
         return new Promise((resolve, reject) => {
-            fn.allowed(user_id, 'issuer')
-            .then(result => {
-                fn.get(
-                    'issues',
-                    {issue_id: issue_id}
-                )
-                .then(issue => {
-                    if (issue.status !== 1) reject(new Error('Issue is not pending approval'))
-                    else {
-                        update_issue(issue, 0, user_id, 'DECLINED')
-                        .then(action => resolve(true))
-                        .catch(err => reject(err));
-                    };
-                })
-                .catch(err => reject(err));
+            fn.issues.get(issue_id)
+            .then(issue => {
+                if (issue.status !== 1) reject(new Error('Issue is not pending approval'))
+                else {
+                    update_issue_status(issue, 0, user_id, 'DECLINED')
+                    .then(action => resolve(true))
+                    .catch(err => reject(err));
+                };
+            })
+            .catch(err => reject(err));
+        });
+    };
+    fn.issues.approve = function (issue_id, user_id) {
+        return new Promise((resolve, reject) => {
+            fn.issues.get(issue_id)
+            .then(issue => {
+                if (issue.status !== 1) reject(new Error('Issue is not pending approval'))
+                else {
+                    update_issue_status(issue, 2, user_id, 'APPROVED')
+                    .then(action => resolve(true))
+                    .catch(err => reject(err));
+                };
             })
             .catch(err => reject(err));
         });
@@ -80,10 +78,7 @@ module.exports = function (m, fn) {
         return new Promise((resolve, reject) => {
             fn.allowed(user_id, 'issuer', true)
             .then(allowed => {
-                fn.get(
-                    'issues',
-                    {issue_id: issue_id}
-                )
+                fn.issues.get(issue_id)
                 .then(issue => {
                     if (!allowed && issue.user_id_issue !== user_id) reject(new Error('Permission denied'))
                     else {
@@ -91,7 +86,7 @@ module.exports = function (m, fn) {
                         else if (issue.status === 4) reject(new Error('Issue has already been added to a loancard'))
                         else if (issue.status === 5) reject(new Error('Issue has already been returned'))
                         else {
-                            update_issue(issue, 0, user_id, 'CANCELLED')
+                            update_issue_status(issue, 0, user_id, 'CANCELLED')
                             .then(action => resolve(true))
                             .catch(err => reject(err));
                         };
@@ -102,44 +97,16 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
-    fn.issues.approve = function (issue_id, user_id) {
-        return new Promise((resolve, reject) => {
-            fn.allowed(user_id, 'issuer')
-            .then(result => {
-                fn.get(
-                    'issues',
-                    {issue_id: issue_id}
-                )
-                .then(issue => {
-                    if (issue.status !== 1) reject(new Error('Issue is not pending approval'))
-                    else {
-                        update_issue(issue, 2, user_id, 'APPROVED')
-                        .then(action => resolve(true))
-                        .catch(err => reject(err));
-                    };
-                })
-                .catch(err => reject(err));
-            })
-            .catch(err => reject(err));
-        });
-    };
     fn.issues.restore = function (issue_id, user_id) {
         return new Promise((resolve, reject) => {
-            fn.allowed(user_id, 'issuer')
-            .then(result => {
-                fn.get(
-                    'issues',
-                    {issue_id: issue_id}
-                )
-                .then(issue => {
-                    if (issue.status !== 0) reject(new Error('Issue is not cancelled/declined'))
-                    else {
-                        update_issue(issue, 2, user_id, 'RESTORED')
-                        .then(action => resolve(true))
-                        .catch(err => reject(err));
-                    };
-                })
-                .catch(err => reject(err));
+            fn.issues.get(issue_id)
+            .then(issue => {
+                if (issue.status !== 0) reject(new Error('Issue is not cancelled/declined'))
+                else {
+                    update_issue_status(issue, 2, user_id, 'RESTORED')
+                    .then(action => resolve(true))
+                    .catch(err => reject(err));
+                };
             })
             .catch(err => reject(err));
         });
@@ -190,11 +157,7 @@ module.exports = function (m, fn) {
             lines.forEach(line => {
                 actions.push(
                     new Promise((resolve, reject) => {
-                        fn.get(
-                            'issues',
-                            {issue_id: line.issue_id},
-                            [m.sizes]
-                        )
+                        fn.issues.get(line.issue_id)
                         .then(issue => {
                             if      (!issue.size)        reject(new Error('Size not found'))
                             else if (issue.status !== 2) reject(new Error('Only approved issues can be ordered'))
@@ -233,16 +196,12 @@ module.exports = function (m, fn) {
         return new Promise((resolve, reject) => {
             if (!issues || issues.length === 0) resolve(false)
             else {
-                fn.allowed(user_id, 'issuer')
-                .then(result => {
-                    sort_issues_by_user(issues)
-                    .then(users => {
-                        let actions = [];
-                        users.forEach(user => actions.push(add_issues_to_loancards(user, user_id)))
-                        Promise.all(actions)
-                        .then(result => resolve(true))
-                        .catch(err => reject(err));
-                    })
+                sort_issues_by_user(issues)
+                .then(users => {
+                    let actions = [];
+                    users.forEach(user => actions.push(add_issues_to_loancards(user, user_id)))
+                    Promise.all(actions)
+                    .then(result => resolve(true))
                     .catch(err => reject(err));
                 })
                 .catch(err => reject(err));
@@ -255,11 +214,7 @@ module.exports = function (m, fn) {
             lines.forEach(line => {
                 actions.push(
                     new Promise((resolve, reject) => {
-                        fn.get(
-                            'issues',
-                            {issue_id: line.issue_id},
-                            [m.sizes]
-                        )
+                        fn.issues.get(line.issue_id)
                         .then(issue => {
                             if      (!issue.size)                                                            reject( new Error('Size not found'))
                             else if (issue.size.has_nsns    &&  !line.nsn_id)                                resolve(new Error('No NSN specified'))
@@ -319,10 +274,7 @@ module.exports = function (m, fn) {
 
     fn.issues.remove_from_loancard = function (issue_id, user_id) {
         return new Promise((resolve, reject) => {
-            fn.get(
-                'issues',
-                {issue_id: issue_id}
-            )
+            fn.issues.get(issue_id)
             .then(issue => {
                 if (issue.status !== 4) reject(new Error('Issue has not been issued'))
                 else {
@@ -380,8 +332,8 @@ module.exports = function (m, fn) {
                     model: m.actions,
                     where: {
                         action: {[fn.op.or]: [
-                            {[fn.op.startsWith]: 'ISSUED | Added to loancard'},
-                            {[fn.op.startsWith]: 'Issue added to loancard'}
+                            'LOANCARD LINE | CREATED',
+                            {[fn.op.startsWith]: 'LOANCARD LINE | INCREMENTED'}
                         ]}
                     },
                     include: [{
@@ -401,7 +353,7 @@ module.exports = function (m, fn) {
                     fn.get(
                         'loancard_lines',
                         {loancard_line_id: link.id},
-                        [fn.inc.stores.loancard()]
+                        [m.loancards]
                     )
                     .then(line => resolve(line))
                     .catch(err => reject(err));
@@ -413,11 +365,7 @@ module.exports = function (m, fn) {
 
     fn.issues.change_size = function (issue_id, size_id, user_id) {
         return new Promise((resolve, reject) => {
-            fn.get(
-                'issues',
-                {issue_id: issue_id},
-                [m.sizes]
-            )
+            fn.get(issue_id)
             .then(issue => {
                 if      (![1, 2].includes(issue.status)) reject(new Error('Only requested or approved issues can have their size edited'))
                 else if (!issue.size)                    reject(new Error('Error getting issue size'))
@@ -451,8 +399,37 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
+    fn.issues.change_qty = function (issue_id, qty, user_id) {
+        return new Promise((resolve, reject) => {
+            qty = Number(qty);
+            if (!qty || !Number.isInteger(qty) || qty < 1) reject(new Error('Invalid qty'))
+            else {
+                fn.issues.get(issue_id)
+                .then(issue => {
+                    if (![1, 2].includes(issue.status)) reject(new Error('Only requested or approved issues can have their qty edited'))
+                    else {
+                        fn.update(issue, {qty: qty})
+                        .then(result => {
+                            fn.actions.create(
+                                `ISSUE | UPDATED | Qty changed From: ${issue.qty} to: ${qty}`,
+                                user_id,
+                                [{table: 'issues', id: issue.issue_id}]
+                            )
+                            .then(result => resolve(true))
+                            .catch(err => {
+                                console.log(err);
+                                resolve(false);
+                            });
+                        })
+                        .catch(err => reject(err));
+                    };
+                })
+                .catch(err => reject(err));
+            };
+        });
+    };
 
-    function update_issue(issue, status, user_id, action) {
+    function update_issue_status(issue, status, user_id, action) {
         return new Promise((resolve, reject) => {
             fn.update(issue, {status: status})
             .then(result => {

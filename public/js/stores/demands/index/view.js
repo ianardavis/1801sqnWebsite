@@ -15,7 +15,8 @@ function getDemands() {
                 let line_cell = add_cell(row, {id: `${demand.demand_id}_lines`});
                 add_cell(row, {text: demand_statuses[demand.status]});
                 add_cell(row, {append: new Link({href: `/demands/${demand.demand_id}`}).e});
-                count({
+                get({
+                    action: 'count',
                     table: 'demand_lines',
                     where: {
                         demand_id: demand.demand_id,

@@ -14,6 +14,10 @@
                     data-bs-toggle="modal"
                     data-bs-target="#mdl_<%= edit.modal %>"
                 <% } %>
+                <% if (edit.tip) { %>
+                    data-bs-toggle='tooltip'
+                    title='<%= edit.tip %>'
+                <% } %>
             >
                 <i class="fas fa-pencil-alt"></i>
             </button>

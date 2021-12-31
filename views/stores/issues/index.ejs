@@ -31,8 +31,8 @@
 			</thead>
 			<tbody id="tbl_issues"></tbody>
 		</table>
-		<%- include(`${partials}/limit`, {table: 'issues'}) %>
 	<% if (permissions.issuer) { %></form><% } %>
+	<%- include(`${partials}/limit`, {table: 'issues'}) %>
 	<div id="div_modals">
 		<%- include(`${partials}/modals/stores/issue_add`) %>
 	</div>

@@ -1,5 +1,8 @@
 module.exports = function (m, fn) {
     fn.sizes = {details: {}};
+    fn.sizes.get = function (size_id) {
+        return fn.get('sizes', {size_id: size_id}, [m.items])
+    };
     fn.sizes.details.updateBulk = function (details) {
         return new Promise((resolve, reject) => {
             let actions = [];

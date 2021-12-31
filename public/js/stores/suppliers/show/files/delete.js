@@ -5,10 +5,12 @@ function fileDeleteBtn(file_id) {
             new Delete_Button({
                 descriptor: 'file',
                 path: `/files/${file_id}`,
-                options: {onComplete: [
-                    getFiles,
-                    function () {modalHide('file_view')}
-                ]}
+                options: {
+                    onComplete: [
+                        getFiles,
+                        function () {modalHide('file_view')}
+                    ]
+                }
             }).e
         );
     });

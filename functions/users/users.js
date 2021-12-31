@@ -1,6 +1,9 @@
 const { scryptSync, randomBytes } = require("crypto");
 module.exports = function (m, fn) {
     fn.users = {password: {}};
+    fn.users.get = function (user_id) {
+        return fn.get('users', {user_id: user_id}, [m.ranks])
+    }
     fn.users.create = function (user) {
         return new Promise((resolve, reject) => {
             if (

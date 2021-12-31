@@ -1,8 +1,9 @@
 function getCounts() {
     document.querySelectorAll('.card-body').forEach(e => {
-        count({
+        get({
+            action: 'count',
             table: 'sizes',
-            query: [`supplier_id=${e.dataset.id}`]
+            where: {supplier_id: e.dataset.id}
         })
         .then(function ([count, options]) {
             let p = document.createElement('p');

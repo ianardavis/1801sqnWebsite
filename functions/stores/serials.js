@@ -1,5 +1,8 @@
 module.exports = function (m, fn) {
     fn.serials = {};
+    fn.serials.get = function(serial_id) {
+        return fn.get('serials', {serial_id: serial_id})
+    };
     fn.serials.create = function (options = {}) {
         return new Promise((resolve, reject) => {
             if (options.serial && options.size_id) {

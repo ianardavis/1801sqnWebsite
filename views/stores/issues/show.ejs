@@ -17,20 +17,20 @@
             </div>
 			<%- include(`${partials}/inputs/display`, {id: 'issue_user_issue', title: 'For',  link: true}) %>
 			<%- include(`${partials}/inputs/display`, {id: 'issue_item',	   title: 'Item', link: true}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'issue_size',	   title: 'Size', link: true, edit: {modal: 'size_edit'}}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'issue_qty',	 	   title: 'Quantity'}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'issue_size',	   title: 'Size', link: true, edit: {modal: 'size_edit', tip: 'Edit Size'}}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'issue_qty',	 	   title: 'Quantity', edit: {modal: 'qty_edit', tip: 'Edit Qty'}}) %>
 			<%- include(`${partials}/inputs/display`, {id: 'issue_createdAt',  title: 'Date Raised'}) %>
 			<%- include(`${partials}/inputs/display`, {id: 'issue_updatedAt',  title: 'Last Updated'}) %>
 			<div class="input-group mb-1">
 				<span class="input-group-text w-30">Status</span>
 				<p class="form-control mb-0" id='issue_status'></p>
                 <% if (permissions.issuer) { %>
-                    <%- include(`${partials}/button/button`, {id: 'mark_cancelled', text: '0', type: 'danger', 	  form: 'mark_cancelled', tip: 'Mark as cancelled'}) %>
-                    <%- include(`${partials}/button/button`, {id: 'mark_requested', text: '1', type: 'primary',	  form: 'mark_requested', tip: 'Mark as requested'}) %>
-                    <%- include(`${partials}/button/button`, {id: 'mark_approved',  text: '2', type: 'warning',	  form: 'mark_approved',  tip: 'Mark as approved'}) %>
-                    <%- include(`${partials}/button/button`, {id: 'mark_ordered',   text: '3', type: 'info',	  form: 'mark_ordered',   tip: 'Mark as ordered'}) %>
-                    <%- include(`${partials}/button/button`, {id: 'mark_issued',    text: '4', type: 'success',	  form: 'mark_issued',    tip: 'Mark as issued'}) %>
-                    <%- include(`${partials}/button/button`, {id: 'mark_returned',  text: '5', type: 'secondary', form: 'mark_returned',  tip: 'Mark as returned'}) %>
+                    <%- include(`${partials}/button/button`, {id: 'mark_0', text: '0', type: 'danger', 	  form: 'mark_cancelled', disabled: true, tip: 'Mark as cancelled'}) %>
+                    <%- include(`${partials}/button/button`, {id: 'mark_1', text: '1', type: 'primary',	  form: 'mark_requested', disabled: true, tip: 'Mark as requested'}) %>
+                    <%- include(`${partials}/button/button`, {id: 'mark_2', text: '2', type: 'warning',	  form: 'mark_approved',  disabled: true, tip: 'Mark as approved'}) %>
+                    <%- include(`${partials}/button/button`, {id: 'mark_3', text: '3', type: 'info',	  form: 'mark_ordered',   disabled: true, tip: 'Mark as ordered'}) %>
+                    <%- include(`${partials}/button/button`, {id: 'mark_4', text: '4', type: 'success',	  form: 'mark_issued',    disabled: true, tip: 'Mark as issued'}) %>
+                    <%- include(`${partials}/button/button`, {id: 'mark_5', text: '5', type: 'secondary', form: 'mark_returned',  disabled: true, tip: 'Mark as returned'}) %>
                 <% } %>
 			</div>
             <% if (permissions.issuer) { %>
@@ -73,6 +73,21 @@
                 </form>
             </div>
         </div>
+        <div id='mdl_qty_edit' class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+                <form class="modal-content" id='form_qty_edit'>
+                    <div class="modal-header">
+                        <h5 class="modal-title">Edit Quantity</h5>
+                    </div>
+                    <div class="modal-body">
+                        <%- include(`${partials}/inputs/number`, {title: 'Qty', id: 'inp_issue_qty_edit', name: 'issue[qty]'}) %>
+                    </div>
+                    <div class="modal-footer">
+						<%- include(`${partials}/button/save`) %>
+                    </div>
+                </form>
+            </div>
+        </div>
 	</div>
 </section>
 <%- include(`${partials}/foot/app`) %>
@@ -82,7 +97,7 @@
 <%- include(`${partials}/common/actions/scripts`) %>
 
 <script src="/js/stores/issues/show/view.js"></script>
-<script src="/js/stores/issues/show/edit_size.js"></script>
+<script src="/js/stores/issues/show/edit.js"></script>
 <script async>getIssue()</script>
 <% if (permissions.issuer) { %>
 	<script src="/js/stores/issues/show/delete.js"></script>

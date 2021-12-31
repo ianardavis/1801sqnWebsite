@@ -55,7 +55,8 @@ function getSizes() {
                     get_stock(size.size_id)
                     .then(stock => set_innerText(`${size.size_id}_stocks`, stock || '0'));
 
-                    sum({
+                    get({
+                        action: 'sum',
                         table: 'orders',
                         where: {
                             size_id: size.size_id,
@@ -66,7 +67,8 @@ function getSizes() {
                         set_innerText(`${size.size_id}_orders`, orders || '0');
                     });
 
-                    sum({
+                    get({
+                        action:'sum',
                         table: 'demand_lines',
                         where: {
                             size_id: size.size_id,
@@ -77,7 +79,8 @@ function getSizes() {
                         set_innerText(`${size.size_id}_demands`, demands || '0');
                     });
 
-                    sum({
+                    get({
+                        action: 'sum',
                         table: 'issues',
                         where: {
                             size_id: size.size_id,

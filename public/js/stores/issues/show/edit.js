@@ -1,4 +1,4 @@
-function getSizes(event) {
+function getSizes() {
     clear('tbl_sizes')
     .then(tbl_sizes => {
         get({
@@ -33,7 +33,17 @@ function getSizes(event) {
         })
         .catch(err => console.log(err));
     });
-}
+};
+function getQty() {
+    get({
+        table: 'issue',
+        where: {issue_id: path[2]}
+    })
+    .then(function ([issue, options]) {
+        set_value('inp_issue_qty_edit', issue.qty)
+    })
+    .catch(err => console.log(err));
+};
 sort_listeners(
     'sizes',
     getSizes,
@@ -46,7 +56,17 @@ sort_listeners(
     false
 );
 window.addEventListener('load', function () {
+    modalOnShow('qty_edit', getQty);
     modalOnShow('size_edit', getSizes);
+    addFormListener(
+        'qty_edit',
+        'PUT',
+        `/issues/${path[2]}/qty`,
+        {onComplete: [
+            getIssue,
+            getActions
+        ]}
+    );
     addFormListener(
         'size_edit',
         'PUT',
@@ -55,5 +75,5 @@ window.addEventListener('load', function () {
             getIssue,
             getActions
         ]}
-    )
+    );
 });

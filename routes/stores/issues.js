@@ -166,7 +166,7 @@ module.exports = (app, m, fn) => {
     });
 
     app.put('/issues',                  fn.loggedIn(), fn.permissions.check('issuer'),              (req, res) => {
-        if (!req.body.lines || req.body.lines.filter(e => e.status !== '').length === 0) fn.send_error(res, 'No lines submitted')
+        if (!req.body.lines || req.body.lines.filter(e => e.status !== '').length === 0) fn.send_error(res, 'No actions')
         else {
             let actions = [];
             req.body.lines.filter(e => e.status === '-3') .forEach(issue => {
@@ -194,15 +194,17 @@ module.exports = (app, m, fn) => {
                     fn.issues.issue(req.body.lines.filter(e => e.status === '4'), req.user.user_id)
                 );
             };
-            Promise.allSettled(actions)
-            .then(results => {
-                fn.allSettledResults(results);
-                if (results.filter(e => e.status === 'rejected').length > 0) {
-                    res.send({success: true, message: 'Some lines failed'});
-                } else res.send({success: true, message: 'Lines actioned'});
-            })
-            .catch(err => fn.send_error(res, err));
+            if (actions.length > 0) {
+                Promise.allSettled(actions)
+                .then(results => res.send({success: true, message: (fn.allSettledResults(results) ? 'Lines actioned' : 'Some lines failed')}))
+                .catch(err => fn.send_error(res, err));
+            } else res.send({success: true, message: 'No actions to perform'});
         };
+    });
+    app.put('/issues/:id/qty',          fn.loggedIn(), fn.permissions.check('issuer'),              (req, res) => {
+        fn.issues.change_qty(req.params.id, req.body.issue.qty , req.user.user_id)
+        .then(result => res.send({success: true, message: 'Quantity updated'}))
+        .catch(err => fn.send_error(res, err));
     });
     app.put('/issues/:id/size',         fn.loggedIn(), fn.permissions.check('issuer'),              (req, res) => {
         fn.issues.change_size(req.params.id, req.body.size_id, req.user.user_id)
