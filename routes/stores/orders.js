@@ -49,14 +49,14 @@ module.exports = (app, m, fn) => {
         if (!req.body.lines || req.body.lines.filter(e => e.status !== '').length === 0) fn.send_error(res, 'No actions')
         else {
             let actions = [];
-            req.body.lines.filter(e => e.status === '-1').forEach(order => {
-                actions.push(fn.orders.restore({order_id: order.order_id, user_id:  req.user.user_id}));
+            req.body.lines.filter(e => e.status === '-3').forEach(order => {
+                actions.push(fn.orders.restore(order.order_id, req.user.user_id));
             })
             req.body.lines.filter(e => e.status === '0').forEach(order => {
-                actions.push(fn.orders.cancel({order_id: order.order_id, user_id:  req.user.user_id}));
+                actions.push(fn.orders.cancel( order.order_id, req.user.user_id));
             });
             req.body.lines.filter(e => e.status === '3').forEach(order => {
-                actions.push(fn.orders.receive({order_id: order.order_id, user_id:  req.user.user_id}));
+                actions.push(fn.orders.receive(order.order_id, order, req.user.user_id));
             });
             if (req.body.lines.filter(e => e.status === '2').length > 0) {
                 actions.push(
@@ -69,6 +69,16 @@ module.exports = (app, m, fn) => {
                 .catch(err => fn.send_error(res, err));
             } else res.send({success: true, message: 'No actions to perform'});
         };
+    });
+    app.put('/orders/:id/qty',          fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
+        fn.orders.change_qty(req.params.id, req.body.qty , req.user.user_id)
+        .then(result => res.send({success: true, message: 'Quantity updated'}))
+        .catch(err => fn.send_error(res, err));
+    });
+    app.put('/orders/:id/size',         fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
+        fn.orders.change_size(req.params.id, req.body.size_id, req.user.user_id)
+        .then(result => res.send({success: true, message: 'Size updated'}))
+        .catch(err => fn.send_error(res, err));
     });
     app.put('/orders/:id/mark/:status', fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
         fn.get(

@@ -5,6 +5,7 @@ function order_radio(id, index, func = null) {
         classes:     ['radio_order'],
         colour:      'warning',
         html:        '<i class="fas fa-industry"></i>',
+        tip:         'Order',
         attributes: [
             {field: 'name',    value: `lines[][${index}][status]`},
             {field: 'value',   value: '3'},

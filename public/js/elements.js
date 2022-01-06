@@ -155,6 +155,10 @@ function Radio(options = {}) {
     radio.classList.add('btn-check');
     if (options.classes)    options.classes.forEach(c => radio.classList.add(c));
     if (options.attributes) options.attributes.forEach(a => radio.setAttribute(a.field, a.value));
+    if (options.tip) {
+        label.setAttribute('data-bs-toggle', 'tooltip');
+        label.setAttribute('title', options.tip);
+    };
     label.classList.add('btn', 'btn-sm', `btn-outline-${options.colour || 'success'}`, 'me-1');
     label.setAttribute('for', `rad_${options.id}`);
     label.innerHTML = options.html || _check();

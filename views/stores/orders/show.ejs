@@ -16,8 +16,8 @@
                 <%- include(`${partials}/button/delete`, {text: 'Cancel', no_ms4: true}) %>
             </div>
 			<%- include(`${partials}/inputs/display`, {id: 'item_name', title: 'Item', link: true}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'size_desc', title: 'Size', link: true}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'qty',	 	title: 'Quantity'}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'size_desc', title: 'Size', link: true, edit: {modal: 'size_edit', tip: 'Edit Size'}}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'qty',	 	title: 'Quantity', 		   edit: {modal: 'qty_edit',  tip: 'Edit Qty'}}) %>
 			<%- include(`${partials}/inputs/display`, {id: 'createdAt', title: 'Date'}) %>
 			<%- include(`${partials}/inputs/display`, {id: 'updatedAt', title: 'Last Updated'}) %>
 			<div class="input-group mb-1">
@@ -32,7 +32,7 @@
 			<form id="form_mark_placed"	  ></form>
 			<form id="form_mark_demanded" ></form>
 			<form id="form_mark_received" ></form>
-			<%- include(`${partials}/inputs/display`, {id: 'user', 	    title: 'Raised By', link: true}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'user', title: 'Raised By', link: true}) %>
 		</div>
         <%- include(`${partials}/common/actions/tab_body`) %>
         <%- include(`${partials}/common/notes/tab_body`) %>
@@ -40,6 +40,8 @@
 	<div id="div_modals">
         <%- include(`${partials}/common/notes/modals`) %>
         <%- include(`${partials}/common/actions/modals`) %>
+        <%- include(`${partials}/modals/size_edit`) %>
+        <%- include(`${partials}/modals/qty_edit`) %>
 	</div>
 </section>
 <%- include(`${partials}/foot/app`) %>
@@ -48,9 +50,11 @@
 <%- include(`${partials}/common/actions/scripts`) %>
 
 <script src="/js/stores/orders/show/view.js"></script>
-<script async>showOrder()</script>
+<script async>getOrder()</script>
 <% if (permissions.stores_stock_admin) { %>
 	<script src="/js/stores/orders/show/delete.js"></script>
 	<script async>setDeleteButton()</script>
 <% } %>
+<script>getSizes_funcs('order', [1], getOrder);</script>
+<script>getQty_funcs(  'order', [1], getOrder);</script>
 <%- include(`${partials}/foot/components/htmlClose`) %>

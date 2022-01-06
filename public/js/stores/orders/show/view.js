@@ -1,5 +1,5 @@
 let statuses = {'0': 'Cancelled', '1': 'Placed', '2': 'Demanded', '3': 'Received'};
-function showOrder() {
+function getOrder() {
     get({
         table: 'order',
         where: {order_id: path[2]}
@@ -25,7 +25,7 @@ window.addEventListener('load', function () {
         'PUT',
         `/orders/${path[2]}/mark/0`,
         {onComplete: [
-            showOrder,
+            getOrder,
             getActions
         ]}
     );
@@ -34,7 +34,7 @@ window.addEventListener('load', function () {
         'PUT',
         `/orders/${path[2]}/mark/1`,
         {onComplete: [
-            showOrder,
+            getOrder,
             getActions
         ]}
     );
@@ -43,7 +43,7 @@ window.addEventListener('load', function () {
         'PUT',
         `/orders/${path[2]}/mark/2`,
         {onComplete: [
-            showOrder,
+            getOrder,
             getActions
         ]}
     );
@@ -52,9 +52,9 @@ window.addEventListener('load', function () {
         'PUT',
         `/orders/${path[2]}/mark/3`,
         {onComplete: [
-            showOrder,
+            getOrder,
             getActions
         ]}
     );
 });
-addReloadListener(showOrder);
+addReloadListener(getOrder);

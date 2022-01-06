@@ -40,7 +40,7 @@ function getQty() {
         where: {issue_id: path[2]}
     })
     .then(function ([issue, options]) {
-        set_value('inp_issue_qty_edit', issue.qty)
+        set_value('inp_qty_edit', issue.qty)
     })
     .catch(err => console.log(err));
 };

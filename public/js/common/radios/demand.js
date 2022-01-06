@@ -1,14 +1,14 @@
-function receive_radio(id, index, func = null) {
+function demand_radio(id, index, func = null) {
     return new Radio({
-        id:          `${id}_receive`,
+        id:          `${id}_demand`,
         float_start: true,
-        classes:     ['radio_receive'],
-        colour:      'success',
-        html:        '<i class="fas fa-receipt"></i>',
-        tip:         'Receive',
+        classes:     ['radio_demand'],
+        colour:      'warning',
+        html:        '<i class="fas fa-industry"></i>',
+        tip:         'Demand',
         attributes: [
             {field: 'name',       value: `lines[][${index}][status]`},
-            {field: 'value',      value: '3'},
+            {field: 'value',      value: '2'},
             {field: 'data-id',    value: id},
             {field: 'data-index', value: index}
         ],

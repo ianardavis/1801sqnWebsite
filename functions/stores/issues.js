@@ -365,7 +365,7 @@ module.exports = function (m, fn) {
 
     fn.issues.change_size = function (issue_id, size_id, user_id) {
         return new Promise((resolve, reject) => {
-            fn.get(issue_id)
+            fn.issues.get(issue_id)
             .then(issue => {
                 if      (![1, 2].includes(issue.status)) reject(new Error('Only requested or approved issues can have their size edited'))
                 else if (!issue.size)                    reject(new Error('Error getting issue size'))

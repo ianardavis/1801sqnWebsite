@@ -1,0 +1,16 @@
+<div id='mdl_qty_edit' class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <form class="modal-content" id='form_qty_edit'>
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Quantity</h5>
+            </div>
+            <div class="modal-body">
+                <%- include(`${partials}/inputs/number`, {title: 'Qty', id: 'inp_qty_edit', name: 'qty'}) %>
+            </div>
+            <div class="modal-footer">
+                <%- include(`${partials}/button/save`) %>
+            </div>
+        </form>
+    </div>
+</div>
+<script src="/js/common/edit_qty.js"></script>

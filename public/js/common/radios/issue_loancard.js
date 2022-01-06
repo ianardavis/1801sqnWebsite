@@ -5,6 +5,7 @@ function issue_radio(id, index, func = null) {
         classes:     ['radio_issue'],
         colour:      'success',
         html:        '<i class="fas fa-address-card"></i>',
+        tip:         'Issue',
         attributes: [
             {field: 'name',       value: `lines[][${index}][status]`},
             {field: 'value',      value: '4'},
@@ -21,6 +22,7 @@ function loancard_radio(id, index, func = null) {
         classes:     ['radio_issue'],
         colour:      'danger',
         html:        '<i class="fas fa-address-card"></i>',
+        tip:         'Remove from loancard',
         attributes: [
             {field: 'name',       value: `lines[][${index}][status]`},
             {field: 'value',      value: '-2'},

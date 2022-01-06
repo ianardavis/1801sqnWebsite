@@ -202,7 +202,7 @@ module.exports = (app, m, fn) => {
         };
     });
     app.put('/issues/:id/qty',          fn.loggedIn(), fn.permissions.check('issuer'),              (req, res) => {
-        fn.issues.change_qty(req.params.id, req.body.issue.qty , req.user.user_id)
+        fn.issues.change_qty(req.params.id, req.body.qty , req.user.user_id)
         .then(result => res.send({success: true, message: 'Quantity updated'}))
         .catch(err => fn.send_error(res, err));
     });

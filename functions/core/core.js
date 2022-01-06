@@ -337,11 +337,11 @@ module.exports = function (m, fn) {
         return where;
     };
     fn.allSettledResults = function (results) {
-        let errors = false;
+        let noErrors = true;
         results.filter(e => e.status === 'rejected').forEach(e => {
-            errors = true;
+            noErrors = false;
             console.log(e);
         });
-        return errors;
+        return noErrors;
     };
 };

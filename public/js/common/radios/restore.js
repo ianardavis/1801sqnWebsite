@@ -5,6 +5,7 @@ function restore_radio(id, index, func = null) {
         classes:     ['radio_restore'],
         colour:      'success',
         html:        '<i class="fas fa-trash-restore-alt"></i>',
+        tip:         'Restore',
         attributes: [
             {field: 'name',    value: `lines[][${index}][status]`},
             {field: 'value',   value: '-3'},

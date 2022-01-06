@@ -64,17 +64,15 @@
 	</div>
 </section>
 <%- include(`${partials}/foot/app`) %>
+<script src="/js/stores/sizes/select/showWindow.js"></script>
+<script src="/js/common/receive_options.js"></script>
+<script>receive_option_func('order')</script>
 <script src="/js/common/radios/nil_cancel.js"></script>
 <script src="/js/common/radios/restore.js"></script>
-<script src="/js/common/radios/demand.js"></script>
 <script src="/js/common/radios/receive.js"></script>
 <script src='/js/stores/orders/index/view.js'></script>
-<% if (permissions.stores_stock_admin) { %>
-	<script src="/js/stores/sizes/select/showWindow.js"></script>
-	<script src='/js/stores/orders/index/add.js'></script>
-	<script src='/js/stores/orders/index/edit.js'></script>
-	<% if (permissions.authorised_demander) { %>
-		<script src='/js/stores/orders/index/demand.js'></script>
-	<% } %>
+<script src='/js/stores/orders/index/add.js'></script>
+<% if (permissions.authorised_demander) { %>
+	<script src="/js/common/radios/demand.js"></script>
 <% } %>
 <%- include(`${partials}/foot/components/htmlClose`) %>

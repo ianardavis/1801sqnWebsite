@@ -5,6 +5,7 @@ function return_radio(id, index, func = null) {
         classes:     ['radio_return'],
         colour:      'secondary',
         html:        '<i class="fas fa-undo-alt"></i>',
+        tip:         'Return',
         attributes: [
             {field: 'name',      value: `lines[][${index}][status]`},
             {field: 'value',     value: '3'},

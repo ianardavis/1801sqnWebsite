@@ -5,6 +5,7 @@ function nil_radio(id, index, func = null) {
         classes:     ['radio_nil'],
         colour:      'primary',
         html:        '<i class="fas fa-question"></i>',
+        tip:         'Nil',
         attributes: [
             {field: 'name',    value: `lines[][${index}][status]`},
             {field: 'data-id', value: id},
@@ -20,6 +21,7 @@ function cancel_radio(id, index, func = null) {
         classes:     ['radio_cancel'],
         colour:      'danger',
         html:        '<i class="fas fa-trash-alt"></i>',
+        tip:         'Cancel',
         attributes: [
             {field: 'name',    value: `lines[][${index}][status]`},
             {field: 'value',   value: '0'},

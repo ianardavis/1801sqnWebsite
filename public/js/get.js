@@ -97,7 +97,7 @@ function addFormListener(form_id, method, location, options = {reload: false}) {
             });
         } else console.log(`${form_id} not found`);
     } catch (error) {
-        console.log(`Error on form: ${form_id}. `, error)
+        console.log(`Error on form: ${form_id}: `, error)
     };
 };
 function sendData(form, method, _location, options = {reload: false}) {
@@ -130,13 +130,13 @@ function sendData(form, method, _location, options = {reload: false}) {
                 else if (options.redirect) window.location.assign(options.redirect);
             } else {
                 console.log(response);
-                alert_toast(response.message || response.error || 'Unknown error');
+                alert_toast(response.message || response.error || 'Ooooopsie');
             };
         } catch (error) {
             console.log(error)
         };
     });
-    XHR.addEventListener("error", function () {alert_toast('Something went wrong.')});
+    XHR.addEventListener("error", function () {alert_toast('Ooooopsie Daisie')});
     XHR.open(method, _location);
     XHR.send(FD);
 };

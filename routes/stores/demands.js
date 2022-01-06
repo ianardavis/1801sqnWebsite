@@ -112,6 +112,7 @@ module.exports = (app, m, fn) => {
         .then(demand => res.send({success: true, message: (demand.created ? 'There is already a demand open for this supplier' : 'Demand raised')}))
         .catch(err => fn.send_error(res, err));
     });
+
     app.put('/demands/:id/complete', fn.loggedIn(), fn.permissions.check('authorised_demander'), (req, res) => {
         fn.demands.complete(req.params.id, req.user)
         .then(result => res.send(result))
@@ -125,35 +126,20 @@ module.exports = (app, m, fn) => {
     app.put('/demand_lines',         fn.loggedIn(), fn.permissions.check('authorised_demander'), (req, res) => {
         if (!req.body.lines || req.body.lines.length === 0) fn.send_error(res, 'No lines submitted')
         else {
-            console.log(req.body.lines);
-            res.send({success: true, message: 'Lines actioned'});
             let actions = [];
-            req.body.lines
-            .filter(e => e.status === '0')
-            .forEach(line => {
+            req.body.lines.filter(e => e.status === '0').forEach(line => {
                 actions.push(
-                    fn.demands.lines.cancel(
-                        line.demand_line_id,
-                        req.user.user_id)
+                    fn.demands.lines.cancel(line.demand_line_id, req.user.user_id)
                 );
             });
-            req.body.lines
-            .filter(e => e.status === '-1')
-            .forEach(line => {
+            // req.body.lines.filter(e => e.status === '-1').forEach(line => {
+            //     actions.push(
+            //         fn.demands.lines.restore(line.demand_line_id, req.user.user_id)
+            //     );
+            // });
+            req.body.lines.filter(e => e.status === '3').forEach(line => {
                 actions.push(
-                    fn.demands.lines.restore(
-                        line.demand_line_id,
-                        req.user.user_id)
-                );
-            });
-            req.body.lines
-            .filter(e => e.status === '3')
-            .forEach(line => {
-                actions.push(
-                    fn.demands.lines.receive(
-                        line,
-                        req.user.user_id
-                    )
+                    fn.demands.lines.receive(line, req.user.user_id)
                 );
             });
             Promise.all(actions)

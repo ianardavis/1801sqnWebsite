@@ -15,7 +15,7 @@ window.addEventListener( "load", function () {
         `/orders/${path[2]}`,
         {
             onComplete: [
-                showOrder,
+                getOrder,
                 function() {if (typeof showActions === 'function') {showActions()}}
             ]
         }

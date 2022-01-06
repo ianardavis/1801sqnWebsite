@@ -5,6 +5,7 @@ function approve_radio(id, index, func = null) {
         classes:     ['radio_decline'],
         colour:      'danger',
         html:        '<i class="fas fa-times-circle"></i>',
+        tip:         'Approve',
         attributes: [
             {field: 'name',  value: `lines[][${index}][status]`},
             {field: 'value', value: '2'}
@@ -19,6 +20,7 @@ function decline_radio(id, index, func = null) {
         classes:     ['radio_approve'],
         colour:      'success',
         html:        '<i class="fas fa-times-circle"></i>',
+        tip:         'Decline',
         attributes: [
             {field: 'name',  value: `lines[][${index}][status]`},
             {field: 'value', value: '-1'}
