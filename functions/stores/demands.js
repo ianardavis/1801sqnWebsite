@@ -6,10 +6,7 @@ module.exports = function (m, fn) {
     };
     fn.demands.create   = function (options = {}) {
         return new Promise((resolve, reject) => {
-            fn.get(
-                'suppliers',
-                {supplier_id: options.supplier_id}
-            )
+            fn.suppliers.get(options.supplier_id)
             .then(supplier => {
                 m.demands.findOrCreate({
                     where: {
@@ -79,31 +76,6 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
-    function cancel_open_demand_lines(demand_id, user_id) {
-        return new Promise((resolve, reject) => {
-            m.demand_lines.findAll({
-                where: {
-                    demand_id: demand_id,
-                    status: {[fn.op.or]: [1, 2]}
-                }
-            })
-            .then(lines => {
-                let line_actions = [];
-                lines.forEach(line => {
-                    line_actions.push(
-                        fn.demands.lines.cancel(
-                            line.demand_line_id,
-                            user_id
-                        )
-                    );
-                });
-                Promise.all(line_actions)
-                .then(results => resolve(true))
-                .catch(err => reject(err));
-            })
-            .catch(err => reject(err));
-        })
-    };
     fn.demands.cancel   = function (demand_id, user_id) {
         return new Promise((resolve, reject) => {
             fn.demands.get(demand_id)
@@ -146,6 +118,31 @@ module.exports = function (m, fn) {
             })
             .catch(err => reject(err));
         });
+    };
+    function cancel_open_demand_lines(demand_id, user_id) {
+        return new Promise((resolve, reject) => {
+            m.demand_lines.findAll({
+                where: {
+                    demand_id: demand_id,
+                    status: {[fn.op.or]: [1, 2]}
+                }
+            })
+            .then(lines => {
+                let line_actions = [];
+                lines.forEach(line => {
+                    line_actions.push(
+                        fn.demands.lines.cancel(
+                            line.demand_line_id,
+                            user_id
+                        )
+                    );
+                });
+                Promise.all(line_actions)
+                .then(results => resolve(true))
+                .catch(err => reject(err));
+            })
+            .catch(err => reject(err));
+        })
     };
     fn.demands.raise    = function (demand_id, user) {
         return new Promise((resolve, reject) => {
@@ -311,84 +308,32 @@ module.exports = function (m, fn) {
                 else {
                     get_orders_for_demand_line(demand_line.demand_line_id, {active_only: true})
                     .then(result => {
-                        let receipt_actions = [],
-                            serials  = line.serials || [],
-                            qty_left = line.qty     || 0;
-                        if (demand_line.size.has_serials) {
-                            for (let i = 0; (i < result.orders.length) && (serials.length > 0); i++) {
-                                let order   = result.orders[i],
-                                    receipt = {serials: []};
-                                let qty = Math.min(order.qty, serials.length);
-                                for (let i = 0; i < qty; i++) {
-                                    receipt.serials.push(serials.pop());
-                                };
-                                receipt_actions.push(
-                                    fn.orders.receive(
-                                        order.order_id,
-                                        receipt,
-                                        user_id,
-                                        [{table: 'demand_lines', id: demand_line.demand_line_id}]
-                                    )
-                                );
-                            };
-                        } else {
-                            for (let i = 0; (i < result.orders.length) && (qty_left > 0); i++) {
-                                let order   = result.orders[i],
-                                    receipt = {};
-                                if (qty_left === 0) break;
-                                receipt.location = line.location;
-                                if (qty_left >= line.qty) receipt.qty = order.qty
-                                else                      receipt.qty = qty_left;
-                                qty_left -= receipt.qty;
-                                receipt_actions.push(
-                                    fn.orders.receive(
-                                        order.order_id,
-                                        receipt,
-                                        user_id,
-                                        [{table: 'demand_lines', id: demand_line.demand_line_id}]
-                                    )
-                                );
-                            };
-                        };
-                        Promise.allSettled(receipt_actions)
-                        .then(results => {
-                            let qty_received = 0;
-                            results.filter(e => e.status === 'fulfilled').forEach(e => qty_received += Number(e.value.qty));
-                            let variance = 0, order_qty = 0, receipt = {};
+                        receive_orders(
+                            demand_line.demand_line_id,
+                            demand_line.size.has_serials,
+                            user_id,
+                            result.orders,
+                            line
+                        )
+                        .then(result => {
+                            let order_qty = 0, receipt = {};
                             if (demand_line.size.has_serials) {
-                                order_qty       = serials.length;
-                                variance        = qty_received - (line.serials.length - serials.length);
-                                receipt.serials = serials;
+                                order_qty       = result.remaining.length;
+                                receipt.serials = result.remaining;
                             } else {
-                                order_qty        = qty_left;
-                                variance         = qty_received - (line.qty - qty_left);
-                                receipt.qty      = qty_left;
+                                order_qty        = result.remaining.qty;
+                                receipt.qty      = result.remaining.qty;
                                 receipt.location = line.location;
                             };
-                            let action = null
-                            if (order_qty > 0) {
-                                action = new Promise((resolve, reject) => {
-                                    fn.orders.create(
-                                        demand_line.size_id,
-                                        order_qty,
-                                        user_id,
-                                    )
-                                    .then(order => {
-                                        fn.orders.receive(
-                                            order.order_id,
-                                            receipt,
-                                            user_id,
-                                            [{table: 'demand_lines', id: demand_line.demand_line_id}]
-                                        )
-                                        .then(result => resolve(result.qty))
-                                        .catch(err => reject(err));
-                                    })
-                                    .catch(err => reject(err));
-                                });
-                            } else action = new Promise(r => r(0));
-                            action
+                            receive_remaining(
+                                order_qty,
+                                demand_line.size_id,
+                                demand_line.demand_line_id,
+                                user_id,
+                                receipt
+                            )
                             .then(received => {
-                                demand_receipt_variance(demand_line, Number(qty_received) + Number(received), user_id)
+                                check_receipt_variance(demand_line, Number(result.qty) + Number(received), user_id)
                                 .then(variance_result => {
                                     fn.update(variance_result.demand_line, {status: 3})
                                     .then(result => {
@@ -409,7 +354,80 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
-    function demand_receipt_variance(demand_line, qty, user_id) {
+    function receive_orders(demand_line_id, has_serials, user_id, orders, line) {
+        return new Promise((resolve, reject) => {
+            let receipt_actions = [],
+                serials  = line.serials || [],
+                qty_left = line.qty     || 0;
+            if (has_serials) {
+                for (let i = 0; (i < orders.length) && (serials.length > 0); i++) {
+                    let order   = orders[i],
+                        receipt = {serials: []};
+                    let qty = Math.min(order.qty, serials.length);
+                    for (let i = 0; i < qty; i++) {
+                        receipt.serials.push(serials.pop());
+                    };
+                    receipt_actions.push(
+                        fn.orders.receive(
+                            order.order_id,
+                            receipt,
+                            user_id,
+                            [{table: 'demand_lines', id: demand_line_id}]
+                        )
+                    );
+                };
+            } else {
+                for (let i = 0; (i < orders.length) && (qty_left > 0); i++) {
+                    let order   = orders[i],
+                        receipt = {};
+                    if (qty_left === 0) break;
+                    receipt.location = line.location;
+                    if (qty_left >= line.qty) receipt.qty = order.qty
+                    else                      receipt.qty = qty_left;
+                    qty_left -= receipt.qty;
+                    receipt_actions.push(
+                        fn.orders.receive(
+                            order.order_id,
+                            receipt,
+                            user_id,
+                            [{table: 'demand_lines', id: demand_line_id}]
+                        )
+                    );
+                };
+            };
+            Promise.allSettled(receipt_actions)
+            .then(results => {
+                fn.allSettledResults(results)
+                let qty_received = 0;
+                results.filter(e => e.status === 'fulfilled').forEach(e => qty_received += Number(e.value.qty));
+                resolve({qty: qty_received, remaining: (has_serials ? serials : {qty: qty_left, location: line.location})});
+            })
+            .catch(err => reject(err));
+        });
+    };
+    function receive_remaining(order_qty, size_id, demand_line_id, user_id, receipt) {
+        return new Promise((resolve, reject) => {
+            if (order_qty > 0) {
+                fn.orders.create(
+                    size_id,
+                    order_qty,
+                    user_id,
+                )
+                .then(order => {
+                    fn.orders.receive(
+                        order.order_id,
+                        receipt,
+                        user_id,
+                        [{table: 'demand_lines', id: demand_line_id}]
+                    )
+                    .then(result => resolve(result.qty))
+                    .catch(err => reject(err));
+                })
+                .catch(err => reject(err));
+            } else resolve(0);
+        });
+    };
+    function check_receipt_variance(demand_line, qty, user_id) {
         return new Promise((resolve, reject) => {
             let qty_original = demand_line.qty;
             if (qty > qty_original) {
@@ -664,11 +682,13 @@ module.exports = function (m, fn) {
             fn.get(
                 'suppliers',
                 {supplier_id: supplier_id},
-                [fn.inc.stores.files({
-                    where: {description: 'Demand'},
-                    details: true
-                }),
-                fn.inc.stores.account()]
+                [
+                    fn.inc.stores.files({
+                        where: {description: 'Demand'},
+                        details: true
+                    }),
+                    fn.inc.stores.account()
+                ]
             )
             .then(supplier => {
                 if      (!supplier.files)              reject(new Error('No template for this supplier'))
@@ -715,23 +735,25 @@ module.exports = function (m, fn) {
                 actions.push(
                     new Promise((resolve, reject) => {
                         m.action_links.findAll({
-                            where: {_table: 'issues'},
+                            where: {
+                                _table: 'issues',
+                                active: true
+                            },
                             include: [{
                                 model: m.actions,
                                 where: {
                                     action: {[fn.op.or]: [
-                                        'Order created from issue',
-                                        'Order incremented from issue'
+                                        'ORDER | CREATED',
+                                        {[fn.op.startsWith]: 'ORDER | INCREMENTED'}
                                     ]}
                                 },
-                                required: true,
                                 include: [{
                                     model: m.action_links,
                                     as: 'links',
-                                    required: true,
                                     where: {
                                         _table: 'orders',
-                                        id: order_id
+                                        id: order_id,
+                                        active: true
                                     }
                                 }]
                             }]
@@ -740,15 +762,7 @@ module.exports = function (m, fn) {
                             if (!links || links.length === 0) resolve([])
                             else {
                                 let get_issues = [];
-                                links.forEach(link => {
-                                    get_issues.push(
-                                        fn.get(
-                                            'issues',
-                                            {issue_id: link.id},
-                                            [fn.inc.users.user({as: 'user_issue'})]
-                                        )
-                                    );
-                                });
+                                links.forEach(e => get_issues.push(fn.issues.get(e.id)));
                                 Promise.allSettled(get_issues)
                                 .then(results => {
                                     let users = [];

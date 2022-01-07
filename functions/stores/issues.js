@@ -1,7 +1,15 @@
 module.exports = function (m, fn) {
     fn.issues = {};
     fn.issues.get = function (issue_id) {
-        return fn.get('issues', {issue_id: issue_id}, [m.sizes])
+        return fn.get(
+            'issues',
+            {issue_id: issue_id},
+            [
+                m.sizes,
+                {model: m.users, as: 'user',       attributes: {exclude: ['password', 'salt', 'reset']}},
+                {model: m.users, as: 'user_issue', attributes: {exclude: ['password', 'salt', 'reset']}}
+            ]
+        )
     };
     fn.issues.create  = function (user_id_issue, size_id, qty, user_id, status = 1) {
         return new Promise((resolve, reject) => {
@@ -350,11 +358,7 @@ module.exports = function (m, fn) {
             .then(link => {
                 if (!link) reject(new Error('Loancard line not found'))
                 else {
-                    fn.get(
-                        'loancard_lines',
-                        {loancard_line_id: link.id},
-                        [m.loancards]
-                    )
+                    fn.loancards.lines.get(link.id)
                     .then(line => resolve(line))
                     .catch(err => reject(err));
                 };
@@ -370,10 +374,7 @@ module.exports = function (m, fn) {
                 if      (![1, 2].includes(issue.status)) reject(new Error('Only requested or approved issues can have their size edited'))
                 else if (!issue.size)                    reject(new Error('Error getting issue size'))
                 else {
-                    fn.get(
-                        'sizes',
-                        {size_id: size_id}
-                    )
+                    fn.sizes.get(size_id)
                     .then(size => {
                         if (size.item_id !== issue.size.item_id) reject(new Error('New size is for a different item'))
                         else {

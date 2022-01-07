@@ -6,10 +6,7 @@ module.exports = function (m, fn) {
     fn.serials.create = function (options = {}) {
         return new Promise((resolve, reject) => {
             if (options.serial && options.size_id) {
-                fn.get(
-                    'sizes',
-                    {size_id: options.size_id}
-                )
+                fn.sizes.get(options.size_id)
                 .then(size => {
                     if (!size.has_serials) resolve({success: false, message: 'This size does not have serials'});
                     else {
@@ -36,10 +33,7 @@ module.exports = function (m, fn) {
     };
     fn.serials.return_to_stock = function (serial_id, location_id) {
         return new Promise((resolve, reject) => {
-            fn.get(
-                'serials',
-                {serial_id: serial_id}
-            )
+            fn.serials.get(serial_id)
             .then(serial => {
                 if      (!serial.issue_id)   reject(new Error('Serial # not issued'))
                 else if (serial.location_id) reject(new Error('Serial # already in stock'))

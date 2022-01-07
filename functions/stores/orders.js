@@ -1,7 +1,7 @@
 module.exports = function (m, fn) {
     fn.orders = {};
     fn.orders.get = function (order_id) {
-        return fn.get('orders', {order_id: order_id}, [m.sizes])
+        return fn.get('orders', {order_id: order_id}, [{model: m.sizes, include: [m.suppliers]}])
     };
     function create_normalise_lines(lines) {
         return new Promise(resolve => {
@@ -46,10 +46,7 @@ module.exports = function (m, fn) {
     };
     fn.orders.cancel     = function (order_id, user_id) {
         return new Promise((resolve, reject) => {
-            fn.get(
-                'orders',
-                {order_id: order_id}
-            )
+            fn.orders.get(order_id)
             .then(order => {
                 if      (order.status === 0) reject(new Error('Order has already been cancelled'))
                 else if (order.status === 3) reject(new Error('Order has already been received'))
@@ -65,10 +62,7 @@ module.exports = function (m, fn) {
                                 let actions = [];
                                 result.issue_ids.forEach(issue_id => {
                                     actions.push(new Promise((resolve, reject) => {
-                                        fn.get(
-                                            'issues',
-                                            {issue_id: issue_id}
-                                        )
+                                        fn.issues.get(issue_id)
                                         .then(issue => {
                                             if (issue.status === 3) {
                                                 fn.update(issue, {status: 2})
@@ -168,7 +162,7 @@ module.exports = function (m, fn) {
     };
     fn.orders.create     = function (size_id, qty, user_id, issue_ids = []) {
         return new Promise((resolve, reject) => {
-            fn.get('sizes', {size_id: size_id})
+            fn.sizes.get(size_id)
             .then(size => {
                 if (!size.orderable) reject(new Error('This size can not ordered'))
                 else {
@@ -227,11 +221,7 @@ module.exports = function (m, fn) {
                 let order_actions = [], suppliers = [];
                 orders.forEach(order => {
                     order_actions.push(new Promise((resolve, reject) => {
-                        fn.get(
-                            'orders',
-                            {order_id: order.order_id},
-                            [{model: m.sizes, include: [m.suppliers]}]
-                        )
+                        fn.orders.get(order.order_id)
                         .then(order => {
                             if      ( order.status !== 1)   reject(new Error('Only placed orders can be demanded'))
                             else if (!order.size)           reject(new Error('Size not found'))
@@ -322,14 +312,7 @@ module.exports = function (m, fn) {
         return new Promise((resolve, reject) => {
             fn.allowed(user_id, 'stores_stock_admin')
             .then(allowed => {
-                fn.get(
-                    'orders',
-                    {order_id: order_id},
-                    [{
-                        model: m.sizes,
-                        include: [m.suppliers]
-                    }]
-                )
+                fn.orders.get(order_id)
                 .then(order => {
                     if (!order.size) reject(new Error('Could not find size'))
                     else {
@@ -460,10 +443,7 @@ module.exports = function (m, fn) {
                 if      (order.status !== 1) reject(new Error('Only requested or approved orders can have their size edited'))
                 else if (!order.size)        reject(new Error('Error getting order size'))
                 else {
-                    fn.get(
-                        'sizes',
-                        {size_id: size_id}
-                    )
+                    fn.sizes.get(size_id)
                     .then(size => {
                         if (size.item_id !== order.size.item_id) reject(new Error('New size is for a different item'))
                         else {
