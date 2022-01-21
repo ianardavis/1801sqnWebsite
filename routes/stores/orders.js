@@ -81,10 +81,7 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.put('/orders/:id/mark/:status', fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
-        fn.get(
-            'orders',
-            {order_id: req.params.id}
-        )
+        fn.orders.get(req.params.id)
         .then(order => {
             if (['0', '1', '2', '3'].includes(req.params.status)) {
                 order.update({status: req.params.status})

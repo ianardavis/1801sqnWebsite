@@ -57,10 +57,7 @@ module.exports = (app, m, fn) => {
     });
 
     app.delete('/sizes/:id', fn.loggedIn(), fn.permissions.check('stores_stock_admin'),   (req, res) => {
-        fn.get(
-            'sizes',
-            {size_id: req.params.id}
-        )
+        fn.sizes.get(req.params.id)
         .then(size => {
             m.stocks.findOne({where: {size_id: req.params.id}})
             .then(stock => {

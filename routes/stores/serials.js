@@ -45,10 +45,7 @@ module.exports = (app, m, fn) => {
     app.post('/serials',            fn.loggedIn(), fn.permissions.check('stores_stock_admin'),   (req, res) => {
         if (!req.body.location) fn.send_error(res, 'No location entered')
         else {
-            fn.get(
-                'sizes',
-                {size_id: req.body.serial.size_id}
-            )
+            fn.sizes.get(req.body.serial.size_id)
             .then(size => {
                 m.locations.findOrCreate({where: {location: req.body.location}})
                 .then(([location, created]) => {
@@ -71,10 +68,7 @@ module.exports = (app, m, fn) => {
     });
     
     app.put('/serials/:id',         fn.loggedIn(), fn.permissions.check('stores_stock_admin'),   (req, res) => {
-        fn.get(
-            'serials',
-            {serial_id: req.params.id}
-        )
+        fn.serials.get(req.params.id)
         .then(serial => {
             m.locations.findOrCreate({where: {location: req.body.location}})
             .then(([location, created]) => {
@@ -91,10 +85,7 @@ module.exports = (app, m, fn) => {
     });
 
     app.delete('/serials/:id',      fn.loggedIn(), fn.permissions.check('stores_stock_admin'),   (req, res) => {
-        fn.get(
-            'serials',
-            {serial_id: req.params.id}
-        )
+        fn.serials.get(req.params.id)
         .then(serial => {
             m.actions.findOne({where: {serial_id: serial.serial_id}})
             .then(action => {

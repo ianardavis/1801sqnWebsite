@@ -21,10 +21,7 @@ module.exports = (app, m, fn) => {
     });
 
     app.post('/addresses',       fn.loggedIn(), fn.permissions.check('supplier_admin'), (req, res) => {
-        fn.get(
-            'suppliers',
-            {supplier_id: req.body.supplier_id}
-        )
+        fn.suppliers.get(req.body.supplier_id)
         .then(supplier => {
             m.addresses.findOrCreate({
                 where:    req.body.address,
@@ -43,11 +40,7 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.put('/addresses',        fn.loggedIn(), fn.permissions.check('supplier_admin'), (req, res) => {
-        fn.get(
-            'supplier_addresses',
-            {supplier_address_id: req.body.supplier_address_id},
-            [fn.inc.stores.address()]
-        )
+        fn.suppliers.addresses.get(req.body.supplier_address_id)
         .then(address => {
             if (!address.address) fn.send_error(res, 'No address for this record')
             else {
@@ -59,11 +52,7 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.delete('/addresses/:id', fn.loggedIn(), fn.permissions.check('supplier_admin'), (req, res) => {
-        fn.get(
-            'supplier_addresses',
-            {supplier_address_id: req.params.id},
-            [fn.inc.stores.address()]
-        )
+        fn.suppliers.addresses.get(req.params.id)
         .then(address => {
             let actions = [];
             if (address.address) actions.push(address.address.destroy());

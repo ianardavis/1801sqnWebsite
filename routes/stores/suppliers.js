@@ -42,10 +42,7 @@ module.exports = (app, m, fn) => {
     });
 
     app.delete('/suppliers/:id',      fn.loggedIn(), fn.permissions.check('supplier_admin'), (req, res) => {
-        fn.get(
-            'suppliers',
-            {supplier_id: req.params.id}
-        )
+        fn.suppliers.get(req.params.id)
         .then(supplier => {
             supplier.destroy({where: {supplier_id: req.params.id}})
             .then(result => {

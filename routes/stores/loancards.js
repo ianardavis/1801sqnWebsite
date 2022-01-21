@@ -3,10 +3,7 @@ module.exports = (app, m, fn) => {
     app.get('/loancards/:id',                fn.loggedIn(), fn.permissions.get('access_stores'),         (req, res) => res.render('stores/loancards/show'));
     app.get('/loancard_lines/:id',           fn.loggedIn(), fn.permissions.get('access_stores'),         (req, res) => res.render('stores/loancard_lines/show'));
     app.get('/loancards/:id/download',       fn.loggedIn(), fn.permissions.check('access_stores'),       (req, res) => {
-        fn.get(
-            'loancards',
-            {loancard_id: req.params.id}
-        )
+        fn.loancards.get(req.params.id)
         .then(loancard => {
             if (!loancard.filename) {
                 fn.loancards.createPDF(loancard.loancard_id)
@@ -23,10 +20,7 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/loancards/:id/print',          fn.loggedIn(), fn.permissions.check('access_stores'),       (req, res) => {
-        fn.get(
-            'loancards',
-            {loancard_id: req.params.id}
-        )
+        fn.loancards.get(req.params.id)
         .then(loancard => {
             if (!loancard.filename) {
                 fn.loancards.createPDF(loancard.loancard_id)

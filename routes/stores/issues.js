@@ -1,10 +1,7 @@
 module.exports = (app, m, fn) => {
     app.get('/issues',                  fn.loggedIn(), fn.permissions.get(  'access_stores', true), (req, res) => res.render('stores/issues/index'));
     app.get('/issues/:id',              fn.loggedIn(), fn.permissions.get(  'access_stores', true), (req, res) => {
-        fn.get(
-            'issues',
-            {issue_id: req.params.id}
-        )
+        fn.issues.get(req.params.id)
         .then(issue => {
             if (
                 !req.allowed &&
@@ -111,29 +108,35 @@ module.exports = (app, m, fn) => {
     });
     app.get('/get/issue_loancard',      fn.loggedIn(), fn.permissions.check('access_stores', true), (req, res) => {
         m.action_links.findOne({
-            where: {_table: 'loancard_lines'},
+            where: {
+                _table: 'loancard_lines',
+                active: true
+            },
             include: [{
                 model: m.actions,
-                where: {action: {[fn.op.or]: ['ISSUED | Added to loancard', 'Issue added to loancard']}},
+                where: {
+                    action: {[fn.op.or]: [
+                        'LOANCARD LINE | CREATED',
+                        {[fn.op.startsWith]: 'LOANCARD LINE | INCREMENTED'}
+                    ]}
+                },
                 include: [{
                     model: m.action_links,
                     as: 'links',
                     where: {
                         _table: 'issues',
-                        id: req.query.where.issue_id
+                        id: req.query.where.issue_id,
+                        active: true
                     }
                 }]
             }],
             ...fn.pagination(req.query)
         })
         .then(link => {
-            if (!link) fn.send_error(res, new Error('Loancard not found'))
+            if (!link) fn.send_error(res, new Error('No active links found'))
             else {
-                fn.get(
-                    'loancard_lines',
-                    {loancard_line_id: link.id}
-                )
-                .then(line => res.send({success: true,  result: line}))
+                fn.loancards.lines.get(link.id)
+                .then(line => res.send({success: true, result: line}))
                 .catch(err => fn.send_error(res, err));
             };
         })
@@ -212,10 +215,7 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.put('/issues/:id/mark/:status', fn.loggedIn(), fn.permissions.check('issuer'),              (req, res) => {
-        fn.get(
-            'issues',
-            {issue_id: req.params.id}
-        )
+        fn.issues.get(req.params.id)
         .then(issue => {
             if (['0', '1', '2', '3', '4', '5'].includes(req.params.status)) {
                 issue.update({status: req.params.status})

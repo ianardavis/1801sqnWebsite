@@ -34,10 +34,7 @@ module.exports = (app, m, fn) => {
     });
 
     app.post('/stocks',             fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
-        fn.get(
-            'sizes',
-            {size_id: req.body.stock.size_id}
-        )
+        fn.sizes.get(req.body.stock.size_id)
         .then(size => {
             m.locations.findOrCreate({where: {location: req.body.location}})
             .then(([location, created]) => {
@@ -71,10 +68,7 @@ module.exports = (app, m, fn) => {
         };
     });
     app.put('/stocks/:id',          fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
-        fn.get(
-            'stocks',
-            {stock_id: req.params.id}
-        )
+        fn.stocks.get({stock_id: req.params.id})
         .then(stock => {
             m.locations.findOrCreate({where: {location: req.body.location}})
             .then(([location, created]) => {
@@ -103,10 +97,7 @@ module.exports = (app, m, fn) => {
     });
     
     app.delete('/stocks/:id',       fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
-        fn.get(
-            'stocks',
-            {stock_id: req.params.id}
-        )
+        fn.stocks.get({stock_id: req.params.id})
         .then(stock => {
             if (stock.qty > 0) fn.send_error(res, 'Cannot delete whilst stock is not 0')
             else {

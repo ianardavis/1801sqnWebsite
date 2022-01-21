@@ -33,10 +33,7 @@ module.exports = (app, m, fn) => {
     }); 
     
     app.delete('/genders/:id', fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
-        fn.get(
-            'genders',
-            {gender_id: req.params.id}
-        )
+        fn.genders.get(req.params.id)
         .then(gender => {
             m.items.update(
                 {gender_id: null},

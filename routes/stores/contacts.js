@@ -14,16 +14,13 @@ module.exports = (app, m, fn) => {
         fn.get(
             'supplier_contacts',
             req.query.where,
-            [fn.inc.stores.contact()]
+            [m.contacts]
         )
         .then(contact => res.send({success: true, result: contact}))
         .catch(err => fn.send_error(res, err));
     });
     app.post('/contacts',       fn.loggedIn(), fn.permissions.check('supplier_admin'), (req, res) => {
-        fn.get(
-            'suppliers',
-            {supplier_id: req.body.supplier_id}
-        )
+        fn.suppliers.get(req.body.supplier_id)
         .then(supplier => {
             m.contacts.findOrCreate({
                 where:    req.body.contact,
@@ -42,11 +39,7 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.put('/contacts',        fn.loggedIn(), fn.permissions.check('supplier_admin'), (req, res) => {
-       fn.get(
-           'supplier_contacts',
-           {supplier_contact_id: req.body.supplier_contact_id},
-            [fn.inc.stores.contact()]
-        )
+        fn.suppliers.contacts.get(req.body.supplier_contact_id)
         .then(contact => {
             if (!contact.contact) fn.send_error(res, 'No contact for this record')
             else {
@@ -58,11 +51,7 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.delete('/contacts/:id', fn.loggedIn(), fn.permissions.check('supplier_admin'), (req, res) => {
-        fn.get(
-            'supplier_contacts',
-            {supplier_contact_id: req.params.id},
-            [fn.inc.stores.contact()]
-        )
+        fn.suppliers.contacts.get(req.params.id)
         .then(contact => {
             let actions = [];
             if (contact.contact) actions.push(contact.contact.destroy());

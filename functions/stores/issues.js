@@ -6,8 +6,8 @@ module.exports = function (m, fn) {
             {issue_id: issue_id},
             [
                 m.sizes,
-                {model: m.users, as: 'user',       attributes: {exclude: ['password', 'salt', 'reset']}},
-                {model: m.users, as: 'user_issue', attributes: {exclude: ['password', 'salt', 'reset']}}
+                {model: m.users, as: 'user',       include: [m.ranks], attributes: {exclude: ['password', 'salt', 'reset']}},
+                {model: m.users, as: 'user_issue', include: [m.ranks], attributes: {exclude: ['password', 'salt', 'reset']}}
             ]
         )
     };

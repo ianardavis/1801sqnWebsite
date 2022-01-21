@@ -55,25 +55,13 @@ module.exports = (app, m, fn) => {
     });
 
     app.post('/nsns',             fn.loggedIn(), fn.permissions.check('stores_stock_admin'),   (req, res) => {
-        fn.get(
-            'sizes',
-            {size_id: req.body.nsn.size_id}
-        )
+        fn.sizes.get(req.body.nsn.size_id)
         .then(size => {
-            fn.get(
-                'nsn_groups',
-                {nsn_group_id: req.body.nsn.nsn_group_id}
-            )
+            fn.nsns.groups.get(req.body.nsn.nsn_group_id)
             .then(nsn_group => {
-                fn.get(
-                    'nsn_classes',
-                    {nsn_class_id: req.body.nsn.nsn_class_id}
-                )
+                fn.nsns.classes.get(req.body.nsn.nsn_class_id)
                 .then(nsn_class => {
-                    fn.get(
-                        'nsn_countries',
-                        {nsn_country_id: req.body.nsn.nsn_country_id}
-                    )
+                    fn.nsns.countries.get(req.body.nsn.nsn_country_id)
                     .then(nsn_country => {
                         m.nsns.findOrCreate({
                             where: {
@@ -107,26 +95,13 @@ module.exports = (app, m, fn) => {
     });
     
     app.put('/nsns/:id',          fn.loggedIn(), fn.permissions.check('stores_stock_admin'),   (req, res) => {
-        fn.get(
-            'nsns',
-            {nsn_id: req.params.id},
-            [fn.inc.stores.size()]
-        )
+        fn.nsns.get(req.params.id)
         .then(nsn => {
-            fn.get(
-                'nsn_groups',
-                {nsn_group_id: req.body.nsn.nsn_group_id}
-            )
+            fn.nsns.groups.get(req.body.nsn.nsn_group_id)
             .then(nsn_group => {
-                fn.get(
-                    'nsn_classes',
-                    {nsn_class_id: req.body.nsn.nsn_class_id}
-                )
+                fn.nsns.classes.get(req.body.nsn.nsn_class_id)
                 .then(nsn_class => {
-                    fn.get(
-                        'nsn_countries',
-                        {nsn_country_id: req.body.nsn.nsn_country_id}
-                    )
+                    fn.nsns.countries.get(req.body.nsn.nsn_country_id)
                     .then(nsn_country => {
                         fn.update(nsn, {
                             nsn_group_id:   nsn_group  .nsn_group_id,
@@ -147,10 +122,7 @@ module.exports = (app, m, fn) => {
     });
     
     app.delete('/nsns/:id',       fn.loggedIn(), fn.permissions.check('stores_stock_admin'),   (req, res) => {
-        fn.get(
-            'nsns',
-            {nsn_id: req.params.id}
-        )
+        fn.nsns.get(req.params.id)
         .then(nsn => {
             m.action_links.findOne({
                 where: {

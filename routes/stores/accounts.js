@@ -38,10 +38,7 @@ module.exports = (app, m, fn) => {
     });
 
     app.delete('/accounts/:id', fn.loggedIn(), fn.permissions.check('supplier_admin'), (req, res) => {
-        fn.get(
-            'accounts',
-            {account_id: req.params.id}
-        )
+        fn.accounts.get(req.params.id)
         .then(account => {
             account.destroy()
             .then(result => {

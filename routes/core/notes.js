@@ -31,10 +31,7 @@ module.exports = (app, m, fn) => {
     });
     
     app.put('/notes',        fn.loggedIn(), (req, res) => {
-        fn.get(
-            'notes',
-            {note_id: req.body.note_id}
-        )
+        fn.notes.get(req.body.note_id)
         .then(note => {
             if (note.system) fn.send_error(res, 'System generated notes can not be edited')
             else {
@@ -47,10 +44,7 @@ module.exports = (app, m, fn) => {
     });
     
     app.delete('/notes/:id', fn.loggedIn(), (req, res) => {
-        fn.get(
-            'notes',
-            {note_id: req.params.id}
-        )
+        fn.notes.get(req.params.id)
         .then(note => {
             if (note.system) fn.send_error(res, 'System generated notes can not be deleted')
             else {

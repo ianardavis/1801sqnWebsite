@@ -41,11 +41,7 @@ module.exports = (app, m, fn) => {
     });
 
     app.delete('/categories/:id', fn.loggedIn(), fn.permissions.check('stores_stock_admin'),   (req, res) => {
-        fn.get(
-            'categories',
-            {category_id: req.params.id},
-            ['category_id']
-        )
+        fn.categories.get(req.params.id)
         .then(category => {
             m.item_categories.destroy(
                 {where: {category_id: category.category_id}}

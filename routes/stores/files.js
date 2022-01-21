@@ -44,10 +44,7 @@ module.exports = (app, m, fn) => {
     });
 
     app.get('/files/:id/download',  fn.loggedIn(), fn.permissions.check('supplier_admin'),  (req, res) => {
-        fn.get(
-            'files',
-            {file_id: req.params.id}
-        )
+        fn.files.get(req.params.id)
         .then(file => {
             if (!file.filename || file.filename === '') fn.send_error(res, 'No filename')
             else {
@@ -117,10 +114,7 @@ module.exports = (app, m, fn) => {
         };
     });
     app.post('/file_details',       fn.loggedIn(), fn.permissions.check('supplier_admin'),  (req, res) => {
-        fn.get(
-            'files',
-            {file_id: req.body.detail.file_id}
-        )
+        fn.files.get(req.body.detail.file_id)
         .then(file => {
             m.file_details.findOrCreate({
                 where: {
@@ -149,10 +143,7 @@ module.exports = (app, m, fn) => {
     });
 
     app.delete('/files/:id',        fn.loggedIn(), fn.permissions.check('supplier_admin'),  (req, res) => {
-        fn.get(
-            'files',
-            {file_id: req.params.id}
-        )
+        fn.files.get(req.params.id)
         .then(file => {
             file.destroy()
             .then(result => {
