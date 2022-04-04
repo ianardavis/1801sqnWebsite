@@ -3,7 +3,9 @@ function build_query(options) {
     if (!options.action || (options.action !== 'sum' && options.action !== 'count')) {
         if (!options.order) {
             let order_col = document.querySelector(`#sort_${options.table}`),
-                order_dir = document.querySelector(`#sort_${options.table}_dir`)
+                order_dir = document.querySelector(`#sort_${options.table}_dir`);
+            console.log(order_col);
+            console.log(order_dir);
             if (order_col && order_dir) {
                 let order_col_parsed = JSON.parse(order_col.value);
                 options.order = order_col_parsed.concat([order_dir.value]);
@@ -50,7 +52,6 @@ function get(options) {
             try {
                 if (options.streamAction) options.streamAction(event.target.responseText)
                 else {
-                    console.log(event);
                     let response = eventParse(event);
                     if (response.success) {
                         if (options.func) {
