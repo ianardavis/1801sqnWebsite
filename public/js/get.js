@@ -51,6 +51,7 @@ function get(options) {
                 if (options.streamAction) options.streamAction(event.target.responseText)
                 else {
                     let response = eventParse(event);
+                    console.log(response);
                     if (response.success) {
                         if (options.func) {
                             add_page_links(
