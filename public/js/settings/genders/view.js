@@ -4,8 +4,8 @@ function getGenders() {
         get({
             table: 'genders'
         })
-        .then(function ([genders, options]) {
-            genders.results.forEach(gender => {
+        .then(function ([results, options]) {
+            results.genders.forEach(gender => {
                 let row = tbl_genders.insertRow(-1);
                 add_cell(row, {text: gender.gender});
                 add_cell(row, {append:
