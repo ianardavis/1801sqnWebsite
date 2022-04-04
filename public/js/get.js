@@ -4,8 +4,8 @@ function build_query(options) {
         if (!options.order) {
             let order_col = document.querySelector(`#sort_${options.table}`),
                 order_dir = document.querySelector(`#sort_${options.table}_dir`);
-            console.log(order_col);
-            console.log(order_dir);
+            console.log(order_col.value);
+            console.log(order_dir.value);
             if (order_col && order_dir) {
                 let order_col_parsed = JSON.parse(order_col.value);
                 options.order = order_col_parsed.concat([order_dir.value]);
