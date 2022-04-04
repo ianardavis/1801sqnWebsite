@@ -30,7 +30,7 @@ module.exports = (app, m, fn) => {
     app.post('/writeoffs',    fn.loggedIn(), fn.permissions.check('canteen_stock_admin'), (req, res) => {
         if (!req.body.writeoff) fn.send_error(res, 'No body')
         else {
-            fn.writeoffs.create(req.body.writeoff, req.user.user_Id)
+            fn.writeoffs.create(req.body.writeoff, req.user.user_id)
             .then(result => res.send({success: true, message: 'Stock written off'}))
             .catch(err => fn.send_error(res, err));
         };
