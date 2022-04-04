@@ -5,7 +5,7 @@ function getGenders() {
             table: 'genders'
         })
         .then(function ([genders, options]) {
-            genders.forEach(gender => {
+            genders.results.forEach(gender => {
                 let row = tbl_genders.insertRow(-1);
                 add_cell(row, {text: gender.gender});
                 add_cell(row, {append:

@@ -5,7 +5,7 @@ function getAccounts() {
             table: 'accounts'
         })
         .then(function ([accounts, options]) {
-            accounts.forEach(account => {
+            accounts.results.forEach(account => {
                 let row = tbl_accounts.insertRow(-1);
                 add_cell(row, {text: account.name});
                 add_cell(row, {text: account.number});

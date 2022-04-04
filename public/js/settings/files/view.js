@@ -8,7 +8,8 @@ function getFiles() {
             get({table: 'fs_files'})
             .then(function ([fs, options]) {
                 let table_files = [];
-                files.forEach(file => {
+                console.log(files);
+                files.results.forEach(file => {
                     const index = fs.indexOf(file.filename);
                     if (index > -1) fs.splice(index, 1);
                     table_files.push({file_id: file.file_id, filename: file.filename, exists: (index !== -1)});
