@@ -2,6 +2,7 @@ module.exports = (app, m, fn) => {
     app.get('/get/categories',    fn.loggedIn(), fn.permissions.check('access_stores'), (req, res) => {
         // let query = fn.nullify(req.query.where);
         if (req.query.where.category_id_parent && req.query.where.category_id_parent == "") {
+            console.log("nullifying");
             req.query.where.category_id_parent = {[fn.op.is]: null};
         };
         console.log(req.query.where);
