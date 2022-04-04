@@ -1,6 +1,7 @@
 module.exports = (app, m, fn) => {
     app.get('/get/categories',    fn.loggedIn(), fn.permissions.check('access_stores'), (req, res) => {
         // let query = fn.nullify(req.query.where);
+        console.log(req.query.where);
         m.categories.findAndCountAll({
             where:   req.query.where || {},
             include: [fn.inc.stores.categories({as: 'parent'})],
