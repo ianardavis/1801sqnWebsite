@@ -7,13 +7,13 @@ function getCategories(parent_id = '') {
             table: 'categories',
             where: {category_id_parent: parent_id}
         })
-        .then(function ([categories, options]) {
-            if (categories.length === 0) {
+        .then(function ([results, options]) {
+            if (results.categories.length === 0) {
                 let span = document.querySelector(`#caret_${parent_id}`);
                 if (span) span.classList.remove('caret');
                 ul_category.remove();
             } else {
-                categories.forEach(category => {
+                results.categories.forEach(category => {
                     ul_category.appendChild(
                         new Category_LI({
                             text:  category.category,

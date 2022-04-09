@@ -31,4 +31,12 @@ function getFiles() {
         });
     });
 };
+sort_listeners(
+    'files',
+    getGenders,
+    [
+        {value: '["createdAt"]', text: 'Created'},
+        {value: '["filename"]',  text: 'Filename', selected: true}
+    ]
+);
 addReloadListener(getFiles);

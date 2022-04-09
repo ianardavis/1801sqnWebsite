@@ -4,22 +4,22 @@ module.exports = function (m, fn) {
     fn.demands.get = function (demand_id) {
         return fn.get('demands', {demand_id: demand_id});
     };
-    fn.demands.create   = function (options = {}) {
+    fn.demands.create   = function (supplier_id, user_id) {
         return new Promise((resolve, reject) => {
-            fn.suppliers.get(options.supplier_id)
+            fn.suppliers.get(supplier_id)
             .then(supplier => {
                 m.demands.findOrCreate({
                     where: {
                         supplier_id: supplier.supplier_id,
                         status:     1
                     },
-                    defaults: {user_id: options.user_id}
+                    defaults: {user_id: user_id}
                 })
                 .then(([demand, created]) => {
                     if (created) {
                         fn.actions.create(
                             'DEMAND | CREATED',
-                            options.user_id,
+                            user_id,
                             [{table: 'demands', id: demand.demand_id}]
                         )
                         .then(action => resolve(demand.demand_id))

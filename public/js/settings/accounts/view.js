@@ -42,6 +42,16 @@ function viewAccount(account_id) {
     });
 };
 addReloadListener(getAccounts);
+sort_listeners(
+    'accounts',
+    getAccounts,
+    [
+        {value: '["createdAt"]', text: 'Created'},
+        {value: '["name"]',      text: 'Name', selected: true},
+        {value: '["number"]',    text: 'Number', selected: true},
+        {value: '["user_id"]',   text: 'Owner', selected: true}
+    ]
+);
 window.addEventListener('load', function () {
     modalOnShow('account_view', function (event) {viewAccount(event.relatedTarget.dataset.id)});
 });

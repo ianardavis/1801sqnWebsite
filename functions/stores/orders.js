@@ -263,10 +263,10 @@ module.exports = function (m, fn) {
                     let demand_actions = [];
                     suppliers.forEach(supplier => {
                         demand_actions.push(new Promise((resolve, reject) => {
-                            fn.demands.create({
-                                supplier_id: supplier.supplier_id,
-                                user_id:     user_id
-                            })
+                            fn.demands.create(
+                                supplier.supplier_id,
+                                user_id
+                            )
                             .then(demand_id => {
                                 let line_actions = [];
                                 supplier.sizes.forEach(size => {

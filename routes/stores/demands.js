@@ -102,10 +102,10 @@ module.exports = (app, m, fn) => {
         } else fn.send_error(res, 'No lines');
     });
     app.post('/demands',             fn.loggedIn(), fn.permissions.check('authorised_demander'), (req, res) => {
-        fn.demands.create({
-            supplier_id: req.body.supplier_id,
-            user_id:     req.user.user_id
-        })
+        fn.demands.create(
+            req.body.supplier_id,
+            req.user.user_id
+        )
         .then(demand => res.send({success: true, message: (demand.created ? 'There is already a demand open for this supplier' : 'Demand raised')}))
         .catch(err => fn.send_error(res, err));
     });

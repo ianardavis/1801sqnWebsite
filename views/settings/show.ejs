@@ -28,11 +28,10 @@
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="printers" role="tabpanel" aria-labelledby="printers-tab">
             <%- include(`${partials}/inputs/display`, {title: 'Printer', id: 'setting_printer'}) %>
-            <%- include(`${partials}/button/button`, {text: 'Find Printer', type: 'primary', id: 'printers', classes: ['w-100']}) %>
+            <%- include(`${partials}/button/button`, {text: 'Find Printers', type: 'primary', id: 'printers', classes: ['w-100', 'mb-1']}) %>
             <form id='form_printers'>
-                <%- include(`${partials}/button/button`, {text: 'Save Selected Printer', type: 'success', classes: ['w-100']}) %>
-                <%- include(`${partials}/sort`, {table: 'printers'}) %>
-	            <table class="table table-sm table-hover">
+                <%- include(`${partials}/button/button`, {text: 'Save Selected Printer', type: 'success', classes: ['w-100', 'mb-1']}) %>
+                <table class="table table-sm table-hover">
                     <thead class="thead-dark">
                         <th><i class='fas fa-check'></i></th>
                         <th class="w-100">Printer</th>
@@ -74,7 +73,7 @@
                     <thead class="thead-dark">
                         <th class='w-20'>File ID </th>
                         <th class='w-60'>Filename</th>
-                        <th class='w-20'>Gender</th>
+                        <th class='w-20'>Exists</th>
                         <th><i class='fas fa-trash-alt'></i></th>
                     </thead>
                     <tbody id='tbl_files'></tbody>
@@ -357,7 +356,6 @@
 <script src="/js/settings/settings/add.js"></script>
 <script src="/js/settings/settings/edit.js"></script>
 <script src="/js/settings/settings/delete.js"></script>
-<script async>getSettings()</script>
 <script async>getPrinter()</script>
 <script async>getErrorLog()</script>
 <script async>getOutLog()</script>
@@ -367,7 +365,6 @@
     <script src="/js/settings/genders/add.js"></script>
     <script src="/js/settings/genders/edit.js"></script>
     <script src="/js/settings/genders/delete.js"></script>
-    <script async>getGenders()</script>
     <script src="/js/utils/list/categories.js"></script>
     <script src="/js/settings/categories/view.js"></script>
     <script src="/js/tree.js"></script>
@@ -381,14 +378,11 @@
 <% if (permissions.supplier_admin) { %>
     <script src="/js/settings/files/view.js"></script>
     <script src="/js/settings/files/delete.js"></script>
-    <script async>getFiles()</script>
-    
     <script src="/js/settings/accounts/view.js"></script>
     <script src="/js/utils/list/users.js"></script>
     <script src="/js/settings/accounts/add.js"></script>
     <script src="/js/settings/accounts/edit.js"></script>
     <script src="/js/settings/accounts/delete.js"></script>
-    <script async>getAccounts()</script>
 <% } %>
 
 <%- include(`${partials}/foot/components/htmlClose`) %>

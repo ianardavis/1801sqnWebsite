@@ -77,6 +77,15 @@ addReloadListener(getErrorLog);
 addReloadListener(getOutLog);
 addReloadListener(getPrinter);
 addReloadListener(getSettings);
+sort_listeners(
+    'settings',
+    getSettings,
+    [
+        {value: '["createdAt"]', text: 'Created'},
+        {value: '["name"]',      text: 'Setting', selected: true},
+        {value: '["value"]',     text: 'Value'}
+    ]
+);
 window.addEventListener('load', function () {
     modalOnShow('setting_view', function (event) {viewSetting(event.relatedTarget.dataset.id)});
 });
