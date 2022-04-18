@@ -12,7 +12,7 @@ function getLines() {
             func: getLines
         })
         .then(function ([result, options]) {
-            set_count('line', resul.count);
+            set_count('line', result.count);
             let row_index = 0;
             result.lines.forEach(line => {
                 try {
