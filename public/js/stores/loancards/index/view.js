@@ -12,8 +12,8 @@ function getLoancards() {
             table: 'loancards',
             where: where
         })
-        .then(function ([loancards, options]) {
-            loancards.forEach(loancard => {
+        .then(function ([results, options]) {
+            results.loancards.forEach(loancard => {
                 let row = tbl_loancards.insertRow(-1);
                 add_cell(row, table_date(loancard.createdAt));
                 add_cell(row, {text: print_user(loancard.user_loancard)});
@@ -51,7 +51,6 @@ function StopScanning() {
 function StartScanning() {
     Html5Qrcode.getCameras().then(devices => {
         if (devices && devices.length) {
-            // const html5QrCode = new Html5Qrcode("reader");
             const config = {
                 fps: 10,
                 qrbox: { width: 250, height: 250 },
@@ -73,6 +72,15 @@ function StartScanning() {
 function GoToEnter(input) {
     if(event.key === 'Enter') gotoLoancard(input.value);
 };
+sort_listeners(
+    'loancards',
+    getLoancards,
+    [
+        {value: '["createdAt"]',        text: 'Created'},
+        {value: '["user_id_loancard"]', text: 'User', selected: true},
+        {value: '["status"]',           text: 'Status'}
+    ]
+);
 addReloadListener(getLoancards);
 window.addEventListener('load', function () {
     addListener('goto_loancard_id', );
@@ -87,5 +95,5 @@ window.addEventListener('load', function () {
     addListener('sel_users',    getLoancards, 'change');
     addListener('createdAt_from', function (){filter()}, 'change');
     addListener('createdAt_to',   function (){filter()}, 'change');
-    getLoancards();
+    // getLoancards();
 });

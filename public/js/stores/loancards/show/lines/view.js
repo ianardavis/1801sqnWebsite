@@ -1,6 +1,5 @@
 let line_statuses = {'0': 'Cancelled', '1': 'Pending', '2': 'Issued', '3': 'Returned'};
 function getLines() {
-    disable_button('lines_action');
     clear('tbl_lines')
     .then(tbl_lines => {
         let sel_status = document.querySelector('#sel_status') || {value: ''},

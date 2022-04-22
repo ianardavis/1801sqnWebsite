@@ -405,7 +405,7 @@ module.exports = function (m, fn) {
     };
     fn.loancards.lines.cancel = function (options = {}) {
         return new Promise((resolve, reject) => {
-            fn.loancards.get(options.loancard_line_id)
+            fn.loancards.lines.get(options.loancard_line_id)
             .then(line => {
                 if      (line.status === 0) reject(new Error('This line has already been cancelled'))
                 else if (line.status === 2) reject(new Error('This line has already been completed'))
@@ -615,9 +615,9 @@ module.exports = function (m, fn) {
             };
         });
     };
-    function add_stock(size_id, nsn_id, loancard_id, user_id, issue_id, options) {
+    function add_stock(size_id, nsn_id, loancard_id, user_id, line) {
         return new Promise((resolve, reject) => {
-            check_stock(size_id, options)
+            check_stock(size_id, line)
             .then(stock => {
                 m.loancard_lines.findOrCreate({
                     where: {
@@ -627,32 +627,32 @@ module.exports = function (m, fn) {
                         nsn_id:      nsn_id
                     },
                     defaults: {
-                        qty:     options.qty,
-                        user_id: options.user_id,
+                        qty:     line.qty,
+                        user_id: user_id,
                     }
                 })
                 .then(([loancard_line, created]) => {
-                    fn.decrement(stock, options.qty)
+                    fn.decrement(stock, line.qty)
                     .then(result => {
                         let action = null;
                         if (created) action = new Promise(r => r(true))
-                        else         action = fn.increment(loancard_line, options.qty);
+                        else         action = fn.increment(loancard_line, line.qty);
                         action
                         .then(result => {
                             fn.actions.create(
-                                `LOANCARD LINE | ${(created ? 'CREATED' : `INCREMENTED | By ${options.qty}`)}`,
+                                `LOANCARD LINE | ${(created ? 'CREATED' : `INCREMENTED | By ${line.qty}`)}`,
                                 user_id,
                                 [
                                     {table: 'loancard_lines', id: loancard_line.loancard_line_id},
                                     {table: 'stocks',         id: stock.stock_id},
-                                    {table: 'issues',         id: issue_id},
-                                    ...(nsn_id ? {table: 'nsns', id: nsn_id} : {})
+                                    {table: 'issues',         id: line.issue_id},
+                                    (nsn_id ? {table: 'nsns', id: nsn_id} : {})
                                 ]
                             )
-                            .then(action => resolve(options.qty))
+                            .then(action => resolve(line.qty))
                             .catch(err => {
                                 console.log(err);
-                                resolve(options.qty)
+                                resolve(line.qty)
                             });
                         })
                         .catch(err => reject(err));

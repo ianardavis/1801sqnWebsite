@@ -65,8 +65,9 @@ module.exports = (app, m, fn) => {
             include: [
                 {
                     model: m.loancard_lines,
-                    as: 'lines',
-                    where: {status: {[fn.op.ne]: 0}}
+                    as:    'lines',
+                    where: {status: {[fn.op.ne]: 0}},
+                    required: false
                 },
                 fn.inc.users.user(),
                 fn.inc.users.user({as: 'user_loancard'})
