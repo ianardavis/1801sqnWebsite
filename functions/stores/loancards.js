@@ -59,9 +59,10 @@ module.exports = function (m, fn) {
         return 85;
     };
     function addHeader(doc, loancard, y) {
+        console.log(loancard.user_loancard);
         doc
             .fontSize(15)
-            .text(`Rank: ${      loancard.user_loancard.rank.rank}`,      28,  y)
+            .text(`Rank: ${     (loancard.user_loancard.rank ? loancard.user_loancard.rank.rank : "")}`, 28, y)
             .text(`Surname: ${   loancard.user_loancard.surname}`,        140, y)
             .text(`First Name: ${loancard.user_loancard.first_name}`,     380, y)
             .text(`Service #: ${ loancard.user_loancard.service_number}`, 28,  y+20)
