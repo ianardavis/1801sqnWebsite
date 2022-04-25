@@ -24,7 +24,9 @@ module.exports = function (m, fn) {
                         docMetadata = {},
                         writeStream = fs.createWriteStream(`${process.env.ROOT}/public/res/loancards/${file}`, {flags: 'w'});
                     docMetadata.Title         = `Loan Card: ${loancard.loancard_id}`;
-                    docMetadata.Author        = `${loancard.user.rank.rank} ${loancard.user.full_name}`;
+                    if (loancard.user) {
+                        docMetadata.Author = `${(loancard.user.rank ? loancard.user.rank.rank : "")} ${loancard.user.full_name}`;
+                    }
                     docMetadata.bufferPages   = true;
                     docMetadata.autoFirstPage = false;
                     const doc = new PDF(docMetadata);
