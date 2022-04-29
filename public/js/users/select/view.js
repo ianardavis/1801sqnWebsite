@@ -1,8 +1,8 @@
 function getRanks() {
-    listRanks({blank: {text: 'All'}})
+    listRanks();
 };
 function getStatuses() {
-    listStatuses({blank: {text: 'All'}})
+    listStatuses();
 };
 function getUsers() {
     clear('tbl_users')
@@ -67,5 +67,4 @@ window.addEventListener('load', function () {
     addListener('btn_select',      selectUsers);
     getRanks();
     getStatuses();
-    getUsers();
 })

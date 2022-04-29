@@ -83,12 +83,12 @@ function getIssues() {
         });
     });
 };
-function getUsers() {
-    return listUsers({
-        select: 'filter_issues_user',
-        blank:  {text: 'All'}
-    });
-};
+// function getUsers() {
+//     return listUsers({
+//         select: 'filter_issues_user',
+//         blank:  {text: 'All'}
+//     });
+// };
 addReloadListener(getIssues);
 sort_listeners(
     'issues',
@@ -104,7 +104,11 @@ sort_listeners(
         {value: '["status"]',                    text: 'Status'}
     ]
 );
-getUsers();
+// getUsers();
+listUsers({
+    select: 'filter_issues_user',
+    blank:  {text: 'All'}
+});
 window.addEventListener('load', function () {
     addListener('filter_issues_user',           getIssues, 'input');
     addListener('status_issues_0',              getIssues, 'input');

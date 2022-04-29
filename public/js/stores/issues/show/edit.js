@@ -10,8 +10,7 @@ function getSizes() {
                 get({
                     table: 'sizes',
                     where:{
-                        item_id: issue.size.item_id,
-                        orderable: true
+                        item_id: issue.size.item_id
                     }
                 })
                 .then(function ([result, options]) {

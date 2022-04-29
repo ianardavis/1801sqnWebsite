@@ -10,7 +10,8 @@ function getLoancards() {
         if (sel_users && sel_users.value !== "") where.user_id_loancard = sel_users.value;
         get({
             table: 'loancards',
-            where: where
+            where: where,
+            func:  getLoancards
         })
         .then(function ([results, options]) {
             results.loancards.forEach(loancard => {
@@ -95,5 +96,4 @@ window.addEventListener('load', function () {
     addListener('sel_users',    getLoancards, 'change');
     addListener('createdAt_from', function (){filter()}, 'change');
     addListener('createdAt_to',   function (){filter()}, 'change');
-    // getLoancards();
 });

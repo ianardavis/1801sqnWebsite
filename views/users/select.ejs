@@ -2,8 +2,8 @@
 <section class='container'>
     <h1>Select User...</h1>
     <div id="div_filters">
-        <%- include(`${partials}/inputs/select`, {id: 'sel_ranks',    title: 'Rank',   spinner_id: 'ranks',    reload_id: 'reload_ranks'}) %>
-        <%- include(`${partials}/inputs/select`, {id: 'sel_statuses', title: 'Status', spinner_id: 'statuses', reload_id: 'reload_statuses'}) %>
+        <%- include(`${partials}/inputs/select`, {id: 'sel_ranks',    title: 'Rank',   spinner_id: 'ranks',    reload_id: 'reload_ranks',    multiple: true}) %>
+        <%- include(`${partials}/inputs/select`, {id: 'sel_statuses', title: 'Status', spinner_id: 'statuses', reload_id: 'reload_statuses', multiple: true}) %>
         <%- include(`${partials}/sort`, {table: 'users'}) %>
 	</div>
     <div id="div_users">

@@ -64,6 +64,6 @@
 <% if (permissions.issuer) { %>
 	<script src="/js/stores/issues/show/delete.js"></script>
 <% } %>
-<script>getSizes_funcs('issue', [1, 2], getIssue);</script>
+<script>getSizes_funcs('issue', [1, 2], getIssue, {});</script>
 <script>getQty_funcs(  'issue', [1, 2], getIssue);</script>
 <%- include(`${partials}/foot/components/htmlClose`) %>

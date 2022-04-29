@@ -5,8 +5,8 @@ module.exports = function (m, fn) {
             'loancards',
             {loancard_id: loancard_id},
             [
-                {model: m.users, as: 'user',          attributes: {exclude: ['password', 'salt', 'reset']}},
-                {model: m.users, as: 'user_loancard', attributes: {exclude: ['password', 'salt', 'reset']}}
+                {model: m.users, as: 'user',          attributes: {exclude: ['password', 'salt', 'reset']}, include: [m.ranks]},
+                {model: m.users, as: 'user_loancard', attributes: {exclude: ['password', 'salt', 'reset']}, include: [m.ranks]}
             ]
         );
     };
@@ -23,7 +23,7 @@ module.exports = function (m, fn) {
                     let file        = `${loancard.loancard_id}-${loancard.user_loancard.surname}.pdf`,
                         docMetadata = {},
                         writeStream = fs.createWriteStream(`${process.env.ROOT}/public/res/loancards/${file}`, {flags: 'w'});
-                    docMetadata.Title         = `Loan Card: ${loancard.loancard_id}`;
+                    docMetadata.Title = `Loan Card: ${loancard.loancard_id}`;
                     if (loancard.user) {
                         docMetadata.Author = `${(loancard.user.rank ? loancard.user.rank.rank : "")} ${loancard.user.full_name}`;
                     }
@@ -59,7 +59,6 @@ module.exports = function (m, fn) {
         return 85;
     };
     function addHeader(doc, loancard, y) {
-        console.log(loancard.user_loancard);
         doc
             .fontSize(15)
             .text(`Rank: ${     (loancard.user_loancard.rank ? loancard.user_loancard.rank.rank : "")}`, 28, y)

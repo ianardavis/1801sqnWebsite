@@ -10,6 +10,7 @@
             <% if (locals.name) { %>    name=<%= name %><% } %>
             <% if (locals.required) { %>required<% } %>
             <% if (locals.size) { %>    size='<%= size %>'<% } %>
+            <% if (locals.multiple) { %>multiple<% } %>
         >
         <% if (locals.options) { %>
             <% options.forEach(option => { %>

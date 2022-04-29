@@ -30,11 +30,11 @@ function getLoancard() {
             enable_button('loancard_file_download');
             if (loancard.filename) enable_button('loancard_file_delete');
             enable_button('loancard_date_due_edit', '');
-            set_attribute('form_download', 'method', 'GET');
-            set_attribute('form_download', 'action', `/loancards/${loancard.loancard_id}/download`);
+            set_attribute('form_loancard_file_download', 'method', 'GET');
+            set_attribute('form_loancard_file_download', 'action', `/loancards/${loancard.loancard_id}/download`);
         } else {
-            set_attribute('form_download', 'method');
-            set_attribute('form_download', 'action');
+            set_attribute('form_loancard_file_download', 'method');
+            set_attribute('form_loancard_file_download', 'action');
         };
         return loancard.status;
     })
