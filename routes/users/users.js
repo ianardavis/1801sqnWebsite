@@ -52,7 +52,7 @@ module.exports = (app, m, fn) => {
             ...fn.pagination(req.query)
         })
         .then(results => fn.send_res('users', res, results, req.query))
-        .catch(err =>  fn.send_error(res, err));
+        .catch(err => fn.send_error(res, err));
     });
 
     app.post('/users',            fn.loggedIn(), fn.permissions.check('user_admin'),         (req, res) => {

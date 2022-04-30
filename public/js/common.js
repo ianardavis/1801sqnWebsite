@@ -329,7 +329,13 @@ function toProperCase(str) {
         return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
       }
     );
-  }
+};
+function getSelectedOptions(id) {
+    let e = document.querySelector(`#${id}`);
+    if (e && e.selectedOptions) {
+        return Array.from(e.selectedOptions).map(({ value }) => value)
+    } else return [];
+}
 let path = window.location.pathname.toString().split('/');
 window.addEventListener('load', function() {
     document.title = `${toProperCase(path[1])} | 1801 (Alnwick) Sqn ATC`;

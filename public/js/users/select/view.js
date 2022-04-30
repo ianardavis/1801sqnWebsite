@@ -1,20 +1,13 @@
-function getRanks() {
-    listRanks();
-};
-function getStatuses() {
-    listStatuses();
-};
 function getUsers() {
     clear('tbl_users')
     .then(tbl_users => {
-        let ranks     = document.querySelector('#sel_ranks')    || {value: ''},
-            statuses  = document.querySelector('#sel_statuses') || {value: ''},
-            where = {};
-        if (ranks   .value !== '') where.rank_id   = ranks.value;
-        if (statuses.value !== '') where.status_id = statuses.value;
+        let where = {},
+            ranks    = getSelectedOptions('sel_ranks'),
+            statuses = getSelectedOptions('sel_statuses');
+        if (ranks   .length > 0) where.rank_id   = ranks;
+        if (statuses.length > 0) where.status_id = statuses;
         get({
             table: 'users',
-            location: 'users/current',
             where: where
         })
         .then(function ([result, options]) {
@@ -52,19 +45,17 @@ sort_listeners(
     getUsers,
     [
         {value: '["createdAt"]',      text: 'Created'},
-        {value: '["service_number"]', text: 'Service #/Bader #', selected: true},
+        {value: '["service_number"]', text: 'Service #/Bader #'},
         {value: '["rank_id"]',        text: 'Rank'},
-        {value: '["surname"]',        text: 'Surname'},
+        {value: '["surname"]',        text: 'Surname', selected: true},
         {value: '["first_name"]',     text: 'First Name'}
     ]
 );
 window.addEventListener('load', function () {
     addListener('tbl_users', toggle_checkbox_on_row_click);
-    addListener('reload_ranks',    getRanks);
-    addListener('reload_statuses', getStatuses);
-    addListener('sel_ranks',       getUsers, 'change');
-    addListener('sel_statuses',    getUsers, 'change');
-    addListener('btn_select',      selectUsers);
-    getRanks();
-    getStatuses();
+    addListener('sel_ranks',    getUsers, 'change');
+    addListener('sel_statuses', getUsers, 'change');
+    addListener('btn_select',   selectUsers);
+    listRanks();
+    listStatuses();
 })

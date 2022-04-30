@@ -9,7 +9,7 @@
 			<%- include(`${partials}/button/modal/open`, {type: 'success', text: 'Add Supplier', modal: 'supplier_add', classes: ['w-100']}) %>
 		</div>
 		<div class="col-12 col-md-4 mb-1">
-			<input class='form-control' type='text' id='supplierSearch' onkeyup='searchCards(this)' placeholder='Search by name...'>
+			<input class='form-control' type='text' id='supplierSearch' placeholder='Search by name...'>
 		</div>
 		<div class="col-12 col-md-4 mb-1">
 			<%- include(`${partials}/sort`, {table: 'suppliers'}) %>

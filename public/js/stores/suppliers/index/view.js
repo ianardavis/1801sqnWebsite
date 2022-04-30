@@ -1,8 +1,14 @@
 function getSuppliers() {
     clear('tbl_suppliers')
     .then(tbl_suppliers => {
+        let like = {},
+            searchString = document.querySelector('#supplierSearch');
+        if (searchString.value.trim() != "") {
+            like.name = searchString.value
+        }
         get({
-            table: 'suppliers'
+            table: 'suppliers',
+            like:  like
         })
         .then(function ([result, options]) {
             result.suppliers.forEach(supplier => {
@@ -29,3 +35,7 @@ sort_listeners(
         {value: '["name"]',      text: 'Name', selected: true}
     ]
 );
+window.addEventListener('load', function () {
+    let searchString = document.querySelector('#supplierSearch');
+    searchString.addEventListener('input', getSuppliers);
+});
