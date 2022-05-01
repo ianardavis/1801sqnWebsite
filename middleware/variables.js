@@ -1,6 +1,5 @@
 module.exports = () => {
     return (req, res, next) => {
-        console.log(req.query.where);
         ['where', 'like', 'lt', 'gt', 'order', 'limit', 'offset'].forEach(e => {
             if (req.query[e]){
                 try {

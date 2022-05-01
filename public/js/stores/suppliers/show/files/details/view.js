@@ -5,8 +5,8 @@ function viewDetails(file_id) {
             table: 'file_details',
             where: {file_id: file_id}
         })
-        .then(function ([details, options]) {
-            details.forEach(e => {
+        .then(function ([result, options]) {
+            result.details.forEach(e => {
                 let row = tbl_file_details.insertRow(-1);
                 add_cell(row, {text: e.name});
                 add_cell(row, {text: e.value});

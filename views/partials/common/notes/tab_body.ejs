@@ -1,9 +1,6 @@
 <div class="tab-pane fade" id="notes" role="tabpanel">
     <div class="row mb-1">
         <div class="col-12 col-md-4 mb-1">
-            <%- include(`${partials}/button/modal/open`, {text: 'New Note', type: 'success', modal: 'note_add', classes: ['w-100'], small: true}) %>
-        </div>
-        <div class="col-12 col-md-4 mb-1">
             <select class='form-select form-select-sm' id='sel_system'>
                 <option value="" >Include System Notes</option>
                 <option value="0">Exclude System Notes</option>
@@ -20,6 +17,23 @@
             <th class='w-70'>Note</th>
             <th><i class="fas fa-search"></i></th>
         </thead>
+        <form id='form_note_add'>
+            <input type="hidden" name='note[_table]' id="note_add_table">
+            <input type="hidden" name='note[id]'     id="note_add_id">
+            <script>
+                document.querySelector('#note_add_table').value = path[1];
+                document.querySelector('#note_add_id')   .value = path[2];
+            </script>
+            <tbody>
+                <tr>
+                    <td></td>
+                    <td>
+                        <textarea class='form-control' name="note[note]" id="note_add_note" rows="1" required></textarea>
+                    </td>
+                    <td><button class='btn btn-sm btn-success'><i class="fas fa-check"></i></button></td>
+                </tr>
+            </tbody>
+        </form>
         <tbody id="tbl_notes"></tbody>
     </table>
     <%- include(`${partials}/limit`, {table: 'notes'}) %>
