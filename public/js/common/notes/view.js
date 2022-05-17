@@ -1,12 +1,12 @@
 function getNotes() {
     clear('tbl_notes')
     .then(tbl_notes => {
-        let sel_system = document.querySelector('#sel_system') || {value: ''},
-            where = {
+        let where = {
                 _table: path[1],
                 id:     path[2]
-            };
-        if (sel_system.value !== '') where.system = (sel_system.value === '1');
+            },
+            system = getSelectedOptions('sel_system');
+        if (system.length > 0) where.system = system;
         get({
             table: 'notes',
             where: where,

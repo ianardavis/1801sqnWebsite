@@ -1,12 +1,12 @@
-let getGenders = listGenders({blank: {text: 'All'}});
+let getGenders = listGenders({all_selected: true});
 function getItems() {
     clear('tbl_items')
     .then(tbl_items => {
-        let sel_genders      = document.querySelector('#sel_genders')      || {value: ''},
-            item_description = document.querySelector('#item_description') || {value: ''},
+        let item_description = document.querySelector('#item_description') || {value: ''},
             where = null,
-            like  = null;
-        if (sel_genders.value      !== '') where = {gender_id:   sel_genders.value};
+            like  = null,
+            genders = getSelectedOptions('sel_genders');
+        if (genders.length > 0) where = {gender_id: genders};
         if (item_description.value !== '') like  = {description: item_description.value};
         get({
             table: 'items',

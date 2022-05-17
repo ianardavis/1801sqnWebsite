@@ -1,16 +1,12 @@
-<div class="float-end w-100 mb-1">
-    <div class="row">
-        <div class="col-3 align-self-center">
-            <label for="sort_<%= table %>">Sort By:</label>
-        </div>
-        <div class="col-5">
-            <select class='form-select w-100 form-select-sm' id='sort_<%= table %>'></select>
-        </div>
-        <div class="col-4">
-            <select class='form-select w-100 form-select-sm' id='sort_<%= table %>_dir'>
+<% if (locals.includeRow) { %><div class="row mb-1 justify-content-end"><% } %>
+    <div class="col-12 col-md-4">
+        <div class="input-group input-group-sm">
+            <label class="input-group-text w-30" for="sort_<%= table %>">Sort By</label>
+            <select class="form-select" id="sort_<%= table %>"></select>
+            <select class='form-select' id='sort_<%= table %>_dir'>
                 <option value="ASC" >Ascending</option>
                 <option value="DESC">Descending</option>
             </select>
         </div>
     </div>
-</div>
+<% if (locals.includeRow) { %></div><% } %>

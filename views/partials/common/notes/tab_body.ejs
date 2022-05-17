@@ -1,15 +1,12 @@
 <div class="tab-pane fade" id="notes" role="tabpanel">
-    <div class="row mb-1">
+    <div class="row justify-content-between mb-1">
         <div class="col-12 col-md-4 mb-1">
-            <select class='form-select form-select-sm' id='sel_system'>
-                <option value="" >Include System Notes</option>
-                <option value="0">Exclude System Notes</option>
-                <option value="1">Only System Notes</option>
+            <select class='form-select form-select-sm' id='sel_system' multiple size="2">
+                <option value="0" selected>Non-System Notes</option>
+                <option value="1">System Notes</option>
             </select>
         </div>
-        <div class="col-12 col-md-4 mb-1 justify-content-center">
-            <%- include(`${partials}/sort`, {table: 'notes'}) %>
-        </div>
+        <%- include(`${partials}/sort`, {table: 'notes'}) %>
     </div>
 	<table class="table table-sm table-hover">
         <thead class="thead-dark">
@@ -27,10 +24,8 @@
             <tbody>
                 <tr>
                     <td></td>
-                    <td>
-                        <textarea class='form-control' name="note[note]" id="note_add_note" rows="1" required></textarea>
-                    </td>
-                    <td><button class='btn btn-sm btn-success'><i class="fas fa-check"></i></button></td>
+                    <td><textarea class='form-control form-control-sm' name="note[note]" id="note_add_note" rows="1" placeholder="Required" required></textarea></td>
+                    <td><button class='btn btn-sm btn-success'><i class="fas fa-plus"></i></button></td>
                 </tr>
             </tbody>
         </form>

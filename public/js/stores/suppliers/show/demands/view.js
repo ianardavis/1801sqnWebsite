@@ -2,9 +2,9 @@ let demand_statuses = {'0': 'Cancelled', '1': 'Draft', '2': 'Complete', '3': 'Cl
 function getDemands() {
     clear('tbl_demands')
     .then(tbl_demands => {
-        let sel_status = document.querySelector('#sel_demand_status') || {value: ''},
-            where = {supplier_id: path[2]};
-        if (sel_status.value !== '') where.status = sel_status.value;
+        let where = {supplier_id: path[2]},
+            statuses = getSelectedOptions('sel_demand_status');
+        if (statuses.length > 0) where.status = statuses;
         get({
             table: 'demands',
             where: where,
