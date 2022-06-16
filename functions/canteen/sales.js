@@ -160,7 +160,8 @@ module.exports = function (m, fn) {
         return new Promise((resolve, reject) => {
             fn.get(
                 'sales',
-                {sale_id: sale_id}
+                {sale_id: sale_id},
+                [{model: m.sale_lines, as: 'lines'}]
             )
             .then(sale => {
                 if      (sale.status === 0) reject(new Error('Sale has been cancelled'))
@@ -169,7 +170,7 @@ module.exports = function (m, fn) {
                     process_payments(sale.sale_id, _sale, user_id)
                     .then(change => {
                         let actions = [fn.update(sale, {status: 2})];
-                        lines.forEach(line => actions.push(subtract_sold_qty_from_stock(line.item_id, line.qty)))
+                        sale.lines.forEach(line => actions.push(subtract_sold_qty_from_stock(line.item_id, line.qty)))
                         Promise.all(actions)
                         .then(result => resolve(change))
                         .catch(err => reject(err));
@@ -191,7 +192,7 @@ module.exports = function (m, fn) {
             .then(sale => {
                 if      (!sale.session)             reject(new Error('Session not found'))
                 else if (sale.session.status !== 1) reject(new Error('Session for this sale is not open'))
-                else resolve(true);
+                else resolve(sale);
             })
             .catch(err => reject(err));
         });

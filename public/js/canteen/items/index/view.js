@@ -8,8 +8,8 @@ function getItems() {
             table: 'canteen_items',
             where: where
         })
-        .then(function ([items, options]) {
-            items.forEach(item => {
+        .then(function ([results, options]) {
+            results.items.forEach(item => {
                 let row = tbl_items.insertRow(-1);
                 add_cell(row, {text: item.name});
                 add_cell(row, {text: `£${Number(item.price).toFixed(2)}`});

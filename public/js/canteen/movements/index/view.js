@@ -4,8 +4,8 @@ function getMovements() {
         get({
             table: 'movements'
         })
-        .then(function ([movements, options]) {
-            movements.forEach(movement => {
+        .then(function ([results, options]) {
+            results.movements.forEach(movement => {
                 let row = tbl_movements.insertRow(-1);
                 add_cell(row, {text: (movement.holding_from ? movement.holding_from.description : (movement.session ? 'Canteen Session' : ''))});
                 add_cell(row, {text: (movement.holding_to   ? movement.holding_to.description : '')});

@@ -4,8 +4,8 @@ function getHoldings() {
         get({
             table: 'holdings'
         })
-        .then(function ([holdings, options]) {
-            holdings.forEach(holding => {
+        .then(function ([results, options]) {
+            results.holdings.forEach(holding => {
                 let row = tbl_holdings.insertRow(-1);
                 add_cell(row, {text: holding.description});
                 add_cell(row, {text: `£${Number(holding.cash).toFixed(2)}`});

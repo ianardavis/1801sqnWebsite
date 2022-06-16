@@ -20,8 +20,8 @@
             <th><i class='fas fa-search'></i></th>
         </thead>
         <tbody id="tbl_paid_in_outs"></tbody>
-		<%- include(`${partials}/limit`, {table: 'paid_in_outs'}) %>
     </table>
+	<%- include(`${partials}/limit`, {table: 'paid_in_outs'}) %>
     <div id="div_modals">
         <div id='mdl_paid_in_out_add' class="modal" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
@@ -49,5 +49,4 @@
 <script src="/js/utils/list/users.js"></script>
 <script src="/js/utils/list/holdings.js"></script>
 <script src="/js/canteen/paid_in_outs/index/add.js"></script>
-<script async>getPaidInOuts()</script>
 <%- include(`${partials}/foot/components/htmlClose`) %>

@@ -4,8 +4,8 @@ function getWriteoffs() {
         get({
             table: 'writeoffs'
         })
-        .then(function ([writeoffs, options]) {
-            writeoffs.forEach(writeoff => {
+        .then(function ([results, options]) {
+            results.writeoffs.forEach(writeoff => {
                 let row = tbl_writeoffs.insertRow(-1);
                 add_cell(row, table_date(writeoff.createdAt));
                 add_cell(row, {text: writeoff.item.name});

@@ -8,9 +8,9 @@ function getHoldings() {
             where: {holding_id: path[2]},
             spinner: 'holdings'
         })
-        .then(function ([holdings, options]) {
+        .then(function ([results, options]) {
             sel_holdings.appendChild(new Option({text: 'Select destination holding...'}).e)
-            holdings.forEach(holding => {
+            results.holdings.forEach(holding => {
                 sel_holdings.appendChild(new Option({text: holding.description, value: holding.holding_id}).e)
             });
         })

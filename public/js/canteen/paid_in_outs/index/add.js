@@ -17,7 +17,7 @@ function getHoldings() {
 function getUsers() {
     listUsers({
         blank: {text: 'Select User...'},
-        table: 'users_current'
+        location: 'users/current'
     });
 };
 window.addEventListener('load', function () {

@@ -10,10 +10,14 @@ function build_query(options) {
             };
         };
         if (options.order) queries.push(`order=${ JSON.stringify(options.order)}`);
-        let limit  = document.querySelector(`.limit_${ options.table} .active`),
-            offset = document.querySelector(`.offset_${options.table} .active`);
-        if (limit && limit.dataset.value !== 'All') queries.push(`limit=${ JSON.stringify(limit .dataset.value)}`);
-        if (offset)                                 queries.push(`offset=${JSON.stringify(offset.dataset.value)}`);
+        try {
+            let limit  = document.querySelector(`.limit_${ options.table} .active`),
+                offset = document.querySelector(`.offset_${options.table} .active`);
+            if (limit && limit.dataset.value !== 'All') queries.push(`limit=${ JSON.stringify(limit .dataset.value)}`);
+            if (offset)                                 queries.push(`offset=${JSON.stringify(offset.dataset.value)}`);
+        } catch (error) {
+            console.log(error);
+        }
     };
     if (options.where) queries.push(`where=${JSON.stringify(options.where)}`);
     if (options.like ) queries.push(`like=${ JSON.stringify(options.like)}`);
@@ -45,6 +49,7 @@ function get(options) {
         show_spinner(options.spinner || options.table || '');
         const XHR = new XMLHttpRequest();
         XHR_ErrorListener(XHR, options.spinner || options.table || '');
+        
         XHR.addEventListener("load", function (event) {
             hide_spinner(options.spinner || options.table || '');
             try {
@@ -79,6 +84,7 @@ function get(options) {
         XHR.addEventListener("error", function () {reject()});
         
         XHR.open('GET', `/${options.action || 'get'}/${options.location || options.table}?${build_query(options).join('&')}`);
+        
         XHR.send();
     });
 };
@@ -104,6 +110,7 @@ function sendData(form, method, _location, options = {reload: false}) {
     const XHR = new XMLHttpRequest(),
           FD  = new FormData(form);
     XHR_ErrorListener(XHR, options.spinner || options.table || '');
+    
     XHR.addEventListener("load", function (event) {
         try {
             let response = eventParse(event);
@@ -136,7 +143,10 @@ function sendData(form, method, _location, options = {reload: false}) {
             console.log(error)
         };
     });
+    
     XHR.addEventListener("error", function () {alert_toast('Ooooopsie Daisie')});
+    
     XHR.open(method, _location);
+    
     XHR.send(FD);
 };

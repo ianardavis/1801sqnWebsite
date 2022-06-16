@@ -8,10 +8,10 @@ function getSales() {
                 table: 'sales',
                 where: {session_id: path[2]}
             })
-            .then(function ([sales, options]) {
-                set_count('sale', sales.length);
+            .then(function ([results, options]) {
+                set_count('sale', results.sales.length);
                 let items = [], takings = 0.00;
-                sales.forEach(sale => {
+                results.sales.forEach(sale => {
                     let row = tbl_sales.insertRow(-1);
                     add_cell(row, {text: print_time(sale.createdAt)});
                     add_cell(row, {text: print_user(sale.user)});

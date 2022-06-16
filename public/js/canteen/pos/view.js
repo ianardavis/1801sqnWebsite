@@ -48,15 +48,15 @@ function getSaleLines() {
                 table: 'sale_lines',
                 where: {sale_id: sale_id.innerText}
             })
-            .then(function ([lines, options]) {
+            .then(function ([results, options]) {
                 let total  = 0;
-                if (lines.length === 0) {
+                if (results.lines.length === 0) {
                     disable_button('complete_sale')
                     disable_button('finish');
                 } else {
                     enable_button('complete_sale');
                     enable_button('finish');
-                    lines.forEach(line => {
+                    results.lines.forEach(line => {
                         total += line.qty * line.price;
                         let row = tbl_sale_lines.insertRow(-1);
                         add_cell(row, {text: line.item.name});
@@ -189,8 +189,8 @@ function getPages() {
                 table: 'canteen_items',
                 where: {current: true}
             })
-            .then(function ([items, options]) {
-                items.forEach(item => {
+            .then(function ([results, options]) {
+                results.items.forEach(item => {
                     all_items.appendChild(
                         new Form({
                             classes: ['col-3', 'mb-2', 'h-100'],
@@ -264,8 +264,8 @@ function getSession() {
         table: 'sessions',
         where: {status: 1}
     })
-    .then(function ([sessions, options]) {
-        set_href('btn_session', `/sessions/${sessions[0].session_id}`);
+    .then(function ([results, options]) {
+        set_href('btn_session', `/sessions/${results.sessions[0].session_id}`);
     });
 };
 addReloadListener(getSale);

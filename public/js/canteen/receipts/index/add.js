@@ -14,14 +14,14 @@ function getItems() {
     clear('sel_items')
     .then(sel_items => {
         get({table: 'canteen_items'})
-        .then(function ([items, options]) {
+        .then(function ([results, options]) {
             sel_items.appendChild(
                 new Option({
                     text: 'Select item ...',
                     selected: true
                 }).e
             )
-            items.forEach(item => {
+            results.items.forEach(item => {
                 sel_items.appendChild(
                     new Option({
                         value: item.item_id,

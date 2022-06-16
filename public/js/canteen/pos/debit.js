@@ -5,9 +5,9 @@ function getCredits() {
             table: 'credits',
             spinner: 'users_debit'
         })
-        .then(function ([credits, options]) {
+        .then(function ([results, options]) {
             sel_credits.appendChild(new Option({value: '', text: 'Select Account'}).e)
-            credits.forEach(credit => {
+            results.credits.forEach(credit => {
                 sel_credits.appendChild(new Option({
                     value: credit.user_id,
                     text: `${credit.user.rank.rank} ${credit.user.full_name} | £${Number(credit.credit).toFixed(2)}`

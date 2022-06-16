@@ -3,8 +3,9 @@ function listUsers(options = {}) {
         clear(options.select || 'sel_users')
         .then(sel_users => {
             get({
-                table:   options.table || 'users',
+                table:   options.table   || 'users',
                 spinner: options.spinner || options.table || 'users',
+                order: ["surname", "ASC"],
                 ...options
             })
             .then(function ([result, options]) {

@@ -45,7 +45,7 @@ module.exports = (app, m, fn) => {
                 m.ranks,
                 {
                     model: m.statuses,
-                    where: {status: {[fn.op.substring]: 'Current'}}
+                    where: {current: true}
                 }
             ],
             attributes: user_attributes,

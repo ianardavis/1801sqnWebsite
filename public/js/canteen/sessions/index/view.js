@@ -1,12 +1,10 @@
 function getSessions() {
     clear('tbl_sessions')
     .then(tbl_sessions => {
-        get({
-            table: 'sessions'
-        })
-        .then(function ([sessions, options]) {
+        get({table: 'sessions'})
+        .then(function ([results, options]) {
             let current_sessions = [];
-            sessions.forEach(session => {
+            results.sessions.forEach(session => {
                 let row = tbl_sessions.insertRow(-1);
                 add_cell(row, table_date(session.createdAt, true));
                 add_cell(row, (session.datetime_end ? table_date(session.datetime_end, true) : ''));
@@ -22,3 +20,12 @@ function getSessions() {
     });
 };
 addReloadListener(getSessions);
+sort_listeners(
+    'sessions',
+    getSessions,
+    [
+        {value: '["createdAt"]',    text: 'Start', selected: true},
+        {value: '["datetime_end"]', text: 'End'},
+        {value: '["status"]',       text: 'Status'}
+    ]
+);

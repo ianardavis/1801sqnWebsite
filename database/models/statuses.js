@@ -23,6 +23,12 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.DATE,
       allowNull: true,
       comment: "null"
+    },
+    'current': {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: true,
+      comment: "null"
     }
   }, {
     tableName: 'statuses',

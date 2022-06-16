@@ -30,9 +30,9 @@ function viewButton(page_id, position, layout = null) {
             table: 'canteen_items',
             where: {current: true}
         })
-        .then(function ([items, options]) {
+        .then(function ([results, options]) {
             sel_items.appendChild(new Option({text: 'Select Item...', selected: (!layout)}).e);
-            items.forEach(e => sel_items.appendChild(new Option({
+            results.items.forEach(e => sel_items.appendChild(new Option({
                 value: e.item_id,
                 text:  e.name,
                 selected: (layout && layout.item_id === e.item_id ? true : false)

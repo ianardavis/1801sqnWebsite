@@ -6,9 +6,9 @@ function getPayments() {
             where: {session_id: path[2]},
             func: getPayments
         })
-        .then(function ([result, options]) {
-            set_count('payment', result.count);
-            result.payments.forEach(payment => {
+        .then(function ([results, options]) {
+            set_count('payment', results.count);
+            results.payments.forEach(payment => {
                 let row = tbl_payments.insertRow(-1);
                 add_cell(row, {text: payment.type});
                 add_cell(row, {text: `£${Number(payment.amount).toFixed(2)}`});

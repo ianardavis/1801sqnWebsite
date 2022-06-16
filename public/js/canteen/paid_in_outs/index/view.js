@@ -3,10 +3,11 @@ function getPaidInOuts() {
     clear('tbl_paid_in_outs')
     .then(tbl_paid_in_outs => {
         get({
-            table: 'paid_in_outs'
+            table: 'paid_in_outs',
+            func: getPaidInOuts
         })
-        .then(function ([paid_in_outs, options]) {
-            paid_in_outs.forEach(paid_in_out => {
+        .then(function ([results, options]) {
+            results.paid_ins.forEach(paid_in_out => {
                 let row = tbl_paid_in_outs.insertRow(-1);
                 add_cell(row, table_date(paid_in_out.createdAt));
                 add_cell(row, {text: (paid_in_out.paid_in ? 'In' : 'Out')});
@@ -21,3 +22,16 @@ function getPaidInOuts() {
     });
 };
 addReloadListener(getPaidInOuts);
+sort_listeners(
+    'paid_in_outs',
+    getPaidInOuts,
+    [
+        {value: '["createdAt"]',           text: 'Date', selected: true},
+        {value: '["paid_in"]',             text: 'Paid In/Out'},
+        {value: '["holding_id"]',          text: 'Holding'},
+        {value: '["user_id_paid_in_out"]', text: 'To/From'},
+        {value: '["reason"]',              text: 'Reason'},
+        {value: '["amount"]',              text: 'Amount'},
+        {value: '["status"]',              text: 'Status'}
+    ]
+);

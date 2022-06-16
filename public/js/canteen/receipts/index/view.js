@@ -4,8 +4,8 @@ function getReceipts() {
         get({
             table: 'receipts'
         })
-        .then(function ([receipts, options]) {
-            receipts.forEach(receipt => {
+        .then(function ([results, options]) {
+            results.receipts.forEach(receipt => {
                 try {
                     let row = tbl_receipts.insertRow(-1);
                     add_cell(row, table_date(receipt.createdAt));

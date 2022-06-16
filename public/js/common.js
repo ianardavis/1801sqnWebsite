@@ -335,7 +335,7 @@ function getSelectedOptions(id) {
     if (e && e.selectedOptions) {
         return Array.from(e.selectedOptions).map(({ value }) => value)
     } else return [];
-}
+};
 let path = window.location.pathname.toString().split('/');
 window.addEventListener('load', function() {
     document.title = `${toProperCase(path[1])} | 1801 (Alnwick) Sqn ATC`;
