@@ -10,7 +10,7 @@
 <%- include(`${partials}/head/components/close`) %>
 <section class='container'>
     <%- include(`${partials}/sort`, {table: 'sessions'}) %>
-	<table class="table table-sm table-hover">
+	<table class="table table-sm table-hover mt-1">
         <thead class="thead-dark">
             <th class='w-40'>Start</th>
             <th class='w-40'>End</th>
@@ -18,8 +18,8 @@
             <th><i class='fas fa-search'></i></th>
         </thead>
         <tbody id="tbl_sessions"></tbody>
-		<%- include(`${partials}/limit`, {table: 'sessions'}) %>
     </table>
+	<%- include(`${partials}/limit`, {table: 'sessions'}) %>
     <div id="div_modals">
         <% if (permissions.pos_supervisor) { %>
             <div id='mdl_session_add' class="modal" tabindex="-1" role="dialog">

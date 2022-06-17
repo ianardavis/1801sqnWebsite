@@ -1,7 +1,10 @@
 function getSessions() {
     clear('tbl_sessions')
     .then(tbl_sessions => {
-        get({table: 'sessions'})
+        get({
+            table: 'sessions',
+            func: getSessions
+        })
         .then(function ([results, options]) {
             let current_sessions = [];
             results.sessions.forEach(session => {

@@ -2,7 +2,8 @@ function getReceipts() {
     clear('tbl_receipts')
     .then(tbl_receipts => {
         get({
-            table: 'receipts'
+            table: 'receipts',
+            func: getReceipts
         })
         .then(function ([results, options]) {
             results.receipts.forEach(receipt => {
@@ -21,4 +22,14 @@ function getReceipts() {
         });
     });
 };
-document.querySelector('#reload').addEventListener('click', getReceipts);
+addReloadListener(getReceipts);
+sort_listeners(
+    'receipts',
+    getReceipts,
+    [
+        {value: '["createdAt"]', text: 'Date', selected: true},
+        {value: '["item_id"]',   text: 'Item'},
+        {value: '["qty"]',       text: 'Qty'},
+        {value: '["cost"]',      text: 'Cost'}
+    ]
+);

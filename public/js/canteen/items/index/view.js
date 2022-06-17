@@ -6,7 +6,8 @@ function getItems() {
         if (current.value !== '') where = {current: true};
         get({
             table: 'canteen_items',
-            where: where
+            where: where,
+            func: getItems
         })
         .then(function ([results, options]) {
             results.items.forEach(item => {
@@ -21,6 +22,16 @@ function getItems() {
     });
 };
 addReloadListener(getItems);
+sort_listeners(
+    'canteen_items',
+    getItems,
+    [
+        {value: '["name"]',    text: 'Name', selected: true},
+        {value: '["price"]',   text: 'Price'},
+        {value: '["qty"]',     text: 'Stock'},
+        {value: '["current"]', text: 'Current'}
+    ]
+);
 window.addEventListener('load', function () {
     addListener('current', getItems, 'change');
 });

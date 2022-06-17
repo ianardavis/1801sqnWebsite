@@ -10,7 +10,7 @@
 <%- include(`${partials}/head/components/close`) %>
 <section class='container'>
     <%- include(`${partials}/sort`, {table: 'receipts'}) %>
-	<table class="table table-sm table-hover">
+	<table class="table table-sm table-hover mt-1">
         <thead class="thead-dark">
             <th class='w-40'>Date</th>
             <th class='w-40'>Item</th>
@@ -19,8 +19,8 @@
             <th><i class='fas fa-search'></i></th>
         </thead>
         <tbody id="tbl_receipts"></tbody>
-		<%- include(`${partials}/limit`, {table: 'receipts'}) %>
     </table>
+    <%- include(`${partials}/limit`, {table: 'receipts'}) %>
     <div id="div_modals">
         <div id='mdl_receipt_add' class="modal" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
@@ -45,6 +45,5 @@
 </section>
 <%- include(`${partials}/foot/app`) %>
 <script src="/js/canteen/receipts/index/view.js"></script>
-<script async>getReceipts()</script>
 <script src="/js/canteen/receipts/index/add.js"></script>
 <%- include(`${partials}/foot/components/htmlClose`) %>

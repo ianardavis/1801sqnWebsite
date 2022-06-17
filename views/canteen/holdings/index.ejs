@@ -8,15 +8,15 @@
 <%- include(`${partials}/head/components/close`) %>
 <section class='container'>
     <%- include(`${partials}/sort`, {table: 'holdings'}) %>
-	<table class="table table-sm table-hover">
+	<table class="table table-sm table-hover mt-1">
         <thead class="thead-dark">
             <th class='w-40'>Description</th>
             <th class='w-60'>Cash</th>
             <th><i class='fas fa-search'></i></th>
         </thead>
         <tbody id="tbl_holdings"></tbody>
-		<%- include(`${partials}/limit`, {table: 'holdings'}) %>
     </table>
+	<%- include(`${partials}/limit`, {table: 'holdings'}) %>
     <div id="div_modals">
         <div id='mdl_holding_add' class="modal" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">

@@ -2,7 +2,8 @@ function getHoldings() {
     clear('tbl_holdings')
     .then(tbl_holdings => {
         get({
-            table: 'holdings'
+            table: 'holdings',
+            func: getHoldings
         })
         .then(function ([results, options]) {
             results.holdings.forEach(holding => {
@@ -15,3 +16,11 @@ function getHoldings() {
     });
 };
 addReloadListener(getHoldings);
+sort_listeners(
+    'holdings',
+    getHoldings,
+    [
+        {value: '["description"]', text: 'Description', selected: true},
+        {value: '["cash"]',        text: 'Cash'}
+    ]
+);

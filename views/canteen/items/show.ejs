@@ -33,7 +33,7 @@
         <% if (permissions.canteen_stock_admin) { %>
             <div class="tab-pane fade" id="receipts"  role="tabpanel" aria-labelledby="receipts-tab">
                 <%- include(`${partials}/sort`, {table: 'receipts'}) %>
-	            <table class="table table-sm table-hover">
+	            <table class="table table-sm table-hover mt-1">
                     <thead class="thead-dark">
                         <th class='w-80'>Date</th>
                         <th class='w-20'>Qty</th>
@@ -47,7 +47,7 @@
         <% if (permissions.canteen_stock_admin) { %>
             <div class="tab-pane fade" id="writeoffs" role="tabpanel" aria-labelledby="writeoffs-tab">
                 <%- include(`${partials}/sort`, {table: 'writeoffs'}) %>
-	            <table class="table table-sm table-hover">
+	            <table class="table table-sm table-hover mt-1">
                     <thead class="thead-dark">
                         <th class='w-30'>Date</th>
                         <th class='w-40'>Reason</th>
@@ -61,8 +61,8 @@
         <% } %>
         <% if (permissions.pos_user) { %>
             <div class="tab-pane fade" id="sales"     role="tabpanel" aria-labelledby="sales-tab">
-                <%- include(`${partials}/sort`, {table: 'sales'}) %>
-	            <table class="table table-sm table-hover">
+                <%- include(`${partials}/sort`, {table: 'sale_lines'}) %>
+	            <table class="table table-sm table-hover mt-1">
                     <thead class="thead-dark">
                         <th class='w-80'>Date</th>
                         <th class='w-20'>Qty</th>
@@ -70,7 +70,7 @@
                     </thead>
                     <tbody id="tbl_sales"></tbody>
                 </table>
-                <%- include(`${partials}/limit`, {table: 'sales'}) %>
+                <%- include(`${partials}/limit`, {table: 'sale_lines'}) %>
             </div>
         <% } %>
         <%- include(`${partials}/common/notes/tab_body`) %>
@@ -145,16 +145,13 @@
 <script async>getItem()</script>
 <% if (permissions.canteen_stock_admin) { %>
     <script src='/js/canteen/items/show/receipts/view.js'></script>
-    <script async>getReceipts()</script>
     <script src='/js/canteen/items/show/receipts/add.js'></script>
     <script src='/js/canteen/items/show/writeoffs/view.js'></script>
-    <script async>getWriteoffs()</script>
     <script src='/js/canteen/items/show/writeoffs/add.js'></script>
     <script src='/js/canteen/items/show/edit.js'></script>
     <script src='/js/canteen/items/show/delete.js'></script>
 <% } %>
 <% if (permissions.pos_user) { %>
     <script src='/js/canteen/items/show/sales/view.js'></script>
-    <script async>getSales()</script>
 <% } %>
 <%- include(`${partials}/foot/components/htmlClose`) %>

@@ -6,7 +6,8 @@ function getSales() {
         .then(tbl_sales => {
             get({
                 table: 'sales',
-                where: {session_id: path[2]}
+                where: {session_id: path[2]},
+                func:  getSales
             })
             .then(function ([results, options]) {
                 set_count('sale', results.sales.length);
@@ -48,3 +49,12 @@ function getSales() {
     });
 };
 addReloadListener(getSales);
+sort_listeners(
+    'sales',
+    getSales,
+    [
+        {value: '["createdAt"]', text: 'Time', selected: true},
+        {value: '["qty"]',       text: 'Qty'},
+        {value: '["status"]',    text: 'Status'}
+    ]
+);

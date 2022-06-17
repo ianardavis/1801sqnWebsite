@@ -2,7 +2,8 @@ function getWriteoffs() {
     clear('tbl_writeoffs')
     .then(tbl_writeoffs => {
         get({
-            table: 'writeoffs'
+            table: 'writeoffs',
+            func: getWriteoffs
         })
         .then(function ([results, options]) {
             results.writeoffs.forEach(writeoff => {
@@ -16,3 +17,13 @@ function getWriteoffs() {
     });
 };
 addReloadListener(getWriteoffs);
+sort_listeners(
+    'writeoffs',
+    getWriteoffs,
+    [
+        {value: '["createdAt"]', text: 'Date', selected: true},
+        {value: '["item_id"]',   text: 'Item'},
+        {value: '["reason"]',    text: 'Reason'},
+        {value: '["qty"]',       text: 'Qty'}
+    ]
+);

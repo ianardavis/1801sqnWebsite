@@ -2,7 +2,8 @@ function getMovements() {
     clear('tbl_movements')
     .then(tbl_movements => {
         get({
-            table: 'movements'
+            table: 'movements',
+            func: getMovements
         })
         .then(function ([results, options]) {
             results.movements.forEach(movement => {
@@ -17,3 +18,14 @@ function getMovements() {
     });
 };
 addReloadListener(getMovements);
+sort_listeners(
+    'movements',
+    getMovements,
+    [
+        {value: '["createdAt"]',       text: 'Date', selected: true},
+        {value: '["holding_id_from"]', text: 'From'},
+        {value: '["holding_id_to"]',   text: 'To'},
+        {value: '["description"]',     text: 'Description'},
+        {value: '["amount"]',          text: 'Amount'}
+    ]
+);

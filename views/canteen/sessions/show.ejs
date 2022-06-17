@@ -32,7 +32,7 @@
         </div>
         <div class="tab-pane fade" id="sales" role="tabpanel" aria-labelledby="sales-tab">
             <%- include(`${partials}/sort`, {table: 'sales'}) %>
-	        <table class="table table-sm table-hover">
+	        <table class="table table-sm table-hover mt-1">
                 <thead class="thead-dark">
 					<th class='w-30'>Time</th>
 					<th class='w-50'>User</th>
@@ -45,8 +45,8 @@
             <%- include(`${partials}/limit`, {table: 'sales'}) %>
         </div>
         <div class="tab-pane fade" id="payments" role="tabpanel" aria-labelledby="payments-tab">
-            <%- include(`${partials}/sort`, {table: 'payments'}) %>
-	        <table class="table table-sm table-hover">
+            <%- include(`${partials}/sort`, {table: 'payments_session'}) %>
+	        <table class="table table-sm table-hover mt-1">
                 <thead class="thead-dark">
 					<th class='w-50'>Type</th>
 					<th class='w-50'>Amount</th>
@@ -58,7 +58,7 @@
         </div>
         <div class="tab-pane fade" id="items" role="tabpanel" aria-labelledby="items-tab">
             <%- include(`${partials}/sort`, {table: 'items'}) %>
-	        <table class="table table-sm table-hover">
+	        <table class="table table-sm table-hover mt-1">
                 <thead class="thead-dark">
 					<th class='w-60'>Name</th>
 					<th class='w-20'>Sales</th>
