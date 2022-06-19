@@ -9,7 +9,12 @@ function listUsers(options = {}) {
                 ...options
             })
             .then(function ([result, options]) {
-                if (options.blank) sel_users.appendChild(new Option({text: options.blank.text || ''}).e);
+                if (options.blank) sel_users.appendChild(
+                    new Option({
+                        text: options.blank.text || '', 
+                        ...(options.blank.value ? {value: options.blank.value} : {})
+                    }).e
+                );
                 result.users.forEach(user => {
                     sel_users.appendChild(
                         new Option({

@@ -8,7 +8,10 @@ module.exports = function (m, fn) {
                     sale_id,
                     amount,
                     user_id,
-                    'Account'
+                    {
+                        type: 'Account',
+                        user_id_payment: account.user_id
+                    }
                 )
                 .then(result => resolve(true))
                 .catch(err => reject(err));
@@ -97,7 +100,14 @@ module.exports = function (m, fn) {
         return new Promise((resolve, reject) => {
             Promise.all( //Process cash payments first
                 (sale.tendered && sale.tendered > 0 ?
-                    [fn.payments.create(sale_id, sale.tendered, user_id)] :
+                    [fn.payments.create(
+                        sale_id,
+                        sale.tendered,
+                        user_id,
+                        {
+                            ...(sale.user_id_payment ? {user_id_payment: sale.user_id_payment} : {})
+                        }
+                    )] :
                     []
                 )
             )

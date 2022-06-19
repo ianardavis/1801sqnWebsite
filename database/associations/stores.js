@@ -23,7 +23,9 @@ module.exports = function (m) {
     m.issues         .hasOne(   m.sizes,           {foreignKey: 'size_id',     sourceKey:  'size_id',    constraints: false});
     m.items          .hasOne (  m.genders,         {foreignKey: 'gender_id',   sourceKey: 'gender_id',   constraints: false});
     m.items          .hasMany(  m.sizes,           {foreignKey: 'item_id',     targetKey: 'item_id'});
+    m.items          .hasMany(  m.item_attributes, {foreignKey: 'item_id',     targetKey: 'item_id', as: 'attributes'});
     m.items          .hasMany(  m.item_categories, {foreignKey: 'item_id',     targetKey: 'item_id'});
+    m.items.belongsToMany(m.genders, {through: m.item_genders});
     m.item_categories.hasOne(   m.categories,      {foreignKey: 'category_id', sourceKey: 'category_id', constraints: false});
     m.item_categories.belongsTo(m.items,           {foreignKey: 'item_id',     targetKey: 'item_id'});
     
@@ -52,15 +54,15 @@ module.exports = function (m) {
     m.serials           .hasOne(   m.locations,       {foreignKey: 'location_id',        sourceKey: 'location_id',    constraints: false});
     m.serials           .hasOne(   m.issues,          {foreignKey: 'issue_id',           sourceKey: 'issue_id',       constraints: false});
     
-    m.sizes             .belongsTo(m.items,           {foreignKey: 'item_id',            targetKey: 'item_id'});
-    m.sizes             .hasMany(  m.issues,          {foreignKey: 'size_id',            targetKey: 'size_id'});
-    m.sizes             .hasMany(  m.orders,          {foreignKey: 'size_id',            targetKey: 'size_id'});
-    m.sizes             .hasMany(  m.demand_lines,    {foreignKey: 'size_id',            targetKey: 'size_id',                            as: 'demands'});
-    m.sizes             .hasMany(  m.stocks,          {foreignKey: 'size_id',            targetKey: 'size_id'});
-    m.sizes             .hasMany(  m.serials,         {foreignKey: 'size_id',            targetKey: 'size_id'});
-    m.sizes             .hasMany(  m.details,         {foreignKey: 'size_id',            sourceKey: 'size_id'});
-    m.sizes             .hasMany(  m.nsns,          {foreignKey: 'size_id',        targetKey: 'size_id'});
-    m.sizes             .hasOne(   m.nsns,          {foreignKey: 'nsn_id',         targetKey: 'nsn_id',         constraints: false});
+    m.sizes             .belongsTo(m.items,        {foreignKey: 'item_id',     targetKey: 'item_id'});
+    m.sizes             .hasMany(  m.issues,       {foreignKey: 'size_id',     targetKey: 'size_id'});
+    m.sizes             .hasMany(  m.orders,       {foreignKey: 'size_id',     targetKey: 'size_id'});
+    m.sizes             .hasMany(  m.demand_lines, {foreignKey: 'size_id',     targetKey: 'size_id',     as: 'demands'});
+    m.sizes             .hasMany(  m.stocks,       {foreignKey: 'size_id',     targetKey: 'size_id'});
+    m.sizes             .hasMany(  m.serials,      {foreignKey: 'size_id',     targetKey: 'size_id'});
+    m.sizes             .hasMany(  m.details,      {foreignKey: 'size_id',     sourceKey: 'size_id'});
+    m.sizes             .hasMany(  m.nsns,         {foreignKey: 'size_id',     targetKey: 'size_id'});
+    m.sizes             .hasOne(   m.nsns,         {foreignKey: 'nsn_id',      targetKey: 'nsn_id',      constraints: false});
     m.sizes             .hasOne(   m.suppliers,    {foreignKey: 'supplier_id', sourceKey: 'supplier_id', constraints: false});
     
     m.stocks            .belongsTo(m.sizes,           {foreignKey: 'size_id',            targetKey: 'size_id'});
