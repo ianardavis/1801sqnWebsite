@@ -104,6 +104,7 @@ function setPage() {
     .catch(err => show_tab('all_items'));
 }
 function addSaleLine() {
+    console.log(this, this.dataset);
     sendData(
         this,
         'POST',
@@ -132,7 +133,7 @@ function getPages() {
                     div.classList.add('col-3', 'mb-2', 'item_btn')
                     div.appendChild(
                         new Form({
-                            classes: ['h-100', 'form_view'],
+                            classes: ['h-100', 'form_view', 'hidden'],
                             append: [
                                 new Hidden({
                                     attributes:[
@@ -183,60 +184,18 @@ function getPages() {
         return true;
     })
     .then(result => {
-        let all_items = document.querySelector('#div_all_items');
-        if (all_items) {
-            get({
-                table: 'canteen_items',
-                where: {current: true}
-            })
-            .then(function ([results, options]) {
-                results.items.forEach(item => {
-                    all_items.appendChild(
-                        new Form({
-                            classes: ['col-3', 'mb-2', 'h-100'],
-                            append:  [
-                                new Hidden({
-                                    attributes:[{field: 'name', value: 'line[sale_id]'}],
-                                    classes: ['sale_id']
-                                }).e,
-                                new Hidden({
-                                    attributes:[
-                                        {field: 'name',  value: 'line[item_id]'},
-                                        {field: 'value', value: String(item.item_id)}
-                                    ]
-                                }).e,
-                                new Button({
-                                    text: `${item.name}\n£${Number(item.price).toFixed(2)}`,
-                                    classes: ['w-100', 'h-100', 'btn', 'btn-primary'],
-                                    noType: true
-                                }).e
-                            ],
-                            submit: function (event) {
-                                event.preventDefault();
-                                addSaleLine.call(this);
-                            }
-                        }).e
-                    );
-                });
-                return true;
-            })
-            .catch(err => {
-                console.log(err);
-                return false;
-            });
-        } else return false;
-    })
-    .then(result => {
         get({table: 'pos_layouts'})
         .then(function ([layouts, options]) {
             layouts.forEach(layout => {
                 set_value(`item_id_${layout.page_id}_${layout.button}`, layout.item_id);
                 set_data(`div_${layout.page_id}_${layout.button}`, 'id', layout.item_id);
                 let btn_form  = document.querySelector(`#btn_${layout.page_id}_${layout.button}`),
-                    span_form = document.querySelector(`#span_${layout.page_id}_${layout.button}`)
+                    span_form = document.querySelector(`#span_${layout.page_id}_${layout.button}`),
+                    form = document.querySelector(`#form_${layout.page_id}_${layout.button}`);
                 if (btn_form && span_form) {
                     if (layout.colour) btn_form.style.backgroundColor = `${layout.colour}`;
                     span_form.innerHTML = `${layout.item.name}<br>£${Number(layout.item.price).toFixed(2)}`;
+                    form.classList.remove('hidden');
                 };
             });
             return true;
@@ -249,7 +208,6 @@ function getPages() {
     .then(result => {
         getSale();
         setPage();
-        if (typeof addEditButtons === 'function') addEditButtons();
     });
 };
 function reset_sale_complete() {

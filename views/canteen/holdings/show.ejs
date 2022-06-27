@@ -28,7 +28,7 @@
         </div>
         <div class="tab-pane fade" id="movements" role="tabpanel" aria-labelledby="movements-tab">
             <%- include(`${partials}/sort`, {table: 'movements'}) %>
-	        <table class="table table-sm table-hover">
+	        <table class="table table-sm table-hover mt-1">
                 <thead class="thead-dark">
 					<th class='w-25'>Date</th>
 					<th class='w-10'>Description</th>
@@ -39,7 +39,7 @@
                 </thead>
                 <tbody id="tbl_movements"></tbody>
             </table>
-            <%- include(`${partials}/limit`, {table: 'movements'}) %>
+            <%- include(`${partials}/limit`, {table: 'movements_holding'}) %>
         </div>
         <%- include(`${partials}/common/actions/tab_body`) %>
         <%- include(`${partials}/common/notes/tab_body`) %>

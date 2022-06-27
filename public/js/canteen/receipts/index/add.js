@@ -2,7 +2,7 @@ function calculate_cost() {
     let qty        = document.querySelector('#qty'),
         cost_total = document.querySelector('#cost_total');
     if (qty.value > 0 && cost_total.value !== '') {
-        set_value({id: 'cost_each', value: Number(cost_total.value / qty.value).toFixed(2)});
+        set_value('cost_each', Number(cost_total.value / qty.value).toFixed(2));
     };
 };
 function reset_add_item() {

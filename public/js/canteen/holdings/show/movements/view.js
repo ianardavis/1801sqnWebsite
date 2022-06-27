@@ -7,9 +7,9 @@ function getMovements() {
             where: {holding_id: path[2]},
             func: getMovements
         })
-        .then(function ([result, options]) {
-            set_count('movement', result.count);
-            result.movements.forEach(movement => {
+        .then(function ([results, options]) {
+            set_count('movement', results.count);
+            results.movements.forEach(movement => {
                 let row = tbl_movements.insertRow(-1);
                 add_cell(row, {text: print_date(movement.createdAt)});
                 add_cell(row, {text: (movement.holding_id_to === path[2] ? 'In' : (movement.holding_id_from === path[2] ? 'Out' : '?'))});

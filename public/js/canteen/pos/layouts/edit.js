@@ -1,4 +1,6 @@
+let editMode = false;
 function addEditButtons() {
+    console.log('add edit buttons');
     document.querySelectorAll('.edit_dd').forEach(span => {
         span.appendChild(new Button({
             small: true,
@@ -12,6 +14,19 @@ function addEditButtons() {
         }).e);
     });
 };
+function removeEditButtons() {
+    document.querySelectorAll('.edit_dd').forEach(e => e.innerHTML = '');
+};
+function toggleEditMode() {
+    editMode = !editMode;
+    if (editMode)
+    {
+        addEditButtons();
+    } else {
+        removeEditButtons();
+    }
+    
+}
 function getButton(page_id, position) {
     get({
         table: 'pos_layout',
@@ -76,5 +91,7 @@ window.addEventListener('load', function () {
         'PUT',
         '/pos_layouts',
         {onComplete: getPages}
-    )
+    );
+    document.querySelector('#btnEditMode').addEventListener('click', toggleEditMode);
+    document.querySelector('#btnEditMode').removeAttribute('disabled');
 });

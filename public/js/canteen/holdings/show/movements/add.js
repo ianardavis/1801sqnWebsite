@@ -9,6 +9,7 @@ function getHoldings() {
             spinner: 'holdings'
         })
         .then(function ([results, options]) {
+            console.log(results);
             sel_holdings.appendChild(new Option({text: 'Select destination holding...'}).e)
             results.holdings.forEach(holding => {
                 sel_holdings.appendChild(new Option({text: holding.description, value: holding.holding_id}).e)

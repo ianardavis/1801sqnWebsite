@@ -28,11 +28,11 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/movements_holding', fn.loggedIn(), fn.permissions.check('cash_admin'), (req, res) => {
-        m.movements.findAll({
+        m.movements.findAndCountAll({
             where: {
                 [fn.op.or]: [
-                    {holding_id_to:   req.query.holding_id},
-                    {holding_id_from: req.query.holding_id}
+                    {holding_id_to:   req.query.where.holding_id},
+                    {holding_id_from: req.query.where.holding_id}
                 ]
             },
             include: [
@@ -43,7 +43,7 @@ module.exports = (app, m, fn) => {
             ],
             ...fn.pagination(req.query)
         })
-        .then(movements => res.send({success: true, result: movements}))
+        .then(results => fn.send_res('movements', res, results, req.query))//res.send({success: true, result: movements}))
         .catch(err => fn.send_error(res, err));
     });
     app.post('/movements',            fn.loggedIn(), fn.permissions.check('cash_admin'), (req, res) => {   
