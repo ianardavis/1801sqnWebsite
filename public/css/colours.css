@@ -122,6 +122,14 @@ hr {
 	color: var(--main-bg-color);
 }
 
+.offcanvas-header {
+	background-color: var(--main-color);
+	color: var(--main-bg-color);
+}
+.offcanvas {
+	background-color: var(--main-bg-color);
+	color: var(--main-color);
+}
 
 .pwd_warn {
 	background: #f95056;

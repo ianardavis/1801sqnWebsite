@@ -2,9 +2,9 @@ let issue_statuses = {'0': 'Cancelled', '1': 'Requested', '2': 'Approved', '3': 
 function getIssues () {
     clear('tbl_issues')
     .then(tbl_issues => {
-        let statuses = checked_statuses(),
-            where = {user_id_issue: path[2]};
-        if (statuses) where.status = statuses;
+        let where = {user_id_issue: path[2]},
+            statuses = getSelectedOptions('sel_issue_statuses');
+        if (statuses.length > 0) where.status = statuses;
         get({
             table: 'issues',
             where: where,
@@ -73,13 +73,7 @@ sort_listeners(
     ]
 );
 window.addEventListener('load', function () {
-    addListener('sel_status_issues', getIssues, 'change');
-    addListener('status_0',          getIssues, 'change');
-    addListener('status_1',          getIssues, 'change');
-    addListener('status_2',          getIssues, 'change');
-    addListener('status_3',          getIssues, 'change');
-    addListener('status_4',          getIssues, 'change');
-    addListener('status_5',          getIssues, 'change');
+    addListener('sel_issue_statuses', getIssues, 'change');
     addListener('createdAt_from', function (){filter()}, 'change');
     addListener('createdAt_to',   function (){filter()}, 'change');
     addListener('item',           function (){filter()}, 'input');

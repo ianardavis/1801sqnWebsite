@@ -1,14 +1,15 @@
 function getUsers() {
     clear('tbl_users')
     .then(tbl => {
-        let status = document.querySelector('#sel_statuses') || {value: ''},
-            rank   = document.querySelector('#sel_ranks')    || {value: ''},
-            where = {};
-            if (status.value !== '') where.status_id = status.value;
-            if (rank  .value !== '') where.rank_id = rank.value;
+        let where  = {},
+            statuses = getSelectedOptions('sel_statuses'),
+            ranks    = getSelectedOptions('sel_ranks');
+        if (statuses.length > 0) where.status_id = statuses;
+        if (ranks.length > 0) where.rank_id = ranks;
         get({
             table: 'users',
-            where: where
+            where: where,
+            func:  getUsers
         })
         .then(function ([result, options]) {
             result.users.forEach(user => {
@@ -26,16 +27,12 @@ function getUsers() {
 function getStatuses() {
     return listStatuses({
         select: 'sel_statuses',
-        blank: true,
-        blank_text: 'All',
         id_only: true
     });
 };
 function getRanks() {
     return listRanks({
         select: 'sel_ranks',
-        blank: true,
-        blank_text: 'All',
         id_only: true
     });
 };
@@ -49,7 +46,8 @@ sort_listeners(
         {value: '["rank_id"]',        text: 'Rank'},
         {value: '["surname"]',        text: 'Surname'},
         {value: '["first_name"]',     text: 'First Name'}
-    ]
+    ],
+    false
 );
 window.addEventListener("load", function () {
     addListener('sel_statuses', getUsers, 'change');
