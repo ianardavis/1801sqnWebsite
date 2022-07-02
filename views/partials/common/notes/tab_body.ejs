@@ -1,12 +1,36 @@
 <div class="tab-pane fade" id="notes" role="tabpanel">
-    <div class="row justify-content-between mb-1">
-        <div class="col-12 col-md-4 mb-1">
-            <select class='form-select form-select-sm' id='sel_system' multiple size="2">
-                <option value="0" selected>Non-System Notes</option>
-                <option value="1">System Notes</option>
-            </select>
-        </div>
+    <div class="row justify-content-between">
         <%- include(`${partials}/sort`, {table: 'notes'}) %>
+        <div class="col-12 col-md-4 mb-1">
+            <button class="btn btn-sm btn-primary w-100" type="button" data-bs-toggle="offcanvas" data-bs-target="#sdbNotesFilter" aria-controls="sdbNotesFilter">
+                Filter
+            </button>
+        </div>
+    </div>
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="sdbNotesFilter" aria-labelledby="sdbNotesFilterLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="sdbNotesFilterLabel">Filter Notes</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <div class="input-group mb-1">
+                <span class="input-group-text w-30">Include</span>
+                <select id="sel_system" class="form-select" multiple size="2">
+                    <option value="0" selected>Non-System Notes</option>
+                    <option value="1">System Notes</option>
+                </select>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <h5 class='text-start'>Date From:</h5>
+                    <input type="date" class='form-control' id='note_createdAt_from'>
+                </div>
+                <div class="col-sm-6">
+                    <h5 class='text-start'>Date To:</h5>
+                    <input type="date" class='form-control' id='note_createdAt_to'>
+                </div>
+            </div>
+        </div>
     </div>
 	<table class="table table-sm table-hover">
         <thead class="thead-dark">

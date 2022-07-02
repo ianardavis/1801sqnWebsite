@@ -2,9 +2,9 @@ let loancard_statuses = {'0': 'Cancelled', '1':'Draft', '2': 'Open', '3': 'Close
 function getLoancards () {
     clear('tbl_loancards')
     .then(tbl_loancards => {
-        let sel_status = document.querySelector('#sel_status_loancards') || {value: ''},
-            where = {user_id_loancard: path[2]};
-        if (sel_status.value !== '') where.status = sel_status.value;
+        let where = {user_id_loancard: path[2]},
+            statuses = getSelectedOptions('sel_loancard_statuses');
+            if (statuses.length > 0) where.status = statuses;
         get({
             table: 'loancards',
             where: where,
@@ -33,5 +33,5 @@ sort_listeners(
     ]
 );
 window.addEventListener('load', function () {
-    addListener('sel_status_loancards', getLoancards, 'change');
+    addListener('sel_loancard_statuses', getLoancards, 'change');
 })

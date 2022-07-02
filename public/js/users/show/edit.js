@@ -17,6 +17,7 @@ function viewUserEdit() {
 };
 window.addEventListener('load', function () {
     enable_button('user_edit');
+    enable_button('password_reset');
     addFormListener(
         'user_edit',
         'PUT',

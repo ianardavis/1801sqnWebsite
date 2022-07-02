@@ -44,8 +44,8 @@ function getIssues () {
 };
 function filter(tbl_issues) {
     if (!tbl_issues) tbl_issues = document.querySelector('#tbl_issues');
-    let from = new Date(document.querySelector('#createdAt_from').value).getTime() || '',
-        to   = new Date(document.querySelector('#createdAt_to').value)  .getTime() || '',
+    let from = new Date(document.querySelector('#issue_createdAt_from').value).getTime() || '',
+        to   = new Date(document.querySelector('#issue_createdAt_to').value)  .getTime() || '',
         item = document.querySelector('#item').value.trim() || '',
         size = document.querySelector('#size').value.trim() || '';
     tbl_issues.childNodes.forEach(row => {
@@ -74,8 +74,8 @@ sort_listeners(
 );
 window.addEventListener('load', function () {
     addListener('sel_issue_statuses', getIssues, 'change');
-    addListener('createdAt_from', function (){filter()}, 'change');
-    addListener('createdAt_to',   function (){filter()}, 'change');
+    addListener('issue_createdAt_from', function (){filter()}, 'change');
+    addListener('issue_createdAt_to',   function (){filter()}, 'change');
     addListener('item',           function (){filter()}, 'input');
     addListener('size',           function (){filter()}, 'input');
 });

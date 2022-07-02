@@ -73,6 +73,15 @@ select {
 	margin-left: auto;
 	margin-right: auto;
 }
+.fixed {
+	position: fixed;
+	top: 100px;
+	left: 0px;
+	z-index: 9000;
+}
+.offcanvas {
+	z-index: 9500;
+}
 button.dropdown-item {
 	font-size: 25px;
 }
