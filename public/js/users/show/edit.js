@@ -30,6 +30,12 @@ window.addEventListener('load', function () {
         }
     );
     addFormListener(
+        'giftaid_add',
+        'POST',
+        `/giftaid`,
+        {onComplete: getGiftaids}
+    );
+    addFormListener(
         'password_reset',
         'PUT',
         `/users/users/${path[2]}`,

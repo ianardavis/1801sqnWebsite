@@ -14,11 +14,22 @@ module.exports = function (m, fn) {
     };
     fn.send_res = function (table, res, result, query, inc = []) {
         let _return = {success: true, result: {}};
-        _return.result[table] = result.rows;
-        _return.result.count  = result.count;
-        _return.result.limit  = query.limit;
-        _return.result.offset = query.offset;
+        if (result.rows) {
+            _return.result[table] = result.rows;
+        } else {
+            _return.result[table] = result;
+        };
+        if (result.count) {
+            _return.result.count  = result.count;
+        };
+        if (query.limit) {
+            _return.result.limit  = query.limit;
+        };
+        if (query.offset) {
+            _return.result.offset = query.offset;
+        };
         inc.forEach(i => _return.result[i.name] = i.obj);
+        // console.log(_return);
         res.send(_return);
     };
     fn.add_years = function (years = 0) {

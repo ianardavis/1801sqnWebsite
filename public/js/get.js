@@ -66,6 +66,7 @@ function get(options) {
                                 options.func
                             );
                         };
+                        // console.log(response);
                         resolve([response.result, options]);
                     } else {
                         console.log(`********* Error getting ${options.table} *********`);
