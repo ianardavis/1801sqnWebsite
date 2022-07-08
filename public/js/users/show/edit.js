@@ -1,7 +1,7 @@
 function viewUserEdit() {
     get({
         table: 'user',
-        where: {user_Id: path[2]}
+        where: {user_id: path[2]}
     })
     .then(function ([user, options]) {
         listStatuses( {select: 'sel_statuses', selected: user.status_id, id_only: true});
@@ -28,12 +28,6 @@ window.addEventListener('load', function () {
                 function () {modalHide('user_edit')}
             ]
         }
-    );
-    addFormListener(
-        'giftaid_add',
-        'POST',
-        `/giftaid`,
-        {onComplete: getGiftaids}
     );
     addFormListener(
         'password_reset',

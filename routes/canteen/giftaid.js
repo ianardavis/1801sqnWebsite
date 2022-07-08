@@ -1,5 +1,13 @@
 module.exports = (app, m, fn) => {
     app.get('/get/giftaid', fn.loggedIn(),                                     (req, res) => {
+        fn.get(
+            'giftaid',
+            req.query.where
+        )
+        .then(giftaid => res.send({success: true, result: giftaid}))
+        .catch(err => fn.send_error(res, err));
+    });
+    app.get('/get/giftaids', fn.loggedIn(),                                     (req, res) => {
         m.giftaid.findAll({
             where: req.query.where
         })
@@ -22,4 +30,5 @@ module.exports = (app, m, fn) => {
             .catch(err => fn.send_error(res, err));
         };
     });
+    app.delete('/giftaid')
 };

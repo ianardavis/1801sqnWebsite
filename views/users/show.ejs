@@ -58,16 +58,18 @@
                         <th class='w-50'>To</th>
                         <th></th>
                     </thead>
-                    <form id='form_giftaid_add'>
-                        <input class='user_id' type="hidden" name='giftaid[user_id]'>
-                        <tbody>
-                            <tr>
-                                <td><input class="form-control form-control-sm" type="date" name="giftaid[startDate]"></td>
-                                <td></td>
-                                <td><button class='btn btn-sm btn-success'><i class="fas fa-plus"></i></button></td>
-                            </tr>
-                        </tbody>
-                    </form>
+                    <% if (permissions.user_admin) { %>
+                        <form id='form_giftaid_add'>
+                            <input class='user_id' type="hidden" name='giftaid[user_id]'>
+                            <tbody>
+                                <tr>
+                                    <td><input class="form-control form-control-sm" type="date" name="giftaid[startDate]"></td>
+                                    <td></td>
+                                    <td><button class='btn btn-sm btn-success'><i class="fas fa-plus"></i></button></td>
+                                </tr>
+                            </tbody>
+                        </form>
+                    <% } %>
                     <tbody id="tbl_giftaid"></tbody>
                 </table>
             </div>
@@ -246,6 +248,37 @@
                 </div>
             </div>
         <% } %>
+        <div id='mdl_giftaid_view' class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">
+                            View Giftaid Record
+                            <%- include(`${partials}/spinner`, {id: 'giftaid_view'}) %>
+                        </h5>
+                        <span class='float-end'>
+                            <span id='giftaid_delete_btn' class='float-end me-1'>
+                                <form id="form_giftaid_delete">
+                                    <button class="btn btn-sm btn-danger"  id='btn_giftaid_delete' disabled><i class="fas fa-trash-alt" ></i></button>
+                                </form>
+                            </span>
+                            <span id='giftaid_edit_btn'   class='float-end me-1'>
+                                <button class="btn btn-sm btn-warning" id='btn_giftaid_edit'   disabled><i class="fas fa-pencil-alt"></i></button>
+                            </span>
+                        </span>
+                    </div>
+                    <div class="modal-body">
+                        <%- include(`${partials}/inputs/display`, {title: 'Start Date', id: 'giftaid_view_startDate'}) %>
+                        <%- include(`${partials}/inputs/display`, {title: 'End Date',   id: 'giftaid_view_endDate'}) %>
+                        <%- include(`${partials}/inputs/display`, {title: 'Created',    id: 'giftaid_view_createdAt'}) %>
+                        <%- include(`${partials}/inputs/display`, {title: 'Updated',    id: 'giftaid_view_updatedAt'}) %>
+                    </div>
+                    <div class="modal-footer">
+                        <%- include(`${partials}/button/save`) %>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div id='mdl_user_password' class="modal fade" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
                 <form class="modal-content" id='form_user_password'>
@@ -278,7 +311,7 @@
                                     </button>
                                     <ul class="dropdown-menu" aria-labelledby="btn_grant_permissions">
                                         <li><button type='button' class="dropdown-item" id='btn_permissions_storeman'>Storeman</button></li>
-                                        <li><button type='button' class="dropdown-item" id='btn_permissions_canteen'>Canteen</button></li>
+                                        <li><button type='button' class="dropdown-item" id='btn_permissions_canteen' >Canteen </button></li>
                                     </ul>
                                 </span>
                                 <button type='button' class="btn btn-success" id='btn_select_all'>Select All</button>
@@ -344,11 +377,15 @@
 <script>show_tab('<%= tab %>');</script>
 <script src='/js/users/show/view.js'></script>
 <script async>getUser()</script>
+<script src='/js/users/show/giftaid/view.js'></script>
 <% if (permissions.user_admin) { %>
     <script src="/js/users/show/edit.js"></script>
     <script src="/js/utils/list/statuses.js"></script>
     <script src="/js/utils/list/ranks.js"></script>
     <script src="/js/users/show/delete.js"></script>
+    <script src='/js/users/show/giftaid/add.js'></script>
+    <script src='/js/users/show/giftaid/edit.js'></script>
+    <script src='/js/users/show/giftaid/delete.js'></script>
 <% } %>
 <% if (permissions.user_admin || permissions.edit_own_permissions) { %>
     <script src='/js/users/show/permissions/view.js'></script>
