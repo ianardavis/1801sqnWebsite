@@ -16,27 +16,9 @@ function getUser() {
         document.querySelectorAll('.user_id').forEach(e => e.value = user.user_id);
     });
 };
-function getGiftaids()
-{
-    clear('tbl_giftaid')
-    .then(tbl_giftaid => {
-        get({
-            table: 'giftaid',
-            where: {user_id: path[2]}
-        })
-        .then(function ([results, options]) {
-            results.giftaid.forEach(giftaid => {
-                let row = tbl_giftaid.insertRow(-1);
-                add_cell(row, table_date(giftaid.startDate));
-                add_cell(row, table_date(giftaid.endDate));
-            })
-        })
-    });
-}
 addReloadListener(getUser);
 window.addEventListener('load', function () {
     document.querySelectorAll('.user_id').forEach(e => e.value = path[2]);
-    getGiftaids();
     enable_button('user_password');
     addFormListener(
         'user_password',

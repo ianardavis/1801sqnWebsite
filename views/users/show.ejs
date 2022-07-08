@@ -229,6 +229,22 @@
                     </form>
                 </div>
             </div>
+            <div id='mdl_giftaid_edit' class="modal fade" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <form class="modal-content" id='form_giftaid_edit'>
+                        <div class="modal-header">
+                            <h5 class="modal-title">Edit Giftaid Record</h5>
+                        </div>
+                        <div class="modal-body">
+                            <%- include(`${partials}/inputs/date`, {title: 'Start Date', name: 'giftaid[startDate]', id: 'giftaid_edit_start', required: true}) %>
+                            <%- include(`${partials}/inputs/date`, {title: 'End Date',   name: 'giftaid[endDate]',   id: 'giftaid_edit_end'}) %>
+                        </div>
+                        <div class="modal-footer">
+                            <%- include(`${partials}/button/save`) %>
+                        </div>
+                    </form>
+                </div>
+            </div>
         <% } %>
         <div id='mdl_user_password' class="modal fade" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
