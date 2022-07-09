@@ -15,11 +15,7 @@
                 Toggle Change Password
             </button>
         </form>
-        <form id="form_delete" class="mt-auto">
-            <button id='btn_user_delete' type='button' class="btn btn-danger w-100" disabled>
-                Delete User
-            </button>
-        </form>
+        <%- include(`${partials}/button/delete`) %>
     <%- include(`${partials}/sidebar_close`) %>
     <ul class="nav nav-tabs" id="mainTab" role="tablist">
         <%- include(`${partials}/tab_head`, {id: 'details',     spinner: 'user',        title: 'Details'}) %>

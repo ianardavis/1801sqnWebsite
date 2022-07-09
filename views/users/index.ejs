@@ -11,7 +11,6 @@
 	</div>
 	<%- include(`${partials}/sidebar_open`, {id: 'Filter', sidebar_text: 'Filter Users'}) %>
 		<%- include(`${partials}/button/modal/open`, {text: 'New User', id: 'user_add', type: 'success'}) %>
-        
 		<%- include(`${partials}/inputs/select`, {title: 'Statuses', id: 'sel_statuses', spinner_id: 'statuses', reload_id: 'reload_statuses', multiple: true, size: 4}) %>
 		<%- include(`${partials}/inputs/select`, {title: 'Ranks', 	 id: 'sel_ranks',    spinner_id: 'ranks', 	 reload_id: 'reload_ranks',    multiple: true, size: 10}) %>
 	<%- include(`${partials}/sidebar_close`) %>

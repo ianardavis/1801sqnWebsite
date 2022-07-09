@@ -2,7 +2,7 @@ let issue_statuses = {'0': 'Cancelled', '1': 'Requested', '2': 'Approved', '3': 
 function getIssues() {
     clear('tbl_issues')
     .then(tbl_issues => {
-        let status = document.querySelector('#sel_issue_status') || {value: ''},
+        let status = document.querySelector('#sel_issue_statuses') || {value: ''},
             where = {size_id: path[2]};
         if (status.value !== '') where.status = status.value;
         get({
@@ -63,6 +63,6 @@ sort_listeners(
     ]
 );
 window.addEventListener('load', function () {
-    document.querySelector('#sel_issue_status').addEventListener('change', getIssues);
+    document.querySelector('#sel_issue_statuses').addEventListener('change', getIssues);
     modalOnShow('issue_view', function (event) {viewIssue(event.relatedTarget.dataset.id)});
 });

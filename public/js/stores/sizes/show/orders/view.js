@@ -57,6 +57,6 @@ sort_listeners(
     ]
 );
 window.addEventListener('load', function () {
-    addListener('sel_order_status', getOrders, 'change');
+    addListener('sel_order_statuses', getOrders, 'change');
     modalOnShow('order_view', function (event) {viewOrder(event.relatedTarget.dataset.id)});
 });

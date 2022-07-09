@@ -5,14 +5,10 @@
 <%- include(`${partials}/head/components/close`) %>
 <section class='container'>
     <%- include(`${partials}/sidebar_open`, {id: 'Actions', button_html: '<i class="fas fa-angle-right"></i>', sidebar_text: 'Actions'}) %>
-        <%- include(`${partials}/button/modal/open`, {text: 'Edit',         type: 'warning', modal: 'item_edit'}) %>
-        <%- include(`${partials}/button/modal/open`, {text: 'New Category', type: 'success', modal: 'category_add'}) %>
-        <%- include(`${partials}/button/modal/open`, {text: 'New Size',     type: 'success', modal: 'size_add'}) %>
-		<form id="form_delete" class="mt-auto">
-			<button id='btn_delete' type='button' class="btn btn-danger w-100" disabled>
-				Delete
-			</button>
-		</form>
+        <%- include(`${partials}/button/modal/open`, {text: 'Edit',         id: 'item_edit',    type: 'warning', modal: 'item_edit'}) %>
+        <%- include(`${partials}/button/modal/open`, {text: 'New Category', id: 'category_add', type: 'success', modal: 'category_add'}) %>
+        <%- include(`${partials}/button/modal/open`, {text: 'New Size',     id: 'size_add',     type: 'success', modal: 'size_add'}) %>
+        <%- include(`${partials}/button/delete`) %>
     <%- include(`${partials}/sidebar_close`) %>
     <ul class="nav nav-tabs" id="mainTab" role="tablist">
         <%- include(`${partials}/tab_head`, {id: 'details',    title: 'Details',    spinner: 'item'}) %>

@@ -1,5 +1,5 @@
 <% if (locals.button_html) { %>
-    <%- include(`${partials}/sidebar_button`, {id: id, html: button_html}) %>
+    <%- include(`${partials}/sidebar_button`, {id: id, html: button_html, floating: true}) %>
 <% } %>
 <div class="offcanvas offcanvas-start" tabindex="-1" id="sdb<%= id %>" aria-labelledby="sdb<%= id %>Label">
     <div class="offcanvas-header">

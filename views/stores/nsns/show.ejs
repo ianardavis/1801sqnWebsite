@@ -4,6 +4,10 @@
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/head/components/close`) %>
 <section class='container'>
+    <%- include(`${partials}/sidebar_open`, {id: 'Actions', button_html: '<i class="fas fa-angle-right"></i>', sidebar_text: 'Actions'}) %>
+        <%- include(`${partials}/button/modal/open`, {text: 'Edit', id: 'nsn_edit', type: 'warning', modal: 'nsn_edit'}) %>
+        <%- include(`${partials}/button/delete`) %>
+    <%- include(`${partials}/sidebar_close`) %>
     <ul class="nav nav-tabs" id="mainTab" role="tablist">
         <%- include(`${partials}/tab_head`, {id: 'details',   title: 'Details',   spinner: 'nsn'}) %>
         <%- include(`${partials}/tab_head`, {id: 'loancards', title: 'Loancards', spinner: 'loancards', count_id: 'loancard'}) %>
@@ -12,11 +16,6 @@
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
-            <div class="input-group mb-1">
-                <span class="input-group-text w-30">Actions</span>
-                <%- include(`${partials}/button/modal/open`, {text: 'Edit', type: 'warning', modal: 'nsn_edit', small: true, classes: ['ms-1']}) %>
-                <%- include(`${partials}/button/delete`) %>
-            </div>
             <%- include(`${partials}/inputs/display`, {id: 'nsn_group',   title: 'Group'}) %>
             <%- include(`${partials}/inputs/display`, {id: 'nsn_class',   title: 'Classification'}) %>
             <%- include(`${partials}/inputs/display`, {id: 'nsn_country', title: 'Country'}) %>

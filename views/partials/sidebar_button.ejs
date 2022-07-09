@@ -1,4 +1,10 @@
-<button class="btn btn-primary float-start fixed" type="button" data-bs-toggle="offcanvas" data-bs-target="#sdb<%= id %>" aria-controls="sdb<%= id %>">
+<button
+    class="btn btn-sm btn-primary<% if (locals.floating) { %> float-start fixed<% } else { %> w-100<% } %>"
+    type="button"
+    data-bs-toggle="offcanvas"
+    data-bs-target="#sdb<%= id %>"
+    aria-controls="sdb<%= id %>"
+>
     <% if (locals.text) { %>
         <%= text %>
     <% } else if (locals.html) { %>
