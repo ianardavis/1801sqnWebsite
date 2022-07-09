@@ -2,9 +2,21 @@ let issue_statuses = {0: 'Cancelled', 1: 'Requested', 2: 'Approved', 3: 'Ordered
 function getIssues() {
     clear('tbl_issues')
     .then(tbl_issues => {
+        let where = {},
+            gt    = null,
+            lt    = null,
+            statuses  = getSelectedOptions('sel_issue_statuses'),
+            date_from = document.querySelector('#filter_issues_createdAt_from'),
+            date_to   = document.querySelector('#filter_issues_createdAt_to');
+        if (statuses.length > 0) where.status = statuses;
+        if (date_from && date_from.value !== '') gt = {column: 'createdAt', value: date_from.value};
+        if (date_to   && date_to.value   !== '') lt = {column: 'createdAt', value: date_to  .value};
         get({
             table: 'issues',
-            ...build_filter_query('issues'),
+            where: where,
+            gt: gt,
+            lt: lt,
+            // ...build_filter_query('issues'),
             func: getIssues
         })
         .then(function ([result, options]) {

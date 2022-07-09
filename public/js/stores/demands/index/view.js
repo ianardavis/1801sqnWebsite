@@ -2,9 +2,23 @@ let demand_statuses = {"0": "Cancelled", "1": "Draft", "2": "Complete", "3":"Clo
 function getDemands() {
     clear('tbl_demands')
     .then(tbl_demands => {
+        let where = {},
+            gt    = null,
+            lt    = null,
+            statuses  = getSelectedOptions('sel_demand_statuses'),
+            supplier  = document.querySelector('#filter_demands_supplier'),
+            date_from = document.querySelector('#filter_demands_createdAt_from'),
+            date_to   = document.querySelector('#filter_demands_createdAt_to');
+        if (statuses.length > 0) where.status = statuses;
+        if (supplier && supplier.value !== '') where.supplier_id = supplier.value;
+        if (date_from && date_from.value !== '') gt = {column: 'createdAt', value: date_from.value};
+        if (date_to   && date_to.value   !== '') lt = {column: 'createdAt', value: date_to  .value};
         get({
             table: 'demands',
-            ...build_filter_query('demands'),
+            where: where,
+            gt: gt,
+            lt: lt,
+            // ...build_filter_query('demands'),
             func: getDemands
         })
         .then(function ([result, options]) {

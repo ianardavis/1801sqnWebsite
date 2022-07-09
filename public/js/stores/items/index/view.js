@@ -1,4 +1,4 @@
-let getGenders = listGenders({all_selected: true});
+let getGenders = listGenders();
 function getItems() {
     clear('tbl_items')
     .then(tbl_items => {

@@ -1,9 +1,33 @@
-<%- include(`${partials}/head/app`, {text: 'Stores'}) %>
+<%- include(`${partials}/head/app`,	  {text: 'Stores'}) %>
 <%- include(`${partials}/breadcrumb`, {href: '/demands', text: 'Demands'}) %>
 <%- include(`${partials}/breadcrumb`) %>
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/head/components/close`) %>
 <section class='container'>
+	<%- include(`${partials}/sidebar_open`, {id: 'Actions', button_html: '<i class="fas fa-angle-right"></i>', sidebar_text: 'Actions'}) %>
+		<form id="form_complete mb-2">
+			<button id='btn_complete' type='button' class="btn btn-success w-100" disabled>
+				Complete
+			</button>
+		</form>
+		<form id="form_close mb-2">
+			<button id='btn_close'    type='button' class="btn btn-warning w-100" disabled>
+				Complete
+			</button>
+		</form>
+		<form id="form_download mb-2">
+			<button id='btn_download' type='button' class='btn btn-sm btn-primary mb-2' disabled>
+				Download
+			</button>
+		</form>
+		<button class="btn btn-sm btn-success w-100 mb-2" form='form_lines'>Action Lines</button>
+	
+		<form id="form_delete" class="mt-auto">
+			<button id='btn_delete'   type='button' class="btn btn-danger w-100" disabled>
+				Cancel
+			</button>
+		</form>
+    <%- include(`${partials}/sidebar_close`) %>
 	<ul class="nav nav-tabs" id="mainTab" role="tablist">
         <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'demand'}) %>
         <%- include(`${partials}/tab_head`, {id: 'lines',   title: 'Lines',	  spinner: 'demand_lines',  count_id: 'line'}) %>
@@ -12,38 +36,32 @@
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
-            <div class="input-group mb-1">
-                <span class="input-group-text w-30">Actions</span>
-				<%- include(`${partials}/button/button`, {id: 'complete', text: 'Complete', type: 'success', form: 'complete'}) %>
-				<%- include(`${partials}/button/button`, {id: 'close', 	  text: 'Close', 	type: 'warning', form: 'close', classes: ['ms-1']}) %>
-                <%- include(`${partials}/button/delete`, {text: 'Cancel'}) %>
-            </div>
-			<form id="form_complete"></form>
-			<form id="form_close"></form>
 			<%- include(`${partials}/inputs/display`, {id: 'demand_supplier',  title: 'Supplier',  link: true}) %>
 			<%- include(`${partials}/inputs/display`, {id: 'demand_user',	   title: 'Raised By', link: true}) %>
 			<%- include(`${partials}/inputs/display`, {id: 'demand_createdAt', title: 'Date'}) %>
 			<%- include(`${partials}/inputs/display`, {id: 'demand_updatedAt', title: 'Last Updated'}) %>
 			<%- include(`${partials}/inputs/display`, {id: 'demand_status',    title: 'Status'}) %>
-            <div class="input-group mb-1">
-                <span class="input-group-text w-30">Filename</span>
-				<p class='form-control mb-0' id="demand_file"></p>
-				<%- include(`${partials}/button/button`, {id: 'download', icon: '<i class="fas fa-file-download"></i>', type: 'success', form: 'download'}) %>
-            </div>
-			<form id="form_download"></form>
+			<%- include(`${partials}/inputs/display`, {id: 'demand_file',      title: 'Filename'}) %>
 		</div>
 		<div class="tab-pane fade" id="lines" role="tabpanel" aria-labelledby="lines-tab">
-			<div class="row">
-				<div class="col-12 col-md-4">
-					<%- include(`${partials}/inputs/select`, {title: 'Status', small: true, id: 'sel_status', options: [{text: 'All', selected: true}, {value: '"status":0', text: 'Cancelled'}, {value: '"status":1', text: 'Pending'}, {value: '"status":2', text: 'Open'}, {value: '"status":3', text: 'Received'}]}) %>
+			<div class="row justify-content-between">
+                <%- include(`${partials}/sort`, {table: 'demand_lines'}) %>
+                <div class="col-12 col-md-4 mb-1">
+                    <%- include(`${partials}/sidebar_button`, {id: 'LinesFilter', text: 'Filter'}) %>
+                </div>
+            </div>
+            <%- include(`${partials}/sidebar_open`, {id: 'LinesFilter', sidebar_text: 'Filter Lines'}) %>
+				<div class="input-group mb-1">
+					<span class="input-group-text w-30">Status</span>
+					<select id="sel_lines_statuses" class="form-select" multiple size="4">
+						<option value="0">Cancelled</option>
+						<option value="1" selected>Pending</option>
+						<option value="2" selected>Open</option>
+						<option value="3">Received</option>
+					</select>
 				</div>
-				<div class="col-12 col-md-4">
-					<button class="btn btn-sm btn-success w-100" form='form_lines'>Action Lines</button>
-				</div>
-				<div class="col-12 col-md-4">
-					<%- include(`${partials}/sort`, {table: 'demand_lines'}) %>
-				</div>
-			</div>
+			<%- include(`${partials}/sidebar_close`) %>
+
 	        <form id='form_lines'>
 				<table class='table table-sm table-hover'>
 					<thead class='thead-dark'>

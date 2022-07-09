@@ -2,9 +2,9 @@ let line_statuses = {'0': 'Cancelled', '1': 'Pending', '2': 'Open', '3': 'Closed
 function getLines() {
     clear('tbl_lines')
     .then(tbl_lines => {
-        let sel_status = document.querySelector('#sel_status') || {value: ''},
-            where = {demand_id: path[2]};
-        if (sel_status.value !== '') where.status = sel_status.value;
+        let where = {demand_id: path[2]},
+            statuses = getSelectedOptions('sel_lines_statuses');
+        if (statuses.length > 0) where.status = statuses;
         get({
             table: 'demand_lines',
             where: where,

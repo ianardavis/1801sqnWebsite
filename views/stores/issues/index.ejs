@@ -1,22 +1,38 @@
-<%- include(`${partials}/head/app`, {text: 'Stores'}) %>
+<%- include(`${partials}/head/app`,   {text: 'Stores'}) %>
 <%- include(`${partials}/breadcrumb`, {text: 'Issues'}) %>
-<%- include(`${partials}/menu/breadcrumb_add`, {modal: 'issue_add'}) %>
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/spinner`, {id: 'issues'}) %>
 <%- include(`${partials}/head/components/close`) %>
 <section class="container">
-	<div class="row">
-		<div class="col-12 col-md-6 mb-1">
-			<%- include(`${partials}/filter/button`, {id: 'issue'}) %>
-		</div>
-		<div class="col-12 col-md-6 mb-1">
-			<button class="btn btn-success w-100" form="form_issue_edit">
-				Action Selected Issues
-			</button>
+	<div class="row justify-content-between">
+		<%- include(`${partials}/sort`, {table: 'issues'}) %>
+		<div class="col-12 col-md-4 mb-1">
+			<%- include(`${partials}/sidebar_button`, {id: 'IssuesFilter', text: 'Filter/Actions'}) %>
 		</div>
 	</div>
+	<%- include(`${partials}/sidebar_open`, {id: 'IssuesFilter', sidebar_text: 'Filter'}) %>
+		<%- include(`${partials}/button/modal/open`, {text: 'New Issue', id: 'issue_add', type: 'success'}) %>
+		<%- include(`${partials}/filter/user`,   {append: '_issue', table: 'issues'}) %>
+		<div class="input-group mb-1">
+			<span class="input-group-text w-30">Status</span>
+			<select id="sel_issue_statuses" class="form-select" multiple size="4">
+				<option value="0">Cancelled</option>
+				<option value="1" selected>Requested</option>
+				<option value="2" selected>Approved</option>
+				<option value="3" selected>Ordered</option>
+				<option value="4" selected>Issued</option>
+				<option value="5">Returned</option>
+			</select>
+		</div>
+		<%- include(`${partials}/filter/date`,   {table: 'issues', field: 'createdAt'}) %>
+		<%- include(`${partials}/filter/size`,   {table: 'issues'}) %>
+
+		<button class="btn btn-success w-100 mt-auto" form="form_issue_edit">
+			Action Selected Issues
+		</button>
+	<%- include(`${partials}/sidebar_close`) %>
+
 	<%- include(`${partials}/filter/stores/issues`, {user: true}) %>
-	<%- include(`${partials}/sort`, {table: 'issues'}) %>
 	<% if (permissions.issuer) { %><form id='form_issue_edit'><% } %>
 		<table class="table table-sm table-hover">
 			<thead class="thead-dark">

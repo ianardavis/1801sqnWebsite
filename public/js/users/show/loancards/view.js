@@ -4,7 +4,7 @@ function getLoancards () {
     .then(tbl_loancards => {
         let where = {user_id_loancard: path[2]},
             statuses = getSelectedOptions('sel_loancard_statuses');
-            if (statuses.length > 0) where.status = statuses;
+        if (statuses.length > 0) where.status = statuses;
         get({
             table: 'loancards',
             where: where,

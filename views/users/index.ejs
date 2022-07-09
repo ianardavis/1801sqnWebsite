@@ -1,5 +1,4 @@
 <%- include(`${partials}/head/app`, {text: 'Users'}) %>
-<%- include(`${partials}/menu/breadcrumb_add`, {modal: 'user_add', permission: 'user_admin'}) %>
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/spinner`, {id: 'users'}) %>
 <%- include(`${partials}/head/components/close`) %>
@@ -7,23 +6,15 @@
 	<div class="row justify-content-between">
 		<%- include(`${partials}/sort`, {table: 'users'}) %>
 		<div class="col-12 col-md-4 mb-1">
-			<button class="btn btn-sm btn-primary w-100" type="button" data-bs-toggle="offcanvas" data-bs-target="#sdbFilter" aria-controls="sdbFilter">
-				Filter Users
-			</button>
+			<%- include(`${partials}/sidebar_button`, {id: 'Filter', text: 'Filter/Actions'}) %>
 		</div>
 	</div>
-	<div class="offcanvas offcanvas-start" tabindex="-1" id="sdbFilter" aria-labelledby="sdbFilterLabel">
-		<div class="offcanvas-header">
-			<h5 class="offcanvas-title" id="sdbFilterLabel">Filter Users</h5>
-			<button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-		</div>
-		<div class="offcanvas-body">
-			<div class="dropdown mt-3">
-				<%- include(`${partials}/inputs/select`, {title: 'Statuses', id: 'sel_statuses', spinner_id: 'statuses', reload_id: 'reload_statuses', multiple: true, size: 4}) %>
-				<%- include(`${partials}/inputs/select`, {title: 'Ranks', 	 id: 'sel_ranks',    spinner_id: 'ranks', 	 reload_id: 'reload_ranks',    multiple: true, size: 10}) %>
-			</div>
-		</div>
-	</div>
+	<%- include(`${partials}/sidebar_open`, {id: 'Filter', sidebar_text: 'Filter Users'}) %>
+		<%- include(`${partials}/button/modal/open`, {text: 'New User', id: 'user_add', type: 'success'}) %>
+        
+		<%- include(`${partials}/inputs/select`, {title: 'Statuses', id: 'sel_statuses', spinner_id: 'statuses', reload_id: 'reload_statuses', multiple: true, size: 4}) %>
+		<%- include(`${partials}/inputs/select`, {title: 'Ranks', 	 id: 'sel_ranks',    spinner_id: 'ranks', 	 reload_id: 'reload_ranks',    multiple: true, size: 10}) %>
+	<%- include(`${partials}/sidebar_close`) %>
 	<table class="table table-sm table-hover">
 		<thead class="thead-dark">
 			<th class='w-20'>Bader/Service #</th>

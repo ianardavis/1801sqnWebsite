@@ -2,21 +2,14 @@
 <%- include(`${partials}/breadcrumb`) %>
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/head/components/close`) %>
-<button class="btn btn-primary float-start fixed" type="button" data-bs-toggle="offcanvas" data-bs-target="#sdbActions" aria-controls="sdbActions">
-    <i class="fas fa-angle-right"></i>
-</button> 
-<div class="offcanvas offcanvas-start" tabindex="-1" id="sdbActions" aria-labelledby="sdbActionsLabel">
-    <div class="offcanvas-header">
-        <h5 class="offcanvas-title" id="sdbActionsLabel">Actions</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-    </div>
-    <div class="offcanvas-body d-flex flex-column">
-        <%- include(`${partials}/button/modal/open`, {text: 'Edit User',                   id: 'user_edit',         type: 'warning'}) %>
-        <%- include(`${partials}/button/modal/open`, {text: 'Edit Permissions',            id: 'permissions_edit',  type: 'warning'}) %>
-        <%- include(`${partials}/button/modal/open`, {text: 'Change Password',             id: 'user_password',     type: 'warning'}) %>
-        <%- include(`${partials}/button/modal/open`, {text: 'New Issue',                   id: 'issue_add',         type: 'success'}) %>
-        <%- include(`${partials}/button/modal/open`, {text: 'New Issue From Measurements', id: 'issue_measurement', type: 'success'}) %>
-        <%- include(`${partials}/button/modal/open`, {text: 'Action Lines',                id: 'issues_action',     type: 'warning'}) %>
+<section class="container">
+    <%- include(`${partials}/sidebar_open`, {id: 'Actions', button_html: '<i class="fas fa-angle-right"></i>', sidebar_text: 'Actions'}) %>
+        <%- include(`${partials}/button/modal/open`, {text: 'Edit User',                id: 'user_edit',         type: 'warning'}) %>
+        <%- include(`${partials}/button/modal/open`, {text: 'Edit Permissions',         id: 'permissions_edit',  type: 'warning'}) %>
+        <%- include(`${partials}/button/modal/open`, {text: 'Change Password',          id: 'user_password',     type: 'warning'}) %>
+        <%- include(`${partials}/button/modal/open`, {text: 'New Issue',                id: 'issue_add',         type: 'success'}) %>
+        <%- include(`${partials}/button/modal/open`, {text: 'New Issue (Measurements)', id: 'issue_measurement', type: 'success'}) %>
+        <%- include(`${partials}/button/modal/open`, {text: 'Action Lines',             id: 'issues_action',     type: 'warning'}) %>
         <form action="" id="form_password_reset">
             <button class='btn btn-success w-100' id='btn_password_reset' disabled>
                 Toggle Change Password
@@ -27,9 +20,7 @@
                 Delete User
             </button>
         </form>
-    </div>
-</div>
-<section class="container">
+    <%- include(`${partials}/sidebar_close`) %>
     <ul class="nav nav-tabs" id="mainTab" role="tablist">
         <%- include(`${partials}/tab_head`, {id: 'details',     spinner: 'user',        title: 'Details'}) %>
         <%- include(`${partials}/tab_head`, {id: 'permissions', spinner: 'permissions', title: 'Permissions', count_id: 'permission', permission: 'user_admin'}) %>
@@ -76,7 +67,9 @@
         </div>
         <% if (permissions.user_admin || permissions.edit_own_permissions) { %>
             <div class="tab-pane fade" id="permissions" role="tabpanel" aria-labelledby="permissions-tab">
-                <%- include(`${partials}/sort`, {table: 'permissions'}) %>
+                <div class="row justify-content-between">
+                    <%- include(`${partials}/sort`, {table: 'permissions'}) %>
+                </div>
 	            <table class="table table-sm table-hover">
                     <thead class="thead-dark">
                         <th class='w-100'>Permission</th>
@@ -90,50 +83,42 @@
             <div class="row justify-content-between">
                 <%- include(`${partials}/sort`, {table: 'issues'}) %>
                 <div class="col-12 col-md-4 mb-1">
-                    <button class="btn btn-sm btn-primary w-100" type="button" data-bs-toggle="offcanvas" data-bs-target="#sdbIssuesFilter" aria-controls="sdbIssuesFilter">
-                        Filter
-                    </button>
+                    <%- include(`${partials}/sidebar_button`, {id: 'IssuesFilter', text: 'Filter'}) %>
                 </div>
             </div>
-            <div class="offcanvas offcanvas-start" tabindex="-1" id="sdbIssuesFilter" aria-labelledby="sdbIssuesFilterLabel">
-                <div class="offcanvas-header">
-                    <h5 class="offcanvas-title" id="sdbIssuesFilterLabel">Filter Issues</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            <%- include(`${partials}/sidebar_open`, {id: 'IssuesFilter', sidebar_text: 'Filter Issues'}) %>
+                <div class="input-group mb-1">
+                    <span class="input-group-text w-30">Status</span>
+                    <select id="sel_issue_statuses" class="form-select" multiple size="6">
+                        <option value="0">Cancelled</option>
+                        <option value="1" selected>Requested</option>
+                        <option value="2" selected>Approved </option>
+                        <option value="3" selected>Ordered  </option>
+                        <option value="4" selected>Issued   </option>
+                        <option value="5">Returned </option>
+                    </select>
                 </div>
-                <div class="offcanvas-body">
-                    <div class="input-group mb-1">
-                        <span class="input-group-text w-30">Status</span>
-                        <select id="sel_issue_statuses" class="form-select" multiple size="6">
-                            <option value="0">Cancelled</option>
-                            <option value="1" selected>Requested</option>
-                            <option value="2" selected>Approved </option>
-                            <option value="3" selected>Ordered  </option>
-                            <option value="4" selected>Issued   </option>
-                            <option value="5">Returned </option>
-                        </select>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <h5 class='text-start'>Date From:</h5>
+                        <input type="date" class='form-control' id='issue_createdAt_from'>
                     </div>
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <h5 class='text-start'>Date From:</h5>
-                            <input type="date" class='form-control' id='issue_createdAt_from'>
-                        </div>
-                        <div class="col-sm-6">
-                            <h5 class='text-start'>Date To:</h5>
-                            <input type="date" class='form-control' id='issue_createdAt_to'>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-12">
-                            <h5 class='text-start'>Item:</h5>
-                            <input type="text" class='form-control' id='item'>
-                        </div>
-                        <div class="col-sm-12">
-                            <h5 class='text-start'>Size:</h5>
-                            <input type="text" class='form-control' id='size'>
-                        </div>
+                    <div class="col-sm-6">
+                        <h5 class='text-start'>Date To:</h5>
+                        <input type="date" class='form-control' id='issue_createdAt_to'>
                     </div>
                 </div>
-            </div>
+                <div class="row">
+                    <div class="col-12">
+                        <h5 class='text-start'>Item:</h5>
+                        <input type="text" class='form-control' id='item'>
+                    </div>
+                    <div class="col-sm-12">
+                        <h5 class='text-start'>Size:</h5>
+                        <input type="text" class='form-control' id='size'>
+                    </div>
+                </div>
+            <%- include(`${partials}/sidebar_close`) %>
             <% if (permissions.issuer) { %><form id='form_issue_edit'><% } %>
 	        <table class='table table-sm table-hover'>
                 <thead class="thead-dark">
@@ -163,38 +148,30 @@
             <div class="row justify-content-between">
                 <%- include(`${partials}/sort`, {table: 'loancards'}) %>
                 <div class="col-12 col-md-4 mb-1">
-                    <button class="btn btn-sm btn-primary w-100" type="button" data-bs-toggle="offcanvas" data-bs-target="#sdbLoancardsFilter" aria-controls="sdbLoancardsFilter">
-                        Filter
-                    </button>
+                    <%- include(`${partials}/sidebar_button`, {id: 'LoancardsFilter', text: 'Filter'}) %>
                 </div>
             </div>
-            <div class="offcanvas offcanvas-start" tabindex="-1" id="sdbLoancardsFilter" aria-labelledby="sdbLoancardsFilterLabel">
-                <div class="offcanvas-header">
-                    <h5 class="offcanvas-title" id="sdbLoancardsFilterLabel">Filter Loancards</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            <%- include(`${partials}/sidebar_open`, {id: 'LoancardsFilter', sidebar_text: 'Filter Loancards'}) %>
+                <div class="input-group mb-1">
+                    <span class="input-group-text w-30">Status</span>
+                    <select id="sel_loancard_statuses" class="form-select" multiple size="4">
+                        <option value="0">Cancelled</option>
+                        <option value="1" selected>Draft</option>
+                        <option value="2" selected>Open </option>
+                        <option value="3">Closed  </option>
+                    </select>
                 </div>
-                <div class="offcanvas-body">
-                    <div class="input-group mb-1">
-                        <span class="input-group-text w-30">Status</span>
-                        <select id="sel_loancard_statuses" class="form-select" multiple size="4">
-                            <option value="0">Cancelled</option>
-                            <option value="1" selected>Draft</option>
-                            <option value="2" selected>Open </option>
-                            <option value="3">Closed  </option>
-                        </select>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <h5 class='text-start'>Date From:</h5>
+                        <input type="date" class='form-control' id='loancard_createdAt_from'>
                     </div>
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <h5 class='text-start'>Date From:</h5>
-                            <input type="date" class='form-control' id='loancard_createdAt_from'>
-                        </div>
-                        <div class="col-sm-6">
-                            <h5 class='text-start'>Date To:</h5>
-                            <input type="date" class='form-control' id='loancard_createdAt_to'>
-                        </div>
+                    <div class="col-sm-6">
+                        <h5 class='text-start'>Date To:</h5>
+                        <input type="date" class='form-control' id='loancard_createdAt_to'>
                     </div>
                 </div>
-            </div>
+            <%- include(`${partials}/sidebar_close`) %>
 	        <table class='table table-sm table-hover'>
                 <thead class="thead-dark">
                     <th class="w-40">Date</th>

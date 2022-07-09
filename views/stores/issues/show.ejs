@@ -4,6 +4,27 @@
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/head/components/close`) %>
 <section class="container">
+	<%- include(`${partials}/sidebar_open`, {id: 'Actions', button_html: '<i class="fas fa-angle-right"></i>', sidebar_text: 'Actions'}) %>
+        <%- include(`${partials}/button/modal/open`, {text: 'Edit Size',     id: 'size_edit', type: 'warning'}) %>
+        <%- include(`${partials}/button/modal/open`, {text: 'Edit Quantity', id: 'qty_edit',  type: 'warning'}) %>
+        <div class="input-group mb-3">
+            <label class="input-group-text" for="sel_mark_as">Mark Issue As:</label>
+            <select class="form-select" id="sel_mark_as">
+                <option value="0" disabled>Cancelled</option>
+                <option value="1" disabled>Requested</option>
+                <option value="2" disabled>Approved</option>
+                <option value="3" disabled>Ordered</option>
+                <option value="4" disabled>Issued</option>
+                <option value="5" disabled>Returned</option>
+            </select>
+            <button class="btn btn-success" type="button"><i class="fas fa-check"></i></button>
+        </div>
+		<form id="form_delete" class="mt-auto">
+			<button id='btn_delete' type='button' class="btn btn-danger w-100" disabled>
+				Cancel
+			</button>
+		</form>
+    <%- include(`${partials}/sidebar_close`) %>
 	<ul class="nav nav-tabs" id="mainTab" role="tablist">
         <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'issue'}) %>
         <%- include(`${partials}/common/actions/tab_head`) %>
@@ -11,37 +32,14 @@
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
-            <div class="input-group mb-1">
-                <span class="input-group-text w-30">Actions</span>
-                <%- include(`${partials}/button/delete`, {no_ms4: true}) %>
-            </div>
 			<%- include(`${partials}/inputs/display`, {id: 'issue_user_issue', title: 'For',  link: true}) %>
 			<%- include(`${partials}/inputs/display`, {id: 'issue_item',	   title: 'Item', link: true}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'issue_size',	   title: 'Size', link: true, edit: {modal: 'size_edit', tip: 'Edit Size'}}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'issue_qty',	 	   title: 'Quantity', edit: {modal: 'qty_edit', tip: 'Edit Qty'}}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'issue_size',	   title: 'Size', link: true}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'issue_qty',	 	   title: 'Quantity'}) %>
 			<%- include(`${partials}/inputs/display`, {id: 'issue_createdAt',  title: 'Date Raised'}) %>
 			<%- include(`${partials}/inputs/display`, {id: 'issue_updatedAt',  title: 'Last Updated'}) %>
-			<div class="input-group mb-1">
-				<span class="input-group-text w-30">Status</span>
-				<p class="form-control mb-0" id='issue_status'></p>
-                <% if (permissions.issuer) { %>
-                    <%- include(`${partials}/button/button`, {id: 'mark_0', text: '0', type: 'danger', 	  form: 'mark_cancelled', disabled: true, tip: 'Mark as cancelled'}) %>
-                    <%- include(`${partials}/button/button`, {id: 'mark_1', text: '1', type: 'primary',	  form: 'mark_requested', disabled: true, tip: 'Mark as requested'}) %>
-                    <%- include(`${partials}/button/button`, {id: 'mark_2', text: '2', type: 'warning',	  form: 'mark_approved',  disabled: true, tip: 'Mark as approved'}) %>
-                    <%- include(`${partials}/button/button`, {id: 'mark_3', text: '3', type: 'info',	  form: 'mark_ordered',   disabled: true, tip: 'Mark as ordered'}) %>
-                    <%- include(`${partials}/button/button`, {id: 'mark_4', text: '4', type: 'success',	  form: 'mark_issued',    disabled: true, tip: 'Mark as issued'}) %>
-                    <%- include(`${partials}/button/button`, {id: 'mark_5', text: '5', type: 'secondary', form: 'mark_returned',  disabled: true, tip: 'Mark as returned'}) %>
-                <% } %>
-			</div>
-            <% if (permissions.issuer) { %>
-                <form id="form_mark_cancelled"></form>
-                <form id="form_mark_requested"></form>
-                <form id="form_mark_approved" ></form>
-                <form id="form_mark_ordered"  ></form>
-                <form id="form_mark_issued"   ></form>
-                <form id="form_mark_returned" ></form>
-            <% } %>
-			<%- include(`${partials}/inputs/display`, {id: 'issue_user', title: 'By', link: true}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'issue_status',	   title: 'Status'}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'issue_user',       title: 'By',   link: true}) %>
 		</div>
         <%- include(`${partials}/common/actions/tab_body`) %>
         <%- include(`${partials}/common/notes/tab_body`) %>

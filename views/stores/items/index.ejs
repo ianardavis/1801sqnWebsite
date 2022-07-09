@@ -1,20 +1,21 @@
 <%- include(`${partials}/head/app`,	  {text: 'Stores'}) %>
 <%- include(`${partials}/breadcrumb`, {text: 'Items'}) %>
-<% if (permissions.stores_stock_admin) { %>
-	<li class="nav-item">
-		<a class='nav-link' data-bs-toggle="modal" data-bs-target="#mdl_item_add"><i class="fas fa-plus"></i></a>
-	</li>
-<% } %>
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/spinner`, {id: 'items'}) %>
 <%- include(`${partials}/head/components/close`) %>
 <section class='container'>
-	<div class="row">
-		<div class="col-12 col-lg-5 mx-auto">
-			<%- include(`${partials}/inputs/select`, {id: 'sel_genders', 	  title: 'Genders', spinner_id: 'genders', reload_id: 'reload_genders', multiple: true, size: '3'}) %>
-			<%- include(`${partials}/inputs/text`,   {id: 'item_description', title: 'Description'}) %>
+	<div class="row justify-content-between">
+		<%- include(`${partials}/sort`, {table: 'items'}) %>
+		<div class="col-12 col-md-4 mb-1">
+			<%- include(`${partials}/sidebar_button`, {id: 'ItemsFilter', text: 'Filter/Actions'}) %>
 		</div>
-		<%- include(`${partials}/sort`, {table: 'items', includeRow: true}) %>
+	</div>
+	<%- include(`${partials}/sidebar_open`, {id: 'ItemsFilter', sidebar_text: 'Filter'}) %>
+		<%- include(`${partials}/button/modal/open`, {text: 'New Item', id: 'item_add', type: 'success'}) %>
+		<%- include(`${partials}/inputs/select`, {id: 'sel_genders', 	  title: 'Genders', spinner_id: 'genders', reload_id: 'reload_genders', multiple: true, size: '3'}) %>
+		<%- include(`${partials}/inputs/text`,   {id: 'item_description', title: 'Description'}) %>
+	<%- include(`${partials}/sidebar_close`) %>
+	<div class="row">
 		<div class="col-12 col-lg-5 mx-auto">
 	        <table class='table table-sm table-hover'>
 				<thead class='thead-dark'>

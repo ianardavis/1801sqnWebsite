@@ -19,7 +19,7 @@ function listGenders(options = {}) {
 				result.genders.forEach(gender => {
 					sel_genders.appendChild(
 						new Option({
-							selected: (options.selected === gender.gender_id || options.all_selected),
+							selected: (options.selected === gender.gender_id),
 							text:  gender.gender,
 							value: gender.gender_id
 						}).e

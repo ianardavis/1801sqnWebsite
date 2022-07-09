@@ -4,6 +4,16 @@
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/head/components/close`) %>
 <section class='container'>
+    <%- include(`${partials}/sidebar_open`, {id: 'Actions', button_html: '<i class="fas fa-angle-right"></i>', sidebar_text: 'Actions'}) %>
+        <%- include(`${partials}/button/modal/open`, {text: 'Edit',         type: 'warning', modal: 'item_edit'}) %>
+        <%- include(`${partials}/button/modal/open`, {text: 'New Category', type: 'success', modal: 'category_add'}) %>
+        <%- include(`${partials}/button/modal/open`, {text: 'New Size',     type: 'success', modal: 'size_add'}) %>
+		<form id="form_delete" class="mt-auto">
+			<button id='btn_delete' type='button' class="btn btn-danger w-100" disabled>
+				Delete
+			</button>
+		</form>
+    <%- include(`${partials}/sidebar_close`) %>
     <ul class="nav nav-tabs" id="mainTab" role="tablist">
         <%- include(`${partials}/tab_head`, {id: 'details',    title: 'Details',    spinner: 'item'}) %>
         <%- include(`${partials}/tab_head`, {id: 'categories', title: 'Categories', spinner: 'categories', count_id: 'category'}) %>
@@ -12,11 +22,6 @@
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
-            <div class="input-group mb-1">
-                <span class="input-group-text w-30">Actions</span>
-                <%- include(`${partials}/button/modal/open`, {text: 'Edit', type: 'warning', modal: 'item_edit', small: true, classes: ['ms-1']}) %>
-                <%- include(`${partials}/button/delete`) %>
-            </div>
             <%- include(`${partials}/inputs/display`, {id: 'item_description', title: 'Description'}) %>
             <%- include(`${partials}/inputs/display`, {id: 'item_size_text1',  title: 'Size Text 1'}) %>
             <%- include(`${partials}/inputs/display`, {id: 'item_size_text2',  title: 'Size Text 2'}) %>
@@ -24,11 +29,10 @@
             <%- include(`${partials}/inputs/display`, {id: 'item_gender',      title: 'Gender'}) %>
         </div>
         <div class="tab-pane fade" id="categories" role="tabpanel" aria-labelledby="categories-tab">
+            <div class="row justify-content-between">
+                <%- include(`${partials}/sort`, {table: 'item_categories'}) %>
+            </div>
             <div class="row">
-                <div class="col-12 col-lg-5 mx-auto mb-1">
-                    <%- include(`${partials}/button/modal/open`, {text: 'New Category', type: 'success', modal: 'category_add', classes: ['w-100'], small: true}) %>
-                </div>
-                <%- include(`${partials}/sort`, {table: 'item_categories', includeRow: true}) %>
                 <div class="col-12 col-lg-5 mx-auto">
 	                <table class='table table-sm table-hover w-100'>
                         <thead class='thead-dark'>
@@ -42,11 +46,10 @@
             </div>
         </div>
         <div class="tab-pane fade" id="sizes" role="tabpanel" aria-labelledby="sizes-tab">
+            <div class="row justify-content-between">
+                <%- include(`${partials}/sort`, {table: 'sizes'}) %>
+            </div>
             <div class="row">
-                <div class="col-12 col-lg-6 mx-auto mb-1">
-                    <%- include(`${partials}/button/modal/open`, {text: 'New Size', type: 'success', modal: 'size_add', classes: ['w-100'], small: true}) %>
-                </div>
-                <%- include(`${partials}/sort`, {table: 'sizes', includeRow: true}) %>
                 <div class="col-12 col-lg-6 mx-auto">
 	                <table class='table table-sm table-hover w-100'>
                         <thead class='thead-dark'>

@@ -1,5 +1,7 @@
-<div class="collapse border p-2 mb-1" id="demands-filter">
+<!-- <div class="collapse border p-2 mb-1" id="demands-filter"> -->
+<%- include(`${partials}/sidebar_open`, {id: 'DemandsFilter', sidebar_text: 'Filter'}) %>
     <%- include(`${partials}/filter/supplier`, {table: 'demands'}) %>
     <%- include(`${partials}/filter/status`,   {table: 'demands', statuses: [{text: 'Cancelled', value: '0', colour: 'secondary'}, {text: 'Draft', value: '1', colour: 'warning', checked: true}, {text: 'Complete', value: '2', colour: 'success', checked: true}, {text: 'Closed', value: '3', colour: 'secondary'}]}) %>
     <%- include(`${partials}/filter/date`,     {table: 'demands', field: 'createdAt'}) %>
-</div>
+<%- include(`${partials}/sidebar_close`) %>
+<!-- </div> -->
