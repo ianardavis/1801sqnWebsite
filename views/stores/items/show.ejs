@@ -4,7 +4,7 @@
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/head/components/close`) %>
 <section class='container'>
-    <%- include(`${partials}/sidebar_open`, {id: 'Actions', button_html: '<i class="fas fa-angle-right"></i>', sidebar_text: 'Actions'}) %>
+    <%- include(`${partials}/sidebar_open`, {id: 'Actions', button_html: 'Actions', sidebar_text: 'Actions'}) %>
         <%- include(`${partials}/button/modal/open`, {text: 'Edit',         id: 'item_edit',    type: 'warning', modal: 'item_edit'}) %>
         <%- include(`${partials}/button/modal/open`, {text: 'New Category', id: 'category_add', type: 'success', modal: 'category_add'}) %>
         <%- include(`${partials}/button/modal/open`, {text: 'New Size',     id: 'size_add',     type: 'success', modal: 'size_add'}) %>

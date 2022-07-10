@@ -67,6 +67,10 @@ select {
 .crests {
 	padding: 0px;
 }
+.sideways {
+	transform: rotate(90deg);
+	/* text-orientation: sideways; */
+}
 .crest {
 	height: 100px;
 	padding: 0 5px;

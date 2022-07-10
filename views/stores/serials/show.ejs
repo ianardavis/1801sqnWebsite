@@ -4,16 +4,11 @@
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/head/components/close`) %>
 <section class='container'>
+    <%- include(`${partials}/sidebar_open`, {id: 'Actions', button_html: 'Actions', sidebar_text: 'Actions'}) %>
+        <%- include(`${partials}/button/modal/open`, {text: 'Edit', id: 'serial_edit', type: 'warning', modal: 'serial_edit'}) %>
+        <%- include(`${partials}/button/delete`) %>
+    <%- include(`${partials}/sidebar_close`) %>
     <ul class="nav nav-tabs" id="mainTab" role="tablist">
-        <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Menu
-            </a>
-            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <%- include(`${partials}/menu/button`, {id: 'serial_edit', text: 'Edit',   modal: 'serial_edit'}) %>
-				<%- include(`${partials}/menu/button`, {id: 'delete',	   text: 'Delete', btn_form: {permission: 'stores_stock_admin'}}) %>
-            </div>
-        </li>
         <%- include(`${partials}/tab_head`, {id: 'details',   title: 'Details',   spinner: 'serial'}) %>
         <%- include(`${partials}/tab_head`, {id: 'loancards', title: 'Loancards', spinner: 'loancards', count_id: 'loancard'}) %>
         <%- include(`${partials}/common/actions/tab_head`) %>

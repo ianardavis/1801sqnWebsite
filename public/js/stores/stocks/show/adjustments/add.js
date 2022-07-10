@@ -7,6 +7,8 @@ function reset_scrap_add() {
 window.addEventListener('load', function () {
     modalOnShow('count_add', reset_count_add);
     modalOnShow('scrap_add', reset_scrap_add);
+    enable_button('count_add');
+    enable_button('scrap_add');
     addFormListener(
         'count_add',
         'PUT',

@@ -6,6 +6,13 @@
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/head/components/close`) %>
 <section class='container'>
+    <%- include(`${partials}/sidebar_open`, {id: 'Actions', button_html: 'Actions', sidebar_text: 'Actions'}) %>
+        <%- include(`${partials}/button/modal/open`, {id: 'transfer_add', text: 'Transfer', type: 'success', modal: 'transfer_add'}) %>
+        <%- include(`${partials}/button/modal/open`, {id: 'stock_edit',   text: 'Edit',     type: 'warning', modal: 'stock_edit'}) %>
+        <%- include(`${partials}/button/modal/open`, {id: 'count_add',    text: 'Count',    type: 'warning', modal: 'count_add'}) %>
+        <%- include(`${partials}/button/modal/open`, {id: 'scrap_add',    text: 'Scrap',    type: 'danger',  modal: 'scrap_add'}) %>
+        <%- include(`${partials}/button/delete`) %>
+    <%- include(`${partials}/sidebar_close`) %>
     <ul class="nav nav-tabs" id="mainTab" role="tablist">
         <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'stock'}) %>
         <%- include(`${partials}/common/actions/tab_head`) %>
@@ -13,25 +20,10 @@
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
-            <div class="input-group mb-1">
-                <span class="input-group-text w-30">Actions</span>
-                <%- include(`${partials}/button/delete`) %>
-            </div>
-            <%- include(`${partials}/inputs/display`, {id: 'stock_item', title: 'Item', link: true}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'stock_size', title: 'Size', link: true}) %>
-            <div class="input-group mb-1">
-                <span class="input-group-text w-30">Location</span>
-                <p class="form-control mb-0" id='stock_location'></p>
-                <%- include(`${partials}/button/modal/open`, {icon: 'share',      type: 'success', modal: 'transfer_add', small: true}) %>
-                <%- include(`${partials}/button/modal/open`, {icon: 'pencil-alt', type: 'warning', modal: 'stock_edit',   small: true}) %>
-                <a class='btn btn-primary' id='stock_location_link'><i class="fas fa-search"></i></a>
-            </div>
-            <div class="input-group mb-1">
-                <span class="input-group-text w-30">Quantity</span>
-                <p class="form-control mb-0" id='stock_qty'></p>
-                <%- include(`${partials}/button/modal/open`, {icon: 'pencil-alt', type: 'warning', modal: 'count_add', small: true}) %>
-                <%- include(`${partials}/button/modal/open`, {icon: 'trash-alt',  type: 'danger',  modal: 'scrap_add', small: true}) %>
-            </div>
+            <%- include(`${partials}/inputs/display`, {id: 'stock_item',     title: 'Item',     link: true}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'stock_size',     title: 'Size',     link: true}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'stock_location', title: 'Location', link: true}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'stock_qty',      title: 'Quantity'}) %>
         </div>
         <%- include(`${partials}/common/actions/tab_body`) %>
         <%- include(`${partials}/common/notes/tab_body`) %>

@@ -4,6 +4,14 @@
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/head/components/close`) %>
 <section class="container">
+	<%- include(`${partials}/sidebar_open`, {id: 'Actions', button_html: 'Actions', sidebar_text: 'Actions'}) %>
+        <%- include(`${partials}/button/modal/open`, {text: 'Edit',        id: 'supplier_edit', type: 'warning', modal: 'supplier_edit'}) %>
+        <%- include(`${partials}/button/modal/open`, {text: 'New Address', id: 'address_add',   type: 'success', modal: 'address_add'}) %>
+        <form id='form_set_default'>
+            <button class='btn btn-success w-100' id='btn_default' disabled>Set Default</button>
+        </form>
+        <%- include(`${partials}/button/delete`) %>
+	<%- include(`${partials}/sidebar_close`) %>
     <ul class="nav nav-tabs" id="mainTab" role="tablist">
         <%- include(`${partials}/tab_head`, {id: 'details',   title: 'Details',   spinner: 'supplier'}) %>
         <%- include(`${partials}/tab_head`, {id: 'files',     title: 'Files',     spinner: 'files',     count_id: 'file'}) %>
@@ -15,26 +23,18 @@
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details"   role="tabpanel" aria-labelledby="details-tab">
-            <div class="input-group mb-1">
-                <span class="input-group-text w-30">Actions</span>
-                <%- include(`${partials}/button/modal/open`, {text: 'Edit', type: 'warning', modal: 'supplier_edit', small: true, classes: ['ms-1']}) %>
-                <% if (permissions.access_settings) { %>
-                    <button class='btn btn-success ms-1' id='btn_default' form='form_set_default'>Set Default</button>
-                    <form id='form_set_default'></form>
-                <% } %>
-                <%- include(`${partials}/button/delete`) %>
-            </div>
             <%- include(`${partials}/inputs/display`, {id: 'supplier_name',       title: 'Name'}) %>
             <%- include(`${partials}/inputs/display`, {id: 'supplier_account',    title: 'Account', link: {modal: 'account_view'}}) %>
             <%- include(`${partials}/inputs/display`, {id: 'supplier_is_stores',  title: 'RAF Stores'}) %>
             <%- include(`${partials}/inputs/display`, {id: 'supplier_is_default', title: 'Default Supplier', permission: 'access_settings'}) %>
-            
         </div>
         <div class="tab-pane fade" id="files"     role="tabpanel" aria-labelledby="files-tab">
-            <%- include(`${partials}/sort`, {table: 'files', includeRow: true}) %>
+            <div class="row justify-content-between mb-1">
+                <%- include(`${partials}/sort`, {table: 'files'}) %>
+            </div>
 	        <table class="table table-sm table-hover">
                 <thead class="thead-dark">
-					<th class='w-50'>Filename   </th>
+					<th class='w-50'>Filename</th>
 					<th class='w-50'>Description</th>
                     <th><i class='fas fa-search'></i></th>
                 </thead>
@@ -59,9 +59,6 @@
         </div>
         <div class="tab-pane fade" id="addresses" role="tabpanel" aria-labelledby="addresses-tab">
             <div class="row justify-content-between mb-1">
-                <div class="col-12 col-md-6 mb-1">
-                    <%- include(`${partials}/button/modal/open`, {text: 'New Address', type: 'success', modal: 'address_add', classes: ['w-100'], small: true}) %>
-                </div>
                 <%- include(`${partials}/sort`, {table: 'addresses'}) %>
             </div>
 	        <table class="table table-sm table-hover">
@@ -76,7 +73,9 @@
             <%- include(`${partials}/limit`, {table: 'addresses'}) %>
         </div>
         <div class="tab-pane fade" id="contacts"  role="tabpanel" aria-labelledby="contacts-tab">
-            <%- include(`${partials}/sort`, {table: 'contacts', includeRow: true}) %>
+            <div class="row justify-content-between mb-1">
+                <%- include(`${partials}/sort`, {table: 'contacts'}) %>
+            </div>
 	        <table class="table table-sm table-hover">
                 <thead class="thead-dark">
                     <th class='w-30'>Type</th>
@@ -110,13 +109,17 @@
             </div>
         </div>
         <div class="tab-pane fade" id="items"     role="tabpanel" aria-labelledby="items-tab">
-            <%- include(`${partials}/sort`, {table: 'items', includeRow: true}) %>
+            <div class="row justify-content-between mb-1">
+                <%- include(`${partials}/sort`, {table: 'items'}) %>
+            </div>
             <div class="row">
                 <div class="col-12 col-md-6 mx-auto">
                     <select class='form-select mb-1' id="sel_items"></select>
                 </div>
             </div>
-            <%- include(`${partials}/sort`, {table: 'sizes', includeRow: true}) %>
+            <div class="row justify-content-between mb-1">
+                <%- include(`${partials}/sort`, {table: 'sizes'}) %>
+            </div>
             <div class="row">
                 <div class="col-12 col-md-6 mx-auto">
                     <table class="table table-sm table-hover">
@@ -135,16 +138,22 @@
         <% if (permissions.authorised_demander) { %>
             <div class="tab-pane fade" id="demands" role="tabpanel" aria-labelledby="demands-tab">
 	            <div class="row justify-content-between mb-1">
-                    <div class="col-12 col-md-6 mb-1">
-                        <select class='form-select form-select-sm' id='sel_demand_status' multiple>
+                    <%- include(`${partials}/sort`, {table: 'demands'}) %>
+                    <div class="col-12 col-md-4 mb-1">
+                        <%- include(`${partials}/sidebar_button`, {id: 'DemandsFilter', text: 'Filter'}) %>
+                    </div>
+                </div>
+                <%- include(`${partials}/sidebar_open`, {id: 'DemandsFilter', sidebar_text: 'Filter Demands'}) %>
+                    <div class="input-group mb-1">
+                        <span class="input-group-text w-30">Status</span>
+                        <select class='form-select' id='sel_demand_status' multiple size="4">
                             <option value='0'>Cancelled</option>
                             <option value='1' selected>Draft</option>
                             <option value='2' selected>Complete</option>
                             <option value='3' selected>Closed</option>
                         </select>
                     </div>
-                    <%- include(`${partials}/sort`, {table: 'demands'}) %>
-                </div>
+                <%- include(`${partials}/sidebar_close`) %>
                 <table class="table table-sm table-hover">
                     <thead class="thead-dark">
                         <th class='w-50'>Date  </th>

@@ -4,14 +4,16 @@
 <%- include(`${partials}/spinner`, {id: 'items'}) %>
 <%- include(`${partials}/head/components/close`) %>
 <section class='container'>
+	<%- include(`${partials}/sidebar_open`, {id: 'Actions', button_html: 'Actions', sidebar_text: 'Actions'}) %>
+		<%- include(`${partials}/button/modal/open`, {text: 'New Item', id: 'item_add', type: 'success'}) %>
+	<%- include(`${partials}/sidebar_close`) %>
 	<div class="row justify-content-between">
 		<%- include(`${partials}/sort`, {table: 'items'}) %>
 		<div class="col-12 col-md-4 mb-1">
-			<%- include(`${partials}/sidebar_button`, {id: 'ItemsFilter', text: 'Filter/Actions'}) %>
+			<%- include(`${partials}/sidebar_button`, {id: 'ItemsFilter', text: 'Filter'}) %>
 		</div>
 	</div>
 	<%- include(`${partials}/sidebar_open`, {id: 'ItemsFilter', sidebar_text: 'Filter'}) %>
-		<%- include(`${partials}/button/modal/open`, {text: 'New Item', id: 'item_add', type: 'success'}) %>
 		<%- include(`${partials}/inputs/select`, {id: 'sel_genders', 	  title: 'Genders', spinner_id: 'genders', reload_id: 'reload_genders', multiple: true, size: '3'}) %>
 		<%- include(`${partials}/inputs/text`,   {id: 'item_description', title: 'Description'}) %>
 	<%- include(`${partials}/sidebar_close`) %>

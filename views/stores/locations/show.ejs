@@ -1,19 +1,14 @@
-<%- include(`${partials}/head/app`, {text: 'Stores'}) %>
+<%- include(`${partials}/head/app`,   {text: 'Stores'}) %>
 <%- include(`${partials}/breadcrumb`, {text: 'Locations'}) %>
 <%- include(`${partials}/breadcrumb`) %>
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/head/components/close`) %>
 <section class='container'>
+    <%- include(`${partials}/sidebar_open`, {id: 'Actions', button_html: 'Actions', sidebar_text: 'Actions'}) %>
+        <%- include(`${partials}/button/modal/open`, {id: 'location_edit', text: 'Edit', type: 'warning', modal: 'location_edit'}) %>
+        <%- include(`${partials}/button/delete`) %>
+    <%- include(`${partials}/sidebar_close`) %>
     <ul class="nav nav-tabs" id="mainTab" role="tablist">
-        <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Menu
-            </a>
-            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-				<%- include(`${partials}/menu/button`, {id: 'location_edit', text: 'Edit',   modal: 'location_edit'}) %>
-				<%- include(`${partials}/menu/button`, {id: 'delete',	     text: 'Delete', btn_form: {permission: 'stores_stock_admin'}}) %>
-            </div>
-        </li>
         <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'location'}) %>
         <%- include(`${partials}/tab_head`, {id: 'stocks',  title: 'Stock',   spinner: 'stocks',  count_id: 'stock'}) %>
         <%- include(`${partials}/tab_head`, {id: 'serials', title: 'Serials', spinner: 'serials', count_id: 'serial'}) %>

@@ -1,17 +1,17 @@
 <%- include(`${partials}/head/app`,   {text: 'Stores'}) %>
 <%- include(`${partials}/breadcrumb`, {text: 'Suppliers'}) %>
-<li class="nav-item">
-	<a class='nav-link' data-bs-toggle="modal" data-bs-target="#mdl_supplier_add"><i class="fas fa-plus"></i></a>
-</li>
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/spinner`, {id: 'suppliers'}) %>
 <%- include(`${partials}/head/components/close`) %>
 <section class="container">
-	<div class="row">
+	<%- include(`${partials}/sidebar_open`, {id: 'Actions', button_html: 'Actions', sidebar_text: 'Actions'}) %>
+		<%- include(`${partials}/button/modal/open`, {id: 'supplier_add', text: 'Add Supplier', type: 'success'}) %>
+	<%- include(`${partials}/sidebar_close`) %>
+    <div class="row">
+		<%- include(`${partials}/sort`, {table: 'suppliers'}) %>
 		<div class="col-12 col-md-8 mb-1">
 			<input class='form-control form-control-sm' type='text' id='supplierSearch' placeholder='Search by name...'>
 		</div>
-		<%- include(`${partials}/sort`, {table: 'suppliers'}) %>
 	</div>
 	<div class='menu row' id="tbl_suppliers"></div>
 	<div id="div_modals">
