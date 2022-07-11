@@ -17,4 +17,7 @@ function getStock() {
         document.querySelectorAll('.stock_id').forEach(e => e.setAttribute('value', stock.stock_id))
     });
 };
-window.addEventListener('load', getStock);
+window.addEventListener('load', function () {
+    getStock();
+    document.querySelectorAll('.stock_id').forEach(e => e.value = path[2]);
+});
