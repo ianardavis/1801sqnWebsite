@@ -7,10 +7,11 @@
 <%- include(`${partials}/head/components/close`) %>
 <section class='container'>
     <%- include(`${partials}/sidebar_open`, {id: 'Actions', button_html: 'Actions', sidebar_text: 'Actions'}) %>
-        <%- include(`${partials}/button/modal/open`, {id: 'transfer_add', text: 'Transfer', type: 'success', modal: 'transfer_add'}) %>
-        <%- include(`${partials}/button/modal/open`, {id: 'stock_edit',   text: 'Edit',     type: 'warning', modal: 'stock_edit'}) %>
-        <%- include(`${partials}/button/modal/open`, {id: 'count_add',    text: 'Count',    type: 'warning', modal: 'count_add'}) %>
-        <%- include(`${partials}/button/modal/open`, {id: 'scrap_add',    text: 'Scrap',    type: 'danger',  modal: 'scrap_add'}) %>
+        <%- include(`${partials}/button/modal/open`, {id: 'transfer_add', text: 'Transfer',      type: 'success', modal: 'transfer_add'}) %>
+        <%- include(`${partials}/button/modal/open`, {id: 'stock_edit',   text: 'Edit',          type: 'warning', modal: 'stock_edit'}) %>
+        <%- include(`${partials}/button/modal/open`, {id: 'receipt_add',  text: 'Receive Stock', type: 'success', modal: 'receipt_add'}) %>
+        <%- include(`${partials}/button/modal/open`, {id: 'count_add',    text: 'Count',         type: 'warning', modal: 'count_add'}) %>
+        <%- include(`${partials}/button/modal/open`, {id: 'scrap_add',    text: 'Scrap',         type: 'danger',  modal: 'scrap_add'}) %>
         <%- include(`${partials}/button/delete`) %>
     <%- include(`${partials}/sidebar_close`) %>
     <ul class="nav nav-tabs" id="mainTab" role="tablist">
@@ -33,6 +34,21 @@
         <%- include(`${partials}/common/notes/modals`) %>
         <%- include(`${partials}/common/actions/modals`) %>
         <% if (permissions.stores_stock_admin) { %>
+            <div id='mdl_receipt_add' class="modal fade" tabindex="-1" role="dialog">
+                <div class="modal-dialog modal-lg" role="document">
+                    <form class="modal-content" id='form_receipt_add'>
+                        <div class="modal-header">
+                            <h5 class="modal-title">Receive Stock</h5>
+                        </div>
+                        <div class="modal-body">
+                            <%- include(`${partials}/inputs/number`, {title: 'Quantity', id: 'receipt_qty', name: 'receipt[qty]', required: true}) %>
+                        </div>
+                        <div class="modal-footer">
+                            <%- include(`${partials}/button/save`) %>
+                        </div>
+                    </form>
+                </div>
+            </div>
             <div id='mdl_stock_edit'     class="modal fade" tabindex="-1" role="dialog">
                 <div class="modal-dialog" role="document">
                     <form class="modal-content" id='form_stock_edit'>
@@ -109,6 +125,7 @@
     <script src="/js/stores/locations/getLocations.js"></script>
     <script src='/js/stores/stocks/show/edit.js'></script>
     <script src="/js/stores/stocks/show/delete.js"></script>
+    <script src='/js/stores/stocks/show/receipts/add.js'></script>
     <script src='/js/stores/stocks/show/adjustments/add.js'></script>
     <script src='/js/stores/stocks/show/transfers/add.js'></script>
 <% } %>
