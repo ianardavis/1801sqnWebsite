@@ -25,7 +25,7 @@
     "mysql": "^2.18.1",
     "mysql2": "^2.2.5",
     "node-pre-gyp": "^0.17.0",
-    "passport": "^0.4.1",
+    "passport": "^0.6.0",
     "passport-local": "^1.0.0",
     "passport-local-mysql": "^5.0.10",
     "pdf-to-printer": "^2.0.4",

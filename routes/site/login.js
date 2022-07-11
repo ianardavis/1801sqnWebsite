@@ -7,8 +7,10 @@ module.exports = (app, m, fn) => {
         } else res.render('site/login', {redirect: req.query.redirect});
     });
     app.get('/logout', fn.loggedIn(), (req, res) => {
-        req.logout();
-        res.redirect('/');
+        req.logout(function(err) {
+            if (err) { return next(err); }
+            res.redirect('/');
+        });
     });
     app.post('/login', passport.authenticate('local', {failureRedirect: `/login`}), (req, res) => res.redirect(`${req.body.redirect || '/resources'}`));
 };
