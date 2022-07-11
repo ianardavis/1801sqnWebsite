@@ -51,6 +51,15 @@ module.exports = (app, m, fn) => {
         })
         .catch(err => fn.send_error(res, err));
     });
+    app.post('/receipts',           fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
+        fn.stocks.receive({
+            stock:   {stock_id: req.body.receipt.stock_id},
+            qty:     req.body.receipt.qty,
+            user_id: req.user.user_id
+        })
+        .then(result => res.send({success: true, message: 'Stock received'}))
+        .catch(err => fn.send_error(res, err));
+    });
 
     app.put('/stocks/counts',       fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
         if (!req.body.counts) fn.send_error(res, 'No details')

@@ -6,13 +6,14 @@
 <%- include(`${partials}/head/components/close`) %>
 <section class='container'>
     <%- include(`${partials}/sidebar_open`, {id: 'Actions', button_html: 'Actions', sidebar_text: 'Actions'}) %>
-        <%- include(`${partials}/button/modal/open`, {text: 'Edit',               id: 'size_edit',  type: 'warning', modal: 'size_edit'}) %>
-        <%- include(`${partials}/button/modal/open`, {text: 'Add Detail',         id: 'detail_add', type: 'success', modal: 'detail_add'}) %>
-        <%- include(`${partials}/button/modal/open`, {text: 'New NSN',            id: 'nsn_add',    type: 'success', modal: 'nsn_add'}) %>
-        <%- include(`${partials}/button/modal/open`, {text: 'New Serial',         id: 'serial_add', type: 'success', modal: 'serial_add'}) %>
-        <%- include(`${partials}/button/modal/open`, {text: 'New Stock Location', id: 'stock_add',  type: 'success', modal: 'stock_add'}) %>
-        <%- include(`${partials}/button/modal/open`, {text: 'New Order',          id: 'order_add',  type: 'success', modal: 'order_add'}) %>
-        <%- include(`${partials}/button/modal/open`, {text: 'New Issue',          id: 'issue_add',  type: 'success', modal: 'issue_add'}) %>
+        <%- include(`${partials}/button/modal/open`, {text: 'Edit',               id: 'size_edit',   type: 'warning', modal: 'size_edit'}) %>
+        <%- include(`${partials}/button/modal/open`, {text: 'Add Detail',         id: 'detail_add',  type: 'success', modal: 'detail_add'}) %>
+        <%- include(`${partials}/button/modal/open`, {text: 'New NSN',            id: 'nsn_add',     type: 'success', modal: 'nsn_add'}) %>
+        <%- include(`${partials}/button/modal/open`, {text: 'New Serial',         id: 'serial_add',  type: 'success', modal: 'serial_add'}) %>
+        <%- include(`${partials}/button/modal/open`, {text: 'New Stock Location', id: 'stock_add',   type: 'success', modal: 'stock_add'}) %>
+        <%- include(`${partials}/button/modal/open`, {text: 'Receive Stock',      id: 'receipt_add', type: 'success', modal: 'receipt_add'}) %>
+        <%- include(`${partials}/button/modal/open`, {text: 'New Order',          id: 'order_add',   type: 'success', modal: 'order_add'}) %>
+        <%- include(`${partials}/button/modal/open`, {text: 'New Issue',          id: 'issue_add',   type: 'success', modal: 'issue_add'}) %>
         <%- include(`${partials}/button/delete`) %>
     <%- include(`${partials}/sidebar_close`) %>
     <ul class="nav nav-tabs" id="mainTab" role="tablist">
@@ -286,6 +287,22 @@
                     </form>
                 </div>
             </div>
+            <div id='mdl_receipt_add' class="modal fade" tabindex="-1" role="dialog">
+                <div class="modal-dialog modal-lg" role="document">
+                    <form class="modal-content" id='form_receipt_add'>
+                        <div class="modal-header">
+                            <h5 class="modal-title">Receive Stock</h5>
+                        </div>
+                        <div class="modal-body">
+                            <%- include(`${partials}/inputs/select`, {title: 'Location', id: 'receipt_stock', name: 'receipt[stock_id]', required: true, spinner_id: 'receipt', reload_id: 'reload_locations_receipt'}) %>
+                            <%- include(`${partials}/inputs/number`, {title: 'Quantity', id: 'receipt_qty',   name: 'receipt[qty]',      required: true}) %>
+                        </div>
+                        <div class="modal-footer">
+                            <%- include(`${partials}/button/save`) %>
+                        </div>
+                    </form>
+                </div>
+            </div>
             
             <div id='mdl_detail_add'  class="modal fade" tabindex="-1" role="dialog">
                 <div class="modal-dialog modal-lg" role="document">
@@ -384,7 +401,6 @@
                 </div>
             </div>
         <% } %>
-
     </div>
 </section>
 <%- include(`${partials}/foot/app`) %>
