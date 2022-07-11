@@ -7,7 +7,6 @@ function getReceiptStocks() {
         })
         .then(function ([result, options]) {
             result.stocks.forEach(stock => {
-                console.log(stock);
                 receipt_qty.appendChild(new Option({value: stock.stock_id, text: stock.location.location}).e);
             });
         });
@@ -27,7 +26,7 @@ window.addEventListener( "load", function () {
     addFormListener(
         'receipt_add',
         'POST',
-        '/receipts',
+        '/stocks/receipts',
         {onComplete: getStocks}
     );
     addListener('reload_locations_stock',   getLocations);
