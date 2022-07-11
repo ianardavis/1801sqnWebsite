@@ -1,12 +1,15 @@
 function getReceiptStocks() {
     clear('receipt_qty')
     .then(receipt_qty => {
+        console.log("size_id: ", path[2]);
         get({
             table: 'stocks',
             where: {size_id: path[2]}
         })
         .then(function ([result, options]) {
+            console.log(result);
             result.stocks.forEach(stock => {
+                console.log(stock);
                 receipt_qty.appendChild(new Option({value: stock.stock_id, text: stock.location.location}).e);
             });
         });
