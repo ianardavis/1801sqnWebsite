@@ -10,7 +10,7 @@
     <div class="row">
 		<%- include(`${partials}/sort`, {table: 'suppliers'}) %>
 		<div class="col-12 col-md-8 mb-1">
-			<input class='form-control form-control-sm' type='text' id='supplierSearch' placeholder='Search by name...'>
+			<input class='form-control form-control-sm' type='text' id='inp_supplier_name' placeholder='Search by name...'>
 		</div>
 	</div>
 	<div class='menu row' id="tbl_suppliers"></div>
@@ -35,9 +35,9 @@
 	</div>
 </section>
 <%- include(`${partials}/foot/app`) %>
-<script src='/js/search/cards.js'></script>
+<script src='/js/constructors/card.js'></script>
 <script src='/js/stores/suppliers/index/view.js'></script>
-	<script src='/js/stores/suppliers/index/sizes/count.js'></script>
+<script src='/js/stores/suppliers/index/sizes/count.js'></script>
 <% if (permissions.access_settings) { %>
 	<script src='/js/stores/suppliers/index/settings/default.js'></script>
 <% } %>

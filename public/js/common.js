@@ -1,15 +1,3 @@
-function dateToday(addYears = 0) {
-    let current_date = new Date();
-    return `
-        ${current_date.getFullYear() + addYears}-
-        ${String(current_date.getMonth() + 1).padStart(2, '0')}-
-        ${String(current_date.getDate())     .padStart(2, '0')}
-    `;
-};
-function returnDate(_date) {
-    let date = new Date(_date);
-    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-};
 function removeID(id) {
     if (typeof id === 'string') {
         let e = document.querySelector(`#${id}`);
@@ -88,11 +76,6 @@ function show(id) {
 function hide(id) {
     let e = document.querySelector(`#${id}`);
     if (e) e.classList.add('hidden');
-};
-function isShown(id) {
-    let e = document.querySelector(`#${id}`);
-    if (e && !e.classList.contains('hidden')) return true
-    else return false;
 };
 function print_user(user) {
     if (user) return `${user.rank.rank} ${user.full_name}`
@@ -297,23 +280,23 @@ function build_filter_query(table) {
     if (sel_statuses) where.status        = sel_statuses;
     if (sel_user)     where.user_id_issue = sel_user;
 
-    let supplier = document.querySelector(`#filter_${table}_supplier`);
-    if (supplier && supplier.value !== '') where.supplier_id = supplier.value;
+    let supplier = document.querySelector(`#filter_${table}_supplier`) || {value: ''};
+    if (supplier.value) where.supplier_id = supplier.value;
 
-    let date_from = document.querySelector(`#filter_${table}_createdAt_from`),
-        date_to   = document.querySelector(`#filter_${table}_createdAt_to`);
-    if (date_from && date_from.value !== '') gt = {column: 'createdAt', value: date_from.value};
-    if (date_to   && date_to.value   !== '') lt = {column: 'createdAt', value: date_to  .value};
+    let date_from = document.querySelector(`#filter_${table}_createdAt_from`) || {value: ''},
+        date_to   = document.querySelector(`#filter_${table}_createdAt_to`)   || {value: ''};
+    if (date_from.value) gt = {column: 'createdAt', value: date_from.value};
+    if (date_to  .value) lt = {column: 'createdAt', value: date_to  .value};
     
-    let item  = document.querySelector(`#filter_${table}_item`),
-        size1 = document.querySelector(`#filter_${table}_size_1`),
-        size2 = document.querySelector(`#filter_${table}_size_2`),
-        size3 = document.querySelector(`#filter_${table}_size_3`);
-    if ((item && item.value) || (size1 && size1.value) || (size2 && size2.value) || (size3 && size3.value)) like = {};
-    if (item  && item .value !=='') like.item  = item.value;
-    if (size1 && size1.value !=='') like.size1 = size1.value;
-    if (size2 && size2.value !=='') like.size2 = size2.value;
-    if (size3 && size3.value !=='') like.size3 = size3.value;
+    let item  = document.querySelector(`#filter_${table}_item`)   || {value: ''},
+        size1 = document.querySelector(`#filter_${table}_size_1`) || {value: ''},
+        size2 = document.querySelector(`#filter_${table}_size_2`) || {value: ''},
+        size3 = document.querySelector(`#filter_${table}_size_3`) || {value: ''};
+    if (item.value || size1.value || size2.value || size3.value) like = {};
+    if (item .value) like.item  = item.value;
+    if (size1.value) like.size1 = size1.value;
+    if (size2.value) like.size2 = size2.value;
+    if (size3.value) like.size3 = size3.value;
 
     return {
         where: where,

@@ -4,9 +4,9 @@ function getLoancards() {
     clear('tbl_loancards')
     .then(tbl_loancards => {
         let sel_users = document.querySelector('#sel_users') || {value: ''},
-            where     = {};
-        let statuses = checked_statuses()
-        if (statuses) where.status = statuses;
+            where     = {},
+            statuses  = getSelectedOptions('sel_demand_statuses');
+        if (statuses.length > 0) where.status = statuses;
         if (sel_users && sel_users.value !== "") where.user_id_loancard = sel_users.value;
         get({
             table: 'loancards',
@@ -30,7 +30,7 @@ function getLoancards() {
 function filter(tbl_loancards) {
     if (!tbl_loancards) tbl_loancards = document.querySelector('#tbl_loancards');
     let from = new Date(document.querySelector('#createdAt_from').value).getTime() || '',
-        to   = new Date(document.querySelector('#createdAt_to').value)  .getTime() || '';
+        to   = new Date(document.querySelector('#createdAt_to')  .value).getTime() || '';
         tbl_loancards.childNodes.forEach(row => {
         if (
             (!from || row.childNodes[0].dataset.sort > from) &&

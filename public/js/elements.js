@@ -1,12 +1,9 @@
-function _check()  {return '<i class="fas fa-check"></i>'}
-function _search() {return '<i class="fas fa-search"></i>'}
-function _globe()  {return '<i class="fas fa-globe-europe"></i>'}
-function _edit()   {return '<i class="fas fa-pencil-alt"></i>'}//
-function _save()   {return '<i class="fas fa-save"></i>'}
+function _check()              {return '<i class="fas fa-check"></i>'}
+function _search()             {return '<i class="fas fa-search"></i>'}
+function _edit()               {return '<i class="fas fa-pencil-alt"></i>'}
 function _move(attribute = '') {return `<i class="fas fa-align-justify"${attribute}></i>`}
-function _copy()   {return '<i class="fas fa-clipboard"></i>'}
-function _delete() {return '<i class="fas fa-trash-alt"></i>'}
-function random_id() {return Math.floor(Math.random()*10000)};
+function _delete()             {return '<i class="fas fa-trash-alt"></i>'}
+function random_id()           {return Math.floor(Math.random()*10000)};
 
 function List_Item(text, caret) {
     this.e = document.createElement('li');
@@ -262,34 +259,6 @@ function Spinner(id = null) {
     this.e.setAttribute('role', 'status');
     this.e.innerHTML = '<span class="sr-only">Loading...</span>';
 };
-function Card(options = {}) {
-    this.e       = document.createElement('div');
-    let a        = document.createElement('a'),
-        header   = document.createElement('div'),
-        title    = document.createElement('h3'),
-        body     = document.createElement('div'),
-        subtitle = document.createElement('p');
-    this.e.classList.add('col-12', 'col-sm-6', 'col-lg-4', 'col-xl-3');
-    if (options.href) a.setAttribute('href', options.href);
-    a.classList.add('card', 'mb-3', 'text-start');
-    header.classList.add('card-header');
-    if (options.head_100) header.classList.add('h-100-px');
-    title.classList.add('card-title');
-    if (options.search && options.search.title === true) title.classList.add('search');
-    title.innerText = options.title;
-    header.appendChild(title);
-    if (options.subtitle) {
-        subtitle.classList.add('card-subtitle', 'text-muted', 'f-10');
-        if (options.subtitle.id) subtitle.setAttribute('id', options.subtitle.id);
-        subtitle.innerText = options.subtitle.text || ''
-        header.appendChild(subtitle);
-    };
-    body.classList.add('card-body');
-    if (options.body && options.body.data) body.setAttribute(`data-${options.body.data.field}`, options.body.data.value);
-    a.appendChild(header);
-    a.appendChild(body);
-    this.e.appendChild(a);
-};
 function Badge(options = {}) {
     this.e = document.createElement('span');
     this.e.classList.add('mx-1', `float-${options.float}`, 'badge', `bg-${options.colour}`);
@@ -320,32 +289,6 @@ function Notification (options = {}) {
     body.innerText = options.text || '';
     this.e.appendChild(heading);
     this.e.appendChild(body);
-};
-function TH(options = {}) {
-    this.e = document.createElement('th');
-    if      (options.text) this.e.innerText = options.text
-    else if (options.html) this.e.innerHTML = options.html
-    if (options.width) this.e.classList.add(`w-${options.width}`);
-};
-function THEAD() {
-    this.e = document.createElement('thead');
-    this.e.classList.add('thead-dark');
-};
-function TBODY(id) {
-    this.e = document.createElement('tbody');
-    this.e.setAttribute('id', `tbl_${id}`);
-};
-function Table() {
-    this.e = document.createElement('table');
-    this.e.classList.add('table', 'table-sm', 'table-hover');
-};
-function H5(options = {}) {
-    this.e = document.createElement('h5');
-    if (options.text) this.e.innerText = options.text;
-};
-function P(options = {}) {
-    this.e = document.createElement('p');
-    if (options.attributes) options.attributes.forEach(a => this.e.setAttribute(a.field, a.value));
 };
 function LI(options = {}) {
     this.e = document.createElement('li');

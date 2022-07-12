@@ -1,10 +1,10 @@
+let inp_supplier_name = document.querySelector('#inp_supplier_name');
 function getSuppliers() {
     clear('tbl_suppliers')
     .then(tbl_suppliers => {
-        let like = {},
-            searchString = document.querySelector('#supplierSearch');
-        if (searchString.value.trim() != "") {
-            like.name = searchString.value
+        let like = {};
+        if (inp_supplier_name.value.trim() != "") {
+            like.name = inp_supplier_name.value
         }
         get({
             table: 'suppliers',
@@ -13,10 +13,8 @@ function getSuppliers() {
         .then(function ([result, options]) {
             result.suppliers.forEach(supplier => {
                 tbl_suppliers.appendChild(new Card({
-                    href:     `/suppliers/${supplier.supplier_id}`,
                     title:    supplier.name,
-                    head_100: true,
-                    search:   {title: true},
+                    href:     `/suppliers/${supplier.supplier_id}`,
                     subtitle: {id: `default_${supplier.supplier_id}`},
                     body:     {data: {field: 'id', value: supplier.supplier_id}}
                 }).e);
@@ -36,6 +34,5 @@ sort_listeners(
     ]
 );
 window.addEventListener('load', function () {
-    let searchString = document.querySelector('#supplierSearch');
-    searchString.addEventListener('input', getSuppliers);
+    inp_supplier_name.addEventListener('input', getSuppliers);
 });

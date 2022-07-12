@@ -6,6 +6,11 @@ function numberEvents() {
         else if (e.key === 'Backspace')                                     backspace();
     });
 };
+function isShown(id) {
+    let e = document.querySelector(`#${id}`);
+    if (e && !e.classList.contains('hidden')) return true
+    else return false;
+};
 function numberBtn(num) {
     if (modalIsShown('sale_complete') && !isShown('btn_close_complete_sale')) {
         let tendered = document.querySelector('#tendered'),

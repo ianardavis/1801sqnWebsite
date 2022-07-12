@@ -1,6 +1,10 @@
 function setCompleteButton(status) {
     if (status === 1) enable_button('loancard_complete');
 };
+function returnDate(_date) {
+    let date = new Date(_date);
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+};
 function editLoancardDueDate() {
     get({
         table: 'loancard',
@@ -10,6 +14,14 @@ function editLoancardDueDate() {
         set_attribute('date_due_edit', 'value', returnDate(loancard.date_due));
         set_attribute('date_due_edit', 'min',   returnDate(loancard.createdAt));
     });
+};
+function dateToday(addYears = 0) {
+    let current_date = new Date();
+    return `
+        ${current_date.getFullYear() + addYears}-
+        ${String(current_date.getMonth() + 1).padStart(2, '0')}-
+        ${String(current_date.getDate())     .padStart(2, '0')}
+    `;
 };
 function completeLoancardDueDate() {
     set_attribute('date_due_complete', 'value', dateToday(7));
