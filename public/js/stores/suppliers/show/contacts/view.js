@@ -9,7 +9,6 @@ function getContacts() {
         .then(function ([result, options]) {
             set_count('contact', result.count);
             result.contacts.forEach(contact => {
-                console.log(contact);
                 let row = tbl_contacts.insertRow(-1);
                 add_cell(row, {text: contact.type});
                 add_cell(row, {text: contact.description});

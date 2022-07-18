@@ -3,10 +3,10 @@ function getLocations() {
     .then(locations_list => {
         get({
             table: 'locations',
-            order: {col: 'location', dir: 'ASC'}
+            order: ['location', 'ASC']
         })
-        .then(function ([locations, options]) {
-            locations.forEach(e => locations_list.appendChild(new Option({value: e.location}).e));
+        .then(function ([results, options]) {
+            results.locations.forEach(e => locations_list.appendChild(new Option({value: e.location}).e));
         });
     });
 };
