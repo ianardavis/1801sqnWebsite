@@ -126,6 +126,7 @@ function setActionButton() {
     });
 };
 window.addEventListener( "load", function () {
+    enable_button('action');
     setActionButton();
     addFormListener(
         'action',
