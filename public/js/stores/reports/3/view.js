@@ -122,7 +122,6 @@ sort_listeners(
     ]
 );
 window.addEventListener('load', function () {
-    getItems();
     addListener('sel_suppliers', getSizes, 'input');
     addListener('sel_items',     getSizes, 'input');
     addFormListener(
