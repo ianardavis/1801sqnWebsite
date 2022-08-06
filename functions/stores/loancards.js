@@ -14,50 +14,6 @@ module.exports = function (m, fn) {
     //string height @ 15: 19.095
     //string height @ 10: 12.7299999
     // A4 (595.28 x 841.89)
-    function createFile(loancard) {
-        return new Promise((resolve, reject) => {
-            try {
-                const fs  = require('fs'),
-                      PDF = require('pdfkit');
-                try {
-                    let file        = `${loancard.loancard_id}-${loancard.user_loancard.surname}.pdf`,
-                        docMetadata = {},
-                        writeStream = fs.createWriteStream(`${process.env.ROOT}/public/res/loancards/${file}`, {flags: 'w'});
-                    docMetadata.Title = `Loan Card: ${loancard.loancard_id}`;
-                    if (loancard.user) {
-                        docMetadata.Author = `${(loancard.user.rank ? loancard.user.rank.rank : "")} ${loancard.user.full_name}`;
-                    }
-                    docMetadata.bufferPages   = true;
-                    docMetadata.autoFirstPage = false;
-                    const doc = new PDF(docMetadata);
-                    doc.pipe(writeStream);
-                    doc.font(`${process.env.ROOT}/public/lib/fonts/myriad-pro/d (1).woff`);
-                    resolve([doc, file, writeStream]);
-                } catch (err) {
-                    console.log(err);
-                    reject(err);
-                };
-            } catch (err) {
-                reject(err);
-            };
-        });
-    };
-    function addPage(doc) {
-        let pageMetaData = {};
-        pageMetaData.size    = 'A4';
-        pageMetaData.margins = 28;
-        doc.addPage(pageMetaData);
-        return 28;
-    };
-    function addLogos(doc, y) {
-        doc
-            .image(`${process.env.ROOT}/public/img/rafac_logo.png`, 28,  y, {height: 80})
-            .image(`${process.env.ROOT}/public/img/sqnCrest.png`,   470, y, {height: 80})
-            .fontSize(30)
-            .text('1801 SQUADRON ATC', 28, y,    {width: 539, align: 'center'})
-            .text('STORES LOAN CARD',  28, y+40, {width: 539, align: 'center'});
-        return 85;
-    };
     function addHeader(doc, loancard, y) {
         doc
             .fontSize(15)
@@ -82,10 +38,7 @@ module.exports = function (m, fn) {
         return 55;
     };
     function addDeclaration(doc, count, y) {
-        if (y >= 640) {
-            doc.text('END OF PAGE', 28, y, {width: 539, align: 'center'});
-            y = addPage(doc);
-        };
+        if (y >= 640) fn.files.add.EndOfPage(doc, y);
         let close_text = `END OF LOANCARD, ${count} LINE(S) ISSUED`,
             disclaimer = 'By signing in the box below, I confirm I have received the items listed above. I understand I am responsible for any items issued to me and that I may be liable to pay for items lost or damaged through negligence';
         doc
@@ -93,18 +46,7 @@ module.exports = function (m, fn) {
             .text(disclaimer, 28, y+20, {width: 539, align: 'center'})
             .rect(197.64, y+50, 200, 100).stroke();
     };
-    function addPageNumbers(doc, loancard_id) {
-        const range = doc.bufferedPageRange();
-        doc.fontSize(10);
-        for (let i = range.start; i < range.count; i++) {
-            doc.switchToPage(i);
-            doc
-            .text(`Page ${i + 1} of ${range.count}`, 28, 723.89)
-            .image(`${process.env.ROOT}/public/res/barcodes/${loancard_id}_128.png`, 28,  738.89, {width: 434, height: 75})
-            .image(`${process.env.ROOT}/public/res/barcodes/${loancard_id}_qr.png`,  492, 738.89, {width: 75,  height: 75});
-        };
-    };
-    function add_line(doc, line, y) {
+    function addLine(doc, line, y) {
         let y_c = 30;
         doc
             .text(line.qty,                                                            320, y)
@@ -147,21 +89,20 @@ module.exports = function (m, fn) {
                         else {
                             fn.create_barcodes(loancard.loancard_id)
                             .then(result => {
-                                createFile(loancard)
+                                fn.files.create(loancard.loancard_id, 'loancards', loancard.user_loancard.surname, loancard.user)
                                 .then(([doc, file, writeStream]) => {
-                                    let y = addPage(doc);
-                                    y += addLogos(doc, y);
+                                    let y = fn.files.add.Page(doc);
+                                    y += fn.files.add.Logos(doc, y, 'STORES LOAN CARD');
                                     y += addHeader(doc, loancard, y);
                                     lines.forEach(line => {
                                         if (y >= 708-(line.nsn ? 15 : 0)-(line.serial ? 15 : 0)) {
-                                            doc.text('END OF PAGE', 28, y, {width: 539, align: 'center'});
-                                            y  = addPage(doc);
+                                            y = fn.files.add.EndOfPage(doc, y);
                                             y += addHeader(doc, loancard, y);
                                         };
-                                        y += add_line(doc, line, y);
+                                        y += addLine(doc, line, y);
                                     });
                                     addDeclaration(doc, lines.length, y);
-                                    addPageNumbers(doc, loancard.loancard_id);
+                                    fn.files.add.PageNumbers(doc, loancard.loancard_id);
                                     doc.end();
                                     writeStream.on('error', err => reject(err));
                                     writeStream.on('finish', function () {

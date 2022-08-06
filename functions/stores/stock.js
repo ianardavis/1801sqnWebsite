@@ -48,44 +48,74 @@ module.exports = function (m, fn) {
             } else reject(new Error('No size, location or stock ID submitted'));
         });
     };
-    fn.stocks.adjust = function (stock_id, type, qty, user_id) {
+    fn.stocks.scrap = function (stock_id, qty, user_id) {
+        return new Promise((resolve, reject) => {
+            m.stocks.findOne({
+                where: {stock_id: stock_id},
+                include: [m.sizes]
+            })
+            .then(stock => {
+                fn.decrement(stock, qty)
+                .then(result => {
+                    m.scraps.findOrCreate({
+                        where: {
+                            supplier_id: stock.size.supplier_id,
+                            status: 1
+                        }
+                    })
+                    .then(([scrap, created]) => {
+                        m.scrap_lines.findOrCreate({
+                            where: {
+                                scrap_id: scrap.scrap_id,
+                                size_id:  stock.size_id
+                            },
+                            defaults: {
+                                qty: qty
+                            }
+                        })
+                        .then(([line, created]) => {
+                            Promise.all((!created ? [line.increment('qty', {by: qty})] : []))
+                            .then(results => {
+                                fn.actions.create(
+                                    `STOCK | SCRAPPED | Decreased by ${qty}. New qty: ${Number(stock.qty - qty)}`,
+                                    user_id,
+                                    [{table: 'stocks', id: stock.stock_id}]
+                                )
+                                .then(results => resolve(true))
+                                .catch(err => resolve(false));
+                            })
+                            .catch(err => reject(err));
+                        })
+                        .catch(err => reject(err));
+                    })
+                    .catch(err => reject(err));
+                })
+                .catch(err => reject(err));
+            })
+            .catch(err => reject(err));
+        });
+    };
+    fn.stocks.count = function (stock_id, qty, user_id) {
         return new Promise((resolve, reject) => {
             fn.stocks.get({stock_id: stock_id})
             .then(stock => {
-                let action = null, action_text = '', variance = 0;
-                switch (String(type).toLowerCase()) {
-                    case 'count':
-                        variance = qty - stock.qty;
-                        action = fn.update(stock, {qty: qty});
-                        action_text = `COUNT | ${(variance < 0 ? 
+                let variance = qty - stock.qty;
+                fn.update(stock, {qty: qty})
+                .then(result => {
+                    fn.actions.create(
+                        `COUNT | ${(variance < 0 ? 
                             `Decreased by ${variance}. New qty: ${qty}` : (variance > 0 ? 
                             `Increased by ${variance}. New qty: ${qty}` : 
                             `No variance. Qty: ${qty}`
                             )
-                        )}`;
-                        break
-                    case 'scrap':
-                        variance = 0 - qty;
-                        action = fn.decrement(stock, qty);
-                        action_text = `STOCK | SCRAPPED | Decreased by ${qty}. New qty: ${Number(stock.qty - qty)}`
-                        break
-                    default:
-                        break
-                };
-                if (!action) reject(new Error('Invalid adjustment type'))
-                else {
-                    action
-                    .then(result => {
-                        fn.actions.create(
-                            action_text,
-                            user_id,
-                            [{table: 'stocks', id: stock.stock_id}]
-                        )
-                        .then(results => resolve(true))
-                        .catch(err => resolve(false));
-                    })
-                    .catch(err => reject(err));
-                };
+                        )}`,
+                        user_id,
+                        [{table: 'stocks', id: stock.stock_id}]
+                    )
+                    .then(results => resolve(true))
+                    .catch(err => resolve(false));
+                })
+                .catch(err => reject(err));
             })
             .catch(err => reject(err));
         });

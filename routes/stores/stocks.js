@@ -51,7 +51,7 @@ module.exports = (app, m, fn) => {
         })
         .catch(err => fn.send_error(res, err));
     });
-    app.post('/stocks/receipts',           fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
+    app.post('/stocks/receipts',    fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
         fn.stocks.receive({
             stock:   {stock_id: req.body.receipt.stock_id},
             qty:     req.body.receipt.qty,
@@ -66,7 +66,7 @@ module.exports = (app, m, fn) => {
         else {
             let actions = [];
             req.body.counts.filter(a => a.qty).forEach(count => {
-                actions.push(fn.stocks.adjust(count.stock_id, 'Count', count.qty, req.user.user_id))
+                actions.push(fn.stocks.count(count.stock_id, count.qty, req.user.user_id))
             })
             Promise.allSettled(actions)
             .then(results => {
@@ -95,15 +95,23 @@ module.exports = (app, m, fn) => {
         .then(result => res.send({success: true, message: 'Stock transferred'}))
         .catch(err => fn.send_error(res, err));
     });
-    app.put('/stocks/:id/:type',    fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
-        if      (!req.body[req.params.type])                                                             fn.send_error(res, 'No details')
-        else if (req.params.type.toLowerCase() !== 'scrap' && req.params.type.toLowerCase() !== 'count') fn.send_error(res, 'Invalid type')
+    app.put('/stocks/:id/scrap',    fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
+        if (!req.body.scrap) fn.send_error(res, 'No details')
         else {
-            fn.stocks.adjust(req.params.id, req.params.type, req.body[req.params.type].qty, req.user.user_id)
-            .then(result => res.send({success: true, message: `${req.params.type} saved`}))
+            fn.stocks.scrap(req.params.id, req.body.scrap.qty, req.user.user_id)
+            .then(result => res.send({success: true, message: 'Stock scrapped'}))
             .catch(err => fn.send_error(res, err));
         };
     });
+    app.put('/stocks/:id/count',    fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
+        if (!req.body.count) fn.send_error(res, 'No details')
+        else {
+            fn.stocks.count(req.params.id, req.body.count.qty, req.user.user_id)
+            .then(result => res.send({success: true, message: 'Stock counted'}))
+            .catch(err => fn.send_error(res, err));
+        };
+    });
+    app.put('/stocks/:id/:type',    fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {fn.send_error(res, 'Invalid type')});
     
     app.delete('/stocks/:id',       fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
         fn.stocks.get({stock_id: req.params.id})

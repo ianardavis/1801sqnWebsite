@@ -105,7 +105,8 @@
                             <h5 class="modal-title">Scrap</h5>
                         </div>
                         <div class="modal-body">
-                            <%- include(`${partials}/inputs/number`, {title: 'Quantity', name: 'scrap[qty]', id: 'adjustment_qty_scrap', required: true}) %>
+                            <%- include(`${partials}/inputs/selecy`, {title: 'NSN',      name: 'scrap[nsn_id]', id: 'scrap_nsn_ad'}) %>
+                            <%- include(`${partials}/inputs/number`, {title: 'Quantity', name: 'scrap[qty]',    id: 'adjustment_qty_scrap', required: true}) %>
                         </div>
                         <div class="modal-footer">
                             <input type="submit" class="btn btn-success w-100" value='Scrap Stock'>
