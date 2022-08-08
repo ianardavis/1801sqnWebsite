@@ -98,7 +98,7 @@ module.exports = (app, m, fn) => {
     app.put('/stocks/:id/scrap',    fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
         if (!req.body.scrap) fn.send_error(res, 'No details')
         else {
-            fn.stocks.scrap(req.params.id, req.body.scrap.qty, req.user.user_id)
+            fn.stocks.scrap(req.params.id, req.body.scrap, req.user.user_id)
             .then(result => res.send({success: true, message: 'Stock scrapped'}))
             .catch(err => fn.send_error(res, err));
         };

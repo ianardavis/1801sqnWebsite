@@ -105,8 +105,9 @@
                             <h5 class="modal-title">Scrap</h5>
                         </div>
                         <div class="modal-body">
-                            <%- include(`${partials}/inputs/selecy`, {title: 'NSN',      name: 'scrap[nsn_id]', id: 'scrap_nsn_ad'}) %>
-                            <%- include(`${partials}/inputs/number`, {title: 'Quantity', name: 'scrap[qty]',    id: 'adjustment_qty_scrap', required: true}) %>
+                            <%- include(`${partials}/inputs/select`, {title: 'Serial',   name: 'scrap[serial_id]', id: 'scrap_add_serial'}) %>
+                            <%- include(`${partials}/inputs/select`, {title: 'NSN',      name: 'scrap[nsn_id]',    id: 'scrap_add_nsn'}) %>
+                            <%- include(`${partials}/inputs/number`, {title: 'Quantity', name: 'scrap[qty]',       id: 'scrap_add_qty', required: true}) %>
                         </div>
                         <div class="modal-footer">
                             <input type="submit" class="btn btn-success w-100" value='Scrap Stock'>
@@ -128,7 +129,8 @@
     <script src='/js/stores/stocks/show/edit.js'></script>
     <script src="/js/stores/stocks/show/delete.js"></script>
     <script src='/js/stores/stocks/show/receipts/add.js'></script>
-    <script src='/js/stores/stocks/show/adjustments/add.js'></script>
+    <script src='/js/stores/stocks/show/scraps/add.js'></script>
+    <script src='/js/stores/stocks/show/counts/add.js'></script>
     <script src='/js/stores/stocks/show/transfers/add.js'></script>
 <% } %>
 <%- include(`${partials}/foot/components/htmlClose`) %>

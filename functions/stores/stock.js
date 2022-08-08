@@ -48,14 +48,14 @@ module.exports = function (m, fn) {
             } else reject(new Error('No size, location or stock ID submitted'));
         });
     };
-    fn.stocks.scrap = function (stock_id, qty, user_id) {
+    fn.stocks.scrap = function (stock_id, details, user_id) {
         return new Promise((resolve, reject) => {
             m.stocks.findOne({
                 where: {stock_id: stock_id},
                 include: [m.sizes]
             })
             .then(stock => {
-                fn.decrement(stock, qty)
+                fn.decrement(stock, details.qty)
                 .then(result => {
                     m.scraps.findOrCreate({
                         where: {
@@ -70,14 +70,14 @@ module.exports = function (m, fn) {
                                 size_id:  stock.size_id
                             },
                             defaults: {
-                                qty: qty
+                                qty: details.qty
                             }
                         })
                         .then(([line, created]) => {
-                            Promise.all((!created ? [line.increment('qty', {by: qty})] : []))
+                            Promise.all((!created ? [line.increment('qty', {by: details.qty})] : []))
                             .then(results => {
                                 fn.actions.create(
-                                    `STOCK | SCRAPPED | Decreased by ${qty}. New qty: ${Number(stock.qty - qty)}`,
+                                    `STOCK | SCRAPPED | Decreased by ${details.qty}. New qty: ${Number(stock.qty - details.qty)}`,
                                     user_id,
                                     [{table: 'stocks', id: stock.stock_id}]
                                 )

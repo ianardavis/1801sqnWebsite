@@ -250,6 +250,7 @@ function Option(options = {}) {
     };
     if (options.value) this.e.setAttribute('value', options.value)
     else               this.e.setAttribute('value', '');
+    if (options.disabled) this.e.setAttribute('disabled', true);
     this.e.innerText = `${pre_text}${options.text || ''}${_text}`;
 };
 function Spinner(id = null) {

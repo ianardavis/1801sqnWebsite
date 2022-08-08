@@ -116,12 +116,12 @@ function table_date(date, time = false) {
 function clear(id) {
     return new Promise((resolve, reject) => {
         let e = document.getElementById(id);
-        if (!e) {
-            console.log(`Element not found: ${id}`);
-            reject(new Error('Element not found'));
-        } else {
+        if (e) {
             e.innerHTML = '';
             resolve(e);
+        } else {
+            console.log(`Element not found: ${id}`);
+            reject(new Error('Element not found'));
         };
     })
 };
