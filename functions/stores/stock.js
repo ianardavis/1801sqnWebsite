@@ -55,42 +55,46 @@ module.exports = function (m, fn) {
                 include: [m.sizes]
             })
             .then(stock => {
-                fn.decrement(stock, details.qty)
-                .then(result => {
-                    m.scraps.findOrCreate({
-                        where: {
-                            supplier_id: stock.size.supplier_id,
-                            status: 1
-                        }
-                    })
-                    .then(([scrap, created]) => {
-                        m.scrap_lines.findOrCreate({
+                if      (stock.size.has_nsns    && !details.nsn_id)    reject(new Error("No valid NSN submitted"))
+                else if (stock.size.has_serials && !details.serial_id) reject(new Error("No valid serial # submitted"))
+                else {
+                    fn.decrement(stock, details.qty)
+                    .then(result => {
+                        m.scraps.findOrCreate({
                             where: {
-                                scrap_id: scrap.scrap_id,
-                                size_id:  stock.size_id
-                            },
-                            defaults: {
-                                qty: details.qty
+                                supplier_id: stock.size.supplier_id,
+                                status: 1
                             }
                         })
-                        .then(([line, created]) => {
-                            Promise.all((!created ? [line.increment('qty', {by: details.qty})] : []))
-                            .then(results => {
-                                fn.actions.create(
-                                    `STOCK | SCRAPPED | Decreased by ${details.qty}. New qty: ${Number(stock.qty - details.qty)}`,
-                                    user_id,
-                                    [{table: 'stocks', id: stock.stock_id}]
-                                )
-                                .then(results => resolve(true))
-                                .catch(err => resolve(false));
+                        .then(([scrap, created]) => {
+                            m.scrap_lines.findOrCreate({
+                                where: {
+                                    scrap_id: scrap.scrap_id,
+                                    size_id:  stock.size_id
+                                },
+                                defaults: {
+                                    qty: details.qty
+                                }
+                            })
+                            .then(([line, created]) => {
+                                Promise.all((!created ? [line.increment('qty', {by: details.qty})] : []))
+                                .then(results => {
+                                    fn.actions.create(
+                                        `STOCK | SCRAPPED | Decreased by ${details.qty}. New qty: ${Number(stock.qty - details.qty)}`,
+                                        user_id,
+                                        [{table: 'stocks', id: stock.stock_id}]
+                                    )
+                                    .then(results => resolve(true))
+                                    .catch(err => resolve(false));
+                                })
+                                .catch(err => reject(err));
                             })
                             .catch(err => reject(err));
                         })
                         .catch(err => reject(err));
                     })
                     .catch(err => reject(err));
-                })
-                .catch(err => reject(err));
+                }
             })
             .catch(err => reject(err));
         });
