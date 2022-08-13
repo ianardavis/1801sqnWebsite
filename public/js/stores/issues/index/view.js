@@ -3,12 +3,21 @@ function getIssues() {
     clear('tbl_issues')
     .then(tbl_issues => {
         let where = {},
+            like  = {},
             gt    = null,
             lt    = null,
             statuses  = getSelectedOptions('sel_issue_statuses'),
             date_from = document.querySelector('#filter_issues_createdAt_from'),
             date_to   = document.querySelector('#filter_issues_createdAt_to'),
-            user_id   = document.querySelector('#filter_issues_user');
+            user_id   = document.querySelector('#filter_issues_user'),
+            item      = document.querySelector('#filter_issues_item'),
+            size1     = document.querySelector('#filter_issues_size_1'),
+            size2     = document.querySelector('#filter_issues_size_2'),
+            size3     = document.querySelector('#filter_issues_size_3');
+        if (item .value)         like.item  = item.value;
+        if (size1.value)         like.size1 = size1.value;
+        if (size2.value)         like.size2 = size2.value;
+        if (size3.value)         like.size3 = size3.value;
         if (user_id.value)       where.user_id_issue = user_id.value;
         if (statuses.length > 0) where.status = statuses;
         if (date_from && date_from.value !== '') gt = {column: 'createdAt', value: date_from.value};
@@ -18,6 +27,7 @@ function getIssues() {
             where: where,
             gt:    gt,
             lt:    lt,
+            like:  like,
             func:  getIssues
         })
         .then(function ([result, options]) {
@@ -39,12 +49,7 @@ function getIssues() {
                     }).e
                 });
                 let radios = [], args = [issue.issue_id, row_index, issue_options];
-                if (
-                    issue.status === 0 ||
-                    issue.status === 1 ||
-                    issue.status === 2 ||
-                    issue.status === 3
-                ) {
+                if ([0, 1, 2, 3].includes(issue.status)) {
                     if (typeof nil_radio     === 'function') radios.push(nil_radio(    ...args));
                 };
                 if (issue.status === 0) {
