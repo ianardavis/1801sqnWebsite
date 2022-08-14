@@ -4,7 +4,7 @@ function getOrders() {
     .then(tbl_orders => {
         get({
             table: 'orders',
-            ...build_filter_query('orders'),
+            ...build_filter_query('order'),
             func: getOrders
         })
         .then(function ([result, options]) {
@@ -58,71 +58,6 @@ function getOrders() {
         });
     });
 };
-// function receive_options() {
-//     clear(`${this.dataset.id}_details`)
-//     .then(div_details => {
-//         if (this.value === '3') {
-//             div_details.appendChild(new Spinner(this.dataset.id).e);
-//             get({
-//                 table: 'order',
-//                 where: {order_id: this.dataset.id},
-//                 index: this.dataset.index
-//             })
-//             .then(function ([order, options]) {
-//                 if ([1,2].includes(order.status)) {
-//                     if (order.size.has_serials) {
-//                         for (let i = 0; i < order.qty; i++) {
-//                             div_details.appendChild(new Select({
-//                                 attributes: [
-//                                     {field: 'name',        value: `lines[][${options.index}][serials][][${i}][serial]`},
-//                                     {field: 'required',    value: true},
-//                                     {field: 'placeholder', value: `Serial ${i + 1}`}
-//                                 ]
-//                             }).e);
-//                             div_details.appendChild(new Select({
-//                                 attributes: [
-//                                     {field: 'name',        value: `lines[][${options.index}][serials][][${i}][location]`},
-//                                     {field: 'required',    value: true},
-//                                     {field: 'placeholder', value: `Location ${i + 1}`}
-//                                 ]
-//                             }).e);
-//                         };
-//                     } else {
-//                         let list = document.createElement('datalist');
-//                         list.setAttribute('id', `loc_list_${options.index}`);
-//                         div_details.appendChild(new Input({
-//                             attributes: [
-//                                 {field: 'name',        value: `lines[][${options.index}][location]`},
-//                                 {field: 'required',    value: true},
-//                                 {field: 'list',        value: `loc_list_${options.index}`},
-//                                 {field: 'placeholder', value: 'Enter Location...'}
-//                             ]
-//                         }).e);
-//                         div_details.appendChild(list);
-//                         get({
-//                             table: 'stocks',
-//                             where: {size_id: order.size_id}
-//                         })
-//                         .then(function ([result, options]) {
-//                             result.stocks.forEach(e => list.appendChild(new Option({value: e.location.location}).e));
-//                         });
-//                         div_details.appendChild(new Input({
-//                             attributes: [
-//                                 {field: 'type',        value: 'number'},
-//                                 {field: 'min',         value: '1'},
-//                                 {field: 'Placeholder', value: 'Receipt Quantity'},
-//                                 {field: 'name',        value: `lines[][${options.index}][qty]`},
-//                                 {field: 'required',    value: true},
-//                                 {field: 'value',       value: order.qty}
-//                             ]
-//                         }).e);
-//                     };
-//                 };
-//                 remove_spinner(order.order_id);
-//             });
-//         };
-//     });
-// };
 addReloadListener(getOrders);
 sort_listeners(
     'orders',
@@ -138,16 +73,13 @@ sort_listeners(
     ]
 );
 window.addEventListener('load', function () {
-    addListener('status_orders_0', getOrders, 'input');
-    addListener('status_orders_1', getOrders, 'input');
-    addListener('status_orders_2', getOrders, 'input');
-    addListener('status_orders_3', getOrders, 'input');
-    addListener('filter_orders_createdAt_from', getOrders, 'input');
-    addListener('filter_orders_createdAt_to',   getOrders, 'input');
-    addListener('filter_orders_item',   getOrders, 'input');
-    addListener('filter_orders_size_1', getOrders, 'input');
-    addListener('filter_orders_size_2', getOrders, 'input');
-    addListener('filter_orders_size_3', getOrders, 'input');
+    addListener('filter_order_statuses',       getOrders, 'input');
+    addListener('filter_order_createdAt_from', getOrders, 'input');
+    addListener('filter_order_createdAt_to',   getOrders, 'input');
+    addListener('filter_order_item',           getOrders, 'input');
+    addListener('filter_order_size_1',         getOrders, 'input');
+    addListener('filter_order_size_2',         getOrders, 'input');
+    addListener('filter_order_size_3',         getOrders, 'input');
     addFormListener(
         'order_edit',
         'PUT',

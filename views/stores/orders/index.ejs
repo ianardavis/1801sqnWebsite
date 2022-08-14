@@ -5,18 +5,30 @@
 <%- include(`${partials}/spinner`, {id: 'orders'}) %>
 <%- include(`${partials}/head/components/close`) %>
 <section class='container'>
-	<div class="row">
-		<div class="col-12 col-md-6 mb-1">
-			<%- include(`${partials}/filter/button`, {id: 'order'}) %>
-		</div>
-		<div class="col-12 col-md-6 mb-1">
-			<button class="btn btn-success w-100" form="form_order_edit">
-				Action Selected Orders
-			</button>
+	<div class="row justify-content-between">
+		<%- include(`${partials}/sort`, {table: 'order'}) %>
+		<div class="col-12 col-md-4 mb-1">
+			<%- include(`${partials}/sidebar_button`, {id: 'OrdersFilter', text: 'Filter/Actions'}) %>
 		</div>
 	</div>
-	<%- include(`${partials}/filter/stores/orders`) %>
-	<%- include(`${partials}/sort`, {table: 'orders'}) %>
+	<%- include(`${partials}/sidebar_open`, {id: 'OrdersFilter', sidebar_text: 'Filter'}) %>
+		<%- include(`${partials}/button/modal/open`, {text: 'New Order', id: 'order_add', type: 'success'}) %>
+		<div class="input-group mb-1">
+			<span class="input-group-text w-30">Status</span>
+			<select id="filter_order_statuses" class="form-select" multiple size="4">
+				<option value="0"		  >Cancelled</option>
+				<option value="1" selected>Placed	</option>
+				<option value="2" selected>Demanded	</option>
+				<option value="3"		  >Received	</option>
+			</select>
+		</div>
+		<%- include(`${partials}/filter/date`, {table: 'order', field: 'createdAt'}) %>
+		<%- include(`${partials}/filter/size`, {table: 'order'}) %>
+
+		<button class="btn btn-success w-100 mt-auto" form="form_order_edit">
+			Action Selected Orders
+		</button>
+	<%- include(`${partials}/sidebar_close`) %>
 	<% if (permissions.stores_stock_admin) { %><form id='form_order_edit'><% } %>
 		<table class="table table-sm table-hover">
 			<thead class="thead-dark">

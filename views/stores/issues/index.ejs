@@ -12,10 +12,10 @@
 	</div>
 	<%- include(`${partials}/sidebar_open`, {id: 'IssuesFilter', sidebar_text: 'Filter'}) %>
 		<%- include(`${partials}/button/modal/open`, {text: 'New Issue', id: 'issue_add', type: 'success'}) %>
-		<%- include(`${partials}/filter/user`, {append: '_issue', table: 'issues'}) %>
+		<%- include(`${partials}/filter/user`, {append: '_issue', table: 'issue'}) %>
 		<div class="input-group mb-1">
 			<span class="input-group-text w-30">Status</span>
-			<select id="sel_issue_statuses" class="form-select" multiple size="6">
+			<select id="filter_issue_statuses" class="form-select" multiple size="6">
 				<option value="0"		  >Cancelled</option>
 				<option value="1" selected>Requested</option>
 				<option value="2" selected>Approved	</option>
@@ -24,8 +24,8 @@
 				<option value="5"		  >Returned	</option>
 			</select>
 		</div>
-		<%- include(`${partials}/filter/date`,   {table: 'issues', field: 'createdAt'}) %>
-		<%- include(`${partials}/filter/size`,   {table: 'issues'}) %>
+		<%- include(`${partials}/filter/date`, {table: 'issue', field: 'createdAt'}) %>
+		<%- include(`${partials}/filter/size`, {table: 'issue'}) %>
 
 		<button class="btn btn-success w-100 mt-auto" form="form_issue_edit">
 			Action Selected Issues

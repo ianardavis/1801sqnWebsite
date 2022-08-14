@@ -140,11 +140,21 @@ function toggle_checkbox_on_row_click(event) {
     if (e) e.click();
 };
 function modalHide(id) {
-    bootstrap.Modal.getOrCreateInstance(document.querySelector(`#mdl_${id}`)).hide();
+    bootstrap.Modal.getInstance(document.querySelector(`#mdl_${id}`)).hide();
+};
+function sidebarClose(id) {
+    // const sdb = document.querySelector(`#sdb_${id}`);
+    const sdb = new bootstrap.Offcanvas(`#sdb_${id}`);
+    console.log(sdb);
+    sdb.hide();
 };
 function modalOnShow(id, func) {
     let e = document.querySelector(`#mdl_${id}`);
     if (e) e.addEventListener('show.bs.modal', function (event){func(event)});
+};
+function sidebarOnShow(id, func) {
+    let e = document.querySelector(`#sdb_${id}`);
+    if (e) e.addEventListener('show.bs.offcanvas', function (event){func(event)});
 };
 function modalOnShown(id, func, args = []) {
     let e = document.querySelector(`#mdl_${id}`);
@@ -270,33 +280,28 @@ function sort_listeners(table, func, options, getOnLoad = true) {
     });
 };
 function build_filter_query(table) {
-    let where = null,
-        like  = null,
+    let where = {},
+        like  = {},
         gt    = null,
-        lt    = null;
-    let sel_statuses = checked_statuses(),
-        sel_user     = selected_user(`filter_${table}_user`);
-    if (sel_statuses || sel_user) where = {};
-    if (sel_statuses) where.status        = sel_statuses;
-    if (sel_user)     where.user_id_issue = sel_user;
-
-    let supplier = document.querySelector(`#filter_${table}_supplier`) || {value: ''};
+        lt    = null,
+        statuses  = getSelectedOptions(     `filter_${table}_statuses`),
+        date_from = document.querySelector(`#filter_${table}_createdAt_from`) || {value: ''},
+        date_to   = document.querySelector(`#filter_${table}_createdAt_to`)   || {value: ''},
+        user_id   = document.querySelector(`#filter_${table}_user`)           || {value: ''},
+        item      = document.querySelector(`#filter_${table}_item`)           || {value: ''},
+        size1     = document.querySelector(`#filter_${table}_size_1`)         || {value: ''},
+        size2     = document.querySelector(`#filter_${table}_size_2`)         || {value: ''},
+        size3     = document.querySelector(`#filter_${table}_size_3`)         || {value: ''},
+        supplier  = document.querySelector(`#filter_${table}_supplier`)       || {value: ''};
+    if (item   .value)       like.item  = item.value;
+    if (size1  .value)       like.size1 = size1.value;
+    if (size2  .value)       like.size2 = size2.value;
+    if (size3  .value)       like.size3 = size3.value;
+    if (user_id.value)       where[`user_id_${table}`] = user_id.value;
+    if (statuses.length > 0) where.status = statuses;
+    if (date_from && date_from.value !== '') gt = {column: 'createdAt', value: date_from.value};
+    if (date_to   && date_to.value   !== '') lt = {column: 'createdAt', value: date_to  .value};
     if (supplier.value) where.supplier_id = supplier.value;
-
-    let date_from = document.querySelector(`#filter_${table}_createdAt_from`) || {value: ''},
-        date_to   = document.querySelector(`#filter_${table}_createdAt_to`)   || {value: ''};
-    if (date_from.value) gt = {column: 'createdAt', value: date_from.value};
-    if (date_to  .value) lt = {column: 'createdAt', value: date_to  .value};
-    
-    let item  = document.querySelector(`#filter_${table}_item`)   || {value: ''},
-        size1 = document.querySelector(`#filter_${table}_size_1`) || {value: ''},
-        size2 = document.querySelector(`#filter_${table}_size_2`) || {value: ''},
-        size3 = document.querySelector(`#filter_${table}_size_3`) || {value: ''};
-    if (item.value || size1.value || size2.value || size3.value) like = {};
-    if (item .value) like.item  = item.value;
-    if (size1.value) like.size1 = size1.value;
-    if (size2.value) like.size2 = size2.value;
-    if (size3.value) like.size3 = size3.value;
 
     return {
         where: where,

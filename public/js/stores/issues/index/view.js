@@ -2,32 +2,9 @@ let issue_statuses = {0: 'Cancelled', 1: 'Requested', 2: 'Approved', 3: 'Ordered
 function getIssues() {
     clear('tbl_issues')
     .then(tbl_issues => {
-        let where = {},
-            like  = {},
-            gt    = null,
-            lt    = null,
-            statuses  = getSelectedOptions('sel_issue_statuses'),
-            date_from = document.querySelector('#filter_issues_createdAt_from'),
-            date_to   = document.querySelector('#filter_issues_createdAt_to'),
-            user_id   = document.querySelector('#filter_issues_user'),
-            item      = document.querySelector('#filter_issues_item'),
-            size1     = document.querySelector('#filter_issues_size_1'),
-            size2     = document.querySelector('#filter_issues_size_2'),
-            size3     = document.querySelector('#filter_issues_size_3');
-        if (item .value)         like.item  = item.value;
-        if (size1.value)         like.size1 = size1.value;
-        if (size2.value)         like.size2 = size2.value;
-        if (size3.value)         like.size3 = size3.value;
-        if (user_id.value)       where.user_id_issue = user_id.value;
-        if (statuses.length > 0) where.status = statuses;
-        if (date_from && date_from.value !== '') gt = {column: 'createdAt', value: date_from.value};
-        if (date_to   && date_to.value   !== '') lt = {column: 'createdAt', value: date_to  .value};
         get({
             table: 'issues',
-            where: where,
-            gt:    gt,
-            lt:    lt,
-            like:  like,
+            ...build_filter_query('issue'),
             func:  getIssues
         })
         .then(function ([result, options]) {
@@ -103,7 +80,7 @@ function getIssues() {
 };
 function getUsers() {
     return listUsers({
-        select: 'filter_issues_user',
+        select: 'filter_issue_user',
         blank:  {text: 'All'}
     });
 };
@@ -124,14 +101,16 @@ sort_listeners(
 );
 getUsers();
 window.addEventListener('load', function () {
-    addListener('filter_issues_user',           getIssues, 'input');
-    addListener('sel_issue_statuses',           getIssues, 'input');
-    addListener('filter_issues_createdAt_from', getIssues, 'input');
-    addListener('filter_issues_createdAt_to',   getIssues, 'input');
-    addListener('filter_issues_item',           getIssues, 'input');
-    addListener('filter_issues_size_1',         getIssues, 'input');
-    addListener('filter_issues_size_2',         getIssues, 'input');
-    addListener('filter_issues_size_3',         getIssues, 'input');
+    sidebarOnShow('IssuesFilter', getUsers);
+    modalOnShow('issue_add', () => {sidebarClose('IssuesFilter')});
+    addListener('filter_issue_user',           getIssues, 'input');
+    addListener('filter_issue_statuses',       getIssues, 'input');
+    addListener('filter_issue_createdAt_from', getIssues, 'input');
+    addListener('filter_issue_createdAt_to',   getIssues, 'input');
+    addListener('filter_issue_item',           getIssues, 'input');
+    addListener('filter_issue_size_1',         getIssues, 'input');
+    addListener('filter_issue_size_2',         getIssues, 'input');
+    addListener('filter_issue_size_3',         getIssues, 'input');
     addFormListener(
         'issue_edit',
         'PUT',
