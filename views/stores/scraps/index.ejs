@@ -1,0 +1,42 @@
+<%- include(`${partials}/head/app`, {text: 'Stores'}) %>
+<%- include(`${partials}/breadcrumb`, {text: 'Scraps'}) %>
+<%- include(`${partials}/reload`) %>
+<%- include(`${partials}/spinner`, {id: 'scraps'}) %>
+<%- include(`${partials}/head/components/close`) %>
+<section class='container'>
+	<div class="row justify-content-between">
+		<%- include(`${partials}/sort`, {table: 'scraps'}) %>
+		<div class="col-12 col-md-4 mb-1">
+			<%- include(`${partials}/sidebar_button`, {id: 'ScrapsFilter', text: 'Filter'}) %>
+		</div>
+	</div>
+	<%- include(`${partials}/sidebar_open`, {id: 'ScrapsFilter', sidebar_text: 'Filter'}) %>
+		<%- include(`${partials}/inputs/select`, {title: 'Filter By Supplier', id: 'filter_scrap_suppliers', spinner_id: 'suppliers', reload_id: 'reload_suppliers'}) %>
+		<div class="input-group mb-1">
+			<span class="input-group-text w-30">Status</span>
+			<select id="sel_scrap_statuses" class="form-select" multiple size="4">
+				<option value="0">Cancelled</option>
+				<option value="1" selected>Draft</option>
+				<option value="2">Closed  </option>
+			</select>
+		</div>
+		<%- include(`${partials}/filter/date`, {table: 'scrap', field: 'createdAt'}) %>
+		<%- include(`${partials}/filter/size`, {table: 'scrap'}) %>
+	<%- include(`${partials}/sidebar_close`) %>
+	<table class="table table-sm table-hover">
+		<thead class="thead-dark">
+			<th class='w-35'>Date</th>
+			<th class='w-35'>Supplier</th>
+			<th class='w-15'>Lines</th>
+			<th class='w-15'>Status</th>
+			<th><i class="fas fa-search"></i></th>
+		</thead>
+		<tbody id="tbl_scraps"></tbody>
+	</table>
+	<%- include(`${partials}/limit`, {table: 'scraps'}) %>
+	<div id="div_modals"></div>
+</section>
+<%- include(`${partials}/foot/app`) %>
+<script src='/js/stores/scraps/index/view.js'></script>
+<script src='/js/utils/list/suppliers.js'></script>
+<%- include(`${partials}/foot/components/htmlClose`) %>

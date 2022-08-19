@@ -5,7 +5,7 @@ function getLoancards() {
     .then(tbl_loancards => {
         let sel_users = document.querySelector('#sel_users') || {value: ''},
             where     = {},
-            statuses  = getSelectedOptions('sel_demand_statuses');
+            statuses  = getSelectedOptions('sel_loancard_statuses');
         if (statuses.length > 0) where.status = statuses;
         if (sel_users && sel_users.value !== "") where.user_id_loancard = sel_users.value;
         get({

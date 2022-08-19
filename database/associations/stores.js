@@ -84,7 +84,7 @@ module.exports = function (m) {
     m.contacts          .belongsTo(m.supplier_contacts,  {foreignKey: 'contact_id',  targetKey: 'contact_id'});
 
     m.scraps     .belongsTo(m.suppliers,   {foreignKey: 'supplier_id', targetKey: 'supplier_id'});
-    m.scraps     .hasMany(  m.scrap_lines, {foreignKey: 'scrap_id',    targetKey: 'scrap_id'});
+    m.scraps     .hasMany(  m.scrap_lines, {foreignKey: 'scrap_id',    targetKey: 'scrap_id', as: 'lines'});
     m.scrap_lines.hasOne(   m.sizes,       {foreignKey: 'size_id',     sourceKey: 'size_id',   constraints: false});
     m.scrap_lines.belongsTo(m.scraps,      {foreignKey: 'scrap_id',    targetKey: 'scrap_id'});
     m.scrap_lines.hasOne(   m.serials,     {foreignKey: 'serial_id',   sourceKey: 'serial_id', constraints: false});
