@@ -139,7 +139,7 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         })
     };
-    fn.loancards.cancel = function (options = {}) {
+    fn.loancards.cancel    = function (options = {}) {
         return new Promise((resolve, reject) => {
             fn.loancards.get(options.loancard_id)
             .then(loancard => {
@@ -201,7 +201,7 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
-    fn.loancards.create = function (options = {}) {
+    fn.loancards.create    = function (options = {}) {
         return new Promise((resolve, reject) => {
             m.loancards.findOrCreate({
                 where: {
@@ -214,7 +214,7 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
-    fn.loancards.complete = function (options = {}) {
+    fn.loancards.complete  = function (options = {}) {
         return new Promise((resolve, reject) => {
             fn.loancards.get(options.loancard_id) 
             .then(loancard => {
@@ -275,7 +275,7 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
-    fn.loancards.close = function (options = {}) {
+    fn.loancards.close     = function (options = {}) {
         return new Promise((resolve, reject) => {
             fn.loancards.get(options.loancard_id)
             .then(loancard => {
@@ -302,38 +302,6 @@ module.exports = function (m, fn) {
                     };
                 })
                 .catch(err => reject(err));
-            })
-            .catch(err => reject(err));
-        });
-    };
-    fn.loancards.delete_file = function (options = {}) {
-        return new Promise((resolve, reject) => {
-            fn.loancards.get(options.loancard_id)
-            .then(loancard => {
-                if (loancard.filename) {
-                    fn.file_exists(`${process.env.ROOT}/public/res/loancards/${loancard.filename}`)
-                    .then(filepath => {
-                        fn.rm(filepath)
-                        .then(result => {
-                            fn.update(loancard, {filename: null})
-                            .then(result => {
-                                fn.actions.create(
-                                    'LOANCARD | FILE DELETED',
-                                    options.user_id,
-                                    [{table: 'loancards', id: loancard.loancard_id}]
-                                )
-                                .then(result => resolve(true))
-                                .catch(err => {
-                                    console.log(err);
-                                    resolve(true);
-                                });
-                            })
-                            .catch(err => reject(err));
-                        })
-                        .catch(err => reject(err));
-                    })
-                    .catch(err => reject(err));
-                } else reject(new Error('No file for this loancard'));
             })
             .catch(err => reject(err));
         });

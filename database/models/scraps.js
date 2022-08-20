@@ -11,7 +11,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     'supplier_id': {
       type: DataTypes.UUIDV4,
-      allowNull: false,
+      allowNull: true,
       comment: "null"
     },
     'status': {

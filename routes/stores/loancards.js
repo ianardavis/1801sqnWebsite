@@ -2,39 +2,33 @@ module.exports = (app, m, fn) => {
     app.get('/loancards',                    fn.loggedIn(), fn.permissions.get('access_stores'),         (req, res) => res.render('stores/loancards/index'));
     app.get('/loancards/:id',                fn.loggedIn(), fn.permissions.get('access_stores'),         (req, res) => res.render('stores/loancards/show'));
     app.get('/loancard_lines/:id',           fn.loggedIn(), fn.permissions.get('access_stores'),         (req, res) => res.render('stores/loancard_lines/show'));
+    function getLoancardFilename(loancard_id) {
+        return new Promise((resolve, reject) => {
+            fn.loancards.get(loancard_id)
+            .then(loancard => {
+                if (!loancard.filename) {
+                    fn.loancards.createPDF(loancard.loancard_id)
+                    .then(filename => resolve(filename))
+                    .catch(err => reject(err));
+                } else resolve(loancard.filename);
+            })
+            .catch(err => reject(err));
+        });
+    };
     app.get('/loancards/:id/download',       fn.loggedIn(), fn.permissions.check('access_stores'),       (req, res) => {
-        fn.loancards.get(req.params.id)
-        .then(loancard => {
-            if (!loancard.filename) {
-                fn.loancards.createPDF(loancard.loancard_id)
-                .then(filename => {
-                    fn.download('loancards', filename, res)
-                    .catch(err => fn.send_error(res, err));
-                })
-                .catch(err => fn.send_error(res, err));
-            } else {
-                fn.download('loancards', loancard.filename, res)
-                .catch(err => fn.send_error(res, err));
-            };
+        getLoancardFilename(req.params.id)
+        .then(filename => {
+            fn.download('loancards', filename, res)
+            .catch(err => fn.send_error(res, err));
         })
         .catch(err => fn.send_error(res, err));
     });
     app.get('/loancards/:id/print',          fn.loggedIn(), fn.permissions.check('access_stores'),       (req, res) => {
-        fn.loancards.get(req.params.id)
-        .then(loancard => {
-            if (!loancard.filename) {
-                fn.loancards.createPDF(loancard.loancard_id)
-                .then(filename => {
-                    fn.print_pdf(`${process.env.ROOT}/public/res/loancards/${filename}`)
-                    .then(result => res.send({success: true, message: 'Loancard sent to printer'}))
-                    .catch(err => fn.send_error(res, err));
-                })
-                .catch(err => fn.send_error(res, err));
-            }else {
-                fn.print_pdf(`${process.env.ROOT}/public/res/loancards/${loancard.filename}`)
-                .then(result => res.send({success: true, message: 'Loancard sent to printer'}))
-                .catch(err => fn.send_error(res, err));
-            };
+        getLoancardFilename(req.params.id)
+        .then(filename => {
+            fn.print_pdf(`${process.env.ROOT}/public/res/loancards/${filename}`)
+            .then(result => res.send({success: true, message: 'Loancard sent to printer'}))
+            .catch(err => fn.send_error(res, err));
         })
         .catch(err => fn.send_error(res, err));
     });
@@ -251,9 +245,11 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.delete('/loancards/:id/delete_file', fn.loggedIn(), fn.permissions.check('issuer'),              (req, res) => {
-        fn.loancards.delete_file({
-            loancard_id: req.params.id,
-            user_id:     req.user.user_id
+        fn.delete_file({
+            table:   'loancards',
+            table_s: 'LOANCARD',
+            id:      req.params.id,
+            user_id: req.user.user_id
         })
         .then(result => res.send({success: true, message: 'File deleted'}))
         .catch(err => fn.send_error(res, err));

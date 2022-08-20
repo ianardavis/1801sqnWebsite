@@ -355,4 +355,36 @@ module.exports = function (m, fn) {
         });
         return noErrors;
     };
+    fn.delete_file = function (options = {}) {
+        return new Promise((resolve, reject) => {
+            m[options.table].findByPk(options.id)
+            .then(result => {
+                if (result.filename) {
+                    fn.file_exists(`${process.env.ROOT}/public/res/${options.table}/${result.filename}`)
+                    .then(filepath => {
+                        fn.rm(filepath)
+                        .then(rmresult => {
+                            result.update({filename: null})
+                            .then(result => {
+                                fn.actions.create(
+                                    `${options.table_s} | FILE DELETED`,
+                                    options.user_id,
+                                    [{table: options.table, id: options.id}]
+                                )
+                                .then(result => resolve(true))
+                                .catch(err => {
+                                    console.log(err);
+                                    resolve(true);
+                                });
+                            })
+                            .catch(err => reject(err));
+                        })
+                        .catch(err => reject(err));
+                    })
+                    .catch(err => reject(err));
+                } else reject(new Error('No file for this record'));
+            })
+            .catch(err => reject(err));
+        });
+    };
 };

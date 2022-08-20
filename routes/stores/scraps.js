@@ -2,39 +2,33 @@ module.exports = (app, m, fn) => {
     app.get('/scraps',                    fn.loggedIn(), fn.permissions.get(  'stores_stock_admin'), (req, res) => res.render('stores/scraps/index'));
     app.get('/scraps/:id',                fn.loggedIn(), fn.permissions.get(  'stores_stock_admin'), (req, res) => res.render('stores/scraps/show'));
     app.get('/scrap_lines/:id',           fn.loggedIn(), fn.permissions.get(  'stores_stock_admin'), (req, res) => res.render('stores/scrap_lines/show'));
+    function getScrapFilename(scrap_id) {
+        return new Promise((resolve, reject) => {
+            fn.scraps.get({scrap_id: scrap_id})
+            .then(scrap => {
+                if (!scrap.filename) {
+                    fn.scraps.createPDF(scrap.scrap_id)
+                    .then(filename => resolve(filename))
+                    .catch(err => reject(err));
+                } else resolve(scrap.filename);
+            })
+            .catch(err => reject(err));
+        });
+    };
     app.get('/scraps/:id/download',       fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
-        fn.scraps.get(req.params.id)
-        .then(scrap => {
-            if (!scrap.filename) {
-                fn.scraps.createPDF(scrap.scrap_id)
-                .then(filename => {
-                    fn.download('scraps', filename, res)
-                    .catch(err => fn.send_error(res, err));
-                })
-                .catch(err => fn.send_error(res, err));
-            } else {
-                fn.download('scraps', scrap.filename, res)
-                .catch(err => fn.send_error(res, err));
-            };
+        getScrapFilename(req.params.id)
+        .then(filename => {
+            fn.download('scraps', filename, res)
+            .catch(err => fn.send_error(res, err));
         })
         .catch(err => fn.send_error(res, err));
     });
     app.get('/scraps/:id/print',          fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
-        fn.scraps.get(req.params.id)
-        .then(scrap => {
-            if (!scrap.filename) {
-                fn.scraps.createPDF(scrap.scrap_id)
-                .then(filename => {
-                    fn.print_pdf(`${process.env.ROOT}/public/res/scraps/${filename}`)
-                    .then(result => res.send({success: true, message: 'Scrap sent to printer'}))
-                    .catch(err => fn.send_error(res, err));
-                })
-                .catch(err => fn.send_error(res, err));
-            }else {
-                fn.print_pdf(`${process.env.ROOT}/public/res/scraps/${scrap.filename}`)
-                .then(result => res.send({success: true, message: 'Scrap sent to printer'}))
-                .catch(err => fn.send_error(res, err));
-            };
+        getScrapFilename(req.params.id)
+        .then(filename => {
+            fn.print_pdf(`${process.env.ROOT}/public/res/scraps/${filename}`)
+            .then(result => res.send({success: true, message: 'Scrap sent to printer'}))
+            .catch(err => fn.send_error(res, err));
         })
         .catch(err => fn.send_error(res, err));
     });
@@ -74,16 +68,16 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/scrap_lines',           fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
+        let where = fn.build_query(req.query),
+            include = [
+                fn.inc.stores.size_filter(req.query),
+                fn.inc.stores.nsn(),
+                fn.inc.stores.serial(),
+                fn.inc.stores.scrap()
+            ];
         m.scrap_lines.findAndCountAll({
-            where:   req.query.where,
-            include: [
-                fn.inc.stores.size(),
-                fn.inc.stores.scrap({
-                    include: [
-                        fn.inc.stores.supplier()
-                    ]
-                })
-            ],
+            where:   where,
+            include: include,
             ...fn.pagination(req.query)
         })
         .then(results => fn.send_res('lines', res, results, req.query))
@@ -194,9 +188,11 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.delete('/scraps/:id/delete_file', fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
-        fn.scraps.delete_file({
-            scrap_id: req.params.id,
-            user_id:     req.user.user_id
+        fn.delete_file({
+            table:   'scraps',
+            table_s: 'SCRAP',
+            id:      req.params.id,
+            user_id: req.user.user_id
         })
         .then(result => res.send({success: true, message: 'File deleted'}))
         .catch(err => fn.send_error(res, err));

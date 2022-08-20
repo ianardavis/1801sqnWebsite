@@ -1,54 +1,75 @@
-let statuses = {"0": "Cancelled", "1": "Draft", "2": "Complete", "3": "Closed"};
-function getLoancard() {
-    disable_button('loancard_complete');
-    disable_button('delete');
-    disable_button('download');
-    disable_button('print');
-    disable_button('loancard_file_print');
-    disable_button('loancard_file_download');
-    disable_button('loancard_file_delete');
-    disable_button('loancard_date_due_edit');
+let statuses = {"0": "Cancelled", "1": "Draft", "2": "Closed"};
+function getScrap() {
+    disable_button('scrap_complete');
+    disable_button('scrap_file_print');
+    disable_button('scrap_file_download');
+    disable_button('scrap_file_delete');
     get({
-        table: 'loancard',
-        where: {loancard_id: path[2]}
+        table: 'scrap',
+        where: {scrap_id: path[2]}
     })
-    .then(function ([loancard, options]) {
-        set_breadcrumb(`${print_user(loancard.user_loancard)} | ${print_date(loancard.createdAt)}`);
-        set_innerText('loancard_user_loancard', print_user(loancard.user_loancard));
-        set_innerText('loancard_user',          print_user(loancard.user));
-        set_innerText('loancard_createdAt',     print_date(loancard.createdAt, true));
-        set_innerText('loancard_date_due',      print_date(loancard.date_due));
-        set_innerText('loancard_updatedAt',     print_date(loancard.updatedAt, true));
-        set_innerText('loancard_status',        statuses[loancard.status]);
-        set_innerText('loancard_filename',      loancard.filename || '')
-        set_href('loancard_user_loancard_link', `/users/${loancard.user_id_loancard}`);
-        set_href('loancard_user_link',          `/users/${loancard.user_id}`);
-        if (loancard.status >= 2) {
-            enable_button('print');
-            enable_button('download');
-            enable_button('loancard_file_print');
-            enable_button('loancard_file_download');
-            if (loancard.filename) enable_button('loancard_file_delete');
-            enable_button('loancard_date_due_edit', '');
-            set_attribute('form_loancard_file_download', 'method', 'GET');
-            set_attribute('form_loancard_file_download', 'action', `/loancards/${loancard.loancard_id}/download`);
-        } else {
-            set_attribute('form_loancard_file_download', 'method');
-            set_attribute('form_loancard_file_download', 'action');
+    .then(function ([scrap, options]) {
+        set_breadcrumb(`${scrap.supplier.name} | ${print_date(scrap.createdAt)}`);
+        set_innerText('scrap_supplier',  scrap.supplier.name);
+        set_innerText('scrap_createdAt', print_date(scrap.createdAt, true));
+        set_innerText('scrap_updatedAt', print_date(scrap.updatedAt, true));
+        set_innerText('scrap_status',    statuses[scrap.status]);
+        set_innerText('scrap_filename',  scrap.filename || '')
+        set_href('scrap_supplier_link', `/suppliers/${scrap.supplier_id}`);
+        if (scrap.status == 1) {
+            enable_button('scrap_complete');
+            enable_button('scrap_delete');
         };
-        return loancard.status;
+        if (scrap.status == 2) {
+            enable_button('scrap_file_print');
+            enable_button('scrap_file_download');
+            if (scrap.filename) enable_button('scrap_file_delete');
+            set_attribute('form_scrap_file_download', 'method', 'GET');
+            set_attribute('form_scrap_file_download', 'action', `/scraps/${scrap.scrap_id}/download`);
+        } else {
+            set_attribute('form_scrap_file_download', 'method');
+            set_attribute('form_scrap_file_download', 'action');
+        };
+        return scrap.status;
     })
     .then(status => {
-        if (typeof setDeleteButton   === 'function') setDeleteButton(  status);
-        if (typeof setCompleteButton === 'function') setCompleteButton(status);
-        if (typeof setActionButton   === 'function') setActionButton(  status);
+        if (typeof setDeleteButton === 'function') setDeleteButton(status);
+        if (typeof setActionButton === 'function') setActionButton(status);
     });
 };
-addReloadListener(getLoancard);
+addReloadListener(getScrap);
 window.addEventListener('load', function () {
     addFormListener(
-        'loancard_file_print',
+        'scrap_file_print',
         'GET',
-        `/loancards/${path[2]}/print`
+        `/scraps/${path[2]}/print`
+    );
+    addFormListener(
+        'delete',
+        'DELETE',
+        `/scraps/${path[2]}`,
+        {
+            onComplete: [
+                getScrap,
+                function () {if (typeof getLines === 'function') getLines()}
+            ]
+        }
+    );
+    addFormListener(
+        'scrap_complete',
+        'PUT',
+        `/scraps/${path[2]}/complete`,
+        {
+            onComplete: [
+                getScrap,
+                function () {if (typeof getLines === 'function') getLines()}
+            ]
+        }
+    );
+    addFormListener(
+        'scrap_file_delete',
+        'DELETE',
+        `/scraps/${path[2]}/delete_file`,
+        {onComplete: [getScrap]}
     );
 });

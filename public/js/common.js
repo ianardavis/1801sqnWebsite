@@ -279,9 +279,8 @@ function sort_listeners(table, func, options, getOnLoad = true) {
         .finally(() => {if (func && getOnLoad) func()});
     });
 };
-function build_filter_query(table) {
-    let where = {},
-        like  = {},
+function build_filter_query(table, where = {}) {
+    let like  = {},
         gt    = null,
         lt    = null,
         statuses  = getSelectedOptions(     `filter_${table}_statuses`),

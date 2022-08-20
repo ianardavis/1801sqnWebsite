@@ -51,18 +51,7 @@ module.exports = (app, m, fn) => {
                 if (add_user_id_issue) query.where.user_id_issue = req.user.user_id;
                 let where   = fn.build_query(req.query),
                     include = [
-                        {
-                            model: m.sizes,
-                            where: {
-                                ...(query.like && query.like.size1 ? {size1: {[fn.op.substring]: query.like.size1}} : {}),
-                                ...(query.like && query.like.size2 ? {size2: {[fn.op.substring]: query.like.size2}} : {}),
-                                ...(query.like && query.like.size3 ? {size3: {[fn.op.substring]: query.like.size3}} : {})
-                            },
-                            include: [{
-                                model: m.items,
-                                where: (query.like && query.like.item && query.like.item !== '' ? {description: {[fn.op.substring]: query.like.item}} : {})
-                            }]
-                        },
+                        fn.inc.stores.size_filter(req.query),
                         {
                             model:   m.users,
                             as:      'user_issue',

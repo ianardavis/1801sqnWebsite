@@ -55,22 +55,17 @@ module.exports = function (m, fn) {
                 include: [m.sizes]
             })
             .then(stock => {
-                if      (stock.size.has_nsns    && !details.nsn_id)    reject(new Error("No valid NSN submitted"))
-                else if (stock.size.has_serials && !details.serial_id) reject(new Error("No valid serial # submitted"))
+                if (stock.size.has_nsns && !details.nsn_id) reject(new Error("No valid NSN submitted"))
                 else {
                     fn.decrement(stock, details.qty)
                     .then(result => {
-                        m.scraps.findOrCreate({
-                            where: {
-                                supplier_id: stock.size.supplier_id,
-                                status: 1
-                            }
-                        })
-                        .then(([scrap, created]) => {
+                        fn.scraps.get({supplier_id: stock.size.supplier_id})
+                        .then(scrap => {
                             m.scrap_lines.findOrCreate({
                                 where: {
                                     scrap_id: scrap.scrap_id,
-                                    size_id:  stock.size_id
+                                    size_id:  stock.size_id,
+                                    ...(details.nsn_id ? {nsn_id: details.nsn_id} : {})
                                 },
                                 defaults: {
                                     qty: details.qty
@@ -94,7 +89,7 @@ module.exports = function (m, fn) {
                         .catch(err => reject(err));
                     })
                     .catch(err => reject(err));
-                }
+                };
             })
             .catch(err => reject(err));
         });

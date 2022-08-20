@@ -155,12 +155,39 @@ module.exports = (m, fn) => {
             as:    'supplier'
         };
     };
+    fn.inc.stores.scrap = () => {
+        return {
+            model: m.scraps,
+            as:    'scrap',
+            include: [fn.inc.stores.supplier()]
+        };
+    };
+    fn.inc.stores.scrap_lines = () => {
+        return {
+            model: m.scrap_lines,
+            as:    'lines'
+        };
+    };
     fn.inc.stores.address = () => {
         return {
             model: m.addresses,
             as:    'address'
         };
     };
+    fn.inc.stores.size_filter = (query) => {
+        return {
+            model: m.sizes,
+            where: {
+                ...(query.like && query.like.size1 ? {size1: {[fn.op.substring]: query.like.size1}} : {}),
+                ...(query.like && query.like.size2 ? {size2: {[fn.op.substring]: query.like.size2}} : {}),
+                ...(query.like && query.like.size3 ? {size3: {[fn.op.substring]: query.like.size3}} : {})
+            },
+            include: [{
+                model: m.items,
+                where: (query.like && query.like.item && query.like.item !== '' ? {description: {[fn.op.substring]: query.like.item}} : {})
+            }]
+        }
+    }
     fn.inc.stores.contact = () => {
         return {
             model: m.contacts,

@@ -1,16 +1,22 @@
 module.exports = function (m, fn) {
     fn.scraps = {};
-    fn.scraps.get = function (supplier_id) {
+    fn.scraps.get = function (options = {}) {
         return new Promise((resolve, reject) => {
-            m.scraps.findOrCreate({
-                where: {
-                    supplier_id: supplier_id,
-                    status: 1
-                }
-            })
-            .then(([scrap, created]) => resolve(scrap))
-            .catch(err => reject(err));
-        })
+            if (options.scrap_id) {
+                m.scraps.findByPk(options.scrap_id)
+                .then(scrap => resolve(scrap))
+                .catch(err => reject(err));
+            } else {
+                m.scraps.findOrCreate({
+                    where: {
+                        supplier_id: options.supplier_id || null,
+                        status: 1
+                    }
+                })
+                .then(([scrap, created]) => resolve(scrap))
+                .catch(err => reject(err));
+            };
+        });
     };
     function addHeader(doc, y) {
         doc

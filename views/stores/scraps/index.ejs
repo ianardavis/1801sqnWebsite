@@ -14,14 +14,13 @@
 		<%- include(`${partials}/inputs/select`, {title: 'Filter By Supplier', id: 'filter_scrap_suppliers', spinner_id: 'suppliers', reload_id: 'reload_suppliers'}) %>
 		<div class="input-group mb-1">
 			<span class="input-group-text w-30">Status</span>
-			<select id="sel_scrap_statuses" class="form-select" multiple size="4">
-				<option value="0">Cancelled</option>
-				<option value="1" selected>Draft</option>
-				<option value="2">Closed  </option>
+			<select id="sel_scrap_statuses" class="form-select" multiple size="3">
+				<option value="0"		  >Cancelled</option>
+				<option value="1" selected>Draft	</option>
+				<option value="2"		  >Closed	</option>
 			</select>
 		</div>
 		<%- include(`${partials}/filter/date`, {table: 'scrap', field: 'createdAt'}) %>
-		<%- include(`${partials}/filter/size`, {table: 'scrap'}) %>
 	<%- include(`${partials}/sidebar_close`) %>
 	<table class="table table-sm table-hover">
 		<thead class="thead-dark">

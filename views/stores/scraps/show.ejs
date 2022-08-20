@@ -6,25 +6,26 @@
 <section class='container'>
 	<%- include(`${partials}/sidebar_open`, {id: 'Actions', button_html: 'Actions', sidebar_text: 'Actions'}) %>
 		<form id="form_scrap_complete">
-			<button class='btn btn-success w-100' id='btn_scrap_complete'>
+			<button class='btn btn-success w-100 mb-1' id='btn_scrap_complete'>
 				Complete
 			</button>
 		</form>
 		<form id="form_scrap_file_download">
-			<button class='btn btn-success w-100' id='btn_scrap_file_download'>
+			<button class='btn btn-success w-100 mb-1' id='btn_scrap_file_download'>
 				Download
 			</button>
 		</form>
 		<form id="form_scrap_file_print">
-			<button class='btn btn-primary w-100' id='btn_scrap_file_print'>
+			<button class='btn btn-primary w-100 mb-1' id='btn_scrap_file_print'>
 				Print
 			</button>
 		</form>
 		<form id="form_scrap_file_delete">
-			<button class='btn btn-danger w-100' id='btn_scrap_file_delete'>
+			<button class='btn btn-danger w-100 mb-1' id='btn_scrap_file_delete'>
 				Delete
 			</button>
 		</form>
+		<%- include(`${partials}/button/button`, {id: 'lines_action', text: 'Action Lines', type: 'success', classes: ['mb-1', 'w-100']}) %>
 		<form id="form_delete" class="mt-auto">
 			<button id='btn_delete' type='button' class="btn btn-danger w-100" disabled>
 				Cancel
@@ -49,23 +50,38 @@
 			</div>
 		</div>
 		<div class="tab-pane fade" id="lines" 	role="tabpanel" aria-labelledby="lines-tab">
-			<%- include(`${partials}/inputs/select`, {title: 'Status', id: 'sel_status', options: [{value: '', text: 'All', selected: true}, {value: '"status":0', text: 'Cancelled'}, {value: '"status":1', text: 'Pending'}, {value: '"status":2', text: 'Open'}, {value: '"status":3', text: 'Returned'}]}) %>
-			<% if (permissions.issuer) { %><form id='form_actions'><% } %>
-			<%- include(`${partials}/button/button`, {id: 'lines_action', text: 'Action Lines', type: 'success', classes: ['mb-1', 'w-100']}) %>
-			<%- include(`${partials}/sort`, {table: 'scrap_lines'}) %>
-	        <table class='table table-sm table-hover'>
-				<thead class='thead-dark'>
-					<th class='w-35'>Item</th>
-					<th class='w-35'>Size</th>
-					<th class='w-10'>Qty</th>
-					<th class='w-10'>Status</th>
-					<th class='w-10'>Actions</th>
-					<th><i class='fas fa-search'></i></th>
-				</thead>
-				<tbody id='tbl_lines'></tbody>
-			</table>
-			<%- include(`${partials}/limit`, {table: 'scrap_lines'}) %>
-			<% if (permissions.issuer) { %></form><% } %>
+			<div class="row justify-content-between">
+				<%- include(`${partials}/sort`, {table: 'scrap_lines'}) %>
+				<div class="col-12 col-md-4 mb-1">
+					<%- include(`${partials}/sidebar_button`, {id: 'linesFilter', text: 'Filter'}) %>
+				</div>
+			</div>
+			<%- include(`${partials}/sidebar_open`, {id: 'linesFilter', sidebar_text: 'Filter Lines'}) %>
+				<div class="input-group mb-1">
+					<span class="input-group-text w-30">Status</span>
+					<select id="filter_scrap_line_statuses" class="form-select" multiple size="3">
+						<option value="0"		  >Cancelled</option>
+						<option value="1" selected>Pending	</option>
+						<option value="2" selected>Closed	</option>
+					</select>
+				</div>
+				<%- include(`${partials}/filter/size`, {table: 'scrap_line'}) %>
+			<%- include(`${partials}/sidebar_close`) %>
+			<form id='form_actions'>
+				<table class='table table-sm table-hover'>
+					<thead class='thead-dark'>
+						<th class='w-20'>Item</th>
+						<th class='w-20'>Size</th>
+						<th class='w-25'>Serial/NSN</th>
+						<th class='w-10'>Qty</th>
+						<th class='w-15'>Status</th>
+						<th class='w-10'>Actions</th>
+						<th><i class='fas fa-search'></i></th>
+					</thead>
+					<tbody id='tbl_lines'></tbody>
+				</table>
+				<%- include(`${partials}/limit`, {table: 'scrap_lines'}) %>
+			</form>
 		</div>
         <%- include(`${partials}/common/actions/tab_body`) %>
         <%- include(`${partials}/common/notes/tab_body`) %>
@@ -73,24 +89,6 @@
 	<div id="div_modals">
         <%- include(`${partials}/common/notes/modals`) %>
         <%- include(`${partials}/common/actions/modals`) %>
-		<% if (permissions.stores_stock_admin) { %>
-			<div id='mdl_scrap_complete' class="modal fade" tabindex="-1" role="dialog">
-				<div class="modal-dialog modal-lg" role="document">
-					<form id='form_complete' class="modal-content">
-						<div class="modal-header">
-							<h5 class="modal-title">Complete Scrap Record</h5>
-						</div>
-						<div class="modal-body">
-							<%- include(`${partials}/inputs/date`, {id: 'date_due_complete', title: 'Due Date', name: 'date_due'}) %>
-						</div>
-						<div class="modal-footer">
-							<button class="btn btn-success w-100">Complete</button>
-							<%- include(`${partials}/button/modal/close`) %>
-						</div>
-					</form>
-				</div>
-			</div>
-		<% } %>
 		<%- include(`${partials}/modals/stores/mdl_line_view`, {table: 'Scrap'}) %>
 	</div>
 </section>
@@ -104,11 +102,6 @@
 <script async>getScrap()</script>
 
 <script src="/js/stores/scraps/show/lines/view.js"></script>
-<script async>getLines()</script>
-<% if (permissions.issuer) { %>
-	<script src="/js/stores/scraps/show/edit.js"></script>
-	<script src="/js/utils/list/stocks.js"></script>
-	<script src="/js/utils/list/serials.js"></script>
-	<script src="/js/stores/scrap_lines/edit.js"></script>
-<% } %>
+<script src="/js/utils/list/stocks.js"></script>
+<script src="/js/utils/list/serials.js"></script>
 <%- include(`${partials}/foot/components/htmlClose`) %>
