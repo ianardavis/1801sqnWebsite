@@ -5,9 +5,5 @@
     data-bs-target="#sdb_<%= id %>"
     aria-controls="sdb_<%= id %>"
 >
-    <% if (locals.text) { %>
-        <%= text %>
-    <% } else if (locals.html) { %>
-        <%- html %>
-    <% } %>
+    <%= text %>
 </button>

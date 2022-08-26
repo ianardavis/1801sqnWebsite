@@ -1,7 +1,49 @@
 module.exports = function (m, fn) {
     fn.serials = {};
     fn.serials.get = function(serial_id) {
-        return fn.get('serials', {serial_id: serial_id})
+        return m.serials.findOne({
+            where: {serial_id: serial_id},
+            include: [
+                m.sizes,
+                m.locations
+            ]
+        })
+    };
+    fn.serials.scrap = function (serial_id, details, user_id) {
+        return new Promise((resolve, reject) => {
+            fn.serials.get(serial_id)
+            .then(serial => {
+                if      (serial.size.has_nsns && !details.nsn_id) reject(new Error("No valid NSN submitted"))
+                else if (!serial.location_id)                     reject(new Error("Serial is not in stock"))
+                else if (!serial.location)                        reject(new Error("Invalid serial location"))
+                else {
+                    serial.update({location_id: null})
+                    .then(result => {
+                        fn.scraps.get({supplier_id: serial.size.supplier_id})
+                        .then(scrap => {
+                            fn.scraps.lines.add(
+                                scrap.scrap_id,
+                                serial.size_id,
+                                details
+                            )
+                            .then(result => {
+                                fn.actions.create(
+                                    'SERIAL | SCRAPPED',
+                                    user_id,
+                                    [{table: 'serials', id: serial.serial_id}]
+                                )
+                                .then(results => resolve(true))
+                                .catch(err => resolve(false));
+                            })
+                            .catch(err => reject(err));
+                        })
+                        .catch(err => reject(err));
+                    })
+                    .catch(err => reject(err));
+                };
+            })
+            .catch(err => reject(err));
+        });
     };
     fn.serials.create = function (options = {}) {
         return new Promise((resolve, reject) => {

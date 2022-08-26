@@ -1,5 +1,14 @@
 module.exports = function (m, fn) {
     fn.canteen_items = {};
+    fn.canteen_items.get = function (item_id) {
+        return new Promise((resolve, reject) => {
+            m.canteen_items.findOne({
+                where: {item_id: item_id}
+            })
+            .then(item => resolve(item))
+            .catch(err => reject(err));
+        });
+    };
     fn.canteen_items.create = function (item) {
         return new Promise((resolve, reject) => {
             m.canteen_items.create(item)
@@ -9,10 +18,7 @@ module.exports = function (m, fn) {
     };
     fn.canteen_items.delete = function (item_id) {
         return new Promise((resolve, reject) => {
-            fn.get(
-                'canteen_items',
-                {item_id: item_id}
-            )
+            fn.canteen_items.get(item_id)
             .then(item => {
                 let actions = [];
                 ['sale_lines', 'writeoffs', 'receipts'].forEach(e => actions.push(fn.get(e, {item_id: item.item_id})));

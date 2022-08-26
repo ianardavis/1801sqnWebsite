@@ -1,5 +1,14 @@
 module.exports = function (m, fn) {
     fn.holdings = {};
+    fn.holding.get = function (holding_id) {
+        return new Promise((resolve, reject) => {
+            m.holdings.findOne({
+                where: {holding_id: holding_id}
+            })
+            .then(holding => resolve(holding))
+            .catch(err => reject(err));
+        })
+    };  
     fn.holdings.create = function (holding, user_id) {
         return new Promise((resolve, reject) => {
             if      (!holding)             reject(new Error('No holding details'))
@@ -30,10 +39,7 @@ module.exports = function (m, fn) {
     };
     fn.holdings.count = function (holding_id, balance, user_id) {
         return new Promise((resolve, reject) => {
-            fn.get(
-                'holdings',
-                {holding_id: holding_id}
-            )
+            fn.holding.get(holding_id)
             .then(holding => {
                 let cash = fn.sessions.countCash(balance);
                 fn.update(holding, {cash: cash})

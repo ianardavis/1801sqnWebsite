@@ -61,28 +61,19 @@ module.exports = function (m, fn) {
                     .then(result => {
                         fn.scraps.get({supplier_id: stock.size.supplier_id})
                         .then(scrap => {
-                            m.scrap_lines.findOrCreate({
-                                where: {
-                                    scrap_id: scrap.scrap_id,
-                                    size_id:  stock.size_id,
-                                    ...(details.nsn_id ? {nsn_id: details.nsn_id} : {})
-                                },
-                                defaults: {
-                                    qty: details.qty
-                                }
-                            })
-                            .then(([line, created]) => {
-                                Promise.all((!created ? [line.increment('qty', {by: details.qty})] : []))
-                                .then(results => {
-                                    fn.actions.create(
-                                        `STOCK | SCRAPPED | Decreased by ${details.qty}. New qty: ${Number(stock.qty - details.qty)}`,
-                                        user_id,
-                                        [{table: 'stocks', id: stock.stock_id}]
-                                    )
-                                    .then(results => resolve(true))
-                                    .catch(err => resolve(false));
-                                })
-                                .catch(err => reject(err));
+                            fn.scraps.lines.add(
+                                scrap.scrap_id,
+                                stock.size_id,
+                                details
+                            )
+                            .then(result => {
+                                fn.actions.create(
+                                    `STOCK | SCRAPPED | Decreased by ${details.qty}. New qty: ${Number(stock.qty - details.qty)}`,
+                                    user_id,
+                                    [{table: 'stocks', id: stock.stock_id}]
+                                )
+                                .then(results => resolve(true))
+                                .catch(err => resolve(false));
                             })
                             .catch(err => reject(err));
                         })

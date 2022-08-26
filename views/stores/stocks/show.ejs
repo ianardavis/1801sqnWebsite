@@ -6,7 +6,7 @@
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/head/components/close`) %>
 <section class='container'>
-    <%- include(`${partials}/sidebar_open`, {id: 'Actions', button_html: 'Actions', sidebar_text: 'Actions'}) %>
+    <%- include(`${partials}/sidebar_open`, {id: 'Actions', button_text: 'Actions', sidebar_text: 'Actions'}) %>
         <%- include(`${partials}/button/modal/open`, {id: 'transfer_add', text: 'Transfer',      type: 'success', modal: 'transfer_add'}) %>
         <%- include(`${partials}/button/modal/open`, {id: 'stock_edit',   text: 'Edit',          type: 'warning', modal: 'stock_edit'}) %>
         <%- include(`${partials}/button/modal/open`, {id: 'receipt_add',  text: 'Receive Stock', type: 'success', modal: 'receipt_add'}) %>

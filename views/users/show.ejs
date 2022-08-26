@@ -3,7 +3,7 @@
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/head/components/close`) %>
 <section class="container">
-    <%- include(`${partials}/sidebar_open`, {id: 'Actions', button_html: 'Actions', sidebar_text: 'Actions'}) %>
+    <%- include(`${partials}/sidebar_open`, {id: 'Actions', button_text: 'Actions', sidebar_text: 'Actions'}) %>
         <%- include(`${partials}/button/modal/open`, {text: 'Edit User',                id: 'user_edit',         type: 'warning'}) %>
         <%- include(`${partials}/button/modal/open`, {text: 'Edit Permissions',         id: 'permissions_edit',  type: 'warning'}) %>
         <%- include(`${partials}/button/modal/open`, {text: 'Change Password',          id: 'user_password',     type: 'warning'}) %>

@@ -4,7 +4,7 @@
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/head/components/close`) %>
 <section class="container">
-	<%- include(`${partials}/sidebar_open`, {id: 'Actions', button_html: 'Actions', sidebar_text: 'Actions'}) %>
+	<%- include(`${partials}/sidebar_open`, {id: 'Actions', button_text: 'Actions', sidebar_text: 'Actions'}) %>
         <%- include(`${partials}/button/modal/open`, {text: 'Edit',        id: 'supplier_edit', type: 'warning', modal: 'supplier_edit'}) %>
         <%- include(`${partials}/button/modal/open`, {text: 'New Address', id: 'address_add',   type: 'success', modal: 'address_add'}) %>
         <form id='form_set_default'>

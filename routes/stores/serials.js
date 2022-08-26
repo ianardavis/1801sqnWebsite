@@ -1,6 +1,6 @@
 module.exports = (app, m, fn) => {
-    app.get('/serials/:id',         fn.loggedIn(), fn.permissions.get('access_stores'),   (req, res) => res.render('stores/serials/show'));
-    app.get('/get/serials',         fn.loggedIn(), fn.permissions.check('access_stores'), (req, res) => {
+    app.get('/serials/:id',         fn.loggedIn(), fn.permissions.get('access_stores'),        (req, res) => res.render('stores/serials/show'));
+    app.get('/get/serials',         fn.loggedIn(), fn.permissions.check('access_stores'),      (req, res) => {
         m.serials.findAndCountAll({
             where:   req.query.where,
             include: [
@@ -13,7 +13,7 @@ module.exports = (app, m, fn) => {
         .then(results => fn.send_res('serials', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/current_serials', fn.loggedIn(), fn.permissions.check('access_stores'), (req, res) => {
+    app.get('/get/current_serials', fn.loggedIn(), fn.permissions.check('access_stores'),      (req, res) => {
         req.query.location_id = {[fn.op.not]: null};
         req.query.issue_id    = null;
         m.serials.findAndCountAll({
@@ -28,7 +28,7 @@ module.exports = (app, m, fn) => {
         .then(results => fn.send_res('serials', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/serial',          fn.loggedIn(), fn.permissions.check('access_stores'), (req, res) => {
+    app.get('/get/serial',          fn.loggedIn(), fn.permissions.check('access_stores'),      (req, res) => {
         fn.get(
             'serials',
             req.query.where,
@@ -42,7 +42,7 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
 
-    app.post('/serials',            fn.loggedIn(), fn.permissions.check('stores_stock_admin'),   (req, res) => {
+    app.post('/serials',            fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
         if (!req.body.location) fn.send_error(res, 'No location entered')
         else {
             fn.sizes.get(req.body.serial.size_id)
@@ -67,7 +67,7 @@ module.exports = (app, m, fn) => {
         };
     });
     
-    app.put('/serials/:id',         fn.loggedIn(), fn.permissions.check('stores_stock_admin'),   (req, res) => {
+    app.put('/serials/:id',         fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
         fn.serials.get(req.params.id)
         .then(serial => {
             m.locations.findOrCreate({where: {location: req.body.location}})
@@ -83,8 +83,16 @@ module.exports = (app, m, fn) => {
         })
         .catch(err => fn.send_error(res, err));
     });
+    app.put('/serials/:id/scrap',   fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
+        if (!req.body.scrap) fn.send_error(res, 'No details')
+        else {
+            fn.serials.scrap(req.params.id, req.body.scrap, req.user.user_id)
+            .then(result => res.send({success: true, message: 'Serial scrapped'}))
+            .catch(err => fn.send_error(res, err));
+        };
+    });
 
-    app.delete('/serials/:id',      fn.loggedIn(), fn.permissions.check('stores_stock_admin'),   (req, res) => {
+    app.delete('/serials/:id',      fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
         fn.serials.get(req.params.id)
         .then(serial => {
             m.actions.findOne({where: {serial_id: serial.serial_id}})

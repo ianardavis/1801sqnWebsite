@@ -5,7 +5,7 @@
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/head/components/close`) %>
 <section class='container'>
-    <%- include(`${partials}/sidebar_open`, {id: 'Actions', button_html: 'Actions', sidebar_text: 'Actions'}) %>
+    <%- include(`${partials}/sidebar_open`, {id: 'Actions', button_text: 'Actions', sidebar_text: 'Actions'}) %>
         <%- include(`${partials}/button/modal/open`, {text: 'Edit',               id: 'size_edit',   type: 'warning', modal: 'size_edit'}) %>
         <%- include(`${partials}/button/modal/open`, {text: 'Add Detail',         id: 'detail_add',  type: 'success', modal: 'detail_add'}) %>
         <%- include(`${partials}/button/modal/open`, {text: 'New NSN',            id: 'nsn_add',     type: 'success', modal: 'nsn_add'}) %>
