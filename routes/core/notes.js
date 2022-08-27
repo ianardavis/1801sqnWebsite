@@ -9,12 +9,14 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/note',     fn.loggedIn(), (req, res) => {
-        fn.get(
-            'notes',
-            req.query.where,
-            [fn.inc.users.user()]
-        )
-        .then(note => res.send({success: true, result: note}))
+        m.notes.findOne({
+            where: req.query.where,
+            include: [fn.inc.users.user()]
+        })
+        .then(note => {
+            if (note) res.send({success: true, result: note})
+            else res.send({success: false, message: 'Note not found'});
+        })
         .catch(err => fn.send_error(res, err));
     });
 

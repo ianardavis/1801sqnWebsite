@@ -29,16 +29,18 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/serial',          fn.loggedIn(), fn.permissions.check('access_stores'),      (req, res) => {
-        fn.get(
-            'serials',
-            req.query.where,
-            [
+        m.serials.findOne({
+            where: req.query.where,
+            include: [
                 fn.inc.stores.location(),
                 fn.inc.stores.issue(),
                 fn.inc.stores.size()
             ]
-        )
-        .then(serial => res.send({success: true, result: serial}))
+        })
+        .then(serial => {
+            if (serial) res.send({success: true, result: serial})
+            else res.send({success: false, message: 'Serial not found'});
+        })
         .catch(err => fn.send_error(res, err));
     });
 

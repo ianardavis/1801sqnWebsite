@@ -50,39 +50,38 @@ module.exports = (app, m, fn) => {
     app.put('/permissions/:id', fn.loggedIn(), fn.permissions.check('user_admin', true), (req, res) => {
         permissions_allowed(req.user.user_id, req.allowed)
         .then(allowed => {
-            fn.get(
-                'users',
-                {user_id: req.params.id}
-            )
+            m.users.findOne({where: {user_id: req.params.id}})
             .then(user => {
-                m.permissions.findAll({
-                    where:      {user_id: user.user_id},
-                    attributes: ['permission_id', 'permission']
-                })
-                .then(permissions => {
-                    let actions = [];
-                    permissions.forEach(permission => {
-                        if (!req.body.permissions.includes(permission.permission)) {
+                if (user) {
+                    m.permissions.findAll({
+                        where:      {user_id: user.user_id},
+                        attributes: ['permission_id', 'permission']
+                    })
+                    .then(permissions => {
+                        let actions = [];
+                        permissions.forEach(permission => {
+                            if (!req.body.permissions.includes(permission.permission)) {
+                                actions.push(
+                                    m.permissions.destroy({where: {permission_id: permission.permission_id}})
+                                );
+                            };
+                        });
+                        req.body.permissions.forEach(permission => {
                             actions.push(
-                                m.permissions.destroy({where: {permission_id: permission.permission_id}})
+                                m.permissions.findOrCreate({
+                                    where: {
+                                        user_id:    user.user_id,
+                                        permission: permission
+                                    }
+                                })
                             );
-                        };
-                    });
-                    req.body.permissions.forEach(permission => {
-                        actions.push(
-                            m.permissions.findOrCreate({
-                                where: {
-                                    user_id:    user.user_id,
-                                    permission: permission
-                                }
-                            })
-                        );
-                    });
-                    Promise.allSettled(actions)
-                    .then(results => res.send({success: true, message: 'Permissions edited'}))
+                        });
+                        Promise.allSettled(actions)
+                        .then(results => res.send({success: true, message: 'Permissions edited'}))
+                        .catch(err => fn.send_error(res, err));
+                    })
                     .catch(err => fn.send_error(res, err));
-                })
-                .catch(err => fn.send_error(res, err));
+                } else res.send({success: false, message: 'User not found'});
             })
             .catch(err => fn.send_error(res, err));
         })

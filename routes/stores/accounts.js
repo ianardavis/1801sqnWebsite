@@ -9,22 +9,20 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/account',     fn.loggedIn(), fn.permissions.check('access_stores'),  (req, res) => {
-        fn.get(
-            'accounts',
-            req.query.where,
-            [fn.inc.users.user()]
-        )
-        .then(account => res.send({success: true, result: account}))
+        m.accounts.findOne({
+            where: req.query.where,
+            include: [fn.inc.users.user()]
+        })
+        .then(account => {
+            if (account) res.send({success: true, result: account})
+            else res.send({success: false, message: 'Account not found'});
+        })
         .catch(err => fn.send_error(res, err));
     });
 
     app.put('/accounts/:id',    fn.loggedIn(), fn.permissions.check('supplier_admin'), (req, res) => {
-        fn.put(
-            'accounts',
-            {account_id: req.params.id},
-            req.body.account
-        )
-        .then(result => res.send({success: true, message: 'Account saved'}))
+        fn.accounts.edit(req.params.id, req.body.account)
+        .then(result => res.send({success: result, message: `Account ${(result ? '' : 'not ')}saved`}))
         .catch(err => fn.send_error(res, err));
     });
     

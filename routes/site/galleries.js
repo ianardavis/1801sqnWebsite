@@ -12,12 +12,14 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/gallery',                                                             (req, res) => {
-        fn.get(
-            'galleries',
-            req.query.where,
-            [fn.inc.users.user()]
-        )
-        .then(gallery => res.send({success: true,  result: gallery}))
+        m.galleries.findOne({
+            where: req.query.where,
+            include: [fn.inc.users.user()]
+        })
+        .then(gallery => {
+            if (gallery) res.send({success: true, result: gallery})
+            else res.send({success: false, message: 'Gallery not found'});
+        })
         .catch(err => fn.send_error(res, err));
     });
     
@@ -31,12 +33,14 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/gallery_image',                                                       (req, res) => {
-        fn.get(
-            'gallery_images',
-            req.query.where,
-            [fn.inc.users.user()]
-        )
-        .then(image => res.send({success: true,  result: image}))
+        m.gallery_images.findOne({
+            where: req.query.where,
+            include: [fn.inc.users.user()]
+        })
+        .then(image => {
+            if (image) res.send({success: true,  result: image})
+            else res.send({success: false, message: 'Image not found'});
+        })
         .catch(err => fn.send_error(res, err));
     });
 
@@ -62,27 +66,25 @@ module.exports = (app, m, fn) => {
     });
 
     app.put('/gallery_images',    fn.loggedIn(), fn.permissions.check('gallery_admin'), (req, res) => {
-        fn.get(
-            'gallery_images',
-            {image_id: req.body.image_id},
-            req.body.image
-        )
+        m.gallery_images.findOne({
+            where: {image_id: req.body.image_id}
+        })
         .then(image => res.send({success: true, message: 'Image saved'}))
         .catch(err => fn.send_error(res, err));
     });
 
     app.delete('/gallery_images', fn.loggedIn(), fn.permissions.check('gallery_admin'), (req, res) => {
-        fn.get(
-            'gallery_images',
-            {image_id: req.body.image_id}
-        )
+        m.gallery_images.findOne({where: {image_id: req.body.image_id}})
         .then(image => {
-            let actions = [];
-            actions.push(fn.rm(`${process.env.ROOT}/public/res/images/${image.src}`))
-            actions.push(image.destroy())
-            Promise.allSettled(actions)
-            .then(results => res.send({success: true, message: 'Image deleted'}))
-            .catch(err => fn.send_error(res, err));
+            if (image) {
+                let actions = [];
+                actions.push(fn.rm(`${process.env.ROOT}/public/res/images/${image.src}`))
+                actions.push(image.destroy())
+                Promise.allSettled(actions)
+                .then(results => res.send({success: true, message: 'Image deleted'}))
+                .catch(err => fn.send_error(res, err));
+            }
+            else res.send({success: false, message: 'Image not found'});
         })
         .catch(err => fn.send_error(res, err));
     });

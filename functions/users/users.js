@@ -2,7 +2,10 @@ const { scryptSync, randomBytes } = require("crypto");
 module.exports = function (m, fn) {
     fn.users = {password: {}};
     fn.users.get = function (user_id) {
-        return fn.get('users', {user_id: user_id}, [m.ranks])
+        return m.users.findOne({
+            where: {user_id: user_id},
+            include: [m.ranks, m.statuses]
+        })
     }
     fn.users.create = function (user) {
         return new Promise((resolve, reject) => {
@@ -34,20 +37,21 @@ module.exports = function (m, fn) {
             } else reject(new Error('Not all required information has been submitted'));
         });
     };
-    fn.users.edit   = function (user_id, user) {
+    fn.users.edit   = function (user_id, details) {
         return new Promise((resolve, reject) => {
-            if (user) {
-                if (!user.reset) user.reset = 0;
-                ['user_id','full_name','salt','password','createdAt','updatedAt'].forEach(e => {
-                    if (user[e]) delete user[e];
-                });
-                fn.put(
-                    'users',
-                    {user_id: user_id},
-                    user
-                )
-                .then(user => resolve(true))
-                .catch(err => reject(err));
+            if (details) {
+                fn.users.get(user_id)
+                .then(user => {
+                    if (user) {
+                        if (!details.reset) details.reset = 0;
+                        ['user_id', 'full_name', 'salt', 'password', 'last_login', 'createdAt', 'updatedAt'].forEach(e => {
+                            if (details[e]) delete details[e];
+                        });
+                        user.update(details)
+                        .then(result => resolve(result))
+                        .catch(err => reject(err));
+                    } else reject(new Error('User not found'));
+                })
             } else reject(new Error('No details submitted'));
         });
     }

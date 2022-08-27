@@ -5,10 +5,7 @@ module.exports = function (m, fn) {
             if      (!receipt.qty)  reject(new Error('No quantity submitted'))
             else if (!receipt.cost) reject(new Error('No cost submitted'))
             else {
-                fn.get(
-                    'canteen_items',
-                    {item_id: receipt.item_id}
-                )
+                fn.canteen_items.get(receipt.item_id)
                 .then(item => {
                     m.receipts.create({
                         item_id: item.item_id,
@@ -29,7 +26,7 @@ module.exports = function (m, fn) {
                             });
                         };
                         let qty_current = (item.qty < 0 ? 0 : item.qty)
-                        fn.increment(item, receipt_qty)
+                        item.increment('qty', {by: receipt_qty})
                         .then(result => {
                             if (item.cost !== receipt.cost) {
                                 let cost_new    = Number(((qty_current * item.cost) + (receipt.qty * receipt.cost)) / (qty_current + receipt.qty));

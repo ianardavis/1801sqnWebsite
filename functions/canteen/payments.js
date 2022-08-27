@@ -1,5 +1,10 @@
 module.exports = function (m, fn) {
     fn.payments = {};
+    fn.payments.get = function (payment_id) {
+        return m.payments.findOne({
+            where: {payment_id: payment_id}
+        });
+    };
     fn.payments.create = function (sale_id, amount, user_id, options = {}) {
         return new Promise((resolve, reject) => {
             m.payments.create({

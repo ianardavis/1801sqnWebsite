@@ -185,10 +185,7 @@ module.exports = function (m, fn) {
     };
     fn.upload_file = function (options = {}) {
         return new Promise((resolve, reject) => {
-            fn.get(
-                'suppliers',
-                {supplier_id: options.supplier_id}
-            )
+            fn.suppliers.get(options.supplier_id)
             .then(supplier => {
                 fn.copy_file(
                     options.file,
@@ -233,61 +230,11 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
-    fn.get = function (table, where, include = [], resolveErr = false) {
-        return new Promise((resolve, reject) => {
-            m[table].findOne({
-                where:   where,
-                include: include
-            })
-            .then(result => {
-                if (!result) {
-                    if (resolveErr) resolve(false)
-                    else reject(new Error(`No ${table.replace('_', ' ')} found`));
-                } else resolve(result);
-            })
-            .catch(err => reject(err));
-        });
-    };
-    fn.put = function (table, where, record) {
-        return new Promise((resolve, reject) => {
-            if (!record) reject(new Error('No record'))
-            else {
-                record = fn.nullify(record);
-                fn.get(table, where)
-                .then(result => {
-                    fn.update(result, record)
-                    .then(result => resolve(true))
-                    .catch(err => reject(err));
-                })
-                .catch(err => reject(err));
-            };
-        });
-    };
     fn.update = function (model, fields) {
         return new Promise((resolve, reject) => {
             model.update(fields)
             .then(result => {
                 if (!result) reject(new Error('Record not updated'))
-                else resolve(true);
-            })
-            .catch(err => reject(err));
-        });
-    };
-    fn.increment = function (model, by, column = 'qty') {
-        return new Promise((resolve, reject) => {
-            model.increment(column, {by: by})
-            .then(result => {
-                if (!result) reject(new Error('Record not incremented'))
-                else resolve(true);
-            })
-            .catch(err => reject(err));
-        });
-    };
-    fn.decrement = function (model, by, column = 'qty') {
-        return new Promise((resolve, reject) => {
-            model.decrement(column, {by: by})
-            .then(result => {
-                if (!result) reject(new Error('Record not decremented'))
                 else resolve(true);
             })
             .catch(err => reject(err));

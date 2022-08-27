@@ -21,15 +21,17 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/stock',           fn.loggedIn(), fn.permissions.check('access_stores'),      (req, res) => {
-        fn.get(
-            'stocks',
-            req.query.where,
-            [
+        m.stocks.findOne({
+            where: req.query.where,
+            include: [
                 fn.inc.stores.size(),
                 fn.inc.stores.location()
             ]
-        )
-        .then(stock => res.send({success: true, result: stock}))
+        })
+        .then(stock => {
+            if (stock) res.send({success: true, result: stock})
+            else res.send({success: false, message: 'Stock not found'});
+        })
         .catch(err => fn.send_error(res, err));
     });
 

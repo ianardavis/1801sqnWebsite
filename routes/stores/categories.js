@@ -15,23 +15,21 @@ module.exports = (app, m, fn) => {
         for (let [key, value] of Object.entries(req.query)) {
             if (value === '') req.query[key] = null;
         };
-        fn.get(
-            'categories',
-            req.query.where,
-            [fn.inc.stores.categories({as: 'parent'})]
-        )
-        .then(category => res.send({success: true, result: category}))
+        m.categories.findOne({
+            where: req.query.where,
+            include: [fn.inc.stores.categories({as: 'parent'})]
+        })
+        .then(category => {
+            if (category) res.send({success: true, result: category})
+            else res.send({success: false, message: 'Category not found'});
+        })
         .catch(err => fn.send_error(res, err));
     });
 
     app.put('/categories',        fn.loggedIn(), fn.permissions.check('stores_stock_admin'),   (req, res) => {
         if (req.body.category.parent_category_id === '') req.body.category.parent_category_id = null;
-        fn.put(
-            'categories',
-            {category_id: req.body.category_id},
-            req.body.category
-        )
-        .then(result => res.send({success: true, message: 'Category updated'}))
+        fn.categories.edit(req.body.category_id, req.body.category)
+        .then(result => res.send({success: result, message: `Category ${(result ? '' : 'not ')}updated`}))
         .catch(err => fn.send_error(res, err));
     });
 

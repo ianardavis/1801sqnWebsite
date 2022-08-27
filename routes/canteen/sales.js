@@ -14,12 +14,14 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err))
     });
     app.get('/get/sale',         fn.loggedIn(), fn.permissions.check('pos_user'), (req, res) => {
-        fn.get(
-            'sales',
-            req.query.where,
-            [fn.inc.users.user()]
-        )
-        .then(sale => res.send({success: true,  result: sale}))
+        m.sales.findOne({
+            where: req.query.where,
+            include: [fn.inc.users.user()]
+        })
+        .then(sale => {
+            if (sale) res.send({success: true, result: sale})
+            else res.send({success: false, message: 'Sale not found'});
+        })
         .catch(err => fn.send_error(res, err))
     });
     app.get('/get/sale_current', fn.loggedIn(), fn.permissions.check('pos_user'), (req, res) => {

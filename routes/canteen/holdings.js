@@ -11,11 +11,11 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/holding',         fn.loggedIn(), fn.permissions.check('cash_admin'), (req, res) => {
-        fn.get(
-            'holdings',
-            req.query.where
-        )
-        .then(holding => res.send({success: true, result: holding}))
+        m.holdings.findOne({where: req.query.where})
+        .then(holding => {
+            if (holding) res.send({success: true, result: holding})
+            else res.send({success: false, message: 'Holding not found'});
+        })
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/holdings_except', fn.loggedIn(), fn.permissions.check('cash_admin'), (req, res) => {
@@ -42,11 +42,7 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.put('/holdings/:id',        fn.loggedIn(), fn.permissions.check('cash_admin'), (req, res) => {
-        fn.put(
-            'holdings',
-            {holding_id: req.params.id},
-            req.body.holding
-        )
+        fn.holdings.edit(req.params.id, req.body.holding)
         .then(result => res.send({success: true, message: 'Holding saved'}))
         .catch(err => fn.send_error(res, err));
     });

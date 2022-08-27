@@ -72,7 +72,7 @@ module.exports = (app, m, fn) => {
     });
     app.put('/users/:id',         fn.loggedIn(), fn.permissions.check('user_admin'),         (req, res) => {
         fn.users.edit(req.params.id, req.body.user)
-        .then(result => res.send({success: true,  message: 'User saved'}))
+        .then(result => res.send({success: result,  message: `User ${(result ? '' : 'not ')}saved`}))
         .catch(err => fn.send_error(res, err));
     });
     

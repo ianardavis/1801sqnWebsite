@@ -11,17 +11,17 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/canteen_item',     fn.loggedIn(), fn.permissions.check('access_canteen'),      (req, res) => {
-        fn.get(
-            'canteen_items',
-            req.query.where
-        )
-        .then(item => res.send({success: true,  result: item}))
+        m.canteen_items.findOne({where: req.query.where})
+        .then(item => {
+            if (item) res.send({success: true, result: item})
+            else res.send({success: false, message: 'Item not found'});
+        })
         .catch(err => fn.send_error(res, err));
     });
 
     app.put('/canteen_items/:id',    fn.loggedIn(), fn.permissions.check('canteen_stock_admin'), (req, res) => {
-        fn.put('canteen_items', {item_id: req.params.id}, req.body.item)
-        .then(result => res.send({success: true, message: 'Item updated'}))
+        fn.canteen_items.edit(req.params.id, req.body.item)
+        .then(result => res.send({success: result, message: `Item ${(result ? '' : 'not ')}updated`}))
         .catch(err => fn.send_error(res, err));
     });
     

@@ -18,12 +18,14 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/file',            fn.loggedIn(), fn.permissions.check('supplier_admin'),  (req, res) => {
-        fn.get(
-            'files',
-            req.query.where,
-            [fn.inc.users.user()]
-        )
-        .then(file => res.send({success: true,  result: file}))
+        m.files.findOne({
+            where: req.query.where,
+            include: [fn.inc.users.user()]
+        })
+        .then(file => {
+            if (file) res.send({success: true,  result: file})
+            else res.send({success: false, message: 'File not found'});
+        })
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/file_details',    fn.loggedIn(), fn.permissions.check('supplier_admin'),  (req, res) => {
@@ -35,11 +37,11 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/file_detail',     fn.loggedIn(), fn.permissions.check('supplier_admin'),  (req, res) => {
-        fn.get(
-            'file_details',
-            req.query.where
-        )
-        .then(detail => res.send({success: true, result: detail}))
+        m.file_details.findOne({where: req.query.where})
+        .then(detail => {
+            if (detail) res.send({success: true, result: detail})
+            else res.send({success: false, message: 'Detail not found'});
+        })
         .catch(err => fn.send_error(res, err));
     });
 
@@ -67,20 +69,12 @@ module.exports = (app, m, fn) => {
     });
 
     app.put('/files',               fn.loggedIn(), fn.permissions.check('supplier_admin'),  (req, res) => {
-        fn.put(
-            'files',
-            {file_id: req.body.file_id},
-            req.body.file
-        )
-        .then(file => res.send({success: true,  message: 'File updated'}))
+        fn.files.edit(req.body.file_id, req.body.file)
+        .then(result => res.send({success: result, message: `File ${(result ? '' : 'not ')}updated`}))
         .catch(err => fn.send_error(res, err));
     });
     app.put('/file_details',        fn.loggedIn(), fn.permissions.check('supplier_admin'),  (req, res) => {
-        fn.put(
-            'file_details',
-            {file_detail_id: req.body.file_detail_id},
-            req.body.detail
-        )
+        fn.files.details.edit(req.body.file_detail_id, req.body.detail)
         .then(detail => res.send({success: true,  message: 'Details updated'}))
         .catch(err => fn.send_error(res, err));
     });

@@ -20,15 +20,17 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/size',     fn.loggedIn(), fn.permissions.check('access_stores'), (req, res) => {
-        fn.get(
-            'sizes',
-            req.query.where,
-            [
+        m.sizes.findOne({
+            where: req.query.where,
+            include: [
                 fn.inc.stores.item(),
                 fn.inc.stores.supplier()
             ]
-        )
-        .then(size => res.send({success: true, result: size}))
+        })
+        .then(size => {
+            if (size) res.send({success: true, result: size})
+            else res.send({success: false, message: 'Size not found'});
+        })
         .catch(err => fn.send_error(res, err));
     });
 
@@ -47,11 +49,7 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.put('/sizes/:id',    fn.loggedIn(), fn.permissions.check('stores_stock_admin'),   (req, res) => {
-        fn.put(
-            'sizes',
-            {size_id: req.params.id},
-            req.body.size
-        )
+        fn.sizes.edit(req.params.id, req.body.size)
         .then(result => res.send({success: true, message: 'Size saved'}))
         .catch(err => fn.send_error(res, err));
     });

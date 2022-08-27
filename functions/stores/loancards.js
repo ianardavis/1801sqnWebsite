@@ -1,14 +1,31 @@
 module.exports = function (m, fn) {
     fn.loancards = {lines: {}};
     fn.loancards.get = function (loancard_id) {
-        return fn.get(
-            'loancards',
-            {loancard_id: loancard_id},
-            [
-                {model: m.users, as: 'user',          attributes: {exclude: ['password', 'salt', 'reset']}, include: [m.ranks]},
-                {model: m.users, as: 'user_loancard', attributes: {exclude: ['password', 'salt', 'reset']}, include: [m.ranks]}
-            ]
-        );
+        return new Promise((resolve, reject) => {
+            m.loancards.findOne({
+                where: {loancard_id: loancard_id},
+                include: [
+                    fn.inc.users.user(),
+                    fn.inc.users.user({as: 'user_loancard'})
+                ]
+            })
+            .then(loancard => {
+                if (loancard) resolve(laoncard)
+                else reject(new Error('Loancard not found'));
+            })
+            .catch(err => reject(err));
+        });
+    };
+    fn.loancards.edit = function (loancard_id, details) {
+        return new Promise((resolve, reject) => {
+            fn.loancards.get(loancard_id)
+            .then(loancard => {
+                loancard.update(details)
+                .then(result => resolve(result))
+                .catch(err => reject(err));
+            })
+            .catch(err => reject(err));
+        });
     };
     //string height @ 30: 38.19
     //string height @ 15: 19.095
@@ -308,11 +325,17 @@ module.exports = function (m, fn) {
     };
 
     fn.loancards.lines.get = function (loancard_line_id) {
-        return fn.get(
-            'loancard_lines',
-            {loancard_line_id: loancard_line_id},
-            [m.loancards]
-        );
+        return new Promise((resolve, reject) => {
+            m.loancard_lines.findOne({
+                where: {loancard_line_id: loancard_line_id},
+                include: [m.loancards]
+            })
+            .then(line => {
+                if (line) resolve(line)
+                else reject(new Error('Line not found'));
+            })
+            .catch(err => reject(err));
+        });
     };
     fn.loancards.lines.cancel = function (options = {}) {
         return new Promise((resolve, reject) => {
@@ -345,7 +368,7 @@ module.exports = function (m, fn) {
                                 .then(link => {
                                     fn.stocks.get({stock_id: link.id})
                                     .then(stock => {
-                                        fn.increment(stock, line.qty)
+                                        stock.increment(stock, {by: line.qty})
                                         .then(result => {
                                             get_loancard_links('issues', line.loancard_line_id)
                                             .then(issue_links => {
@@ -543,11 +566,11 @@ module.exports = function (m, fn) {
                     }
                 })
                 .then(([loancard_line, created]) => {
-                    fn.decrement(stock, line.qty)
+                    stock.decrement('qty', {by: line.qty})
                     .then(result => {
                         let action = null;
                         if (created) action = new Promise(r => r(true))
-                        else         action = fn.increment(loancard_line, line.qty);
+                        else         action = loancard_line.increment('qty', {by: line.qty});
                         action
                         .then(result => {
                             fn.actions.create(
@@ -634,7 +657,7 @@ module.exports = function (m, fn) {
                                         }
                                     })
                                     .then(([stock, created]) => {
-                                        fn.increment(stock, line.qty)
+                                        stock.increment('qty', {by: line.qty})
                                         .then(result => {
                                             get_loancard_links('issues', line.loancard_line_id)
                                             .then(links => {

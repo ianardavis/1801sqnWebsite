@@ -15,15 +15,17 @@ module.exports = (app, m, fn) => {
         .catch(err =>     fn.send_error(res, err))
     });
     app.get('/get/receipt',     fn.loggedIn(), fn.permissions.check('canteen_stock_admin'), (req, res) => {
-        fn.get(
-            'receipts',
-            req.query.where,
-            [
+        m.receipts.findOne({
+            where: req.query.where,
+            include: [
                 fn.inc.users.user(),
                 fn.inc.canteen.item()
             ]
-        )
-        .then(receipt => res.send({success: true,  result: receipt}))
+        })
+        .then(receipt => {
+            if (receipt) res.send({success: true, result: receipt})
+            else res.send({success: false, message: 'Receipt not found'});
+        })
         .catch(err => fn.send_error(res, err))
     });
 

@@ -15,12 +15,14 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/supplier',          fn.loggedIn(), fn.permissions.check('supplier_admin'), (req, res) => {
-        fn.get(
-            'suppliers',
-            req.query.where,
-            [fn.inc.stores.account()]
-        )
-        .then(supplier => res.send({success: true,  result: supplier}))
+        m.suppliers.findOne({
+            where: req.query.where,
+            include: [fn.inc.stores.account()]
+        })
+        .then(supplier => {
+            if (supplier) res.send({success: true,  result: supplier})
+            else res.send({success: false, message: 'Supplier not found'});
+        })
         .catch(err => fn.send_error(res, err));
     });
 
@@ -36,11 +38,7 @@ module.exports = (app, m, fn) => {
         .catch(err => res.send({success: true, message: `Error updating supplier: ${err.message}`}));
     });
     app.put('/suppliers/:id',         fn.loggedIn(), fn.permissions.check('supplier_admin'), (req, res) => {
-        fn.put(
-            'suppliers',
-            {supplier_id: req.params.id},
-            req.body.supplier
-        )
+        fn.suppliers.edit(req.params.id, req.body.supplier)
         .then(result => res.send({success: true, message: 'Supplier saved'}))
         .catch(err => res.send({success: true, message: `Error updating supplier: ${err.message}`}));
     });

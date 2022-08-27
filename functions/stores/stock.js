@@ -13,18 +13,25 @@ module.exports = function (m, fn) {
                 )
             ) {
                 if (options.stock_id) {
-                    fn.get('stocks', {stock_id: options.stock_id})
-                    .then(stock => resolve(stock))
+                    m.stocks.findOne({
+                        where: {stock_id: options.stock_id},
+                        include: [m.locations]
+                    })
+                    .then(stock => {
+                        if (stock) resolve(stock)
+                        else reject(new Error('Stock not found'));
+                    })
                     .catch(err => reject(err));
                 } else if (options.size_id) {
-                    fn.get('sizes', {size_id: options.size_id})
+                    fn.sizes.get(options.size_id)
                     .then(size => {
                         if (options.location_id) {
                             m.stocks.findOrCreate({
                                 where: {
                                     size_id:     size.size_id,
                                     location_id: options.location_id
-                                }
+                                },
+                                include: [m.locations]
                             })
                             .then(([stock, created]) => resolve(stock))
                             .catch(err => reject(err));
@@ -35,7 +42,8 @@ module.exports = function (m, fn) {
                                     where: {
                                         size_id:     size.size_id,
                                         location_id: location_id
-                                    }
+                                    },
+                                    include: [m.locations]
                                 })
                                 .then(([stock, created]) => resolve(stock))
                                 .catch(err => reject(err));
@@ -57,7 +65,7 @@ module.exports = function (m, fn) {
             .then(stock => {
                 if (stock.size.has_nsns && !details.nsn_id) reject(new Error("No valid NSN submitted"))
                 else {
-                    fn.decrement(stock, details.qty)
+                    stock.decrement('qty', {by: details.qty})
                     .then(result => {
                         fn.scraps.get({supplier_id: stock.size.supplier_id})
                         .then(scrap => {
@@ -114,7 +122,7 @@ module.exports = function (m, fn) {
         return new Promise((resolve, reject) => {
             fn.stocks.get(options.stock)
             .then(stock => {
-                fn.increment(stock, options.qty)
+                stock.increment('qty', {qty: options.qty})
                 .then(result => {
                     if (!result) reject(new Error('Stock not incremented'))
                     else {
@@ -136,11 +144,7 @@ module.exports = function (m, fn) {
     };
     fn.stocks.transfer = function (stock_id_from, location_to, qty, user_id) {
         return new Promise((resolve, reject) => {
-            fn.get(
-                'stocks',
-                {stock_id: stock_id_from},
-                [m.locations]
-            )
+            fn.stocks.get(stock_id_from)
             .then(stock_from => {
                 if (qty > stock_from.qty) reject(new Error('Transfer quantity is greater than stock quantity'))
                 else {

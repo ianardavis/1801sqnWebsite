@@ -1,8 +1,23 @@
 module.exports = function (m, fn) {
     fn.sales = {lines: {}, payments: {}};
+    fn.sales.get = function (sale_id) {
+        return m.sales.findOne({
+            where: {sale_id: sale_id},
+            include: [
+                fn.inc.canteen.session(),
+                {model: m.sale_lines, as: 'lines'}
+            ]
+        })
+    };
+    fn.sales.lines.get = function (line_id) {
+        return m.sale_lines.findOne({
+            where: {sale_line_id: line_id},
+            include: [fn.inc.canteen.sale({session: true})]
+        });
+    };
     function debit_account(sale_id, account, amount, user_id) {
         return new Promise((resolve, reject) => {
-            fn.decrement(account, amount, 'credit')
+            account.decrement('credit', {by: amount})
             .then(result => {
                 fn.payments.create(
                     sale_id,
@@ -28,7 +43,7 @@ module.exports = function (m, fn) {
             .then(([credit, created]) => {
                 if (created) resolve(0)
                 else {
-                    fn.increment(credit, amount, 'credit')
+                    credit.increment('qty', {by: amount})
                     .then(result => resolve(0))
                     .catch(err => {
                         console.log(err)
@@ -68,10 +83,7 @@ module.exports = function (m, fn) {
     };
     function process_account_payment(user_id_debit, balance, sale_id, user_id) {
         return new Promise((resolve, reject) => {
-            fn.get(
-                'credits',
-                {user_id: user_id_debit}
-            )
+            fn.credits.get(user_id_debit)
             .then(account => {
                 if (balance <= account.credit) {
                     debit_account(sale_id, account, balance, user_id)
@@ -154,12 +166,9 @@ module.exports = function (m, fn) {
     };
     function subtract_sold_qty_from_stock(item_id, qty) {
         return new Promise((resolve, reject) => {
-            fn.get(
-                'canteen_items',
-                {item_id: item_id}
-            )
+            fn.canteen_items.get(item_id)
             .then(item => {
-                fn.decrement(item, qty)
+                item.decrement('qty', {by: qty})
                 .then(result => resolve(true))
                 .catch(err => reject(err));
             })
@@ -168,11 +177,7 @@ module.exports = function (m, fn) {
     }
     fn.sales.complete = function (sale_id, _sale, user_id) {
         return new Promise((resolve, reject) => {
-            fn.get(
-                'sales',
-                {sale_id: sale_id},
-                [{model: m.sale_lines, as: 'lines'}]
-            )
+            fn.sales.get(sale_id)
             .then(sale => {
                 if      (sale.status === 0) reject(new Error('Sale has been cancelled'))
                 else if (sale.status === 2) reject(new Error('Sale has already been completed'))
@@ -194,11 +199,7 @@ module.exports = function (m, fn) {
 
     function check_sale(sale_id) {
         return new Promise((resolve, reject) => {
-            fn.get(
-                'sales',
-                {sale_id: sale_id},
-                [fn.inc.canteen.session()]
-            )
+            fn.sales.get(sale_id)
             .then(sale => {
                 if      (!sale.session)             reject(new Error('Session not found'))
                 else if (sale.session.status !== 1) reject(new Error('Session for this sale is not open'))
@@ -209,15 +210,11 @@ module.exports = function (m, fn) {
     };
     function check_sale_line(sale_line_id) {
         return new Promise((resolve, reject) => {
-            fn.get(
-                'sale_lines',
-                {sale_line_id: sale_line_id},
-                [fn.inc.canteen.sale({session: true})]
-            )
+            fn.sales.lines.get(sale_line_id)
             .then(line => {
-                if      (!line.sale)                     reject(new Error('Sale not found'))
-                else if (!line.sale.session)             reject(new Error('Session not found'))
-                else if (line.sale.session.status !== 1) reject(new Error('Session for this sale is not open'))
+                if      (!line.sale)                      reject(new Error('Sale not found'))
+                else if (!line.sale.session)              reject(new Error('Session not found'))
+                else if ( line.sale.session.status !== 1) reject(new Error('Session for this sale is not open'))
                 else resolve(line);
             })
             .catch(err => reject(err));
@@ -229,10 +226,7 @@ module.exports = function (m, fn) {
             else {
                 check_sale(line.sale_id)
                 .then(sale => {
-                    fn.get(
-                        'canteen_items',
-                        {item_id: line.item_id}
-                    )
+                    fn.canteen_items.get(line.item_id)
                     .then(item => {
                         m.sale_lines.findOrCreate({
                             where: {
@@ -247,7 +241,7 @@ module.exports = function (m, fn) {
                         .then(([sale_line, created]) => {
                             if (created) resolve(true)
                             else {
-                                fn.increment(sale_line, line.qty || 1)
+                                sale_line.increment('qty', {by: line.qty || 1})
                                 .then(result => resolve(true))
                                 .catch(err => reject(err));
                             };
@@ -264,7 +258,7 @@ module.exports = function (m, fn) {
         return new Promise((resolve, reject) => {
             check_sale_line(_line.sale_line_id)
             .then(line => {
-                fn.increment(line, _line.qty)
+                line.increment('qty', {by: _line.qty})
                 .then(result => {
                     line.reload()
                     .then(result => {
@@ -288,10 +282,7 @@ module.exports = function (m, fn) {
 
     fn.sales.payments.delete = function (payment_id) {
         return new Promise((resolve, reject) => {
-            fn.get(
-                'payments',
-                {payment_id: payment_id}
-            )
+            fn.payments.get(payment_id)
             .then(payment => {
                 if      (payment.status === 0) reject(new Error('Payment has been cancelled'))
                 else if (payment.status === 2) reject(new Error('Payment has already been confirmed'))

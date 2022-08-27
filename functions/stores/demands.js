@@ -2,7 +2,7 @@ module.exports = function (m, fn) {
     let line_status = {0: "Cancelled", 1: "Pending", 2: "Open", 3: "Closed"};
     fn.demands = {lines: {}};
     fn.demands.get = function (demand_id) {
-        return fn.get('demands', {demand_id: demand_id});
+        return m.demands.findOne({where: {demand_id: demand_id}});
     };
     fn.demands.create   = function (supplier_id, user_id) {
         return new Promise((resolve, reject) => {
@@ -237,18 +237,16 @@ module.exports = function (m, fn) {
         });
     };
     
-    fn.demands.lines.get     = function (demand_line_id) {
-        return fn.get(
-            'demand_lines',
-            {demand_line_id: demand_line_id},
-            [m.demands, m.sizes]
-        );
+    fn.demands.lines.get     = function (demand_line_id, includes = []) {
+        return m.demand_lines.findOne({
+            where: {demand_line_id: demand_line_id},
+            include: [m.demands, m.sizes].concat(includes)
+        });
     };
     fn.demands.lines.create  = function (options = {}) {
         return new Promise((resolve, reject) => {
-            fn.get(
-                'sizes',
-                {size_id: options.size_id},
+            fn.sizes.get(
+                options.size_id,
                 [fn.inc.stores.details({
                     where: {name: {[fn.op.or]:['Demand Page', 'Demand Cell']}}
                 })]
@@ -276,7 +274,7 @@ module.exports = function (m, fn) {
                             .then(([line, created]) => {
                                 let action = null;
                                 if (created) action = new Promise(r => r(true))
-                                else action = fn.increment(line, options.qty)
+                                else action = line.increment('qty', {by: options.qty})
                                 action
                                 .then(result => {
                                     let links = [];
@@ -454,7 +452,7 @@ module.exports = function (m, fn) {
                     user_id:   user_id
                 })
                 .then(new_line => {
-                    fn.decrement(demand_line, qty)
+                    demand_line.decrement('qty', {by: qty})
                     .then(result => {
                         fn.actions.create(
                             `DEMAND LINE | UPDATED | Partial receipt | New demand line created for receipt qty | Existing demand line qty updated from ${qty_original} to ${qty_original - qty}`,
@@ -679,15 +677,13 @@ module.exports = function (m, fn) {
 
     function get_template(supplier_id) {
         return new Promise((resolve, reject) => {
-            fn.get(
-                'suppliers',
-                {supplier_id: supplier_id},
+            fn.suppliers.get(
+                supplier_id,
                 [
                     fn.inc.stores.files({
                         where: {description: 'Demand'},
                         details: true
-                    }),
-                    fn.inc.stores.account()
+                    })
                 ]
             )
             .then(supplier => {

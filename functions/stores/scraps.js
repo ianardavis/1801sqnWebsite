@@ -1,10 +1,15 @@
+const { resolve, reject } = require("core-js/fn/promise");
+
 module.exports = function (m, fn) {
     fn.scraps = {lines: {}};
     fn.scraps.get = function (options = {}) {
         return new Promise((resolve, reject) => {
             if (options.scrap_id) {
                 m.scraps.findByPk(options.scrap_id)
-                .then(scrap => resolve(scrap))
+                .then(scrap => {
+                    if (scrap) resolve(scrap)
+                    else reject(new Error('Scrap not found'));
+                })
                 .catch(err => reject(err));
             } else {
                 m.scraps.findOrCreate({
@@ -17,6 +22,15 @@ module.exports = function (m, fn) {
                 .catch(err => reject(err));
             };
         });
+    };
+    fn.scraps.edit = function (scrap_id, details) {
+        fn.scraps.get(scrap_id)
+        .then(scrap => {
+            scrap.update(details)
+            .then(result => resolve(result))
+            .catch(err => reject(err));
+        })
+        .catch(err => reject(err));
     };
     fn.scraps.lines.get = function (options = {}) {
         return new Promise((resolve, reject) => {

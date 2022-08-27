@@ -15,15 +15,17 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/session',  fn.loggedIn(), fn.permissions.check('pos_user'),       (req, res) => {
-        fn.get(
-            'sessions',
-            req.query.where,
-            [
+        m.sessions.findOne({
+            where: req.query.where,
+            include: [
                 fn.inc.users.user({as: 'user_open'}),
                 fn.inc.users.user({as: 'user_close'}),
             ]
-        )
-        .then(session => res.send({success: true, result: session}))
+        })
+        .then(session => {
+            if (session) res.send({success: true, result: session})
+            else res.send({success: false, message: 'Session not found'})
+        })
         .catch(err => fn.send_error(res, err));
     });
 

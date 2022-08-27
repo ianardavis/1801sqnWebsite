@@ -40,12 +40,14 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/item',               fn.loggedIn(), fn.permissions.check('access_stores'),      (req, res) => {
-        fn.get(
-            'items',
-            req.query.where,
-            [m.genders]
-        )
-        .then(item => res.send({success: true, result: item}))
+        m.items.findOne({
+            where: req.query.where,
+            include: [m.genders]
+        })
+        .then(item => {
+            if (item) res.send({success: true, result: item})
+            else res.send({success: false, message: 'Item not found'});
+        })
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/item_categories',    fn.loggedIn(), fn.permissions.check('access_stores'),      (req, res) => {
@@ -58,12 +60,14 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/item_category',      fn.loggedIn(), fn.permissions.check('access_stores'),      (req, res) => {
-        fn.get(
-            'item_categories',
-            req.query.where,
-            [m.categories]
-        )
-        .then(category => res.send({success: true, result: category}))
+        m.item_categories.findOne({
+            where: req.query.where,
+            include: [m.categories]
+        })
+        .then(category => {
+            if (category) res.send({success: true, result: category})
+            else res.send({success: false, message: 'Category not found'});
+        })
         .catch(err => fn.send_error(res, err));
     });
 
@@ -92,12 +96,8 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.put('/items/:id',              fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
-        fn.put(
-            'items',
-            {item_id: req.params.id},
-            req.body.item
-        )
-        .then(result => res.send({success: true, message: 'Item saved'}))
+        fn.items.edit(req.params.id, req.body.item)
+        .then(result => res.send({success: result, message: `Item ${(result ? '' : 'not ')}saved`}))
         .catch(err => fn.send_error(res, err));
     });
     app.delete('/items/:id',           fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {

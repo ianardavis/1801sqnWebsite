@@ -14,11 +14,11 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/setting',     fn.loggedIn(), fn.permissions.check('access_settings'), (req, res) => {
-        fn.get(
-            'settings',
-            req.query.where
-        )
-        .then(setting => res.send({success: true, result: setting}))
+        m.settings.findOne({where: req.query.where})
+        .then(setting => {
+            if (setting) res.send({success: true, result: setting})
+            else res.send({success: false, message: 'Setting not found'});
+        })
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/printers',    fn.loggedIn(), fn.permissions.check('access_settings'), (req, res) => {
@@ -43,12 +43,8 @@ module.exports = (app, m, fn) => {
     
 
     app.put('/settings',        fn.loggedIn(), fn.permissions.check('access_settings'), (req, res) => {
-        fn.put(
-            'settings',
-            {setting_id: req.body.setting_id},
-            req.body.setting
-        )
-        .then(setting => res.send({success: true, message: 'Setting updated'}))
+        fn.settings.edit(req.body.setting_id, req.body.setting)
+        .then(result => res.send({success: result, message: `Setting ${(result ? '' : 'not ')}updated`}))
         .catch(err => fn.send_error(res, err));
     });
 
@@ -91,17 +87,17 @@ module.exports = (app, m, fn) => {
     });
     
     app.delete('/settings/:id', fn.loggedIn(), fn.permissions.check('access_settings'), (req, res) => {
-        fn.get(
-            'settings',
-            {setting_id: req.params.id}
-        )
+        m.settings.findOne({where: {setting_id: req.params.id}})
         .then(setting => {
-            setting.destroy()
-            .then(result => {
-                if (!result) fn.send_error(res, 'Setting not deleted')
-                else         res.send({success: true,  message: 'Setting deleted'})
-            })
-            .catch(err => fn.send_error(res, err));
+            if (setting) {
+                setting.destroy()
+                .then(result => {
+                    if (!result) fn.send_error(res, 'Setting not deleted')
+                    else         res.send({success: true,  message: 'Setting deleted'})
+                })
+                .catch(err => fn.send_error(res, err));
+            }
+            else res.send({success: false, message: 'Setting not found'});
         })
         .catch(err => fn.send_error(res, err));
     });

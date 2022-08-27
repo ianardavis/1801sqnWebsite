@@ -11,12 +11,14 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/contact',     fn.loggedIn(), fn.permissions.check('access_stores'),  (req, res) => {
-        fn.get(
-            'supplier_contacts',
-            req.query.where,
-            [m.contacts]
-        )
-        .then(contact => res.send({success: true, result: contact}))
+        m.supplier_contacts.findOne({
+            where: req.query.where,
+            include: [m.contacts]
+        })
+        .then(contact => {
+            if (contact) res.send({success: true, result: contact})
+            else res.send({success: false, message: 'Contact not found'});
+        })
         .catch(err => fn.send_error(res, err));
     });
     app.post('/contacts',       fn.loggedIn(), fn.permissions.check('supplier_admin'), (req, res) => {

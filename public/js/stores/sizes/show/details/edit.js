@@ -45,6 +45,6 @@ window.addEventListener('load', function() {
             ]
         }
     );
-    modalOnShow('detail_view', function(event) {addDetailEditBtn( event.relatedTarget.dataset.id)});
+    modalOnShow('detail_view', function(event) {addDetailEditBtn(event.relatedTarget.dataset.id)});
     modalOnShow('detail_edit', function(event) {viewDetailEdit(event.relatedTarget.dataset.id);});
 });

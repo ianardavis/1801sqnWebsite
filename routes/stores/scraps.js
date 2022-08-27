@@ -39,15 +39,17 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/scrap',                 fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
-        fn.get(
-            'scraps',
-            req.query.where,
-            [
+        m.scraps.findOne({
+            where: req.query.where,
+            include: [
                 fn.inc.stores.scrap_lines(),
                 fn.inc.stores.supplier()
             ]
-        )
-        .then(scrap => res.send({success: true,  result: scrap}))
+        })
+        .then(scrap => {
+            if (scrap) res.send({success: true,  result: scrap})
+            else res.send({success: false, message: 'Scrap not found'});
+        })
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/scraps',                fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
@@ -84,10 +86,9 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/scrap_line',            fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
-        fn.get(
-            'scrap_lines',
-            req.query.where,
-            [
+        m.scrap_lines.findOne({
+            where: req.query.where,
+            include: [
                 fn.inc.stores.size(),
                 fn.inc.stores.scrap({
                     include: [
@@ -95,17 +96,16 @@ module.exports = (app, m, fn) => {
                     ]
                 })
             ]
-        )
-        .then(scrap_line => res.send({success: true, result: scrap_line}))
+        })
+        .then(line => {
+            if (line) res.send({success: true, result: line})
+            else res.send({success: false, message: 'Line not found'});
+        })
         .catch(err => fn.send_error(res, err));
     });
 
     app.put('/scraps/:id',                fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
-        fn.put(
-            'scraps',
-            {scrap_id: req.params.id},
-            req.body.scrap
-        )
+        fn.scraps.edit(req.params.id, req.body.scrap)
         .then(scrap => res.send({success: true, message: 'Scrap updated'}))
         .catch(err => fn.send_error(res, err));
     });
@@ -134,26 +134,28 @@ module.exports = (app, m, fn) => {
             results.filter(e => e.status === 'fulfilled').forEach(e => {if (!scraps.includes(e.value)) scraps.push(e.value)});
             scraps.forEach(scrap_id => {
                 scrap_checks.push(new Promise((resolve, reject) => {
-                    fn.get(
-                        'scraps',
-                        {scrap_id: scrap_id},
-                        [{
+                    m.scraps.findOne({
+                        where: {scrap_id: scrap_id},
+                        include: [{
                             model: m.scrap_lines,
                             as:    'lines',
                             where: {status: {[fn.op.or]: [1]}},
                             required: false
                         }]
-                    )
+                    })
                     .then(scrap => {
-                        if      (scrap.status === 0) reject(new Error('Scrap has already been cancelled'))
-                        else if (scrap.status === 1) {
-                            if (!scrap.lines || scrap.lines.length === 0) {
-                                fn.scraps.cancel({scrap_id: scrap.scrap_id, user_id: req.user.user_id, noforce: true})
-                                .then(result => resolve(result))
-                                .catch(err => reject(err));
-                            } else resolve(false);
-                        } else if (scrap.status === 2) reject(new Error('Scrap has already been closed'))
-                        else reject(new Error('Unknown scrap status'));
+                        if (scrap) {
+                            if      (scrap.status === 0) reject(new Error('Scrap has already been cancelled'))
+                            else if (scrap.status === 1) {
+                                if (!scrap.lines || scrap.lines.length === 0) {
+                                    fn.scraps.cancel({scrap_id: scrap.scrap_id, user_id: req.user.user_id, noforce: true})
+                                    .then(result => resolve(result))
+                                    .catch(err => reject(err));
+                                } else resolve(false);
+                            } else if (scrap.status === 2) reject(new Error('Scrap has already been closed'))
+                            else reject(new Error('Unknown scrap status'));
+                        }
+                        else res.send({success: false, message: 'Scrap not found'});
                     })
                     .catch(err => {
                         console.log(err);

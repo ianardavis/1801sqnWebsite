@@ -1,15 +1,14 @@
 module.exports = function (m, fn) {
     fn.issues = {};
     fn.issues.get = function (issue_id) {
-        return fn.get(
-            'issues',
-            {issue_id: issue_id},
-            [
-                m.sizes,
-                {model: m.users, as: 'user',       include: [m.ranks], attributes: {exclude: ['password', 'salt', 'reset']}},
-                {model: m.users, as: 'user_issue', include: [m.ranks], attributes: {exclude: ['password', 'salt', 'reset']}}
+        return m.issues.findOne({
+            where: {issue_id: issue_id},
+            include: [
+                fn.inc.stores.size(),
+                fn.inc.users.user(),
+                fn.inc.users.user({as: 'user_issue'})
             ]
-        )
+        });
     };
     fn.issues.create  = function (user_id_issue, size_id, qty, user_id, status = 1) {
         return new Promise((resolve, reject) => {
@@ -33,8 +32,8 @@ module.exports = function (m, fn) {
                         .then(([issue, created]) => {
                             let args = [user_id, [{table: 'issues', id: issue.issue_id}]],
                                 action = null;
-                            if (created) action = new Promise(r => r(true))
-                            else         action = fn.increment(issue, qty)
+                            if (created) action = new Promise.resolve(true)
+                            else         action = issue.increment('qty', {by: qty})
                             action
                             .then(result => {
                                 fn.actions.create(
@@ -292,7 +291,7 @@ module.exports = function (m, fn) {
                         if ([0, 2].includes(line.status)) {
                             reject(new Error(`Loancard line has already been ${(line.status === 0 ? 'cancelled' : 'completed')}`));
                         } else if (line.status === 1) {
-                            fn.decrement(line, issue.qty)
+                            line.decrement('qty', {by: issue.qty})
                             .then(result => {
                                 fn.update(issue, {status: 2})
                                 .then(result => {

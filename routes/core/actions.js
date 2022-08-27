@@ -12,12 +12,14 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/action',       fn.loggedIn(), (req, res) => {
-        fn.get(
-            'actions',
-            req.query.where,
-            [fn.inc.users.user()]
-        )
-        .then(action => res.send({success: true, result: action}))
+        m.actions.findOne({
+            where: req.query.where,
+            include: [fn.inc.users.user()]
+        })
+        .then(action => {
+            if (action) res.send({success: true, result: action})
+            else res.send({success: false, message: 'Action not found'});
+        })
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/action_links', fn.loggedIn(), (req, res) => {
@@ -29,11 +31,13 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/action_link',  fn.loggedIn(), (req, res) => {
-        fn.get(
-            'action_links',
-            req.query.where
-        )
-        .then(link => res.send({success: true, result: link}))
+        m.action_links.findOne({
+            where: req.query.where
+        })
+        .then(link => {
+            if (link) res.send({success: true, result: link})
+            else res.send({success: false, message: 'Link not found'});
+        })
         .catch(err => fn.send_error(res, err));
     });
 };

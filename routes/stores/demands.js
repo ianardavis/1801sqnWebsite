@@ -33,15 +33,17 @@ module.exports = (app, m, fn) => {
     });
     
     app.get('/get/demand',           fn.loggedIn(), fn.permissions.check('stores_stock_admin'),  (req, res) => {
-        fn.get(
-            'demands',
-            req.query.where,
-            [
+        m.demands.findOne({
+            where: req.query.where,
+            include: [
                 fn.inc.users.user(),
                 fn.inc.stores.supplier()
             ]
-        )
-        .then(demand => res.send({success: true, result: demand}))
+        })
+        .then(demand => {
+            if (demand) res.send({success: true, result: demand})
+            else res.send({success: false, message: 'Demand not found'});
+        })
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/demands',          fn.loggedIn(), fn.permissions.check('stores_stock_admin'),  (req, res) => {
@@ -70,16 +72,18 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/demand_line',      fn.loggedIn(), fn.permissions.check('stores_stock_admin'),  (req, res) => {
-        fn.get(
-            'demand_lines',
-            req.query.where,
-            [
+        m.demand_lines.findOne({
+            where: req.query.where,
+            include: [
                 fn.inc.stores.size(),
                 fn.inc.users.user(),
                 fn.inc.stores.demand()
             ]
-        )
-        .then(line => res.send({success: true, result: line}))
+        })
+        .then(line => {
+            if (line) res.send({success: true, result: line})
+            else res.send({success: false, message: 'Line not found'});
+        })
         .catch(err => fn.send_error(res, err));
     });
 

@@ -10,6 +10,19 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
+    fn.settings.edit = function (setting_id, details) {
+        return new Promise((resolve, reject) => {
+            m.settings.findOne({where: {setting_id: setting_id}})
+            .then(setting => {
+                if (setting) {
+                    setting.update(details)
+                    .then(result => resolve(result))
+                    .catch(err => reject(err));
+                } else reject(new Error('Setting not found'));
+            })
+            .catch(err => reject(err));
+        });
+    };
     fn.settings.set = function (name, value) {
         return new Promise((resolve, reject) => {
             m.settings.findOrCreate({

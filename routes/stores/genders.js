@@ -8,20 +8,16 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/gender',     fn.loggedIn(),                                             (req, res) => {
-        fn.get(
-            'genders',
-            req.query.where
-        )
-        .then(gender => res.send({success: true, result: gender}))
+        m.gender.findOne({where: req.query.where})
+        .then(gender => {
+            if (gender) res.send({success: true, result: gender})
+            else res.send({success: false, message: 'Gender not found'});
+        })
         .catch(err => fn.send_error(res, err));
     });
 
     app.put('/genders',        fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
-        fn.put(
-            'genders',
-            {gender: req.body.gender.gender},
-            {gender_id: req.body.gender.gender_id}
-        )
+        fn.genders.edit(req.body.gender.gender_id, {gender: req.body.gender.gender})
         .then(result => res.send({success: true, message: 'Gender updated'}))
         .catch(err => fn.send_error(res, err));
     });

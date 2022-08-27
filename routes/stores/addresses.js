@@ -11,12 +11,14 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/address',      fn.loggedIn(), fn.permissions.check('access_stores'),  (req, res) => {
-        fn.get(
-            'supplier_addresses',
-            req.query.where,
-           [fn.inc.stores.address()]
-        )
-        .then(address => res.send({success: true, result: address}))
+        m.supplier_addresses.findOne({
+            where: req.query.where,
+            include: [fn.inc.stores.address()]
+        })
+        .then(address => {
+            if (address) res.send({success: true, result: address})
+            else res.send({success: false, message: 'Address not found'});
+        })
         .catch(err => fn.send_error(res, err));
     });
 

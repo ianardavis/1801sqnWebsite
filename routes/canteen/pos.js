@@ -26,7 +26,10 @@ module.exports = (app, m, fn) => {
             where: req.query.where,
             include: [fn.inc.canteen.item()]
         })
-        .then(pos_layout => res.send({success: true, result: pos_layout}))
+        .then(layout => {
+            if (layout) res.send({success: true, result: layout})
+            else res.send({success: false, message: 'Layout not found'});
+        })
         .catch(err => fn.send_error(res, err));
     });
     app.put('/pos_layouts',        fn.loggedIn(), fn.permissions.check('pos_supervisor'), (req, res) => {
@@ -35,14 +38,17 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.delete('/pos_layouts/:id', fn.loggedIn(), fn.permissions.check('pos_supervisor'), (req, res) => {
-        fn.get('pos_layouts', {pos_layout_id: req.params.id})
+        m.pos_layouts.findOne({where: {pos_layout_id: req.params.id}})
         .then(layout => {
-            layout.destroy()
-            .then(result => {
-                if (!result) fn.send_error(res, 'Layout not deleted')
-                else res.send({success: true, message: 'Layout deleted'});
-            })
-            .catch(err => fn.send_error(res, err))
+            if (!layout) res.send({success: false, message: 'Layout not found'})
+            else {
+                layout.destroy()
+                .then(result => {
+                    if (!result) fn.send_error(res, 'Layout not deleted')
+                    else res.send({success: true, message: 'Layout deleted'});
+                })
+                .catch(err => fn.send_error(res, err));
+            };
         })
         .catch(err => fn.send_error(res, err));
     });

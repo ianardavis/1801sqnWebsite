@@ -15,17 +15,19 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/nsn',           fn.loggedIn(), fn.permissions.check('access_stores'), (req, res) => {
-        fn.get(
-            'nsns',
-            req.query.where,
-            [
+        m.nsns.findOne({
+            where: req.query.where,
+            include: [
                 fn.inc.stores.nsn_group(),
                 fn.inc.stores.nsn_class(),
                 fn.inc.stores.nsn_country(),
                 fn.inc.stores.size()
             ]
-        )
-        .then(nsn => res.send({success: true, result: nsn}))
+        })
+        .then(nsn => {
+            if (nsn) res.send({success: true, result: nsn})
+            else res.send({success: false, message: 'NSN not found'});
+        })
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/nsn_groups',    fn.loggedIn(), fn.permissions.check('access_stores'), (req, res) => {

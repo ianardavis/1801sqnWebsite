@@ -1,7 +1,10 @@
 module.exports = function (m, fn) {
     fn.orders = {};
     fn.orders.get = function (order_id) {
-        return fn.get('orders', {order_id: order_id}, [{model: m.sizes, include: [m.suppliers]}])
+        return m.orders.findOne({
+            where: {order_id: order_id},
+            include: [fn.inc.stores.size({supplier: true})]
+        });
     };
     function create_normalise_lines(lines) {
         return new Promise(resolve => {
@@ -193,7 +196,7 @@ module.exports = function (m, fn) {
                             .then(action => resolve(order))
                             .catch(err => resolve(order));
                         } else {
-                            fn.increment(order, qty)
+                            order.increment('qty', {by: qty})
                             .then(result => {
                                 fn.actions.create(
                                     `ORDER | INCREMENTED | By ${qty}`,
@@ -423,7 +426,7 @@ module.exports = function (m, fn) {
                     user_id: user_id
                 })
                 .then(new_order => {
-                    fn.decrement(order, qty)
+                    order.decrement('qty', {by: qty})
                     .then(result => resolve({
                         action: ` | Partial receipt | New order created for receipt qty | Existing order qty updated from ${order.qty} to ${order.qty - qty}`,
                         links: [{table: 'orders', id: new_order.order_id}],

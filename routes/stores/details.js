@@ -8,12 +8,7 @@ module.exports = (app, m, fn) => {
         .catch(err =>    fn.send_error(res, err));
     });
     app.get('/get/detail',     fn.loggedIn(), fn.permissions.check('access_stores'), (req, res) => {
-        fn.get(
-            'details',
-            req.query.where,
-            [],
-            true
-        )
+        m.details.findOne({where: req.query.where})
         .then(detail => res.send({success: true, result: detail || ''}))
         .catch(err => fn.send_error(res, err));
     });
@@ -37,12 +32,8 @@ module.exports = (app, m, fn) => {
         };
     });
     app.put('/detail',         fn.loggedIn(), fn.permissions.check('stores_stock_admin'),   (req, res) => {
-        fn.put(
-            'details',
-            {detail_id: req.body.detail_id},
-            req.body.detail
-        )
-        .then(result => res.send({success: true, message: 'Detail saved'}))
+        fn.sizes.details.edit(req.body.detail_id, req.body.detail)
+        .then(result => res.send({success: result, message: `Detail ${(result ? '' : 'not ')}saved`}))
         .catch(err => fn.send_error(res, err));
     });
     app.put('/details',        fn.loggedIn(), fn.permissions.check('stores_stock_admin'),   (req, res) => {

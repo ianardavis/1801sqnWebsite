@@ -1,11 +1,11 @@
 module.exports = (app, m, fn) => {
     app.get('/locations/:id', fn.loggedIn(),                                      (req, res) => res.render('stores/locations/show'));
     app.get('/get/location',  fn.loggedIn(),                                      (req, res) => {
-        fn.get(
-            'locations',
-            req.query.where
-        )
-        .then(location => res.send({success: true, result: location}))
+        m.locations.findOne({where: req.query.where})
+        .then(location => {
+            if (location) res.send({success: true, result: location})
+            else res.send({success: false, message: 'Location not found'});
+        })
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/locations', fn.loggedIn(),                                      (req, res) => {

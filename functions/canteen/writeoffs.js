@@ -6,12 +6,9 @@ module.exports = function (m, fn) {
             else if (!writeoff.qty)     reject(new Error('No quantity'))
             else if (!writeoff.item_id) reject(new Error('No item ID'))
             else {
-                fn.get(
-                    'canteen_items',
-                    {item_id: writeoff.item_id}
-                )
+                fn.canteen_items.get(writeoff.item_id)
                 .then(item => {
-                    fn.decrement(item, writeoff.qty)
+                    item.decrement('qty', {by: writeoff.qty})
                     .then(result => {
                         m.writeoffs.create({
                             ...writeoff,

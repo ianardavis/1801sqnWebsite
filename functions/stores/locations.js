@@ -1,5 +1,8 @@
 module.exports = function (m, fn) {
     fn.locations = {};
+    fn.locations.get = function (location_id) {
+        return m.locations.findOne({where: {location_id: location_id}})
+    }
     fn.locations.create = function (location) {
         return new Promise((resolve, reject) => {
             if (location) {
@@ -17,10 +20,7 @@ module.exports = function (m, fn) {
     fn.locations.get = function (options = {}) {
         return new Promise((resolve, reject) => {
             if (options.location_id) {
-                fn.get(
-                    'locations',
-                    {location_id: options.location_id}
-                )
+                fn.locations.get(options.location_id)
                 .then(location => resolve(location.location_id))
                 .catch(err => reject(err));
             } else if (options.location) {

@@ -27,15 +27,17 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/order',               fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
-        fn.get(
-            'orders',
-            req.query.where,
-            [
+        m.orders.findOne({
+            where: req.query.where,
+            include: [
                 fn.inc.stores.size(),
                 fn.inc.users.user()
             ]
-        )
-        .then(order => res.send({success: true, result: order}))
+        })
+        .then(order => {
+            if (order) res.send({success: true, result: order})
+            else res.send({success: false, message: 'Order not found'});
+        })
         .catch(err => fn.send_error(res, err));
     });
 
