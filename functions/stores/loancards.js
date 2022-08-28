@@ -205,8 +205,7 @@ module.exports = function (m, fn) {
                                         options.user_id,
                                         [{table: 'loancards', id: loancard.loancard_id}]
                                     )
-                                    .then(action => resolve(true))
-                                    .catch(err => resolve(false));
+                                    .then(action => resolve(true));
                                 };
                             })
                             .catch(err => reject(err));
@@ -260,8 +259,7 @@ module.exports = function (m, fn) {
                                             options.user_id,
                                             [{table: 'loancard_lines', id: line.loancard_line_id}]
                                         )
-                                        .then(action => resolve(true))
-                                        .catch(err => resolve(false));
+                                        .then(action => resolve(true));
                                     })
                                     .catch(err => reject(err));
                                 }));
@@ -280,8 +278,7 @@ module.exports = function (m, fn) {
                                     options.user_id,
                                     [{table: 'loancards', id: loancard.loancard_id}]
                                 )
-                                .then(action => resolve(true))
-                                .catch(err => resolve(false));
+                                .then(action => resolve(true));
                             })
                             .catch(err => reject(err));
                         };
@@ -312,8 +309,7 @@ module.exports = function (m, fn) {
                                 options.user_id,
                                 [{table: 'loancards', id: loancard.loancard_id}]
                             )
-                            .then(action => resolve(true))
-                            .catch(err => resolve(true));
+                            .then(action => resolve(true));
                         })
                         .catch(err => reject(err));
                     };
@@ -408,11 +404,7 @@ module.exports = function (m, fn) {
                                     options.user_id,
                                     [{table: 'loancard_lines', id: line.loancard_line_id}].concat(result.links).concat(issue_links)
                                 )
-                                .then(result => resolve(line.loancard_id))
-                                .catch(err => {
-                                    console.log(err);
-                                    resolve(line.loancard_id)
-                                });
+                                .then(result => resolve(line.loancard_id));
                             })
                             .catch(err => reject(err));
 
@@ -513,11 +505,7 @@ module.exports = function (m, fn) {
                                         ...(nsn_id ? {table: 'nsns', id: nsn_id} : {})
                                     ]
                                 )
-                                .then(action => resolve(true))
-                                .catch(err => {
-                                    console.log(err);
-                                    resolve(false)
-                                });
+                                .then(action => resolve(true));
                             })
                             .catch(err => {
                                 console.log(err);
@@ -583,11 +571,7 @@ module.exports = function (m, fn) {
                                     (nsn_id ? {table: 'nsns', id: nsn_id} : {})
                                 ]
                             )
-                            .then(action => resolve(line.qty))
-                            .catch(err => {
-                                console.log(err);
-                                resolve(line.qty)
-                            });
+                            .then(action => resolve(line.qty));
                         })
                         .catch(err => reject(err));
                     })
@@ -697,11 +681,7 @@ module.exports = function (m, fn) {
                                                         {table: 'loancard_lines', id: new_line.loancard_line}
                                                     ]
                                                 )
-                                                .then(result => resolve(true))
-                                                .catch(err => {
-                                                    console.log(err);
-                                                    resolve(false);
-                                                });
+                                                .then(result => resolve(true));
                                             })
                                             .catch(err => reject(err));
                                         })
@@ -739,8 +719,7 @@ module.exports = function (m, fn) {
                                             {table: 'locations',      id: location.location_id}
                                         ].concat(issue_links).concat(result.links)
                                     )
-                                    .then(result => resolve(line.loancard_id))
-                                    .catch(err => resolve(line.loancard_id));
+                                    .then(result => resolve(line.loancard_id));
                                 })
                                 .catch(err => resolve(line.loancard_id));
                             })

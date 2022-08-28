@@ -1,8 +1,15 @@
 module.exports = function (m, fn) {
     fn.sessions = {};
     fn.sessions.get = function (session_id) {
-        return m.sessions.findOne({
-            where: {session_id: session_id}
+        return new Promise((resolve, reject) => {
+            m.sessions.findOne({
+                where: {session_id: session_id}
+            })
+            .then(session => {
+                if (session) resolve(session)
+                else reject(new Error('Session not found'));
+            })
+            .catch(err => reject(err));
         });
     };
     fn.sessions.countCash = function (obj) {

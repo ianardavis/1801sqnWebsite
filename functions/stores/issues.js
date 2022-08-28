@@ -40,8 +40,7 @@ module.exports = function (m, fn) {
                                     `ISSUE | ${(created ? 'CREATED' : `INCREMENTED | By ${qty}`)}`,
                                     ...args
                                 )
-                                .then(action => resolve(issue.issue_id))
-                                .catch(err => resolve(issue.issue_id));
+                                .then(action => resolve(issue.issue_id));
                             })
                             .catch(err => reject(err));
                         })
@@ -385,11 +384,7 @@ module.exports = function (m, fn) {
                                     user_id,
                                     [{table: 'issues', id: issue.issue_id}]
                                 )
-                                .then(result => resolve(true))
-                                .catch(err => {
-                                    console.log(err);
-                                    resolve(true);
-                                });
+                                .then(result => resolve(true));
                             })
                             .catch(err => reject(err));
                         }
@@ -416,11 +411,7 @@ module.exports = function (m, fn) {
                                 user_id,
                                 [{table: 'issues', id: issue.issue_id}]
                             )
-                            .then(result => resolve(true))
-                            .catch(err => {
-                                console.log(err);
-                                resolve(false);
-                            });
+                            .then(result => resolve(true));
                         })
                         .catch(err => reject(err));
                     };
@@ -439,8 +430,7 @@ module.exports = function (m, fn) {
                     user_id,
                     [{table: 'issues', id: issue.issue_id}]
                 )
-                .then(action => resolve(true))
-                .catch(err => reject(err));
+                .then(action => resolve(true));
             })
             .catch(err => reject(err));
         });

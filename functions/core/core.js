@@ -318,11 +318,7 @@ module.exports = function (m, fn) {
                                     options.user_id,
                                     [{table: options.table, id: options.id}]
                                 )
-                                .then(result => resolve(true))
-                                .catch(err => {
-                                    console.log(err);
-                                    resolve(true);
-                                });
+                                .then(result => resolve(true));
                             })
                             .catch(err => reject(err));
                         })

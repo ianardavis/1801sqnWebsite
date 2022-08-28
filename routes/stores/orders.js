@@ -108,11 +108,7 @@ module.exports = (app, m, fn) => {
                         req.user.user_id,
                         [{table: 'orders', id: order.order_id}]
                     )
-                    .then(result => res.send({success: true, message: `Order marked as ${status.toLowerCase()}`}))
-                    .catch(err => {
-                        console.log(err);
-                        res.send({success: true, message: `Order marked as ${status.toLowerCase()}`});
-                    });
+                    .then(result => res.send({success: true, message: `Order marked as ${status.toLowerCase()}`}));
                 })
                 .catch(err => {
                     console.log(err);

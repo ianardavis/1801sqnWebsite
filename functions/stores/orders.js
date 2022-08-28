@@ -87,11 +87,7 @@ module.exports = function (m, fn) {
                                         user_id,
                                         [{table: 'orders', id: order.order_id}].concat(links)
                                     )
-                                    .then(action => resolve(true))
-                                    .catch(err => {
-                                        console.log(err);
-                                        resolve(false);
-                                    });
+                                    .then(action => resolve(true));
 
                                 })
                                 .catch(err => {
@@ -193,8 +189,7 @@ module.exports = function (m, fn) {
                                     {table: 'orders', id: order.order_id}
                                 ].concat(links)
                             )
-                            .then(action => resolve(order))
-                            .catch(err => resolve(order));
+                            .then(action => resolve(order));
                         } else {
                             order.increment('qty', {by: qty})
                             .then(result => {
@@ -205,8 +200,7 @@ module.exports = function (m, fn) {
                                         {table: 'orders', id: order.order_id}
                                     ].concat(links)
                                 )
-                                .then(action => resolve(order))
-                                .catch(err => resolve(order));
+                                .then(action => resolve(order));
                             })
                             .catch(err => reject(err));
                         };
@@ -457,11 +451,7 @@ module.exports = function (m, fn) {
                                     user_id,
                                     [{table: 'orders', id: order.order_id}]
                                 )
-                                .then(result => resolve(true))
-                                .catch(err => {
-                                    console.log(err);
-                                    resolve(true);
-                                });
+                                .then(result => resolve(true));
                             })
                             .catch(err => reject(err));
                         }
@@ -489,11 +479,7 @@ module.exports = function (m, fn) {
                                 user_id,
                                 [{table: 'orders', id: order.order_id}]
                             )
-                            .then(result => resolve(true))
-                            .catch(err => {
-                                console.log(err);
-                                resolve(false);
-                            });
+                            .then(result => resolve(true));
                         })
                         .catch(err => reject(err));
                     };
@@ -515,8 +501,7 @@ module.exports = function (m, fn) {
                             {table: 'orders', id: order.order_id}
                         ].concat(links)
                     )
-                    .then(action => resolve(true))
-                    .catch(err => reject(err));
+                    .then(action => resolve(true));
                 } else resolve(true);
             })
             .catch(err => reject(err));

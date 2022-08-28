@@ -1,7 +1,7 @@
 module.exports = function (m, fn) {
     fn.actions = {};
     fn.actions.create = function (action, user_id, links) {
-        return new Promise((resolve, reject) => {
+        return new Promise(resolve => {
             m.actions.create({
                 action:  action,
                 user_id: user_id
@@ -16,14 +16,23 @@ module.exports = function (m, fn) {
                             id:        link.id
                         })
                         .then(link => resolve(link.action_link_id))
-                        .catch(err => reject(err));
+                        .catch(err => {
+                            console.log(err);
+                            reject(err);
+                        });
                     }));
                 });
-                Promise.all(link_actions)
+                Promise.allSettled(link_actions)
                 .then(result => resolve(true))
-                .catch(err => reject(err));
+                .catch(err => {
+                    console.log(err);
+                    resolve(false);
+                });
             })
-            .catch(err => reject(err));
+            .catch(err => {
+                console.log(err);
+                resolve(false);
+            });
         });
     };
 };

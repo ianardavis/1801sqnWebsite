@@ -1,18 +1,32 @@
 module.exports = function (m, fn) {
     fn.sales = {lines: {}, payments: {}};
     fn.sales.get = function (sale_id) {
-        return m.sales.findOne({
-            where: {sale_id: sale_id},
-            include: [
-                fn.inc.canteen.session(),
-                {model: m.sale_lines, as: 'lines'}
-            ]
-        })
+        return new Promise((resolve, reject) => {
+            m.sales.findOne({
+                where: {sale_id: sale_id},
+                include: [
+                    fn.inc.canteen.session(),
+                    fn.inc.canteen.sale_lines()
+                ]
+            })
+            .then(sale => {
+                if (sale) resolve(sale)
+                else reject(new Error('Sale not found'));
+            })
+            .catch(err => reject(err));
+        });
     };
     fn.sales.lines.get = function (line_id) {
-        return m.sale_lines.findOne({
-            where: {sale_line_id: line_id},
-            include: [fn.inc.canteen.sale({session: true})]
+        return new Promise((resolve, reject) => {
+            m.sale_lines.findOne({
+                where: {sale_line_id: line_id},
+                include: [fn.inc.canteen.sale({session: true})]
+            })
+            .then(line => {
+                if (line) resolve(line)
+                else reject(new Error('Line not found'));
+            })
+            .catch(err => reject(err));
         });
     };
     function debit_account(sale_id, account, amount, user_id) {

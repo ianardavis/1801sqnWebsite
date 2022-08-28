@@ -32,8 +32,7 @@ module.exports = function (m, fn) {
                                     user_id,
                                     [{table: 'serials', id: serial.serial_id}]
                                 )
-                                .then(results => resolve(true))
-                                .catch(err => resolve(false));
+                                .then(results => resolve(true));
                             })
                             .catch(err => reject(err));
                         })

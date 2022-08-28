@@ -24,6 +24,16 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
+    function create_action(holding_id, action, user_id) {
+        return new Promise(resolve => {
+            fn.actions.create(
+                `HOLDING | ${action}`,
+                user_id,
+                [{table: 'holdings', id: holding_id}]
+            )
+            .then(result => resolve(true));
+        });
+    };
 
     // CREATE FUNCTIONS
     function check_holding_details(holding) {
@@ -46,24 +56,13 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
-    function create_action(holding_id, cash, user_id) {
-        return new Promise((resolve, reject) => {
-            fn.actions.create(
-                `HOLDING | CREATED: Opening balance: £${Number(cash).toFixed(2)}`,
-                user_id,
-                [{table: 'holdings', id: holding_id}]
-            )
-            .then(result => resolve(true))
-            .catch(err => reject(err));
-        });
-    };
     fn.holdings.create = function (holding, user_id) {
         return new Promise((resolve, reject) => {
             check_holding_details(holding)
             .then(result => {
                 create_holding(holding)
                 .then(([holding_id, cash]) => {
-                    create_action(holding_id, cash, user_id)
+                    create_action(holding_id, `CREATED: Opening balance: £${Number(cash).toFixed(2)}`, user_id)
                     .then(result => resolve(true))
                     .catch(err => {
                         console.log(err);
@@ -84,16 +83,21 @@ module.exports = function (m, fn) {
                 let cash = fn.sessions.countCash(balance);
                 fn.update(holding, {cash: cash})
                 .then(result => {
-                    fn.actions.create(
-                        `HOLDING | COUNT: £${Number(cash).toFixed(2)}. Holding ${(cash === holding.cash ? ' correct' : `${(holding.cash < cash ? 'under by' : 'over by')} £${Math.abs(holding.cash - cash)}`)}`,
-                        user_id,
-                        [{table: 'holdings', id: holding.holding_id}]
+                    let state = (cash === holding.cash ?
+                        'correct' : 
+                        `${(holding.cash < cash ?
+                            'under' :
+                            'over'
+                        )}`
+                    );
+                    let variance = Math.abs(holding.cash - cash);
+
+                    create_action(
+                        holding.holding_id,
+                        `COUNT | Balance: £${Number(cash).toFixed(2)}. Holding ${state} | Variance: ${variance}`,
+                        user_id
                     )
-                    .then(result => resolve(true))
-                    .catch(err => {
-                        console.log(err);
-                        resolve(false);
-                    });
+                    .then(result => resolve(true));
                 })
                 .catch(err => reject(err));
             })

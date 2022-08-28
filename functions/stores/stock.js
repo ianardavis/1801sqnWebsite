@@ -80,8 +80,7 @@ module.exports = function (m, fn) {
                                     user_id,
                                     [{table: 'stocks', id: stock.stock_id}]
                                 )
-                                .then(results => resolve(true))
-                                .catch(err => resolve(false));
+                                .then(results => resolve(true));
                             })
                             .catch(err => reject(err));
                         })
@@ -110,8 +109,7 @@ module.exports = function (m, fn) {
                         user_id,
                         [{table: 'stocks', id: stock.stock_id}]
                     )
-                    .then(results => resolve(true))
-                    .catch(err => resolve(false));
+                    .then(results => resolve(true));
                 })
                 .catch(err => reject(err));
             })
@@ -133,8 +131,7 @@ module.exports = function (m, fn) {
                                 {table: 'stocks', id: stock.stock_id}
                             ].concat(options.action_links || [])
                         )
-                        .then(result => resolve(true))
-                        .catch(err => reject(err));
+                        .then(result => resolve(true));
                     };
                 })
                 .catch(err => reject(err));
@@ -176,7 +173,7 @@ module.exports = function (m, fn) {
                                             {table: 'stocks', id: stock_to  .stock_id}
                                         ]
                                     )
-                                    .finally(result => resolve(true));
+                                    .then(result => resolve(true));
                                 })
                                 .catch(err => reject(err));
                             })

@@ -2,7 +2,7 @@ module.exports = (app, m, fn) => {
     app.get('/demands',              fn.loggedIn(), fn.permissions.get(  'stores_stock_admin'),  (req, res) => res.render('stores/demands/index'));
     app.get('/demands/:id',          fn.loggedIn(), fn.permissions.get(  'stores_stock_admin'),  (req, res) => res.render('stores/demands/show'));
     app.get('/demands/:id/download', fn.loggedIn(), fn.permissions.check('stores_stock_admin'),  (req, res) => {
-        fn.demands.get(req.params.id)
+        fn.demands.get({demand_id: req.params.id})
         .then(demand => {
             if (!demand.filename) {
                 fn.demands.raise(demand.demand_id, req.user)

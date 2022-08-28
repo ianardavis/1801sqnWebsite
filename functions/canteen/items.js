@@ -1,5 +1,3 @@
-const { resolve } = require("core-js/fn/promise");
-
 module.exports = function (m, fn) {
     fn.canteen_items = {};
     fn.canteen_items.get = function (item_id) {
