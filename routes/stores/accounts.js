@@ -1,13 +1,4 @@
 module.exports = (app, m, fn) => {
-    app.get('/get/accounts',    fn.loggedIn(), fn.permissions.check('access_stores'),  (req, res) => {
-        m.accounts.findAndCountAll({
-            where:   req.query.where,
-            include: [fn.inc.users.user()],
-            ...fn.pagination(req.query)
-        })
-        .then(results => fn.send_res('accounts', res, results, req.query))
-        .catch(err => fn.send_error(res, err));
-    });
     app.get('/get/account',     fn.loggedIn(), fn.permissions.check('access_stores'),  (req, res) => {
         m.accounts.findOne({
             where: req.query.where,
@@ -17,6 +8,15 @@ module.exports = (app, m, fn) => {
             if (account) res.send({success: true, result: account})
             else res.send({success: false, message: 'Account not found'});
         })
+        .catch(err => fn.send_error(res, err));
+    });
+    app.get('/get/accounts',    fn.loggedIn(), fn.permissions.check('access_stores'),  (req, res) => {
+        m.accounts.findAndCountAll({
+            where:   req.query.where,
+            include: [fn.inc.users.user()],
+            ...fn.pagination(req.query)
+        })
+        .then(results => fn.send_res('accounts', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });
 

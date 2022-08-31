@@ -1,6 +1,6 @@
-const bwipjs = require('bwip-js'),
-      fs     = require("fs"),
-      ptp    = require('pdf-to-printer');
+const bwipjs = require('bwip-js');
+const fs     = require("fs");
+const ptp    = require('pdf-to-printer');
 module.exports = function (m, fn) {
     fn.file_exists = function (path) {
         return new Promise((resolve, reject) => {
@@ -102,13 +102,13 @@ module.exports = function (m, fn) {
             ${String(current.getSeconds())  .padStart(2, '0')}
         `;
     };
-    fn.create_barcodes = function (uuid) {
+    function create_barcode(uuid, type) {
         return new Promise((resolve, reject) => {
             bwipjs.toBuffer({
-                bcid:        'code128', // Barcode type
+                bcid:        type, // Barcode type
                 text:        uuid,      // Text to encode
                 scale:       3,         // 3x scaling factor
-                height:      15,        // Bar height, in millimeters
+                height:      (type === 'code128' ? 15 : 30), // Bar height, in millimeters
                 includetext: false,     // Show human-readable text
                 backgroundcolor: 'FFFFFF',
                 barcolor: '000000',
@@ -116,31 +116,23 @@ module.exports = function (m, fn) {
                 borderright: '5'
             })
             .then(barcode => {
-                fs.writeFile(`${process.env.ROOT}/public/res/barcodes/${uuid}_128.png`, barcode, () => {
-                    bwipjs.toBuffer({
-                        bcid:        'qrcode', // Barcode type
-                        text:        uuid,     // Text to encode
-                        scale:       3,        // 3x scaling factor
-                        height:      30,       // Bar height, in millimeters
-                        includetext: false,    // Show human-readable text
-                        backgroundcolor: 'FFFFFF',
-                        barcolor: '000000',
-                        borderleft: '5',
-                        borderright: '5'
-                    })
-                    .then(qr => {
-                        fs.writeFile(`${process.env.ROOT}/public/res/barcodes/${uuid}_qr.png`, qr, () => resolve(true));
-                    })
-                    .catch(err => {
-                        console.log(err);
-                        reject(err);
-                    });
-                });
+                const prepend = (type === 'code128' ? '128' : 'qr');
+                const file = `${process.env.ROOT}/public/res/barcodes/${uuid}_${prepend}.png`;
+                fs.writeFile(file, barcode)
+                .then(() => resolve())
+                .catch(err => reject(err));
             })
-            .catch(err => {
-                console.log(err);
-                reject(err);
-            });
+            .catch(err => reject(err));
+        });
+    };
+    fn.create_barcodes = function (uuid) {
+        return new Promise((resolve, reject) => {
+            Promise.allSettled([
+                create_barcode(uuid, 'code128'),
+                create_barcode(uuid, 'qrcode')
+            ])
+            .then(results => resolve(true))
+            .catch(err => reject(err));
         });
     };
     fn.print_pdf = function (file) {

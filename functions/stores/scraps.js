@@ -1,5 +1,3 @@
-const { resolve, reject } = require("core-js/fn/promise");
-
 module.exports = function (m, fn) {
     fn.scraps = {lines: {}};
     fn.scraps.get = function (options = {}) {
@@ -7,8 +5,11 @@ module.exports = function (m, fn) {
             if (options.scrap_id) {
                 m.scraps.findByPk(options.scrap_id)
                 .then(scrap => {
-                    if (scrap) resolve(scrap)
-                    else reject(new Error('Scrap not found'));
+                    if (scrap) {
+                        resolve(scrap)
+                    } else {
+                        reject(new Error('Scrap not found'));
+                    };
                 })
                 .catch(err => reject(err));
             } else {
@@ -24,7 +25,7 @@ module.exports = function (m, fn) {
         });
     };
     fn.scraps.edit = function (scrap_id, details) {
-        fn.scraps.get(scrap_id)
+        fn.scraps.get({scrap_id: scrap_id})
         .then(scrap => {
             scrap.update(details)
             .then(result => resolve(result))
@@ -46,24 +47,32 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         })
     };
-    function checkNSN(nsn_id, size_id) {
+    function check_nsn(nsn_id, size_id) {
         return new Promise((resolve, reject) => {
             m.nsns.findByPk(nsn_id)
             .then(nsn => {
-                if      (!nsn)                    reject(new Error("NSN not found"))
-                else if (nsn.size_id !== size_id) reject(new Error("NSN not for this size"))
-                else resolve(true);
+                if (!nsn) {
+                    reject(new Error('NSN not found'))
+                } else if (nsn.size_id !== size_id) {
+                    reject(new Error('NSN not for this size'))
+                } else {
+                    resolve(true);
+                };
             })
             .catch(err => reject(err));
         });
     };
-    function checkSerial(serial_id, size_id) {
+    function check_serial(serial_id, size_id) {
         return new Promise((resolve, reject) => {
             m.serials.findByPk(serial_id)
             .then(serial => {
-                if      (!serial)                    reject(new Error("Serial not found"))
-                else if (serial.size_id !== size_id) reject(new Error("Serial not for this size"))
-                else resolve(true);
+                if (!serial) {
+                    reject(new Error('Serial not found'))
+                } else if (serial.size_id !== size_id) {
+                    reject(new Error('Serial not for this size'))
+                } else {
+                    resolve(true);
+                };
             })
             .catch(err => reject(err));
         });
@@ -71,8 +80,8 @@ module.exports = function (m, fn) {
     fn.scraps.lines.add = function (scrap_id, size_id, options = {}) {
         return new Promise((resolve, reject) => {
             Promise.all([]
-                .concat((options.nsn_id    ? [checkNSN(   options.nsn_id,    size_id)] : []))
-                .concat((options.serial_id ? [checkSerial(options.serial_id, size_id)] : []))
+                .concat((options.nsn_id    ? [check_nsn(   options.nsn_id,    size_id)] : []))
+                .concat((options.serial_id ? [check_serial(options.serial_id, size_id)] : []))
             )
             .then(preChecks => {
                 m.scrap_lines.findOrCreate({
@@ -87,12 +96,16 @@ module.exports = function (m, fn) {
                     }
                 })
                 .then(([line, created]) => {
-                    if (created) resolve(true)
-                    else {
+                    if (created) {
+                        resolve(true);
+                    } else {
                         line.increment('qty', {by: options.qty})
                         .then(result => {
-                            if (result) resolve(result)
-                            else reject(new Error('Existing scrap line not incremented'));
+                            if (result) {
+                                resolve(result);
+                            } else {
+                                reject(new Error('Existing scrap line not incremented'));
+                            };
                         })
                         .catch(err => reject(err));
                     };
@@ -106,7 +119,7 @@ module.exports = function (m, fn) {
         });
     };
     
-    function addHeader(doc, y) {
+    function add_header(doc, y) {
         doc
             .fontSize(10)
             .text('Item', 161, y)
@@ -121,7 +134,7 @@ module.exports = function (m, fn) {
             .moveTo(445, y)   .lineTo(445, y+15).stroke();
         return 15;
     };
-    function addLine(doc, line, y) {
+    function add_line(doc, line, y) {
         let y_c = 30;
         doc
             .text(line.qty,                                                            320, y)
@@ -142,71 +155,147 @@ module.exports = function (m, fn) {
             .moveTo(445, y)    .lineTo(445, y+y_c).stroke();
         return y_c;
     };
+    function create_pdf(scrap, user) {
+        return new Promise((resolve, reject) => {
+            fn.create_barcodes(scrap.scrap_id)
+            .then(result => {
+                fn.files.create(scrap.scrap_id, 'scraps', 'scrap', user)
+                .then(([doc, file, writeStream]) => {
+                    let y = fn.files.add.Page(doc);
+                    y += fn.files.add.Logos(doc, y, 'SCRAPPED STOCK');
+                    y += add_header(doc, y);
+                    scrap.lines.forEach(line => {
+                        if (y >= 708-(line.nsn ? 15 : 0)-(line.serial ? 15 : 0)) {
+                            y = fn.files.add.EndOfPage(doc, y);
+                            y += add_header(doc, y);
+                        };
+                        y += add_line(doc, line, y);
+                    });
+                    fn.files.add.PageNumbers(doc, scrap.scrap_id);
+                    doc.end();
+
+                    writeStream.on('error', err => reject(err));
+
+                    writeStream.on('finish', function () {
+                        fn.settings.get('Print scrap')
+                        .then(settings => {
+                            if (settings.length !== 1 || settings[0].value !== '1') {
+                                resolve(file);
+                            } else {
+                                fn.print_pdf(`${process.env.ROOT}/public/res/scraps/${file}`)
+                                .then(result => resolve(file))
+                                .catch(err => {
+                                    console.log(err);
+                                    resolve(file);
+                                });
+                            };
+                        })
+                        .catch(err => {
+                            console.log(err);
+                            resolve(file)
+                        });
+                    });
+
+                })
+                .catch(err => reject(err));
+            })
+            .catch(err => reject(err));
+        });
+    };
     fn.scraps.createPDF = function (scrap_id, user) {
         return new Promise((resolve, reject) => {
-            fn.scraps.get({scrap_id: scrap_id})
+            m.scraps.findOne({
+                where: {scrap_id: scrap_id},
+                include: [
+                    {
+                        model: m.scrap_lines,
+                        as: 'lines',
+                        where: {status: 2},
+                        required: false
+                    }
+                ]
+            })
             .then(scrap => {
-                if (scrap.status !== 2) reject(new Error('This scrap is not complete'))
-                else {
-                    fn.scraps.lines.get({
-                        where: {
-                            scrap_id: scrap.scrap_id,
-                            status:   2
-                        }
+                if (scrap.status !== 2) {
+                    reject(new Error('This scrap is not complete'))
+                } else if (!scrap.lines || scrap.lines.length === 0) {
+                    reject(new Error('No open lines on this scrap'))
+                } else {
+                    create_pdf(scrap, user)
+                    .then(filename => {
+                        scrap.update({filename: filename})
+                        .then(result => resolve(filename))
+                        .catch(err => reject(err));
                     })
-                    .then(lines => {
-                        if (!lines || lines.length === 0) reject(new Error('No open lines on this scrap'))
-                        else {
-                            fn.create_barcodes(scrap.scrap_id)
-                            .then(result => {
-                                fn.files.create(scrap.scrap_id, 'scraps', 'scrap', user)
-                                .then(([doc, file, writeStream]) => {
-                                    let y = fn.files.add.Page(doc);
-                                    y += fn.files.add.Logos(doc, y, 'SCRAPPED STOCK');
-                                    y += addHeader(doc, y);
-                                    lines.forEach(line => {
-                                        if (y >= 708-(line.nsn ? 15 : 0)-(line.serial ? 15 : 0)) {
-                                            y = fn.files.add.EndOfPage(doc, y);
-                                            y += addHeader(doc, y);
-                                        };
-                                        y += addLine(doc, line, y);
-                                    });
-                                    addDeclaration(doc, lines.length, y);
-                                    fn.files.add.PageNumbers(doc, scrap.scrap_id);
-                                    doc.end();
-                                    writeStream.on('error', err => reject(err));
-                                    writeStream.on('finish', function () {
-                                        fn.update(scrap, {filename: file})
-                                        .then(result => {
-                                            fn.settings.get('Print scrap')
-                                            .then(settings => {
-                                                if (settings.length !== 1 || settings[0].value !== '1') resolve(file)
-                                                else {
-                                                    fn.print_pdf(`${process.env.ROOT}/public/res/scraps/${file}`)
-                                                    .then(result => resolve(file))
-                                                    .catch(err => {
-                                                        console.log(err);
-                                                        resolve(file);
-                                                    });
-                                                };
-                                            })
-                                            .catch(err => {
-                                                console.log(err);
-                                                resolve(file)
-                                            });
-                                        })
-                                        .catch(err => reject(err));
-                                    });
-                                })
-                                .catch(err => reject(err));
-                            })
-                            .catch(err => reject(err));
-                        };
-                    })
-                    .catch(err => reject(err));
+                    .catch(err => {
+                        console.log(err);
+                        reject(false);
+                    });
                 };
             })
             .catch(err => reject(err));
         })
+    };
+
+    function complete_check(scrap) {
+        return new Promise((resolve, reject) => {
+            if (scrap.status === 0) {
+                reject(new Error('The scrap has been cancelled'));
+            } else if (scrap.status === 2) {
+                reject(new Error('This scrap has already been completed'));
+            } else if (scrap.status === 1) {
+                if (scrap.lines.length === 0) {
+                    reject(new Error('There are no open lines for this scrap'));
+                } else {
+                    resolve(true);
+                };
+            } else {
+                reject (new Error('Unknown status'));
+            };
+        });
+    };
+    fn.scraps.complete = function (scrap_id, user) {
+        return new Promise((resolve, reject) => {
+            m.scraps.findOne({
+                where: {scrap_id: scrap_id},
+                include: [
+                    {
+                        model: m.scrap_lines,
+                        as:    'lines',
+                        where: {status: 1},
+                        required: false
+                    }
+                ]
+            })
+            .then(scrap => {
+                complete_check(scrap)
+                .then(result => {
+                    let actions = [];
+                    scrap.lines.forEach((line) => {
+                        actions.push(line.update({status: 2}));
+                    });
+                    Promise.all(actions)
+                    .then(result => {
+                        scrap.update({status: 2})
+                        .then(result => {
+                            if (result) {
+                                fn.scraps.createPDF(scrap.scrap_id, user)
+                                .then(result => resolve(true))
+                                .catch(err => {
+                                    console.log(err);
+                                    resolve(false);
+                                });
+                            } else {
+                                reject(new Error('Scrap not updated'));
+                            };
+                        })
+                        .catch(err => reject(err));
+                    })
+                    .catch(err => reject(err));
+                })
+                .catch(err => reject(err));
+            })
+            .catch(err => reject(err));
+        });
     };
 };

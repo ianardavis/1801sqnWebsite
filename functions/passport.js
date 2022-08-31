@@ -1,5 +1,5 @@
 module.exports = (passport, m) => {
-    var local  = require('passport-local').Strategy,
+    let local  = require('passport-local').Strategy,
         { scryptSync } = require("crypto");
         
     passport.serializeUser((user_id, done) => done(null, user_id));

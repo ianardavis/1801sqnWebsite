@@ -110,17 +110,12 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.put('/scraps/:id/complete',       fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
-        fn.scraps.complete({
-            scrap_id: req.params.id,
-            user_id: req.user.user_id
-        })
+        fn.scraps.complete(
+            req.params.id,
+            req.user
+        )
         .then(result => {
-            fn.scraps.createPDF(req.params.id)
-            .then(filename => res.send({success: true, message: `Scrap completed. Filename: ${filename}`}))
-            .catch(err => {
-                console.log(err);
-                res.send({success: true, message: `Scrap completed. Error creating PDF: ${err.message}`});
-            });
+            res.send({success: true, message: `Scrap completed. File ${(result ? '' : 'not ')}created`})
         })
         .catch(err => fn.send_error(res, err));
     });

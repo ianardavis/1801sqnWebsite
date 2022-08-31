@@ -27,9 +27,10 @@ module.exports = function (m, fn) {
         return new Promise((resolve, reject) => {
             try {
                 try {
-                    let file        = `${id}-${name}.pdf`,
-                        docMetadata = {},
-                        writeStream = fs.createWriteStream(`${process.env.ROOT}/public/res/${folder}/${file}`, {flags: 'w'});
+                    const file        = `${id}-${name}.pdf`;
+                    let docMetadata = {};
+                    let writeStream = fs.createWriteStream(`${process.env.ROOT}/public/res/${folder}/${file}`, {flags: 'w'});
+
                     docMetadata.Title = `${id}-${folder}-${name}`;
                     if (author) docMetadata.Author = `${(author.rank ? author.rank.rank : "")} ${author.full_name}`;
                     docMetadata.bufferPages   = true;
