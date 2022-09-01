@@ -1,4 +1,5 @@
 module.exports = (app, m, fn) => {
+    let op = require('sequelize').Op;
     app.get('/holdings',            fn.loggedIn(), fn.permissions.get('cash_admin'),   (req, res) => res.render('canteen/holdings/index'));
     app.get('/holdings/:id',        fn.loggedIn(), fn.permissions.get('cash_admin'),   (req, res) => res.render('canteen/holdings/show'));
     
@@ -20,7 +21,7 @@ module.exports = (app, m, fn) => {
     });
     app.get('/get/holdings_except', fn.loggedIn(), fn.permissions.check('cash_admin'), (req, res) => {
         m.holdings.findAndCountAll({
-            where: {holding_id: {[fn.op.ne]: req.query.where.holding_id}},
+            where: {holding_id: {[op.ne]: req.query.where.holding_id}},
             ...fn.pagination(req.query)
         })
         .then(results => fn.send_res('holdings', res, results, req.query))

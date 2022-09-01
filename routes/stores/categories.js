@@ -1,7 +1,8 @@
 module.exports = (app, m, fn) => {
+    let op = require('sequelize').Op;
     app.get('/get/categories',    fn.loggedIn(), fn.permissions.check('access_stores'), (req, res) => {
         if (req.query.where.category_id_parent === "") { 
-            req.query.where.category_id_parent = {[fn.op.is]: null};
+            req.query.where.category_id_parent = {[op.is]: null};
         };
         m.categories.findAndCountAll({
             where:   req.query.where || {},
@@ -20,8 +21,11 @@ module.exports = (app, m, fn) => {
             include: [fn.inc.stores.categories({as: 'parent'})]
         })
         .then(category => {
-            if (category) res.send({success: true, result: category})
-            else res.send({success: false, message: 'Category not found'});
+            if (category) {
+                res.send({success: true, result: category});
+            } else {
+                res.send({success: false, message: 'Category not found'});
+            };
         })
         .catch(err => fn.send_error(res, err));
     });
@@ -49,8 +53,11 @@ module.exports = (app, m, fn) => {
             .then(result => {
                 category.destroy()
                 .then(result => {
-                    if (!result) fn.send_error(res, 'Category not deleted')
-                    else         res.send({success: true,  message: 'Category deleted'})
+                    if (!result) {
+                        fn.send_error(res, 'Category not deleted');
+                    } else         {
+                        res.send({success: true, message: 'Category deleted'});
+                    };
                 })
                 .catch(err => fn.send_error(res, err));
             })

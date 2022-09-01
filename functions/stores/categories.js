@@ -4,8 +4,11 @@ module.exports = function (m, fn) {
         return new Promise((resolve, reject) => {
             m.categories.findOne({where: {category_id: category_id}})
             .then(category => {
-                if (category) resolve(category)
-                else reject(new Error('Category not found'));
+                if (category) {
+                    resolve(category);
+                } else {
+                    reject(new Error('Category not found'));
+                };
             })
             .catch(err => reject(err));
         });

@@ -1,4 +1,5 @@
 module.exports = function (m, fn) {
+    let op = require('sequelize').Op;
     fn.sessions = {};
     fn.sessions.get = function (session_id) {
         return new Promise((resolve, reject) => {
@@ -6,8 +7,11 @@ module.exports = function (m, fn) {
                 where: {session_id: session_id}
             })
             .then(session => {
-                if (session) resolve(session)
-                else reject(new Error('Session not found'));
+                if (session) {
+                    resolve(session);
+                } else {
+                    reject(new Error('Session not found'));
+                };
             })
             .catch(err => reject(err));
         });
@@ -35,7 +39,9 @@ module.exports = function (m, fn) {
                         .then(result => resolve('Session opened'))
                         .catch(err => reject(err));
                         
-                    } else reject('Session already open');
+                    } else {
+                        reject('Session already open');
+                    };
                 })
                 .catch(err => reject(err));
             })
@@ -45,7 +51,7 @@ module.exports = function (m, fn) {
     fn.sessions.getSales = function (session_id) {
         return new Promise((resolve, reject) => {
             m.payments.findAll({
-                where:   {type: {[fn.op.or]: ['Cash', 'cash']}},
+                where:   {type: {[op.or]: ['Cash', 'cash']}},
                 include: [fn.inc.canteen.sale({where: {session_id: session_id}, required: true})]
             })
             .then(payments => {
@@ -60,8 +66,9 @@ module.exports = function (m, fn) {
         return new Promise((resolve, reject) => {
             fn.sessions.get(session_id)
             .then(session => {
-                if (session.status !== 1) reject(new Error('This session is not open'))
-                else {
+                if (session.status !== 1) {
+                    reject(new Error('This session is not open'));
+                } else {
                     m.sales.findAll({
                         where: {
                             session_id: session.session_id,

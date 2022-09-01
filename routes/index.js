@@ -1,6 +1,6 @@
 module.exports = function (app, m) {
-    let fs = require('fs'), fn = {};
-    fn.op = require('sequelize').Op;
+    let fs = require('fs');
+    let fn = {};
     require(`${process.env.ROOT}/middleware/loggedIn.js`)(fn);
     require(`${process.env.ROOT}/middleware/permissions.js`)(m.permissions, fn);
     require(`${process.env.ROOT}/includes`) (fs, m, fn);

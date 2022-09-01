@@ -5,8 +5,11 @@ module.exports = (app, m, fn) => {
             include: [fn.inc.users.user()]
         })
         .then(account => {
-            if (account) res.send({success: true, result: account})
-            else res.send({success: false, message: 'Account not found'});
+            if (account) {
+                res.send({success: true, result: account});
+            } else {
+                res.send({success: false, message: 'Account not found'});
+            };
         })
         .catch(err => fn.send_error(res, err));
     });
@@ -40,8 +43,9 @@ module.exports = (app, m, fn) => {
         .then(account => {
             account.destroy()
             .then(result => {
-                if (!result) fn.send_error(res, 'Account not deleted')
-                else {
+                if (!result) {
+                    fn.send_error(res, 'Account not deleted');
+                } else {
                     m.suppliers.update(
                         {account_id: null},
                         {where: {account_id: account.account_id}}

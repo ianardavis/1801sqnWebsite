@@ -2,9 +2,13 @@ module.exports = function (m, fn) {
     fn.receipts = {};
     function create_check(receipt) {
         return new Promise((resolve, reject) => {
-            if      (!receipt.qty)  reject(new Error('No quantity submitted'))
-            else if (!receipt.cost) reject(new Error('No cost submitted'))
-            else resolve(true);
+            if (!receipt.qty) {
+                reject(new Error('No quantity submitted'));
+            } else if (!receipt.cost) {
+                reject(new Error('No cost submitted'));
+            } else {
+                resolve(true);
+            };
         });
     };
     function create_action(action, receipt_id, user_id, links = []) {
@@ -56,19 +60,23 @@ module.exports = function (m, fn) {
                             console.log(err);
                             resolve(true);
                         })
-                    } else reject(new Error('Item quantity not updated'));
+                    } else {
+                        reject(new Error('Item quantity not updated'));
+                    };
                 })
                 .catch(err => reject(err));
-            } else resolve(true);
+            } else {
+                resolve(true);
+            };
         });
     };
     function check_item_cost(original_qty, item, receipt) {
         return new Promise(resolve => {
             if (item.cost !== receipt.cost) {
-                let stock_value_original = original_qty * item   .cost;
-                let stock_value_received = receipt .qty * receipt.cost;
-                let total_qty = original_qty + receipt.qty;
-                let cost_new = Number((stock_value_original + stock_value_received) / total_qty);
+                const stock_value_original = original_qty * item   .cost;
+                const stock_value_received = receipt .qty * receipt.cost;
+                const total_qty = original_qty + receipt.qty;
+                const cost_new = Number((stock_value_original + stock_value_received) / total_qty);
                 item.update({cost: cost_new})
                 .then(result => {
                     if (result) {

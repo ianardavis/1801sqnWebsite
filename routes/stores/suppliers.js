@@ -1,11 +1,12 @@
 module.exports = (app, m, fn) => {
+    let op = require('sequelize').Op;
     app.get('/suppliers',             fn.loggedIn(), fn.permissions.get('supplier_admin'),   (req, res) => res.render('stores/suppliers/index'));
     app.get('/suppliers/:id',         fn.loggedIn(), fn.permissions.get('supplier_admin'),   (req, res) => res.render('stores/suppliers/show'));
 
     app.get('/get/suppliers',         fn.loggedIn(), fn.permissions.check('supplier_admin'), (req, res) => {
         let where = req.query.where || {};
         if (req.query.like && req.query.like.name) {
-            where.name = {[fn.op.substring]: req.query.like.name}
+            where.name = {[op.substring]: req.query.like.name}
         }
         m.suppliers.findAndCountAll({
             where: where,

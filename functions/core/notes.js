@@ -7,8 +7,11 @@ module.exports = function (m, fn) {
                 include: [fn.inc.users.user()]
             })
             .then(note => {
-                if (note) resolve(note)
-                else reject(new Error('Note not found'));
+                if (note) {
+                    resolve(note);
+                } else {
+                    reject(new Error('Note not found'));
+                };
             })
         });
     };

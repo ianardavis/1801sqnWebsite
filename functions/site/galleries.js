@@ -2,9 +2,10 @@ module.exports = function (m, fn) {
     fn.galleries = {images: {}};
     fn.galleries.images.upload = function (image, details, user_id) {
         return new Promise((resolve, reject) => {
-            fn.copy_file(
+            const path = fn.public_file('images', image.filename);
+            fn.fs.copy_file(
                 image.file,
-                `${process.env.ROOT}/public/res/images/${image.filename}`
+                path
             )
             .then(result => {
                 m.gallery_images.create({
@@ -15,7 +16,7 @@ module.exports = function (m, fn) {
                     gallery_id:  details.gallery_id
                 })
                 .then(gallery_image => {
-                    fn.rmdir(`${process.env.ROOT}/public/uploads/${image.uuid}`)
+                    fn.fs.rmdir(`${process.env.ROOT}/public/uploads/${image.uuid}`)
                     .then(result => resolve(true))
                     .catch(err => resolve(false));
                 })

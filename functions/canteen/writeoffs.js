@@ -4,10 +4,15 @@ module.exports = function (m, fn) {
     fn.writeoffs = {};
     function create_check(writeoff) {
         return new Promise((resolve, reject) => {
-            if      (!writeoff.reason)  reject(new Error('No reason'))
-            else if (!writeoff.qty)     reject(new Error('No quantity'))
-            else if (!writeoff.item_id) reject(new Error('No item ID'))
-            else resolve(true);
+            if (!writeoff.reason) {
+                reject(new Error('No reason'));
+            } else if (!writeoff.qty) {
+                reject(new Error('No quantity'));
+            } else if (!writeoff.item_id) {
+                reject(new Error('No item ID'));
+            } else {
+                resolve(true);
+            };
         });
     };
     fn.writeoffs.create = function (writeoff, user_id) {

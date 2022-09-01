@@ -6,8 +6,11 @@ module.exports = function (m, fn) {
                 where: {item_id: item_id}
             })
             .then(item => {
-                if (item) resolve(item)
-                else reject(new Error('Item not found'));
+                if (item) {
+                    resolve(item);
+                } else {
+                    reject(new Error('Item not found'));
+                };
             })
             .catch(err => reject(err));
         });
@@ -40,8 +43,11 @@ module.exports = function (m, fn) {
                 m.receipts  .findOne({where: {item_id: item_id}})
             ])
             .then(results => {
-                if (results.filter(e => !e).length > 0) reject(new Error('This item has linked data and cannot be deleted'))
-                else resolve(true);
+                if (results.filter(e => !e).length > 0) {
+                    reject(new Error('This item has linked data and cannot be deleted'));
+                } else {
+                    resolve(true);
+                };
             })
             .catch(err => reject(err));
         });

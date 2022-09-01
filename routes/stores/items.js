@@ -1,4 +1,5 @@
 module.exports = (app, m, fn) => {
+    let op = require('sequelize').Op;
     app.get('/items',                  fn.loggedIn(), fn.permissions.get('access_stores'),        (req, res) => res.render('stores/items/index'));
     app.get('/items/:id',              fn.loggedIn(), fn.permissions.get('access_stores'),        (req, res) => res.render('stores/items/show'));
     
@@ -30,7 +31,7 @@ module.exports = (app, m, fn) => {
     });
     app.get('/get/items',              fn.loggedIn(), fn.permissions.check('access_stores'),      (req, res) => {
         let where = req.query.where || {};
-        if (req.query.like) where.description = {[fn.op.substring]: req.query.like.description || ''}
+        if (req.query.like) where.description = {[op.substring]: req.query.like.description || ''}
         m.items.findAndCountAll({
             where:   where,
             include: [fn.inc.stores.gender()],

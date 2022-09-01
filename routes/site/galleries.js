@@ -78,7 +78,8 @@ module.exports = (app, m, fn) => {
         .then(image => {
             if (image) {
                 let actions = [];
-                actions.push(fn.rm(`${process.env.ROOT}/public/res/images/${image.src}`))
+                const path = fn.public_file('images', image.src);
+                actions.push(fn.rm(path))
                 actions.push(image.destroy())
                 Promise.allSettled(actions)
                 .then(results => res.send({success: true, message: 'Image deleted'}))

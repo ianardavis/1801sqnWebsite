@@ -1,4 +1,5 @@
 module.exports = (app, m, fn) => {
+    let op = require('sequelize').Op;
     app.get('/serials/:id',         fn.loggedIn(), fn.permissions.get('access_stores'),        (req, res) => res.render('stores/serials/show'));
     app.get('/get/serials',         fn.loggedIn(), fn.permissions.check('access_stores'),      (req, res) => {
         m.serials.findAndCountAll({
@@ -14,7 +15,7 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/current_serials', fn.loggedIn(), fn.permissions.check('access_stores'),      (req, res) => {
-        req.query.location_id = {[fn.op.not]: null};
+        req.query.location_id = {[op.not]: null};
         req.query.issue_id    = null;
         m.serials.findAndCountAll({
             where:   req.query.where,

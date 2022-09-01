@@ -1,4 +1,5 @@
 module.exports = (app, m, fn) => {
+    let op = require('sequelize').Op;
     app.get('/issues',                  fn.loggedIn(), fn.permissions.get(  'access_stores', true), (req, res) => res.render('stores/issues/index'));
     app.get('/issues/:id',              fn.loggedIn(), fn.permissions.get(  'access_stores', true), (req, res) => {
         fn.issues.get(req.params.id)
@@ -105,9 +106,9 @@ module.exports = (app, m, fn) => {
             include: [{
                 model: m.actions,
                 where: {
-                    action: {[fn.op.or]: [
+                    action: {[op.or]: [
                         'LOANCARD LINE | CREATED',
-                        {[fn.op.startsWith]: 'LOANCARD LINE | INCREMENTED'}
+                        {[op.startsWith]: 'LOANCARD LINE | INCREMENTED'}
                     ]}
                 },
                 include: [{

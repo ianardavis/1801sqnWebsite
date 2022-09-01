@@ -1,7 +1,7 @@
 module.exports = function (m, fn) {
     fn.actions = {};
     fn.actions.create = function (action, user_id, links) {
-        return new Promise(resolve => {
+        return new Promise((resolve) => {
             m.actions.create({
                 action:  action,
                 user_id: user_id

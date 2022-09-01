@@ -50,12 +50,13 @@ module.exports = (app, m, fn) => {
         .then(file => {
             if (!file.filename || file.filename === '') fn.send_error(res, 'No filename')
             else {
-                let filepath = `${process.env.ROOT}/public/res/files/${file.filename}`;
-                fn.file_exists(filepath)
+                fn.fs.file_exists('files', file.filename)
                 .then(exists => {
+                    const filepath = fn.public_file('files', file.filename);
                     fs.access(filepath, fs.constants.R_OK, function (err) {
-                        if (err) fn.send_error(res, err)
-                        else {
+                        if (err) {
+                            fn.send_error(res, err);
+                        } else {
                             res.download(filepath, function (err) {
                                 if (err) console.log(err);
                             });
@@ -84,24 +85,24 @@ module.exports = (app, m, fn) => {
         else if (Object.keys(req.files).length > 1) {
             let actions = [];
             for (const [key, value] of Object.entries(req.files)) {
-                actions.push(fn.rmdir(`${process.env.ROOT}/public/uploads/${value.uuid}`))
+                actions.push(fn.fs.rmdir(`${process.env.ROOT}/public/uploads/${value.uuid}`))
             };
             Promise.allSettled(actions)
             .then(results => fn.send_error(res, 'Multiple files submitted'))
             .catch(err =>    fn.send_error(res, err));
         } else {
-            fn.upload_file({
+            fn.fs.upload_file({
                 ...req.files.uploaded,
                 ...req.body.file,
                 user_id: req.user.user_id
             })
             .then(result => {
-                fn.rmdir(`${process.env.ROOT}/public/uploads/${req.files.uploaded.uuid}`)
+                fn.fs.rmdir(`${process.env.ROOT}/public/uploads/${req.files.uploaded.uuid}`)
                 .then(result => res.send({success: true, message: 'FIle uploaded'}))
                 .catch(err => fn.send_error(res, err));
             })
             .catch(error => {
-                fn.rmdir(`${process.env.ROOT}/public/uploads/${req.files.uploaded.uuid}`)
+                fn.fs.rmdir(`${process.env.ROOT}/public/uploads/${req.files.uploaded.uuid}`)
                 .then(result => fn.send_error(res, error))
                 .catch(err => fn.send_error(res, err));
             });
@@ -141,7 +142,8 @@ module.exports = (app, m, fn) => {
         .then(file => {
             file.destroy()
             .then(result => {
-                fn.rm(`${process.env.ROOT}/public/res/files/${file.filename}`)
+                const path = fn.public_file('files', file.filename);
+                fn.rm(path)
                 .then(result => res.send({success: true, message: 'File deleted'}))
                 .catch(err =>   res.send({success: true, message: `Error deleting file: ${err.message}`}));
             })
@@ -150,7 +152,8 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.delete('/fs_files/:id',     fn.loggedIn(), fn.permissions.check('supplier_admin'),  (req, res) => {
-        fn.rm(`${process.env.ROOT}/public/res/files/${req.params.id}`)
+        const path = fn.public_file('files', req.params.id);
+        fn.rm(path)
         .then(result => res.send({success: true,  message: 'File deleted'}))
         .catch(err =>   fn.send_error(res, err));
     });

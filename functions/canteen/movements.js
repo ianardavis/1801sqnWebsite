@@ -3,12 +3,19 @@ module.exports = function (m, fn) {
     //
     function check_movement(movement) {
         return new Promise((resolve, reject) => {
-            if      (!movement.holding_id_from)                            reject(new Error('No source holding submitted'))
-            else if (!movement.holding_id_to)                              reject(new Error('No destination holding submitted'))
-            else if (!movement.description)                                reject(new Error('No description submitted'))
-            else if (!movement.amount)                                     reject(new Error('No amount submitted'))
-            else if ( movement.holding_id_from === movement.holding_id_to) reject(new Error('Source holding is same as destination holding'))
-            else resolve(true);
+            if (!movement.holding_id_from) {
+                reject(new Error('No source holding submitted'));
+            } else if (!movement.holding_id_to) {
+                reject(new Error('No destination holding submitted'));
+            } else if (!movement.description) {
+                reject(new Error('No description submitted'));
+            } else if (!movement.amount) {
+                reject(new Error('No amount submitted'));
+            } else if ( movement.holding_id_from === movement.holding_id_to) {
+                reject(new Error('Source holding is same as destination holding'));
+            } else {
+                resolve(true);
+            };
         });
     };
     function get_holdings(holding_id_from, holding_id_to) {
@@ -23,8 +30,9 @@ module.exports = function (m, fn) {
     };
     function transfer_cash(holding_from, holding_to, amount) {
         return new Promise((resolve, reject) => {
-            if (holding_from.cash < Number(amount)) reject(new Error('Not enough cash in source holding'))
-            else {
+            if (holding_from.cash < Number(amount)) {
+                reject(new Error('Not enough cash in source holding'));
+            } else {
                 return Promise.all([
                     holding_from.decrement('cash', {by: amount}),
                     holding_to  .increment('cash', {by: amount})

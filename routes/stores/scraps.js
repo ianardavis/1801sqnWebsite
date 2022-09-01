@@ -1,7 +1,8 @@
 module.exports = (app, m, fn) => {
-    app.get('/scraps',                    fn.loggedIn(), fn.permissions.get(  'stores_stock_admin'), (req, res) => res.render('stores/scraps/index'));
-    app.get('/scraps/:id',                fn.loggedIn(), fn.permissions.get(  'stores_stock_admin'), (req, res) => res.render('stores/scraps/show'));
-    app.get('/scrap_lines/:id',           fn.loggedIn(), fn.permissions.get(  'stores_stock_admin'), (req, res) => res.render('stores/scrap_lines/show'));
+    let op = require('sequelize').Op;
+    app.get('/scraps',              fn.loggedIn(), fn.permissions.get(  'stores_stock_admin'), (req, res) => res.render('stores/scraps/index'));
+    app.get('/scraps/:id',          fn.loggedIn(), fn.permissions.get(  'stores_stock_admin'), (req, res) => res.render('stores/scraps/show'));
+    app.get('/scrap_lines/:id',     fn.loggedIn(), fn.permissions.get(  'stores_stock_admin'), (req, res) => res.render('stores/scrap_lines/show'));
     function getScrapFilename(scrap_id) {
         return new Promise((resolve, reject) => {
             fn.scraps.get({scrap_id: scrap_id})
@@ -15,30 +16,30 @@ module.exports = (app, m, fn) => {
             .catch(err => reject(err));
         });
     };
-    app.get('/scraps/:id/download',       fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
+    app.get('/scraps/:id/download', fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
         getScrapFilename(req.params.id)
         .then(filename => {
-            fn.download('scraps', filename, res)
+            fn.fs.download('scraps', filename, res)
             .catch(err => fn.send_error(res, err));
         })
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/scraps/:id/print',          fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
+    app.get('/scraps/:id/print',    fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
         getScrapFilename(req.params.id)
         .then(filename => {
-            fn.print_pdf(`${process.env.ROOT}/public/res/scraps/${filename}`)
+            fn.pdfs.print('scraps', filename)
             .then(result => res.send({success: true, message: 'Scrap sent to printer'}))
             .catch(err => fn.send_error(res, err));
         })
         .catch(err => fn.send_error(res, err));
     });
 
-    app.get('/count/scraps',              fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
+    app.get('/count/scraps',        fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
         m.scraps.count({where: req.query.where})
         .then(count => res.send({success: true, result: count}))
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/scrap',                 fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
+    app.get('/get/scrap',           fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
         m.scraps.findOne({
             where: req.query.where,
             include: [
@@ -52,14 +53,14 @@ module.exports = (app, m, fn) => {
         })
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/scraps',                fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
+    app.get('/get/scraps',          fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
         m.scraps.findAndCountAll({
             where: req.query.where,
             include: [
                 {
                     model: m.scrap_lines,
                     as:    'lines',
-                    where: {status: {[fn.op.ne]: 0}},
+                    where: {status: {[op.ne]: 0}},
                     required: false
                 },
                 fn.inc.stores.supplier()
@@ -69,7 +70,7 @@ module.exports = (app, m, fn) => {
         .then(results => fn.send_res('scraps', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/scrap_lines',           fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
+    app.get('/get/scrap_lines',     fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
         let where = fn.build_query(req.query),
             include = [
                 fn.inc.stores.size_filter(req.query),
@@ -85,7 +86,7 @@ module.exports = (app, m, fn) => {
         .then(results => fn.send_res('lines', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/scrap_line',            fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
+    app.get('/get/scrap_line',      fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
         m.scrap_lines.findOne({
             where: req.query.where,
             include: [
@@ -104,12 +105,12 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
 
-    app.put('/scraps/:id',                fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
+    app.put('/scraps/:id',          fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
         fn.scraps.edit(req.params.id, req.body.scrap)
         .then(scrap => res.send({success: true, message: 'Scrap updated'}))
         .catch(err => fn.send_error(res, err));
     });
-    app.put('/scraps/:id/complete',       fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
+    app.put('/scraps/:id/complete', fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
         fn.scraps.complete(
             req.params.id,
             req.user
@@ -119,7 +120,7 @@ module.exports = (app, m, fn) => {
         })
         .catch(err => fn.send_error(res, err));
     });
-    app.put('/scrap_lines',               fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
+    app.put('/scrap_lines',         fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
         let actions = [];
         req.body.lines.filter(e => e.status === '0').forEach(line => actions.push(fn.scraps.lines.cancel({...line, user_id: req.user.user_id})));
         Promise.allSettled(actions)
@@ -134,7 +135,7 @@ module.exports = (app, m, fn) => {
                         include: [{
                             model: m.scrap_lines,
                             as:    'lines',
-                            where: {status: {[fn.op.or]: [1]}},
+                            where: {status: {[op.or]: [1]}},
                             required: false
                         }]
                     })
@@ -165,7 +166,7 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     
-    app.delete('/scraps/:id',             fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
+    app.delete('/scraps/:id',       fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
         fn.scraps.cancel({
             scrap_id: req.params.id,
             user_id: req.user.user_id
@@ -176,7 +177,7 @@ module.exports = (app, m, fn) => {
         })
         .catch(err => fn.send_error(res, err));
     });
-    app.delete('/scrap_lines/:id',        fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
+    app.delete('/scrap_lines/:id',  fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
         fn.scraps.lines.cancel({
             scrap_line_id: req.params.id,
             user_id: req.user.user_id
@@ -184,8 +185,8 @@ module.exports = (app, m, fn) => {
         .then(result => res.send({success: true, message: 'Line cancelled'}))
         .catch(err => fn.send_error(res, err));
     });
-    app.delete('/scraps/:id/delete_file', fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
-        fn.delete_file({
+    app.delete('/scraps/:id/file',  fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
+        fn.fs.delete_file({
             table:   'scraps',
             table_s: 'SCRAP',
             id:      req.params.id,

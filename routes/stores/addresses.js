@@ -16,8 +16,11 @@ module.exports = (app, m, fn) => {
             include: [fn.inc.stores.address()]
         })
         .then(address => {
-            if (address) res.send({success: true, result: address})
-            else res.send({success: false, message: 'Address not found'});
+            if (address) {
+                res.send({success: true, result: address});
+            } else {
+                res.send({success: false, message: 'Address not found'});
+            };
         })
         .catch(err => fn.send_error(res, err));
     });
@@ -44,8 +47,9 @@ module.exports = (app, m, fn) => {
     app.put('/addresses',        fn.loggedIn(), fn.permissions.check('supplier_admin'), (req, res) => {
         fn.suppliers.addresses.get(req.body.supplier_address_id)
         .then(address => {
-            if (!address.address) fn.send_error(res, 'No address for this record')
-            else {
+            if (!address.address) {
+                fn.send_error(res, 'No address for this record');
+            } else {
                 fn.update(address.address, req.body.address)
                 .then(result => res.send({success: true, message: 'Address updated'}))
                 .catch(err => fn.send_error(res, err));

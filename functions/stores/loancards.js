@@ -1,4 +1,5 @@
 module.exports = function (m, fn) {
+    let op = require('sequelize').Op;
     fn.loancards = {lines: {}};
     fn.loancards.get = function (loancard_id) {
         return new Promise((resolve, reject) => {
@@ -27,9 +28,9 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
-    //string height @ 30: 38.19
-    //string height @ 15: 19.095
-    //string height @ 10: 12.7299999
+    // string height @ 30: 38.19
+    // string height @ 15: 19.095
+    // string height @ 10: 12.7299999
     // A4 (595.28 x 841.89)
     function addHeader(doc, loancard, y) {
         doc
@@ -55,9 +56,9 @@ module.exports = function (m, fn) {
         return 55;
     };
     function addDeclaration(doc, count, y) {
-        if (y >= 640) fn.files.add.EndOfPage(doc, y);
-        let close_text = `END OF LOANCARD, ${count} LINE(S) ISSUED`,
-            disclaimer = 'By signing in the box below, I confirm I have received the items listed above. I understand I am responsible for any items issued to me and that I may be liable to pay for items lost or damaged through negligence';
+        if (y >= 640) fn.pdfs.end_of_page(doc, y);
+        const close_text = `END OF LOANCARD, ${count} LINE(S) ISSUED`;
+        const disclaimer = 'By signing in the box below, I confirm I have received the items listed above. I understand I am responsible for any items issued to me and that I may be liable to pay for items lost or damaged through negligence';
         doc
             .text(close_text, 28, y,    {width: 539, align: 'center'})
             .text(disclaimer, 28, y+20, {width: 539, align: 'center'})
@@ -104,22 +105,22 @@ module.exports = function (m, fn) {
                     .then(lines => {
                         if (!lines || lines.length === 0) reject(new Error('No open lines on this loancard'))
                         else {
-                            fn.create_barcodes(loancard.loancard_id)
+                            fn.pdfs.create_barcodes(loancard.loancard_id)
                             .then(result => {
-                                fn.files.create(loancard.loancard_id, 'loancards', loancard.user_loancard.surname, loancard.user)
+                                fn.pdfs.create(loancard.loancard_id, 'loancards', loancard.user_loancard.surname, loancard.user)
                                 .then(([doc, file, writeStream]) => {
-                                    let y = fn.files.add.Page(doc);
-                                    y += fn.files.add.Logos(doc, y, 'STORES LOAN CARD');
+                                    let y = fn.pdfs.new_page(doc);
+                                    y += fn.pdfs.logos(doc, y, 'STORES LOAN CARD');
                                     y += addHeader(doc, loancard, y);
                                     lines.forEach(line => {
                                         if (y >= 708-(line.nsn ? 15 : 0)-(line.serial ? 15 : 0)) {
-                                            y = fn.files.add.EndOfPage(doc, y);
+                                            y = fn.pdfs.end_of_page(doc, y);
                                             y += addHeader(doc, loancard, y);
                                         };
                                         y += addLine(doc, line, y);
                                     });
                                     addDeclaration(doc, lines.length, y);
-                                    fn.files.add.PageNumbers(doc, loancard.loancard_id);
+                                    fn.pdfs.page_numbers(doc, loancard.loancard_id);
                                     doc.end();
                                     writeStream.on('error', err => reject(err));
                                     writeStream.on('finish', function () {
@@ -129,7 +130,7 @@ module.exports = function (m, fn) {
                                             .then(settings => {
                                                 if (settings.length !== 1 ||settings[0].value !== '1') resolve(file)
                                                 else {
-                                                    fn.print_pdf(`${process.env.ROOT}/public/res/loancards/${file}`)
+                                                    fn.pdfs.print('loancards', file)
                                                     .then(result => resolve(file))
                                                     .catch(err => {
                                                         console.log(err);
@@ -169,7 +170,7 @@ module.exports = function (m, fn) {
                     m.loancard_lines.count({
                         where: {
                             loancard_id: loancard.loancard_id,
-                            status: {[fn.op.or]: catch_opts}
+                            status: {[op.or]: catch_opts}
                         }
                     })
                     .then(line_count => {
@@ -239,7 +240,7 @@ module.exports = function (m, fn) {
                     m.loancard_lines.findAll({
                         where: {
                             loancard_id: loancard.loancard_id,
-                            status:      {[fn.op.or]: [1, 2]}
+                            status:      {[op.or]: [1, 2]}
                         }
                     })
                     .then(lines => {
@@ -268,7 +269,7 @@ module.exports = function (m, fn) {
                                 {status: 2},
                                 {where: {
                                     loancard_id: loancard.loancard_id,
-                                    status:      {[fn.op.or]: [1, 2]}
+                                    status:      {[op.or]: [1, 2]}
                                 }}
                             ));
                             Promise.all(actions)
@@ -296,7 +297,7 @@ module.exports = function (m, fn) {
                 m.loancard_lines.count({
                     where: {
                         loancard_id: loancard.loancard_id,
-                        status:   {[fn.op.or]: [1, 2]}
+                        status:   {[op.or]: [1, 2]}
                     }
                 })
                 .then(line_count => {
@@ -427,9 +428,9 @@ module.exports = function (m, fn) {
                 include: [{
                     model: m.actions,
                     where: {
-                        action: {[fn.op.or]: [
+                        action: {[op.or]: [
                             'LOANCARD LINE | CREATED',
-                            {[fn.op.startsWith]: 'LOANCARD LINE | INCREMENTED'}
+                            {[op.startsWith]: 'LOANCARD LINE | INCREMENTED'}
                         ]}
                     },
                     include: [{
@@ -743,9 +744,9 @@ module.exports = function (m, fn) {
                 include: [{
                     model: m.actions,
                     where: {action: 
-                        {[fn.op.or]: [
+                        {[op.or]: [
                             'LOANCARD LINE | CREATED',
-                            {[fn.op.startsWith]: 'LOANCARD LINE | INCREMENTED'}
+                            {[op.startsWith]: 'LOANCARD LINE | INCREMENTED'}
                         ]}
                     },
                     include: [{

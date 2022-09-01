@@ -1,4 +1,5 @@
 module.exports = function (m, fn) {
+    let op = require('sequelize').Op;
     let line_status = {0: "Cancelled", 1: "Pending", 2: "Open", 3: "Closed"};
     fn.demands = {lines: {}};
     function create_demand_action(action, demand_id, user_id) {
@@ -138,7 +139,7 @@ module.exports = function (m, fn) {
             fn.demands.lines.getAll(
                 {
                     demand_id: demand_id,
-                    status: {[fn.op.or]: [1, 2]}
+                    status: {[op.or]: [1, 2]}
                 }
             )
             .then(lines => {
@@ -220,7 +221,7 @@ module.exports = function (m, fn) {
                     fn.demands.lines.getAll(
                         {
                             demand_id: demand_id,
-                            status: {[fn.op.or]: [1, 2]}
+                            status: {[op.or]: [1, 2]}
                         },
                         [],
                         {allowNull: true}
@@ -277,7 +278,7 @@ module.exports = function (m, fn) {
             fn.sizes.get(
                 options.size_id,
                 [fn.inc.stores.details({
-                    where: {name: {[fn.op.or]:['Demand Page', 'Demand Cell']}}
+                    where: {name: {[op.or]:['Demand Page', 'Demand Cell']}}
                 })]
             )
             .then(size => {
@@ -494,59 +495,6 @@ module.exports = function (m, fn) {
         });
     };
     
-    // fn.demands.lines.restore = function (demand_line_id, user_id) {
-    //     return new Promise((resolve, reject) => {
-    //         fn.demands.lines.get({demand_line_id: demand_line_id})
-    //         .then(line => {
-    //             if      (line.status !== 0)        reject(new Error('Line is not currently cancelled'))
-    //             else if (line.demand.status !== 1) reject(new Error('Only lines on draft demands can be restored'))
-    //             else {
-    //                 fn.update(line, {status: 1})
-    //                 .then(result => {
-    //                     //Set the lines status to Pending
-    //                     fn.update(line, {status: 1})
-    //                     .then(result => {
-    //                         //Get the order for this demand
-    //                         get_orders_for_demand_line(line.demand_line_id)
-    //                         .then(result => {
-    //                             let order_actions = [];
-    //                             result.orders.forEach(order => {
-    //                                 //For each order, if its status is Placed, change to Demanded and return order id
-    //                                 order_actions.push(new Promise((resolve, reject) => {
-    //                                     if (order.status === 2) {
-    //                                         fn.update(order, {status: 3})
-    //                                         .then(result => resolve(order.order_id))
-    //                                         .catch(err => reject(err));
-    //                                     } else reject(new Error(`Non-allowed order status: ${order.status}`));
-    //                                 }));
-    //                             });
-    //                             Promise.allSettled(order_actions)
-    //                             .then(results => {
-    //                                 //Change the demand line link to non active
-    //                                 fn.update(result.link, {active: true})
-    //                                 .then(result => {
-    //                                     let order_links = [];
-    //                                     //get an array of all the orders updated
-    //                                     results.forEach(e => order_links.push({table: 'orders', id: e.value}));
-    //                                     //create the canclled action record
-    //                                     create_line_action('RESTORED', line.demand_line_id, user_id, order_links)
-    //                                     .then(result => resolve(true));
-    //                                 })
-    //                                 .catch(err => reject(err));
-    //                             })
-    //                             .catch(err => reject(err));
-    //                         })
-    //                         .catch(err => reject(err));
-    //                     })
-    //                     .catch(err => reject(err));
-    //                 })
-    //                 .catch(err => reject(err));
-    //             };
-    //         })
-    //         .catch(err => reject(err));
-    //     });
-    // };
-
     function get_orders_for_demand_line(demand_line_id, options = {}) {
         return new Promise((resolve, reject) => {
             m.action_links.findAll({
@@ -558,9 +506,9 @@ module.exports = function (m, fn) {
                 include: [{
                     model: m.actions,
                     where: {
-                        action: {[fn.op.or]:[
+                        action: {[op.or]:[
                             'DEMAND LINE | CREATED',
-                            {[fn.op.startsWith]: 'DEMAND LINE | INCREMENTED'}
+                            {[op.startsWith]: 'DEMAND LINE | INCREMENTED'}
                         ]}
                     },
                     include: [{
@@ -730,9 +678,9 @@ module.exports = function (m, fn) {
                             include: [{
                                 model: m.actions,
                                 where: {
-                                    action: {[fn.op.or]: [
+                                    action: {[op.or]: [
                                         'ORDER | CREATED',
-                                        {[fn.op.startsWith]: 'ORDER | INCREMENTED'}
+                                        {[op.startsWith]: 'ORDER | INCREMENTED'}
                                     ]}
                                 },
                                 include: [{
@@ -789,10 +737,12 @@ module.exports = function (m, fn) {
         return new Promise((resolve, reject) => {
             const fs = require('fs');
             if (filename) {
-                let new_file = `${demand_id}.xlsx`;
+                const new_file = `${demand_id}.xlsx`;
+                const from = fn.public_file('files', filename);
+                const to = fn.public_file('demands', new_file);
                 fs.copyFile(
-                    `${process.env.ROOT}/public/res/files/${filename}`,
-                    `${process.env.ROOT}/public/res/demands/${new_file}`,
+                    from,
+                    to,
                     function (err) {
                         if (err) reject(new Error(err))
                         else     resolve(new_file);
@@ -800,6 +750,12 @@ module.exports = function (m, fn) {
                 );
             } else reject(new Error('No demand file specified'));
         });
+    };
+    function counter() {
+        let count = 0;
+        return () => {
+            return ++count;
+        };
     };
     function write_cover_sheet(template, account, file, users, raised_by_user) {
         return new Promise((resolve, reject) => {
@@ -811,10 +767,10 @@ module.exports = function (m, fn) {
                         details[e.replace(' ', '_')] = template.details.filter(d => d.name.toLowerCase() === e)[0].value
                     };
                 });
-                let ex       = require('exceljs'),
-                    workbook = new ex.Workbook(),
-                    path     = `${process.env.ROOT}/public/res/demands`;
-                workbook.xlsx.readFile(`${path}/${file}`)
+                let ex       = require('exceljs');
+                let workbook = new ex.Workbook();
+                const path   = fn.public_file('demands', file);;
+                workbook.xlsx.readFile(path)
                 .then(() => {
                     try {
                         let worksheet = workbook.getWorksheet(details.cover_sheet);
@@ -831,7 +787,7 @@ module.exports = function (m, fn) {
                             details.user_start  &&
                             details.user_end
                         ) {
-                            let line = new fn.counter();
+                            let line = new counter();
                             for (let r = Number(details.user_start); r <= Number(details.user_end); r++) {
                                 let rankCell = worksheet.getCell(details.rank_column + r),
                                     nameCell = worksheet.getCell(details.name_column + r),
@@ -844,7 +800,7 @@ module.exports = function (m, fn) {
                                 } else break;
                             };
                         };
-                        workbook.xlsx.writeFile(`${path}/${file}`)
+                        workbook.xlsx.writeFile(path)
                         .then(() => resolve(true))
                         .catch(err => reject(err));
                     } catch (err) {
@@ -856,10 +812,10 @@ module.exports = function (m, fn) {
     };
     function write_items(file, sizes) {
         return new Promise((resolve, reject) => {
-            let ex       = require('exceljs'),
-                workbook = new ex.Workbook(),
-                path     = `${process.env.ROOT}/public/res/demands`;
-            workbook.xlsx.readFile(`${path}/${file}`)
+            let ex       = require('exceljs');
+            let workbook = new ex.Workbook();
+            const path = fn.public_file('demands', file);
+            workbook.xlsx.readFile(path)
             .then(() => {
                 let fails = [];
                 sizes.forEach(size => {
@@ -871,7 +827,7 @@ module.exports = function (m, fn) {
                         fails.push({size_id: size.size_id, reason: err.message});
                     };
                 });
-                workbook.xlsx.writeFile(`${path}/${file}`)
+                workbook.xlsx.writeFile(path)
                 .then(() => resolve(fails))
                 .catch(err => reject(err));
             })

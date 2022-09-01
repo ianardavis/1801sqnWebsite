@@ -7,10 +7,10 @@ module.exports = (app, m, fn) => {
             if (!demand.filename) {
                 fn.demands.raise(demand.demand_id, req.user)
                 .then(file => {
-                    fn.download('demands', file, res);
+                    fn.fs.download('demands', file, res);
                 })
                 .catch(err => fn.send_error(res, err));
-            } else fn.download('demands', demand.filename, res);
+            } else fn.fs.download('demands', demand.filename, res);
         })
         .catch(err => fn.send_error(res, err));
     });

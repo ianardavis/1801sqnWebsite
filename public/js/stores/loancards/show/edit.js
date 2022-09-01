@@ -55,7 +55,7 @@ window.addEventListener( "load", function () {
     addFormListener(
         'loancard_file_delete',
         'DELETE',
-        `/loancards/${path[2]}/delete_file`,
+        `/loancards/${path[2]}/file`,
         {onComplete: [getLoancard]}
     );
 });

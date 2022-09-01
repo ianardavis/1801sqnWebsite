@@ -157,21 +157,21 @@ module.exports = function (m, fn) {
     };
     function create_pdf(scrap, user) {
         return new Promise((resolve, reject) => {
-            fn.create_barcodes(scrap.scrap_id)
+            fn.pdfs.create_barcodes(scrap.scrap_id)
             .then(result => {
-                fn.files.create(scrap.scrap_id, 'scraps', 'scrap', user)
+                fn.pdfs.create(scrap.scrap_id, 'scraps', 'scrap', user)
                 .then(([doc, file, writeStream]) => {
-                    let y = fn.files.add.Page(doc);
-                    y += fn.files.add.Logos(doc, y, 'SCRAPPED STOCK');
+                    let y = fn.pdfs.new_page(doc);
+                    y += fn.pdfs.logos(doc, y, 'SCRAPPED STOCK');
                     y += add_header(doc, y);
                     scrap.lines.forEach(line => {
                         if (y >= 708-(line.nsn ? 15 : 0)-(line.serial ? 15 : 0)) {
-                            y = fn.files.add.EndOfPage(doc, y);
+                            y = fn.pdfs.end_of_page(doc, y);
                             y += add_header(doc, y);
                         };
                         y += add_line(doc, line, y);
                     });
-                    fn.files.add.PageNumbers(doc, scrap.scrap_id);
+                    fn.pdfs.page_numbers(doc, scrap.scrap_id);
                     doc.end();
 
                     writeStream.on('error', err => reject(err));
@@ -182,7 +182,7 @@ module.exports = function (m, fn) {
                             if (settings.length !== 1 || settings[0].value !== '1') {
                                 resolve(file);
                             } else {
-                                fn.print_pdf(`${process.env.ROOT}/public/res/scraps/${file}`)
+                                fn.pdfs.print('scraps', file)
                                 .then(result => resolve(file))
                                 .catch(err => {
                                     console.log(err);

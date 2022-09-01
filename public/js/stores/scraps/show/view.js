@@ -69,7 +69,7 @@ window.addEventListener('load', function () {
     addFormListener(
         'scrap_file_delete',
         'DELETE',
-        `/scraps/${path[2]}/delete_file`,
+        `/scraps/${path[2]}/file`,
         {onComplete: [getScrap]}
     );
 });
