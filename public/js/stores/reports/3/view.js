@@ -27,7 +27,7 @@ function getSizes() {
                     add_cell(row, {
                         text: size.size1,
                         append: [
-                            new Hidden({
+                            new Hidden_Input({
                                 attributes: [
                                     {field: 'name',  value: `orders[][${row_index}][size_id]`},
                                     {field: 'value', value: size.size_id}
@@ -42,15 +42,14 @@ function getSizes() {
                     add_cell(row, {id: `${size.size_id}_demands`});
                     add_cell(row, {id: `${size.size_id}_issues`});
                     add_cell(row, {append: [
-                        new Input({
+                        new Number_Input({
                             attributes: [
-                                {field: 'type', value: 'number'},
                                 {field: 'name', value: `orders[][${row_index}][qty]`},
                                 {field: 'min',  value: '0'}
                             ]
                         }).e
                     ]});
-                    add_cell(row, {append: new Link({href: `/sizes/${size.size_id}`}).e});
+                    add_cell(row, {append: new Link(`/sizes/${size.size_id}`).e});
                     row_index++;
                     get_stock(size.size_id)
                     .then(stock => set_innerText(`${size.size_id}_stocks`, stock || '0'));

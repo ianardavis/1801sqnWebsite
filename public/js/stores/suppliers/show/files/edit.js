@@ -14,12 +14,12 @@ function fileEditBtn(file_id) {
     clear('span_file_edit_btn')
     .then(span_file_edit_btn => {
         span_file_edit_btn.appendChild(
-            new Link({
-                modal: 'file_edit',
-                data: [{field: 'id', value: file_id}],
-                type: 'edit',
-                large: true
-            }).e
+            new Modal_Button(
+                _edit(),
+                'file_edit',
+                [{field: 'id', value: file_id}],
+                false
+            ).e
         );
     });
 };

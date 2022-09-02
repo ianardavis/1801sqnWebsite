@@ -21,7 +21,7 @@ function getLines() {
                     add_cell(row, {text: line.qty});
                     add_cell(row, {
                         text: line_statuses[line.status],
-                        append: new Hidden({
+                        append: new Hidden_Input({
                             attributes: [
                                 {field: 'name',  value: `lines[][${row_index}][loancard_line_id]`},
                                 {field: 'value', value: line.loancard_line_id}
@@ -41,13 +41,14 @@ function getLines() {
                     radios.push(new Div({attributes: [{field: 'id', value: `${line.loancard_line_id}_details`}]}).e);
                     add_cell(row, {append: radios});
                     add_cell(row, {append: 
-                        new Button({
-                            modal: 'line_view',
-                            data: [{
+                        new Modal_Button(
+                            _search(),
+                            'line_view',
+                            [{
                                 field: 'id',
                                 value: line.loancard_line_id
                             }]
-                        }).e
+                        ).e
                     });
                 } catch (error) {
                     console.log(`Error loading line ${line.loancard_line_id}:`)

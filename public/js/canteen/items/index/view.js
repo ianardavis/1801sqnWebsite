@@ -16,7 +16,7 @@ function getItems() {
                 add_cell(row, {text: `£${Number(item.price).toFixed(2)}`});
                 add_cell(row, {text: item.qty || '0'});
                 add_cell(row, {html: (item.current ? _check() : '')});
-                add_cell(row, {append: new Link({href: `/canteen_items/${item.item_id}`}).e});
+                add_cell(row, {append: new Link(`/canteen_items/${item.item_id}`).e});
             });
         });
     });

@@ -17,7 +17,7 @@ function getDemands() {
                     let row = tbl_demands.insertRow(-1);
                     add_cell(row, table_date(demand.createdAt));
                     add_cell(row, {text: demand_statuses[demand.status]});
-                    add_cell(row, {append: new Link({href: `/demands/${demand.demand_id}`}).e});
+                    add_cell(row, {append: new Link(`/demands/${demand.demand_id}`).e});
                 } catch (err) {
                     console.log(err);
                 };

@@ -30,14 +30,13 @@ function getStocks(location_id) {
                     add_cell(row, {text: stock.size.size3});
                     add_cell(row, {text: stock.qty || '0'});
                     add_cell(row, {append: [
-                        new Input({
+                        new Number_Input({
                             attributes: [
-                                {field: 'type', value: 'number'},
                                 {field: 'name', value: `counts[][${row_index}][qty]`},
                                 {field: 'min',  value: '0'}
                             ]
                         }).e,
-                        new Hidden({
+                        new Hidden_Input({
                             attributes: [
                                 {field: 'name',  value: `counts[][${row_index}][stock_id]`},
                                 {field: 'value', value: stock.stock_id}

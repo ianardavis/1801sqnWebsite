@@ -11,15 +11,16 @@ function getAccounts() {
                 add_cell(row, {text: account.number});
                 add_cell(row, {text: print_user(account.user)});
                 add_cell(row, {append: 
-                    new Button({
-                        classes: ['accounts'],
-                        modal:   'account_view',
-                        data: [{
+                    new Modal_Button(
+                        _search(),
+                        'account_view',
+                        [{
                             field: 'id',
                             value: account.account_id
                         }],
-                        small: true
-                    }).e
+                        true,
+                        {classes: ['accounts']}
+                    ).e
                 })
             });
             if (typeof AccountsEditBtns === 'function') accountsEditBtns();

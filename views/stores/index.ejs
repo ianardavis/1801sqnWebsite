@@ -15,17 +15,11 @@
 <%- include(`${partials}/foot/app`) %>
 <script src="/js/stores/index/view.js"></script>
 <% if (permissions.stores_stock_admin) { %>
-	<script async>getCount('orders',  	1, {text: 'Placed',    colour: 'danger',  float: 'start'})</script>
-	<script async>getCount('orders',  	2, {text: 'Demanded',  colour: 'warning', float: 'end'})</script>
+	<script src="/js/stores/index/orders.js"></script>
 <% } %>
 <% if (permissions.authorised_demander) { %>
-	<script async>getCount('demands', 	1, {text: 'Draft', 	  colour: 'warning', float: 'start'})</script>
-	<script async>getCount('demands', 	2, {text: 'Open',  	  colour: 'success', float: 'end'})</script>
+	<script src="/js/stores/index/demands.js"></script>
 <% } %>
-<% if (permissions.issuer) { %>
-	<script async>getCount('issues',  	1, {text: 'Requested', colour: 'danger',  float: 'start'})</script>
-	<script async>getCount('issues',  	2, {text: 'Approved',  colour: 'warning', float: 'end'})</script>
-	<script async>getCount('loancards', 1, {text: 'Draft', 	  colour: 'danger',  float: 'start'})</script>
-	<script async>getCount('loancards', 2, {text: 'Open',  	  colour: 'success', float: 'end'})</script>
-<% } %>
+<script src="/js/stores/index/issues.js"></script>
+<script src="/js/stores/index/loancards.js"></script>
 <%- include(`${partials}/foot/components/htmlClose`) %>

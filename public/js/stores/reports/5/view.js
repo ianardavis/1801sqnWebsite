@@ -24,7 +24,7 @@ function getSizes() {
                     add_cell(row, {
                         text: size.size1,
                         append: [
-                            new Hidden({
+                            new Hidden_Input({
                                 attributes: [
                                     {field: 'name',  value: `sizes[][${index}][size_id]`},
                                     {field: 'value', value: size.size_id}
@@ -36,7 +36,7 @@ function getSizes() {
                     add_cell(row, {text: size.size3});
                     add_cell(row, {id: `${size.size_id}_page`});
                     add_cell(row, {id: `${size.size_id}_cell`});
-                    add_cell(row, {append: new Link({href: `/sizes/${size.size_id}`}).e});
+                    add_cell(row, {append: new Link(`/sizes/${size.size_id}`).e});
                     addInput(size.size_id, 'Page', index);
                     addInput(size.size_id, 'Cell', index);
                     index++;
@@ -56,7 +56,7 @@ function addInput(size_id, _cell, index) {
             }
         })
         .then(function ([detail, options]) {
-            cell.appendChild(new Input({
+            cell.appendChild(new Text_Input({
                 attributes: [
                     {field: 'name',  value: `sizes[][${index}][${_cell}]`},
                     {field: 'value', value: detail.value ||''}
@@ -64,8 +64,10 @@ function addInput(size_id, _cell, index) {
             }).e);
         })
         .catch(err => {
-            cell.appendChild(new Input({
-                attributes: [{field: 'name',  value: `sizes[][${index}][${_cell}]`}]
+            cell.appendChild(new Text_Input({
+                attributes: [
+                    {field: 'name', value: `sizes[][${index}][${_cell}]`}
+                ]
             }).e);
         });
     };

@@ -21,15 +21,15 @@ function addNoteEditBtn(note_id) {
         })
         .then(function ([note, options]) {
             if (!note.system) {
-                note_edit_btn.appendChild(new Button({
-                    classes: ['float-end'],
-                    modal:   'note_edit',
-                    data:    [
+                note_edit_btn.appendChild(new Modal_Button(
+                    _edit(),
+                    'note_edit',[
                         {field: 'id',         value: note.note_id},
                         {field: 'bs-dismiss', value: 'modal'}
                     ],
-                    type:    'edit',
-                }).e);
+                    false,
+                    {classes: ['float-end']},
+                ).e);
             };
         });
     });

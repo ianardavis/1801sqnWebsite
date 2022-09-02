@@ -1,12 +1,7 @@
 let statuses = {'0': 'Cancelled', '1': 'Requested', '2': 'Approved', '3': 'Ordered', '4': 'Issued', '5': 'Returned'};
 function getIssue() {
     disable_button('size_edit');
-    disable_button('mark_0');
-    disable_button('mark_1');
-    disable_button('mark_2');
-    disable_button('mark_3');
-    disable_button('mark_4');
-    disable_button('mark_5');
+    disable_button('mark_as');
     get({
         table: 'issue',
         where: {issue_id: path[2]}
@@ -25,6 +20,7 @@ function getIssue() {
         set_href('issue_user_issue_link', `/users/${issue.user_id_issue}`);
         set_href('issue_size_link',       `/sizes/${issue.size_id}`);
         set_href('issue_item_link',       `/items/${issue.size.item_id}`);
+        enable_button('mark_as');
         for (let i=0; i<=5 ; i++) {
             if (issue.status !== i) enable_button(`mark_${i}`);
         };
@@ -38,57 +34,14 @@ function getIssue() {
 addReloadListener(getIssue);
 window.addEventListener('load', function () {
     addFormListener(
-        'mark_cancelled',
+        'mark_as',
         'PUT',
-        `/issues/${path[2]}/mark/0`,
-        {onComplete: [
-            getIssue,
-            getActions
-        ]}
-    );
-    addFormListener(
-        'mark_requested',
-        'PUT',
-        `/issues/${path[2]}/mark/1`,
-        {onComplete: [
-            getIssue,
-            getActions
-        ]}
-    );
-    addFormListener(
-        'mark_approved',
-        'PUT',
-        `/issues/${path[2]}/mark/2`,
-        {onComplete: [
-            getIssue,
-            getActions
-        ]}
-    );
-    addFormListener(
-        'mark_ordered',
-        'PUT',
-        `/issues/${path[2]}/mark/3`,
-        {onComplete: [
-            getIssue,
-            getActions
-        ]}
-    );
-    addFormListener(
-        'mark_issued',
-        'PUT',
-        `/issues/${path[2]}/mark/4`,
-        {onComplete: [
-            getIssue,
-            getActions
-        ]}
-    );
-    addFormListener(
-        'mark_returned',
-        'PUT',
-        `/issues/${path[2]}/mark/5`,
-        {onComplete: [
-            getIssue,
-            getActions
-        ]}
+        `/issues/${path[2]}/mark`,
+        {
+            onComplete: [
+                getIssue,
+                getActions
+            ]
+        }
     );
 });

@@ -20,16 +20,15 @@ function selectedSizes(sizes) {
                         add_cell(row, {text: size.item.description});
                         add_cell(row, {
                             text: print_size(size),
-                            append: new Hidden({
+                            append: new Hidden_Input({
                                 attributes: [
                                     {field: 'name',  value: `orders[][${row_count}][size_id]`},
                                     {field: 'value', value: size.size_id}
                                 ]
                             }).e
                         });
-                        add_cell(row, {append: new Input({
+                        add_cell(row, {append: new Number_Input({
                             attributes: [
-                                {field: 'type',  value: 'number'},
                                 {field: 'name',  value: `orders[][${row_count}][qty]`},
                                 {field: 'value', value: qty.value}
                             ]

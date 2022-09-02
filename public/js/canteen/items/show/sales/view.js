@@ -13,7 +13,7 @@ function getSales() {
                     let row = tbl_sales.insertRow(-1);
                     add_cell(row, table_date(line.createdAt));
                     add_cell(row, {text: line.qty});
-                    add_cell(row, {append: new Link({href: `/sales/${line.sale_id}`}).e});
+                    add_cell(row, {append: new Link(`/sales/${line.sale_id}`).e});
                 } catch (error) {
                     console.log(error);
                 };

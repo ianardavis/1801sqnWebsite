@@ -98,9 +98,8 @@ function add_serial_select(div_details, index, size_id, qty) {
     });
 };
 function add_qty_input(div_details, index, qty) {
-    div_details.appendChild(new Input({
+    div_details.appendChild(new Number_Input({
         attributes: [
-            {field: 'type',        value: 'number'},
             {field: 'min',         value: '1'},
             {field: 'max',         value: qty},
             {field: 'value',       value: qty},

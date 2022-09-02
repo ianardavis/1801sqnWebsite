@@ -19,14 +19,14 @@ function getCategories(parent_id = '') {
                             text:  category.category,
                             li_id: category.category_id,
                             ul_id: `category_${category.category_id}`,
-                            append: new Button({
-                                modal: 'category_view',
-                                data: [{
+                            append: new Modal_Button(
+                                _search(),
+                                'category_view',
+                                [{
                                     field: 'id',
                                     value: category.category_id
-                                }],
-                                small: true
-                            }).e
+                                }]
+                            ).e
                         }).e
                     );
                     getCategories(category.category_id);

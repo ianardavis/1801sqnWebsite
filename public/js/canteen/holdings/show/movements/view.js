@@ -16,7 +16,7 @@ function getMovements() {
                 add_cell(row, {text: movement.type});
                 add_cell(row, {text: `£${Number(movement.amount).toFixed(2)}`});
                 add_cell(row, {text: movement.description});
-                add_cell(row, {append: new Link({href: `/movements/${movement.movement_id}`}).e});
+                add_cell(row, {append: new Link(`/movements/${movement.movement_id}`).e});
             });
         });
     });

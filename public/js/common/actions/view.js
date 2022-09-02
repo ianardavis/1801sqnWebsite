@@ -15,11 +15,11 @@ function getActions() {
                 let row = tbl_actions.insertRow(-1);
                 add_cell(row, table_date(action.createdAt, true));
                 add_cell(row, {text: action.action, classes: ['text-start']});
-                add_cell(row, {append: new Button({
-                    modal: 'action_view',
-                    small: true,
-                    data: [{field: 'id', value: action.action_id}]
-                }).e})
+                add_cell(row, {append: new Modal_Button(
+                    _search(),
+                    'action_view',
+                    [{field: 'id', value: action.action_id}]
+                ).e})
             })
         });
     });
@@ -39,7 +39,7 @@ function getLinks(action_id) {
                 add_cell(row, (
                     link._table === path[1] && link.id === path[2] ?
                     {text: 'This record'} : 
-                    {append: new Link({href: `/${link._table}/${link.id}`}).e}
+                    {append: new Link(`/${link._table}/${link.id}`).e}
                 ));
             });
         });

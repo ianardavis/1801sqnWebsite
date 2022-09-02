@@ -29,7 +29,7 @@ function return_options() {
                             };
                         });
                     } else {
-                        let location = new Input({
+                        let location = new Text_Input({
                             attributes: [
                                 {field: 'name',        value: `lines[][${options.index}][location]`},
                                 {field: 'required',    value: true},
@@ -38,13 +38,12 @@ function return_options() {
                             ],
                             options: [{text: 'Select Location'}]
                         }).e;
-                        let stock_qty = new Input({
+                        let stock_qty = new Number_Input({
                             attributes: [
-                                {field: 'type',        value: 'number'},
                                 {field: 'min',         value: '1'},
                                 {field: 'max',         value: line.qty},
                                 {field: 'value',       value: line.qty},
-                                {field: 'Placeholder', value: 'Quantity'},
+                                {field: 'placeholder', value: 'Quantity'},
                                 {field: 'name',        value: `lines[][${options.index}][qty]`},
                                 {field: 'required',    value: true}
                             ]

@@ -2,12 +2,12 @@ function accountEditBtn(account_id) {
     clear('account_edit')
     .then(span_edit => {
         span_edit.appendChild(
-            new Link({
-                modal: 'account_edit',
-                type: 'edit',
-                data:  {field: 'id', value: account_id},
-                large: true
-            }).e
+            new Modal_Button(
+                _search(),
+                'account_edit',
+                [{field: 'id', value: account_id}],
+                false
+            ).e
         );
     })
 };

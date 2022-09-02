@@ -34,7 +34,8 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
 
-    app.get('/count/loancards',        fn.loggedIn(), fn.permissions.check('access_stores'),       (req, res) => {
+    app.get('/count/loancards',        fn.loggedIn(), fn.permissions.check('issuer', true),        (req, res) => {
+        if (!req.allowed) req.query.where.user_id_loancard = req.user.user_id;
         m.loancards.count({where: req.query.where})
         .then(count => res.send({success: true, result: count}))
         .catch(err => fn.send_error(res, err));

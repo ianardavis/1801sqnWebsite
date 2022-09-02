@@ -34,7 +34,7 @@ function receive_option_func(table) {
                         } else {
                             let list = document.createElement('datalist');
                             list.setAttribute('id', `loc_list_${options.index}`);
-                            div_details.appendChild(new Input({
+                            div_details.appendChild(new Text_Input({
                                 attributes: [
                                     {field: 'name',        value: `lines[][${options.index}][location]`},
                                     {field: 'required',    value: true},
@@ -50,11 +50,10 @@ function receive_option_func(table) {
                             .then(function ([result, options]) {
                                 result.stocks.forEach(e => list.appendChild(new Option({value: e.location.location}).e));
                             });
-                            div_details.appendChild(new Input({
+                            div_details.appendChild(new Number_Input({
                                 attributes: [
-                                    {field: 'type',        value: 'number'},
                                     {field: 'min',         value: '1'},
-                                    {field: 'Placeholder', value: 'Receipt Quantity'},
+                                    {field: 'placeholder', value: 'Receipt Quantity'},
                                     {field: 'name',        value: `lines[][${options.index}][qty]`},
                                     {field: 'required',    value: true},
                                     {field: 'value',       value: line.qty}

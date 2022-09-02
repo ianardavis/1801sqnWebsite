@@ -17,7 +17,7 @@ function getLoancards () {
                 add_cell(row, table_date(loancard.createdAt));
                 add_cell(row, {text: loancard.lines.length || '0'});
                 add_cell(row, {text: loancard_statuses[loancard.status]})
-                add_cell(row, {append: new Link({href: `/loancards/${loancard.loancard_id}`}).e});
+                add_cell(row, {append: new Link(`/loancards/${loancard.loancard_id}`).e});
             });
         });
     })

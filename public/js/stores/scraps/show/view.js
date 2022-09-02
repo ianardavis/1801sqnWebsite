@@ -39,6 +39,11 @@ function getScrap() {
 };
 addReloadListener(getScrap);
 window.addEventListener('load', function () {
+    enable_button('scrap_complete');
+    enable_button('scrap_file_download');
+    enable_button('scrap_file_print');
+    enable_button('scrap_file_delete');
+    enable_button('delete');
     addFormListener(
         'scrap_file_print',
         'GET',

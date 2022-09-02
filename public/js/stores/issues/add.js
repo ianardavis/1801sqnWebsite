@@ -23,7 +23,7 @@ function selectedSizes(sizes) {
                         add_cell(row, {text: size.item.description});
                         add_cell(row, {
                             text: size.size1,
-                            append: new Hidden({
+                            append: new Hidden_Input({
                                 attributes: [
                                     {field: 'name',  value: `issues[sizes][][${row_count_sizes}][size_id]`},
                                     {field: 'value', value: size.size_id}
@@ -32,9 +32,8 @@ function selectedSizes(sizes) {
                         });
                         add_cell(row, {text: size.size2});
                         add_cell(row, {text: size.size3});
-                        add_cell(row, {append: new Input({
+                        add_cell(row, {append: new Number_Input({
                             attributes: [
-                                {field: 'type',  value: 'number'},
                                 {field: 'name',  value: `issues[sizes][][${row_count_sizes}][qty]`},
                                 {field: 'value', value: qty.value}
                             ]
@@ -70,7 +69,7 @@ function selectedUsers(users) {
                     add_cell(row, {text: user.service_number});
                     add_cell(row, {
                         text: print_user(user),
-                        append: new Hidden({
+                        append: new Hidden_Input({
                             attributes: [
                                 {field: 'name',  value: `issues[users][][${row_count_users}][user_id_issue]`},
                                 {field: 'value', value: user.user_id}

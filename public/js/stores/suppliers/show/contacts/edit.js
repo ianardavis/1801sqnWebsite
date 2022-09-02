@@ -23,11 +23,11 @@ function addContactEditBtn(contact_id) {
             where:   {supplier_contact_id: contact_id}
         })
         .then(function ([contact, options]) {
-            contact_edit_btn.appendChild(new Button({
-                modal:   'contact_edit',
-                data:    [{field: 'id', value: contact.supplier_contact_id}],
-                type:    'edit',
-            }).e);
+            contact_edit_btn.appendChild(new Modal_Button(
+                _search(),
+                'contact_edit',
+                [{field: 'id', value: contact.supplier_contact_id}]
+            ).e);
         });
     });
 };

@@ -32,7 +32,7 @@ function getIssues () {
                         } : {}
                     )
                 });
-                add_cell(row, {append: new Link({href: `/issues/${issue.issue_id}`}).e});
+                add_cell(row, {append: new Link(`/issues/${issue.issue_id}`).e});
                 row_index ++;
             });
             if (typeof addEditSelect === 'function') addEditSelect();

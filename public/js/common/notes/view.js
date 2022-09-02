@@ -18,11 +18,11 @@ function getNotes() {
                 let row = tbl_notes.insertRow(-1);
                 add_cell(row, table_date(note.createdAt));
                 add_cell(row, {text: note.note, ellipsis: true});
-                add_cell(row, {append: new Button({
-                    modal: 'note_view',
-                    data: [{field: 'id', value: note.note_id}],
-                    small: true
-                }).e});
+                add_cell(row, {append: new Modal_Button(
+                    _search(),
+                    'note_view',
+                    [{field: 'id', value: note.note_id}]
+                ).e});
             });
         });
     })

@@ -172,8 +172,7 @@ module.exports = (app, m, fn) => {
             user_id: req.user.user_id
         })
         .then(result => {
-            if (!result) res.send({success: true, message: 'Scrap cancelled'})
-            else res.send({success: true, message: 'Scrap cancelled, action not created'})
+            res.send({success: true, message: `Scrap cancelled${(result ? '' : ', action not created')}`});
         })
         .catch(err => fn.send_error(res, err));
     });

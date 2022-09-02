@@ -9,14 +9,14 @@ function getGenders() {
                 let row = tbl_genders.insertRow(-1);
                 add_cell(row, {text: gender.gender});
                 add_cell(row, {append:
-                    new Button({
-                        modal: 'gender_view',
-                        data: [{
+                    new Modal_Button(
+                        _search(),
+                        'gender_view',
+                        [{
                             field: 'id',
                             value: gender.gender_id
-                        }],
-                        small: true
-                    }).e
+                        }]
+                    ).e
                 })
             });
             if (typeof gendersEditBtns === 'function') gendersEditBtns();

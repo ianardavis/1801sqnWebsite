@@ -11,11 +11,11 @@ function getCategories() {
             result.categories.forEach(category => {
                 let row = tbl_categories.insertRow(-1);
                 add_cell(row, {text: category.category.category});
-                add_cell(row, {append: new Button({
-                    modal: 'category_view',
-                    data: [{field: 'id', value: category.item_category_id}],
-                    small: true
-                }).e});
+                add_cell(row, {append: new Modal_Button(
+                    _search(),
+                    'category_view',
+                    [{field: 'id', value: category.item_category_id}]
+                ).e});
             });
         });
     });

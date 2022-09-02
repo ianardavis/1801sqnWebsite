@@ -70,13 +70,13 @@ function getSaleLines() {
                         add_cell(row, {text: `£${Number(line.qty * line.price).toFixed(2)}`});
                         let form = document.createElement('form');
                         form.setAttribute('id', `form_${line.sale_line_id}_minus`)
-                        form.appendChild(new Hidden({
+                        form.appendChild(new Hidden_Input({
                             attributes: [
                                 {field: 'name', value: 'line[sale_line_id]'},
                                 {field: 'value', value: line.sale_line_id}
                             ]}).e
                         );
-                        form.appendChild(new Hidden({
+                        form.appendChild(new Hidden_Input({
                             attributes: [
                                 {field: 'name',  value: 'line[qty]'},
                                 {field: 'value', value: -1}
@@ -140,13 +140,13 @@ function getPages() {
                         new Form({
                             classes: ['h-100', 'form_view', 'hidden'],
                             append: [
-                                new Hidden({
+                                new Hidden_Input({
                                     attributes:[
                                         {field: 'name', value: 'line[item_id]'},
                                         {field: 'id',   value: `item_id_${page.pos_page_id}_${r}${c}`}
                                     ]
                                 }).e,
-                                new Hidden({
+                                new Hidden_Input({
                                     attributes: [{field: 'name', value: 'line[sale_id]'}],
                                     classes:    ['sale_id']
                                 }).e,

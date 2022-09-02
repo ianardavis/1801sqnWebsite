@@ -10,7 +10,7 @@ function getLineActions() {
                     div_action  = document.createElement('div'),
                     div_actions = document.createElement('div'),
                     div_details = document.createElement('div');
-                div_actions.appendChild(new Hidden({
+                div_actions.appendChild(new Hidden_Input({
                     attributes: [
                         {field: 'name',  value: `actions[${e.dataset.index}][demand_line_id]`},
                         {field: 'value', value: line.demand_line_id}
@@ -61,7 +61,7 @@ function getLineActions() {
 function addSerialEntry(div_details, index, qty) {
     for (let i = 0; i < qty; i++) {
         div_details.appendChild(
-            new Input({
+            new Text_Input({
                 attributes: [
                     {field: 'name',        value: `actions[${index}][serials][${i}][location]`},
                     {field: 'placeholder', value: `Enter Location (${i + 1})`}
@@ -69,7 +69,7 @@ function addSerialEntry(div_details, index, qty) {
             }).e
         );
         div_details.appendChild(
-            new Input({
+            new Text_Input({
                 attributes: [
                     {field: 'name',        value: `actions[${index}][serials][${i}][serial]`},
                     {field: 'placeholder', value: `Enter Serial # (${i + 1})`}
@@ -91,23 +91,21 @@ function addStockEntry(div_details, index, qty, size_id) {
         stocks.forEach(e => location_list.appendChild(new Option({value: e.location.location}).e));
         div_details.appendChild(location_list);
         div_details.appendChild(
-            new Input({
+            new Text_Input({
                 attributes: [
                     {field: 'name',         value: `actions[${index}][receipt][location]`},
                     {field: 'required',     value: true},
                     {field: 'list',         value: `locations_${index}`},
-                    {field: 'autocomplete', value: 'off'},
                     {field: 'placeholder',  value: 'Location'}
                 ]
             }).e
         );
         div_details.appendChild(
-            new Input({
+            new Text_Input({
                 attributes: [
                     {field: 'name',         value: `actions[${index}][receipt][qty]`},
                     {field: 'value',        value: qty},
                     {field: 'required',     value: true},
-                    {field: 'autocomplete', value: 'off'},
                     {field: 'placeholder',  value: 'Quantity'}
                 ]
             }).e

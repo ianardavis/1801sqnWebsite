@@ -1,5 +1,5 @@
 <button
-    class='btn<% if (locals.small) { %> btn-sm<% } %> btn-<%- type %><% if (locals.classes) { %><% classes.forEach(c => { %> <%= c %><% }) %><% } %>'
+    class='btn<% if (locals.small) { %> btn-sm<% } %> btn-<%- colour %> mb-1 w-100'
     <% if (locals.type_att) { %>type='button'<% } %>
     <% if (locals.id)       { %>id='btn_<%= id %>'<% } %>
     <% if (locals.form)     { %>form='form_<%= form %>'<% } %>
@@ -9,9 +9,5 @@
         title='<%= tip %>'
     <% } %>
 >
-<% if (locals.text) { %>
     <%= text %>
-<% } else if (locals.icon) { %>
-    <%- icon %>
-<% } %>
 </button>

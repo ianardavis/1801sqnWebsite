@@ -13,7 +13,7 @@ function getReceipts() {
                     let row = tbl_receipts.insertRow(-1);
                     add_cell(row, table_date(receipt.createdAt));
                     add_cell(row, {text: receipt.qty});
-                    add_cell(row, {append: new Link({href: `/receipts/${receipt.receipt_id}`}).e});
+                    add_cell(row, {append: new Link(`/receipts/${receipt.receipt_id}`).e});
                 } catch (error) {
                     console.log(error);
                 };

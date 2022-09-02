@@ -5,23 +5,13 @@
 <%- include(`${partials}/head/components/close`) %>
 <section class='container'>
 	<%- include(`${partials}/sidebar_open`, {id: 'Actions', button_text: 'Actions', sidebar_text: 'Actions'}) %>
-		<form id="form_complete">
-			<button id='btn_complete' type='button' class="btn btn-success w-100 mb-2" disabled>
-				Complete
-			</button>
-		</form>
-		<form id="form_close">
-			<button id='btn_close'    type='button' class="btn btn-warning w-100 mb-2" disabled>
-				Close
-			</button>
-		</form>
-		<form id="form_download">
-			<button id='btn_download' type='button' class='btn btn-primary w-100 mb-2' disabled>
-				Download
-			</button>
-		</form>
-		<button id="btn_action" type='button' class="btn btn-success w-100 mb-2" form='form_lines' disabled>Action Lines</button>
-        <%- include(`${partials}/button/delete`) %>
+		<%- include(`${partials}/button/form`, {id: 'complete', text: 'Complete', colour: 'success'}) %>
+		<%- include(`${partials}/button/form`, {id: 'close', 	text: 'Close', 	  colour: 'warning'}) %>
+		<%- include(`${partials}/button/form`, {id: 'download', text: 'Download', colour: 'primary'}) %>
+		<button id="btn_action" type='button' class="btn btn-success w-100 mb-2" form='form_lines' disabled>
+			Action Lines
+		</button>
+		<%- include(`${partials}/button/form`, {id: 'delete', 	text: 'Cancel',	  colour: 'danger', align_bottom: true}) %>
     <%- include(`${partials}/sidebar_close`) %>
 	<ul class="nav nav-tabs" id="mainTab" role="tablist">
         <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'demand'}) %>

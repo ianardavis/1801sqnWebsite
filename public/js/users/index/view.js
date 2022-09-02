@@ -18,7 +18,7 @@ function getUsers() {
                 add_cell(row, {text: user.rank.rank});
                 add_cell(row, {text: user.surname});
                 add_cell(row, {text: user.first_name});
-                add_cell(row, {append: new Link({href: `/users/${user.user_id}`}).e});
+                add_cell(row, {append: new Link(`/users/${user.user_id}`).e});
             });
         });
     })

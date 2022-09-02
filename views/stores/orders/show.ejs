@@ -4,11 +4,14 @@
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/head/components/close`) %>
 <section class='container'>
+	<%- include(`${partials}/sidebar_open`, {id: 'Actions', button_text: 'Actions', sidebar_text: 'Actions'}) %>
+		
+	<%- include(`${partials}/sidebar_close`) %>
 	<ul class="nav nav-tabs" id="mainTab" role="tablist">
 		<%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'order'}) %>
 		<%- include(`${partials}/common/actions/tab_head`) %>
 		<%- include(`${partials}/common/notes/tab_head`) %>
-  </ul>
+  	</ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
             <div class="input-group mb-1">
@@ -23,10 +26,10 @@
 			<div class="input-group mb-1">
 				<span class="input-group-text w-30">Status</span>
 				<p class="form-control mb-0" id='status'></p>
-				<%- include(`${partials}/button/button`, {id: 'mark_cancelled', text: '0', type: 'danger', 	  form: 'mark_cancelled', tip: 'Mark as cancelled'}) %>
-				<%- include(`${partials}/button/button`, {id: 'mark_placed', 	text: '1', type: 'success',	  form: 'mark_placed',    tip: 'Mark as placed'}) %>
-				<%- include(`${partials}/button/button`, {id: 'mark_demanded',  text: '2', type: 'warning',	  form: 'mark_demanded',  tip: 'Mark as demanded'}) %>
-				<%- include(`${partials}/button/button`, {id: 'mark_received',  text: '3', type: 'secondary', form: 'mark_received',  tip: 'Mark as received'}) %>
+				<%- include(`${partials}/button/button`, {id: 'mark_cancelled', text: '0', colour: 'danger', 	form: 'mark_cancelled', tip: 'Mark as cancelled'}) %>
+				<%- include(`${partials}/button/button`, {id: 'mark_placed', 	text: '1', colour: 'success',	form: 'mark_placed',    tip: 'Mark as placed'}) %>
+				<%- include(`${partials}/button/button`, {id: 'mark_demanded',  text: '2', colour: 'warning',	form: 'mark_demanded',  tip: 'Mark as demanded'}) %>
+				<%- include(`${partials}/button/button`, {id: 'mark_received',  text: '3', colour: 'secondary', form: 'mark_received',  tip: 'Mark as received'}) %>
 			</div>
 			<form id="form_mark_cancelled"></form>
 			<form id="form_mark_placed"	  ></form>

@@ -13,11 +13,11 @@ function getSerials() {
                 add_cell(row, {text: serial.size.item.description});
                 add_cell(row, {text: print_size(serial.size)});
                 add_cell(row, {text: serial.serial});
-                add_cell(row, {append: new Button({
-                    modal: 'serial_view',
-                    data: [{field: 'id', value: serial.serial_id}],
-                    small: true
-                }).e});
+                add_cell(row, {append: new Modal_Button(
+                    _search(),
+                    'serial_view',
+                    [{field: 'id', value: serial.serial_id}]
+                ).e});
             });
         });
     });

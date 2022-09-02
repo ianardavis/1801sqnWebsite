@@ -1,6 +1,5 @@
 module.exports = function (m, fn) {
-    let op = require('sequelize').Op;
-    let line_status = {0: "Cancelled", 1: "Pending", 2: "Open", 3: "Closed"};
+    const line_status = {0: "Cancelled", 1: "Pending", 2: "Open", 3: "Closed"};
     fn.demands = {lines: {}};
     function create_demand_action(action, demand_id, user_id) {
         return new Promise(resolve => {
@@ -139,7 +138,7 @@ module.exports = function (m, fn) {
             fn.demands.lines.getAll(
                 {
                     demand_id: demand_id,
-                    status: {[op.or]: [1, 2]}
+                    status: {[fn.op.or]: [1, 2]}
                 }
             )
             .then(lines => {
@@ -221,7 +220,7 @@ module.exports = function (m, fn) {
                     fn.demands.lines.getAll(
                         {
                             demand_id: demand_id,
-                            status: {[op.or]: [1, 2]}
+                            status: {[fn.op.or]: [1, 2]}
                         },
                         [],
                         {allowNull: true}
@@ -278,7 +277,7 @@ module.exports = function (m, fn) {
             fn.sizes.get(
                 options.size_id,
                 [fn.inc.stores.details({
-                    where: {name: {[op.or]:['Demand Page', 'Demand Cell']}}
+                    where: {name: {[fn.op.or]:['Demand Page', 'Demand Cell']}}
                 })]
             )
             .then(size => {
@@ -506,9 +505,9 @@ module.exports = function (m, fn) {
                 include: [{
                     model: m.actions,
                     where: {
-                        action: {[op.or]:[
+                        action: {[fn.op.or]:[
                             'DEMAND LINE | CREATED',
-                            {[op.startsWith]: 'DEMAND LINE | INCREMENTED'}
+                            {[fn.op.startsWith]: 'DEMAND LINE | INCREMENTED'}
                         ]}
                     },
                     include: [{
@@ -678,9 +677,9 @@ module.exports = function (m, fn) {
                             include: [{
                                 model: m.actions,
                                 where: {
-                                    action: {[op.or]: [
+                                    action: {[fn.op.or]: [
                                         'ORDER | CREATED',
-                                        {[op.startsWith]: 'ORDER | INCREMENTED'}
+                                        {[fn.op.startsWith]: 'ORDER | INCREMENTED'}
                                     ]}
                                 },
                                 include: [{

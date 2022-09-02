@@ -138,7 +138,7 @@ function sendData(form, method, _location, options = {reload: false}) {
                 else if (options.redirect) window.location.assign(options.redirect);
             } else {
                 console.log(response);
-                alert_toast(response.message || response.error || 'Ooooopsie');
+                alert_toast(response.message || 'Ooooopsie');
             };
         } catch (error) {
             console.log(error)

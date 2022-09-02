@@ -15,11 +15,11 @@ function getOrders() {
                     add_cell(row, table_date(order.createdAt));
                     add_cell(row, {text: order.qty});
                     add_cell(row, {text: order_statuses[order.status] || 'Unknown'});
-                    add_cell(row, {append: new Button({
-                        modal: 'order_view',
-                        data: [{field: 'id', value: order.order_id}],
-                        small: true
-                    }).e});
+                    add_cell(row, {append: new Modal_Button(
+                        _search(),
+                        'order_view',
+                        [{field: 'id', value: order.order_id}]
+                    ).e});
                 } catch (error) {
                     console.log(error);
                 };

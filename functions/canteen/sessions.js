@@ -1,5 +1,4 @@
 module.exports = function (m, fn) {
-    let op = require('sequelize').Op;
     fn.sessions = {};
     fn.sessions.get = function (session_id) {
         return new Promise((resolve, reject) => {
@@ -51,7 +50,7 @@ module.exports = function (m, fn) {
     fn.sessions.getSales = function (session_id) {
         return new Promise((resolve, reject) => {
             m.payments.findAll({
-                where:   {type: {[op.or]: ['Cash', 'cash']}},
+                where:   {type: {[fn.op.or]: ['Cash', 'cash']}},
                 include: [fn.inc.canteen.sale({where: {session_id: session_id}, required: true})]
             })
             .then(payments => {

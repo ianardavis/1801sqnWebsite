@@ -19,14 +19,15 @@ function getLines() {
                     add_cell(row, {text: line.qty});
                     add_cell(row, {
                         text: line_statuses[line.status],
-                        append: new Hidden({
+                        append: new Hidden_Input({
                             attributes: [
                                 {field: 'name',  value: `lines[][${row_index}][line_id]`},
                                 {field: 'value', value: line.line_id}
                             ]
                         }).e
                     });
-                    let radios = [], args = [line.line_id, row_index];
+                    let radios = [];
+                    let args = [line.line_id, row_index];
                     if (line.status === 1) {
                         if (typeof nil_radio    === 'function') radios.push(nil_radio(   ...args));
                         if (typeof cancel_radio === 'function') radios.push(cancel_radio(...args));
@@ -34,14 +35,14 @@ function getLines() {
                     radios.push(new Div({attributes: [{field: 'id', value: `${line.line_id}_details`}]}).e);
                     add_cell(row, {append: radios});
                     add_cell(row, {append: 
-                        new Button({
-                            small: true,
-                            modal: 'line_view',
-                            data: [{
+                        new Modal_Button(
+                            _search(),
+                            'line_view',
+                            [{
                                 field: 'id',
                                 value: line.line_id
                             }]
-                        }).e
+                        ).e
                     });
                 } catch (error) {
                     console.log(`Error loading line ${line.line_id}:`)

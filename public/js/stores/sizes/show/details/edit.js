@@ -21,15 +21,16 @@ function addDetailEditBtn(detail_id) {
             where: {detail_id: detail_id},
         })
         .then(function ([detail, options]) {
-            detail_edit_btn.appendChild(new Button({
-                classes: ['float-end'],
-                modal:   'detail_edit',
-                data:    [
+            detail_edit_btn.appendChild(new Modal_Button(
+                _search(),
+                'detail_edit',
+                [
                     {field: 'id', value: detail.detail_id},
                     {field: 'bs-dismiss', value: 'modal'}
                 ],
-                type: 'edit',
-            }).e);
+                false,
+                {classes: ['float-end']}
+            ).e);
         });
     });
 };

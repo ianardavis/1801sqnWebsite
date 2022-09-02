@@ -19,11 +19,11 @@ function getIssues() {
                     add_cell(row, {text: print_user(issue.user_issue)});
                     add_cell(row, {text: issue.qty});
                     add_cell(row, {text: issue_statuses[issue.status]});
-                    add_cell(row, {append: new Button({
-                        modal: 'issue_view',
-                        data: [{field: 'id', value: issue.issue_id}],
-                        small: true
-                    }).e});
+                    add_cell(row, {append: new Modal_Button(
+                        _search(),
+                        'issue_view',
+                        [{field: 'id', value: issue.issue_id}]
+                    ).e});
                 } catch (error) {
                     console.log(error);
                 };

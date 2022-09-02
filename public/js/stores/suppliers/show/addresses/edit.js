@@ -27,11 +27,11 @@ function addAddressEditBtn(address_id) {
             where: {supplier_address_id: address_id}
         })
         .then(function ([address, options]) {
-            address_edit_btn.appendChild(new Button({
-                modal:   'address_edit',
-                data:    [{field: 'id', value: address.supplier_address_id}],
-                type:    'edit',
-            }).e);
+            address_edit_btn.appendChild(new Modal_Button(
+                _search(),
+                'address_edit',
+                [{field: 'id', value: address.supplier_address_id}]
+            ).e);
         });
     });
 };

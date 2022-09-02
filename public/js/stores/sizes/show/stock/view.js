@@ -13,7 +13,7 @@ function getStocks() {
                     let row = tbl_stocks.insertRow(-1);
                     add_cell(row, {text: stock.location.location});
                     add_cell(row, {text: stock.qty || '0'});
-                    add_cell(row, {append: new Link({href: `/stocks/${stock.stock_id}`}).e});
+                    add_cell(row, {append: new Link(`/stocks/${stock.stock_id}`).e});
                 } catch (error) {console.log(error)};
             });
         });

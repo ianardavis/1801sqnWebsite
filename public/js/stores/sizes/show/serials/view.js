@@ -13,7 +13,7 @@ function getSerials() {
                     let row = tbl_serials.insertRow(-1);
                     add_cell(row, {text: serial.serial});
                     add_cell(row, {text: (serial.location ? serial.location.location : (serial.issue ? 'Issued' : 'Unknown'))});
-                    add_cell(row, {append: new Link({href: `/serials/${serial.serial_id}`}).e});
+                    add_cell(row, {append: new Link(`/serials/${serial.serial_id}`).e});
                 } catch (error) {
                     console.log(error);
                 };

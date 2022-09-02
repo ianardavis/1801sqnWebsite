@@ -34,7 +34,7 @@ function getSizes() {
                     add_cell(row, {text: size.size1});
                     add_cell(row, {text: size.size2});
                     add_cell(row, {text: size.size3});
-                    add_cell(row, {append: new Link({href: `/sizes/${size.size_id}`}).e});
+                    add_cell(row, {append: new Link(`/sizes/${size.size_id}`).e});
                 });
             });
         };

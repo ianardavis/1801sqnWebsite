@@ -1,4 +1,4 @@
-let getGenders = listGenders();
+const getGenders = listGenders();
 function getItems() {
     clear('tbl_items')
     .then(tbl_items => {
@@ -18,7 +18,7 @@ function getItems() {
             result.items.forEach(item => {
                 let row = tbl_items.insertRow(-1);
                 add_cell(row, {text: item.description});
-                add_cell(row, {append: new Link({href: `/items/${item.item_id}`}).e});
+                add_cell(row, {append: new Link(`/items/${item.item_id}`).e});
             });
         });
     });

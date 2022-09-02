@@ -2,12 +2,12 @@ function settingEditBtn(setting_id) {
     clear('setting_edit')
     .then(span_edit => {
         span_edit.appendChild(
-            new Link({
-                modal: 'setting_edit',
-                type: 'edit',
-                data:  [{field: 'id', value: setting_id}],
-                large: true
-            }).e
+            new Modal_Button(
+                _edit(),
+                'setting_edit',
+                [{field: 'id', value: setting_id}],
+                false
+            ).e
         );
     });
 };

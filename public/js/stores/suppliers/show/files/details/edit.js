@@ -19,11 +19,11 @@ function addDetailEditBtns() {
         })
         .then(function ([detail, options]) {
             e.appendChild(
-                new Link({
-                    modal: 'file_detail_edit',
-                    data:  [{field: 'id', value: detail.file_detail_id}],
-                    type:  'edit'
-                }).e
+                new Modal_Button(
+                    _edit(),
+                    'file_detail_edit',
+                    [{field: 'id', value: detail.file_detail_id}]
+                ).e
             );
         });
     });

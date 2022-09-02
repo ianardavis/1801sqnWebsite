@@ -18,7 +18,7 @@ function getIssues() {
                 add_cell(row, {text: issue.qty});
                 add_cell(row, {
                     text: issue_statuses[issue.status] || 'Unknown',
-                    append: new Hidden({
+                    append: new Hidden_Input({
                         attributes: [
                             {field: 'name',  value: `lines[][${row_index}][issue_id]`},
                             {field: 'value', value: issue.issue_id}
@@ -71,7 +71,7 @@ function getIssues() {
                     id: `row_${issue.issue_id}`,
                     append: radios
                 });
-                add_cell(row, {append: new Link({href: `/issues/${issue.issue_id}`}).e});
+                add_cell(row, {append: new Link(`/issues/${issue.issue_id}`).e});
                 row_index ++;
             });
             hide_spinner('issues');

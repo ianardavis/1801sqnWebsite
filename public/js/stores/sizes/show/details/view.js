@@ -11,11 +11,11 @@ function getDetails() {
                 let row = tbl_details.insertRow(-1);
                 add_cell(row, {text: detail.name});
                 add_cell(row, {text: detail.value});
-                add_cell(row, {append: new Button({
-                    modal: 'detail_view',
-                    data: [{field: 'id', value: detail.detail_id}],
-                    small: true
-                }).e});
+                add_cell(row, {append: new Modal_Button(
+                    _search(),
+                    'detail_view',
+                    [{field: 'id', value: detail.detail_id}]
+                ).e});
             });
         });
     });

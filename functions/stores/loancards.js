@@ -1,5 +1,4 @@
 module.exports = function (m, fn) {
-    let op = require('sequelize').Op;
     fn.loancards = {lines: {}};
     fn.loancards.get = function (loancard_id) {
         return new Promise((resolve, reject) => {
@@ -170,7 +169,7 @@ module.exports = function (m, fn) {
                     m.loancard_lines.count({
                         where: {
                             loancard_id: loancard.loancard_id,
-                            status: {[op.or]: catch_opts}
+                            status: {[fn.op.or]: catch_opts}
                         }
                     })
                     .then(line_count => {
@@ -240,7 +239,7 @@ module.exports = function (m, fn) {
                     m.loancard_lines.findAll({
                         where: {
                             loancard_id: loancard.loancard_id,
-                            status:      {[op.or]: [1, 2]}
+                            status:      {[fn.op.or]: [1, 2]}
                         }
                     })
                     .then(lines => {
@@ -269,7 +268,7 @@ module.exports = function (m, fn) {
                                 {status: 2},
                                 {where: {
                                     loancard_id: loancard.loancard_id,
-                                    status:      {[op.or]: [1, 2]}
+                                    status:      {[fn.op.or]: [1, 2]}
                                 }}
                             ));
                             Promise.all(actions)
@@ -297,7 +296,7 @@ module.exports = function (m, fn) {
                 m.loancard_lines.count({
                     where: {
                         loancard_id: loancard.loancard_id,
-                        status:   {[op.or]: [1, 2]}
+                        status:   {[fn.op.or]: [1, 2]}
                     }
                 })
                 .then(line_count => {
@@ -428,9 +427,9 @@ module.exports = function (m, fn) {
                 include: [{
                     model: m.actions,
                     where: {
-                        action: {[op.or]: [
+                        action: {[fn.op.or]: [
                             'LOANCARD LINE | CREATED',
-                            {[op.startsWith]: 'LOANCARD LINE | INCREMENTED'}
+                            {[fn.op.startsWith]: 'LOANCARD LINE | INCREMENTED'}
                         ]}
                     },
                     include: [{
@@ -744,9 +743,9 @@ module.exports = function (m, fn) {
                 include: [{
                     model: m.actions,
                     where: {action: 
-                        {[op.or]: [
+                        {[fn.op.or]: [
                             'LOANCARD LINE | CREATED',
-                            {[op.startsWith]: 'LOANCARD LINE | INCREMENTED'}
+                            {[fn.op.startsWith]: 'LOANCARD LINE | INCREMENTED'}
                         ]}
                     },
                     include: [{

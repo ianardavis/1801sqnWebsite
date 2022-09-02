@@ -17,7 +17,7 @@ function getOrders() {
                 add_cell(row, {text: order.qty});
                 add_cell(row, {
                     text: order_statuses[order.status] || 'Unknown',
-                    append: new Hidden({
+                    append: new Hidden_Input({
                         attributes: [
                             {field: 'name',  value: `lines[][${row_index}][order_id]`},
                             {field: 'value', value: order.order_id}
@@ -52,7 +52,7 @@ function getOrders() {
                     id: `${order.order_id}_row`,
                     append: radios
                 });
-                add_cell(row, {append: new Link({href: `/orders/${order.order_id}`}).e});
+                add_cell(row, {append: new Link(`/orders/${order.order_id}`).e});
                 row_index++;
             });
         });

@@ -11,11 +11,11 @@ function getGiftaids()
                 let row = tbl_giftaid.insertRow(-1);
                 add_cell(row, table_date(giftaid.startDate));
                 add_cell(row, table_date(giftaid.endDate));
-                add_cell(row, {append: new Button({
-                    modal: 'giftaid_view',
-                    data: [{field: 'id', value: giftaid.giftaid_id}],
-                    small: true
-                }).e});
+                add_cell(row, {append: new Modal_Button(
+                    _search(),
+                    'giftaid_view',
+                    [{field: 'id', value: giftaid.giftaid_id}]
+                ).e});
             })
         });
     });

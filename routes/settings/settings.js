@@ -1,7 +1,6 @@
 const ptp = require('pdf-to-printer'),
       fs  = require("fs");
 module.exports = (app, m, fn) => {
-    const execSync = require('child_process').execSync;
     app.get('/settings',        fn.loggedIn(), fn.permissions.get('access_settings'),   (req, res) => res.render('settings/show'));
 
     app.get('/get/settings',    fn.loggedIn(), fn.permissions.check('access_settings'), (req, res) => {
@@ -16,8 +15,11 @@ module.exports = (app, m, fn) => {
     app.get('/get/setting',     fn.loggedIn(), fn.permissions.check('access_settings'), (req, res) => {
         m.settings.findOne({where: req.query.where})
         .then(setting => {
-            if (setting) res.send({success: true, result: setting})
-            else res.send({success: false, message: 'Setting not found'});
+            if (setting) {
+                res.send({success: true, result: setting});
+            } else {
+                res.send({success: false, message: 'Setting not found'});
+            };
         })
         .catch(err => fn.send_error(res, err));
     });
@@ -36,7 +38,9 @@ module.exports = (app, m, fn) => {
                 readStream.on('open',  ()  => {readStream.pipe(res)});
                 readStream.on('close', ()  => {res.end()});
                 readStream.on('error', err => {res.end(err)});
-            } else fn.send_error(res, 'Multiple log locations');
+            } else {
+                fn.send_error(res, 'Multiple log locations');
+            };
         })
         .catch(err => fn.send_error(res, err));
     });
@@ -60,7 +64,7 @@ module.exports = (app, m, fn) => {
     });
     app.post('/logs_flush',     fn.loggedIn(), fn.permissions.check('access_settings'), (req, res) => {
         try {
-            const output = execSync('pm2 flush app', { encoding: 'utf-8' });
+            const output = fn.run_cmd('pm2 flush app');
             console.log(output);
             res.send({success: true, message: 'Logs flushed'});
         } catch (err) {
@@ -69,7 +73,7 @@ module.exports = (app, m, fn) => {
     });
     app.post('/git_pull',       fn.loggedIn(), fn.permissions.check('access_settings'), (req, res) => {
         try {
-            const output = execSync(`git  -C ${process.env.ROOT} pull`, { encoding: 'utf-8' });
+            const output = fn.run_cmd(`git  -C ${process.env.ROOT} pull`);
             console.log(output);
             res.send({success: true, message: 'Git pulled'});
         } catch (err) {
@@ -78,7 +82,7 @@ module.exports = (app, m, fn) => {
     });
     app.post('/pm2_reload',     fn.loggedIn(), fn.permissions.check('access_settings'), (req, res) => {
         try {
-            const output = execSync('pm2 reload app', { encoding: 'utf-8' });
+            const output = fn.run_cmd('pm2 reload app');
             console.log(output);
             res.send({success: true, message: 'App reloaded'});
         } catch (err) {
@@ -92,12 +96,17 @@ module.exports = (app, m, fn) => {
             if (setting) {
                 setting.destroy()
                 .then(result => {
-                    if (!result) fn.send_error(res, 'Setting not deleted')
-                    else         res.send({success: true,  message: 'Setting deleted'})
+                    if (!result) {
+                        fn.send_error(res, 'Setting not deleted');
+                    } else {
+                        res.send({success: true,  message: 'Setting deleted'});
+                    };
                 })
                 .catch(err => fn.send_error(res, err));
             }
-            else res.send({success: false, message: 'Setting not found'});
+            else {
+                res.send({success: false, message: 'Setting not found'});
+            };
         })
         .catch(err => fn.send_error(res, err));
     });

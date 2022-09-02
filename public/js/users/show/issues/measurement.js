@@ -11,7 +11,7 @@ function get_items() {
                 let row = tbl_items.insertRow(-1);
                 add_cell(row, {append: new Checkbox({
                     small:    true,
-                    listener: get_sizes,
+                    listener: {event: 'input', func: get_sizes},
                     attributes: [
                         {field: 'data-item_id', value: item.item_id},
                         {field: 'data-index',   value: index}
@@ -100,7 +100,7 @@ function get_sizes(event) {
                     index: event.target.dataset.index
                 })
                 .then(function ([result, options]) {
-                    qty_cell.appendChild(new Input({
+                    qty_cell.appendChild(new Text_Input({
                         attributes: [
                             {field: 'name',        value: `issues[sizes][][${options.index}][qty]`},
                             {field: 'value',       value: '1'},

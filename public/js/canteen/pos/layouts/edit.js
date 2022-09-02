@@ -2,16 +2,14 @@ let editMode = false;
 function addEditButtons() {
     console.log('add edit buttons');
     document.querySelectorAll('.edit_dd').forEach(span => {
-        span.appendChild(new Button({
-            small: true,
-            type: 'edit',
-            modal: 'layout_edit',
-            html: '<i class="fas fa-pencil-alt"></i>',
-            data: [
+        span.appendChild(new Modal_Button(
+            _edit(),
+            'layout_edit',
+            [
                 {field: 'page',     value: span.dataset.page},
                 {field: 'position', value: span.dataset.position},
             ]
-        }).e);
+        ).e);
     });
 };
 function removeEditButtons() {

@@ -2,12 +2,12 @@ function genderEditBtn(gender_id) {
     clear('gender_edit')
     .then(span_edit => {
         span_edit.appendChild(
-            new Link({
-                modal: 'gender_edit',
-                type: 'edit',
-                data:  {field: 'id', value: gender_id},
-                large: true
-            }).e
+            new Modal_Button(
+                _edit(),
+                'gender_edit',
+                [{field: 'id', value: gender_id}],
+                false
+            ).e
         );
 
     });

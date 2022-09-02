@@ -1,5 +1,4 @@
 module.exports = function (m, fn) {
-    let op = require('sequelize').Op;
     fn.orders = {};
     fn.orders.get = function (order_id) {
         return m.orders.findOne({
@@ -123,9 +122,9 @@ module.exports = function (m, fn) {
                 include: [{
                     model: m.actions,
                     where: {
-                        action: {[op.or]: [
+                        action: {[fn.op.or]: [
                             'ORDER | CREATED',
-                            {[op.startsWith]: 'ORDER | INCREMENTED'}
+                            {[fn.op.startsWith]: 'ORDER | INCREMENTED'}
                         ]}
                     },
                     include: [{

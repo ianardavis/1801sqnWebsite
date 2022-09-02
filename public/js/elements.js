@@ -6,8 +6,7 @@ function _delete()             {return '<i class="fas fa-trash-alt"></i>'}
 function random_id()           {return Math.floor(Math.random()*10000)};
 
 function List_Item(text, caret) {
-    this.e = document.createElement('li');
-    this.e.classList.add('list-group-item', 'text-start', 'p-4');
+    this.e = new LI({classes: ['list-group-item', 'text-start', 'p-4']}).e;
     this.e.appendChild(
         new Checkbox({
             id: text,
@@ -28,16 +27,21 @@ function List_Item(text, caret) {
         attributes: [{field: 'id', value: `ul_${text}`}]
     }).e);
 };
+function LI(options = {}) {
+    this.e = document.createElement('li');
+    if (options.classes) options.classes.forEach(e => this.e.classList.add(e));
+};
 function Category_LI(options = {}) {
     this.e = document.createElement('li');
     this.e.setAttribute('data-id', options.li_id || random_id);
     this.e.classList.add('list-group-item', 'text-start', 'category_li', 'my-1');
-    this.e.appendChild(new Link({
-        type: 'move',
-        type_attribute: `data-id="${options.li_id || ''}"`,
-        data: [{field: 'id', value: options.li_id || ''}],
-        classes: ['me-1']
-    }).e);
+    this.e.appendChild(new Anchor(
+        _move(` data-id="${options.li_id || ''}"`),
+        {
+            classes: ['btn', 'btn-sm', 'btn-primary', 'me-1'],
+            data: [{field: 'id', value: options.li_id || ''}]
+        }
+    ).e);
     if (options.append) this.e.appendChild(options.append);
     this.e.appendChild(new Span({
         innerText: options.text || '',
@@ -84,99 +88,139 @@ function Form(options = {}) {
     if (options.append)     options.append    .forEach(a => this.e.appendChild(a));
     if (options.attributes) options.attributes.forEach(a => this.e.setAttribute(a.field, a.value));
 };
-function Link(options = {}) {
+function Anchor(innerHTML, options = {}) {
     this.e = document.createElement('a');
-    this.e.classList.add('btn');
-    if (!options.large) this.e.classList.add('btn-sm');
-    if (options.classes) options.classes.forEach(c => this.e.classList.add(c));
-
-    if      (options.type === 'edit') this.e.innerHTML = _edit()
-    else if (options.type === 'move') this.e.innerHTML = _move(options.type_attribute || '')
-    else                              this.e.innerHTML = _search();
-
-    if (options.type === 'edit' || options.type === 'move') this.e.classList.add('btn-success');
-    else                                                    this.e.classList.add('btn-primary');
-
-    if      (options.href) this.e.setAttribute('href', options.href)
-    else if (options.modal) {
-        this.e.setAttribute('data-bs-toggle', 'modal');
-        this.e.setAttribute('data-bs-target', `#mdl_${options.modal}`);
-    };
-    if (options.data) {
-        options.data.forEach(e => this.e.setAttribute(`data-${e.field}`, e.value));
-    };
+    if (options.classes)    options.classes   .forEach(c => this.e.classList.add(c));
+    if (options.attributes) options.attributes.forEach(a => this.e.setAttribute(a.field, a.value));
+    if (options.data)       options.data      .forEach(d => this.e.setAttribute(`data-${d.field}`, d.value));
+    this.e.innerHTML = innerHTML;
+};
+function Modal_Button(image, modal, data, small = true, options = {}) {
+    this.e = new Anchor(
+        image,
+        {
+            classes: ['btn', 'btn-primary'].concat((small ? ['btn-sm'] : [])).concat(options.classes || []),
+            attributes: [
+                {field: 'data-bs-toggle', value: 'modal'},
+                {field: 'data-bs-target', value: `#mdl_${modal}`}
+            ],
+            data: data
+        }
+    ).e;
+};
+function Link(href) {
+    this.e = new Anchor(
+        _search(),
+        {
+            classes: ['btn', 'btn-sm', 'btn-primary'],
+            attributes: [{field: 'href', value: href}]
+        }
+    ).e;
 };
 function Delete_Button(options = {}) {
-    this.e = document.createElement('form');
-    let btn = document.createElement('button');
-    btn.classList.add('btn', 'btn-danger');
-    btn.innerHTML = _delete();
-    if (options.small)  btn.classList.add('btn-sm');
-    this.e.appendChild(btn);
-    this.e.addEventListener("submit", function (event) {
-        event.preventDefault();
-        if (confirm(`Delete ${options.descriptor || `line`}?`)){
-            sendData(this.e, 'DELETE', options.path, options.options || {reload: true});
+    const submit_action = function (event) {
+            event.preventDefault();
+            if (confirm(`Delete ${options.descriptor || `line`}?`)){
+                sendData(this.e, 'DELETE', options.path, options.options || {reload: true});
+            };
         };
-    });
+    this.e = new Form({
+        submit: submit_action
+    }).e;
+
+    this.e.appendChild(new Button({
+        html: _delete(),
+        classes: ['btn-danger'],
+        ...(options.small ? {small: true} : {})
+    }).e);
 };
 function Checkbox(options = {}) {
     if (!options.id) options.id = random_id();
-    this.e = document.createElement('span');
-    let checkbox = document.createElement('input'),
-        label    = document.createElement('label');
-    checkbox.setAttribute('type', 'checkbox');
-    checkbox.setAttribute('autocomplete', 'off');
-    checkbox.setAttribute('id', `chk_${options.id}`);
-    checkbox.classList.add('btn-check');
-    if (options.input_classes) options.input_classes.forEach(c => checkbox.classList.add(c));
-    if (options.attributes)    options.attributes   .forEach(a => checkbox.setAttribute(a.field, a.value));
-    label.classList.add('btn', 'btn-outline-success');
-    label.setAttribute('for', `chk_${options.id}`);
-    label.innerHTML = _check();
-    if (options.small) label.classList.add('btn-sm');
-    if (options.float) this.e.classList.add('float-end');
-    if (options.listener) checkbox.addEventListener('input', options.listener);
-    this.e.appendChild(checkbox);
-    this.e.appendChild(label);
+    this.e = new Span((options.float ? {float: true} : {})).e;
+    
+    this.e.appendChild(new Checkbox_Input({
+        attributes: [{field: 'id', value: `chk_${options.id}`}].concat(options.attributes || []),
+        classes:    ['btn-check'],
+        ...(options.listener ? {listener: options.listener} : {})
+    }).e);
+
+    this.e.appendChild(new Label(
+        _check(),
+        {
+            classes:    ['btn', 'btn-outline-success'].concat((options.small ? ['btn-sm'] : [])),
+            attributes: [{field: 'for', value: `chk_${options.id}`}]
+        }
+    ).e);
+};
+function Label(innerHTML, options = {}) {
+    this.e = document.createElement('label');
+    if (options.classes)    options.classes   .forEach(e => this.e.classList.add(e));
+    if (options.attributes) options.attributes.forEach(a => this.e.setAttribute(a.field, a.value));
+    this.e.innerHTML = innerHTML;
 };
 function Radio(options = {}) {
     if (!options.id) options.id = random_id();
     this.e = document.createElement('span');
     if (options.float_start) this.e.classList.add('float-start');
-    let radio = document.createElement('input'),
-        label = document.createElement('label');
-    radio.setAttribute('type', 'radio');
-    radio.setAttribute('id', `rad_${options.id}`);
-    radio.setAttribute('autocomplete', 'off');
-    radio.classList.add('btn-check');
-    if (options.classes)    options.classes.forEach(c => radio.classList.add(c));
-    if (options.attributes) options.attributes.forEach(a => radio.setAttribute(a.field, a.value));
-    if (options.tip) {
-        label.setAttribute('data-bs-toggle', 'tooltip');
-        label.setAttribute('title', options.tip);
-    };
-    label.classList.add('btn', 'btn-sm', `btn-outline-${options.colour || 'success'}`, 'me-1');
-    label.setAttribute('for', `rad_${options.id}`);
-    label.innerHTML = options.html || _check();
     if (options.float) this.e.classList.add('float-end');
-    if (options.listener) radio.addEventListener(options.listener.event, options.listener.func);
-    this.e.appendChild(radio);
-    this.e.appendChild(label);
+
+    this.e.appendChild(new Radio_Input({
+        attributes: [{field: 'id', value: `rad_${options.id}`}].concat(options.attributes || []),
+        classes:    ['btn-check'].concat(options.classes || []),
+        ...(options.listener ? {listener: options.listener} : {})
+    }).e);
+
+    this.e.appendChild(new Label(
+        options.html || _check(),
+        {
+            classes: ['btn', 'btn-sm', `btn-outline-${options.colour || 'success'}`, 'me-1'],
+            attributes: [
+                {field: 'for', value: `rad_${options.id}`}
+            ].concat((options.tip ? [
+                {field: 'data-bs-toggle', value: 'tooltip'},
+                {field: 'title',          value: options.tip}
+            ] : []))
+        }
+    ).e);
 };
-function Hidden(options = {}) {
-    this.e = document.createElement('input');
-    this.e.setAttribute('type', 'hidden');
-    if (options.classes)    options.classes.forEach(   e => this.e.classList.add(e));
-    if (options.attributes) options.attributes.forEach(a => this.e.setAttribute(a.field, a.value));
+function Radio_Input(options = {}) {
+    this.e = new Input({
+        classes: options.classes || [],
+        attributes: [{field: 'type', value: 'radio'}].concat(options.attributes || []),
+        ...(options.listener ? {listener: options.listener} : {})
+    }).e;
+};
+function Checkbox_Input(options = {}) {
+    this.e = new Input({
+        classes: options.classes || [],
+        attributes: [{field: 'type', value: 'checkbox'}].concat(options.attributes || []),
+        ...(options.listener ? {listener: options.listener} : {})
+    }).e;
+};
+function Hidden_Input(options = {}) {
+    this.e = new Input({
+        classes: options.classes || [],
+        attributes: [{field: 'type', value: 'hidden'}].concat(options.attributes || [])
+    }).e;
+};
+function Number_Input(options = {}) {
+    this.e = new Input({
+        classes:    ['form-control', 'form-control-sm'].concat(options.classes    || []),
+        attributes: [{field: 'type', value: 'number'}] .concat(options.attributes || [])
+    }).e;
+};
+function Text_Input(options = {}) {
+    this.e = new Input({
+        classes:    ['form-control', 'form-control-sm'].concat(options.classes    || []),
+        attributes: [{field: 'type', value: 'text'}]   .concat(options.attributes || [])
+    }).e;
 };
 function Input(options = {}) {
     this.e = document.createElement('input');
-    this.e.setAttribute('type', 'text');
-    this.e.classList.add('form-control', 'form-control-sm');
-    this.e.setAttribute('autocomplete', options.autocomplete || 'off');
-    if (options.classes)    options.classes.forEach(e => this.e.classList.add(e));
+    if (options.classes)    options.classes   .forEach(e => this.e.classList.add(e));
     if (options.attributes) options.attributes.forEach(a => this.e.setAttribute(a.field, a.value));
+    if (options.listener)   this.e.addEventListener(options.listener.event, options.listener.func);
+    this.e.setAttribute('autocomplete', 'off');
 };
 function Tab_Header(id, text) { 
     this.e = document.createElement('li');
@@ -250,6 +294,7 @@ function Option(options = {}) {
     };
     if (options.value) this.e.setAttribute('value', options.value)
     else               this.e.setAttribute('value', '');
+    
     if (options.disabled) this.e.setAttribute('disabled', true);
     this.e.innerText = `${pre_text}${options.text || ''}${_text}`;
 };
@@ -290,10 +335,6 @@ function Notification (options = {}) {
     body.innerText = options.text || '';
     this.e.appendChild(heading);
     this.e.appendChild(body);
-};
-function LI(options = {}) {
-    this.e = document.createElement('li');
-    if (options.classes) options.classes.forEach(e => this.e.classList.add(e));
 };
 function Page_Number(options = {}) {
     this.e = new LI({classes: ['page-item']}).e;

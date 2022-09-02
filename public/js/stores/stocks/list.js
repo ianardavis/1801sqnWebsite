@@ -19,7 +19,7 @@ function getStock(size_id, line_id, cell, entry = false) {
         );
         if (entry === true) {
             _cell.appendChild(
-                new Input({
+                new Text_Input({
                     attributes: [
                         {field: 'name',        value: `actions[${line_id}][location]`},
                         {field: 'placeholder', value: 'Enter Location'}

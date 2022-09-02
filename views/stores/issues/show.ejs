@@ -7,23 +7,19 @@
 	<%- include(`${partials}/sidebar_open`, {id: 'Actions', button_text: 'Actions', sidebar_text: 'Actions'}) %>
         <%- include(`${partials}/button/modal/open`, {text: 'Edit Size',     id: 'size_edit', type: 'warning'}) %>
         <%- include(`${partials}/button/modal/open`, {text: 'Edit Quantity', id: 'qty_edit',  type: 'warning'}) %>
-        <div class="input-group mb-3">
+        <form class="input-group mb-3" id='form_mark_as'>
             <label class="input-group-text" for="sel_mark_as">Mark Issue As:</label>
-            <select class="form-select" id="sel_mark_as">
-                <option value="0" disabled>Cancelled</option>
-                <option value="1" disabled>Requested</option>
-                <option value="2" disabled>Approved</option>
-                <option value="3" disabled>Ordered</option>
-                <option value="4" disabled>Issued</option>
-                <option value="5" disabled>Returned</option>
+            <select class="form-select" id="sel_mark_as" name='issue[status]'>
+                <option value="0" id='btn_mark_0' disabled>Cancelled</option>
+                <option value="1" id='btn_mark_1' disabled>Requested</option>
+                <option value="2" id='btn_mark_2' disabled>Approved </option>
+                <option value="3" id='btn_mark_3' disabled>Ordered  </option>
+                <option value="4" id='btn_mark_4' disabled>Issued   </option>
+                <option value="5" id='btn_mark_5' disabled>Returned </option>
             </select>
-            <button class="btn btn-success" type="button"><i class="fas fa-check"></i></button>
-        </div>
-		<form id="form_delete" class="mt-auto">
-			<button id='btn_delete' type='button' class="btn btn-danger w-100" disabled>
-				Cancel
-			</button>
-		</form>
+            <button class="btn btn-success" type="button" id='btn_mark_as' disabled><i class="fas fa-check"></i></button>
+        </form>
+    	<%- include(`${partials}/button/form`, {id: 'delete', text: 'Cancel', colour: 'danger', align_botton: true}) %>
     <%- include(`${partials}/sidebar_close`) %>
 	<ul class="nav nav-tabs" id="mainTab" role="tablist">
         <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'issue'}) %>

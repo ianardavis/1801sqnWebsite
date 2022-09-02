@@ -14,7 +14,7 @@ function getSizes() {
                 add_cell(row, {
                     text: (stock.location ? stock.location.location : ''),
                     append: [
-                        new Hidden({
+                        new Hidden_Input({
                             attributes: [
                                 {field: 'name',  value: `counts[][${row_index}][stock_id]`},
                                 {field: 'value', value: stock.stock_id}
@@ -25,9 +25,8 @@ function getSizes() {
                 });
                 add_cell(row, {text: stock.qty});
                 add_cell(row, {append: [
-                    new Input({
+                    new Number_Input({
                         attributes: [
-                            {field: 'type',  value: 'number'},
                             {field: 'name',  value: `counts[][${row_index}][qty]`},
                             {field: 'value', value: '0'},
                             {field: 'min',   value: '0'},

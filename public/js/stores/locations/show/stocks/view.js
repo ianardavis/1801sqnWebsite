@@ -13,11 +13,11 @@ function getStocks() {
                 add_cell(row, {text: stock.size.item.description});
                 add_cell(row, {text: print_size(stock.size)});
                 add_cell(row, {text: stock.qty || '0'});
-                add_cell(row, {append: new Button({
-                    modal: 'stock_view',
-                    data: [{field: 'id', value: stock.stock_id}],
-                    small: true
-                }).e});
+                add_cell(row, {append: new Modal_Button(
+                    _search(),
+                    'stock_view',
+                    [{field: 'id', value: stock.stock_id}]
+                ).e});
             });
         });
     });

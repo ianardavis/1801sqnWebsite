@@ -1,5 +1,6 @@
+const execSync = require('child_process').execSync;
 module.exports = function (m, fn) {
-    let op = require('sequelize').Op;
+    fn.op = require('sequelize').Op;
     fn.send_error = function (res, err) {
         if (err.message) console.log(err);
         res.send({success: false, message: err.message || err});
@@ -107,7 +108,7 @@ module.exports = function (m, fn) {
         
         if (query.where.status && query.where.status.length > 0) {
             where.status = {
-                [op.or]: (
+                [fn.op.or]: (
                     Array.isArray(query.where.status) ?
                         query.where.status :
                         [query.where.status]
@@ -126,17 +127,17 @@ module.exports = function (m, fn) {
         if (query.gt || query.lt) {
             if (query.gt && query.lt) {
                 where.createdAt = {
-                    [op.between]: [query.gt.value, query.lt.value]
+                    [fn.op.between]: [query.gt.value, query.lt.value]
                 }
             };
             if (query.gt && !query.lt) {
                 where.createdAt = {
-                    [op.gt]: query.gt.value
+                    [fn.op.gt]: query.gt.value
                 }
             };
             if (!query.gt && query.lt) {
                 where.createdAt = {
-                    [op.lt]: query.lt.value
+                    [fn.op.lt]: query.lt.value
                 }
             };
         };
@@ -152,5 +153,8 @@ module.exports = function (m, fn) {
     };
     fn.public_file = function (folder, file) {
         return `${process.env.ROOT}/public/res/${folder}/${file}`;
+    };
+    fn.run_cmd = function (cmd) {
+        return execSync(cmd, { encoding: 'utf-8' });
     };
 };

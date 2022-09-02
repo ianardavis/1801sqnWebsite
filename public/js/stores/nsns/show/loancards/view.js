@@ -13,11 +13,11 @@ function getLoancards() {
                 add_cell(row, table_date(line.createdAt));
                 add_cell(row, {text: print_user(line.loancard.user_loancard)});
                 add_cell(row, {text: line.status});
-                add_cell(row, {append: new Button({
-                    modal: 'loancard_view',
-                    data: [{field: 'id', value: line.loancard_line_id}],
-                    small: true
-                }).e});
+                add_cell(row, {append: new Modal_Button(
+                    _search(),
+                    'loancard_view',
+                    [{field: 'id', value: line.loancard_line_id}]
+                ).e});
             });
         })
     });

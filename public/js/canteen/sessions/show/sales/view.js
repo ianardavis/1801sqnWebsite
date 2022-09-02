@@ -18,7 +18,7 @@ function getSales() {
                     add_cell(row, {text: print_user(sale.user)});
                     add_cell(row, {text: sale.lines.length});
                     add_cell(row, {text: sale_statuses[sale.status] || 'Unknown'});
-                    add_cell(row, {append: new Link({href: `/sales/${sale.sale_id}`}).e});
+                    add_cell(row, {append: new Link(`/sales/${sale.sale_id}`).e});
                     sale.lines.forEach(line => {
                         takings += (line.qty * line.item.price);
                         let current = items.find(e => e.item_id === line.item_id);
@@ -42,7 +42,7 @@ function getSales() {
                     add_cell(row, {text: item.name});
                     add_cell(row, {text: item.sales});
                     add_cell(row, {text: item.qty});
-                    add_cell(row, {append: new Link({href: `/canteen_items/${item.item_id}`}).e});
+                    add_cell(row, {append: new Link(`/canteen_items/${item.item_id}`).e});
                 });
             });
         });

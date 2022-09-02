@@ -12,7 +12,7 @@ function getWriteoffs() {
                 add_cell(row, {text: writeoff.item.name});
                 add_cell(row, {text: writeoff.reason});
                 add_cell(row, {text: writeoff.qty});
-                add_cell(row, {append: new Link({href: `/writeoffs/${writeoff.writeoff_id}`}).e})});
+                add_cell(row, {append: new Link(`/writeoffs/${writeoff.writeoff_id}`).e})});
         });
     });
 };

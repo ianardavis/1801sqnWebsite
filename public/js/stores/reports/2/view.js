@@ -30,7 +30,7 @@ function getLines() {
                         : {}
                     )
                 });
-                add_cell(row, {append: new Link({href: `/loancards/${line.loancard_id}`}).e});
+                add_cell(row, {append: new Link(`/loancards/${line.loancard_id}`).e});
                 row_index++
             });
             return true;

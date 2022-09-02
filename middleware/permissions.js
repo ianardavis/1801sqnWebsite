@@ -44,11 +44,11 @@ module.exports = (m, fn) => {
                 if (permission || allow) {
                     req.allowed = (permission);
                     next();
-                } else res.send({success: false, error: `Permission denied - ${_permission}`});
+                } else res.send({success: false, message: `Permission denied - ${_permission}`});
             })
             .catch(err => {
                 console.log(err);
-                res.send({success: false, error: `Error getting permission - ${err.message}`})
+                res.send({success: false, message: `Error getting permission - ${err.message}`})
             });
         };
     };

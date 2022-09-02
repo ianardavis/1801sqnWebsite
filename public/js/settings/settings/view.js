@@ -10,14 +10,14 @@ function getSettings() {
                 add_cell(row, {text: setting.name});
                 add_cell(row, {text: setting.value});
                 add_cell(row, {append:
-                    new Button({
-                        modal: 'setting_view',
-                        data: [{
+                    new Modal_Button(
+                        _search(),
+                        'setting_view',
+                        [{
                             field: 'id',
                             value: setting.setting_id
-                        }],
-                        small: true
-                    }).e
+                        }]
+                    ).e
                 })
             });
             if (typeof settingsEditBtns === 'function') settingsEditBtns();

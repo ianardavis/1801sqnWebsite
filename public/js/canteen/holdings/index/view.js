@@ -10,7 +10,7 @@ function getHoldings() {
                 let row = tbl_holdings.insertRow(-1);
                 add_cell(row, {text: holding.description});
                 add_cell(row, {text: `£${Number(holding.cash).toFixed(2)}`});
-                add_cell(row, {append: new Link({href: `/holdings/${holding.holding_id}`}).e});
+                add_cell(row, {append: new Link(`/holdings/${holding.holding_id}`).e});
             });
         });
     });

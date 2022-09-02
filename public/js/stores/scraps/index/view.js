@@ -20,7 +20,7 @@ function getScraps() {
                 add_cell(row, {text: scrap.supplier.name});
                 add_cell(row, {text: scrap.lines.length || '0'});
                 add_cell(row, {text: scrap_statuses[scrap.status]});
-                add_cell(row, {append: new Link({href: `/scraps/${scrap.scrap_id}`}).e});
+                add_cell(row, {append: new Link(`/scraps/${scrap.scrap_id}`).e});
             });
         });
     });

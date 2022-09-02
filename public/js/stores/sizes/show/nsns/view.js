@@ -14,10 +14,11 @@ function getNSNs() {
                     add_cell(row, {text: print_nsn(nsn)});
                     add_cell(row, {html: (nsn.size.nsn_id === nsn.nsn_id ? '<i class="fas fa-check"></i>' : '')});
                     add_cell(row, {
-                        append: new Link({
-                            data:  [{field: 'nsn_id', value: nsn.nsn_id}],
-                            modal: 'nsn_view'
-                        }).e}
+                        append: new Modal_Button(
+                            _search(),
+                            'nsn_view',
+                            [{field: 'nsn_id', value: nsn.nsn_id}]
+                        ).e}
                     );
                 } catch (error) {console.log(error)};
             });

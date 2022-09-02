@@ -13,10 +13,11 @@ function getFiles() {
                 add_cell(row, {text: file.filename})
                 add_cell(row, {text: file.description});
                 add_cell(row, {
-                    append: new Link({
-                        modal: 'file_view',
-                        data: [{field: 'id', value: file.file_id}]
-                    }).e
+                    append: new Modal_Button(
+                        _search(),
+                        'file_view',
+                        [{field: 'id', value: file.file_id}]
+                    ).e
                 });
             });
         });

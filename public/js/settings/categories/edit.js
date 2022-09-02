@@ -2,12 +2,12 @@ function categoryEditBtn(category_id) {
     clear('category_edit')
     .then(span_edit => {
         span_edit.appendChild(
-            new Link({
-                modal: 'category_edit',
-                type:  'edit',
-                data:  {field: 'id', value: category_id},
-                large: true
-            }).e
+            new Modal_Button(
+                _edit(),
+                'category_edit',
+                [{field: 'id', value: category_id}],
+                false
+            ).e
         );
     });
 };
