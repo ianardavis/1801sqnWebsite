@@ -4,9 +4,10 @@
 <%- include(`${partials}/spinner`, {id: 'suppliers'}) %>
 <%- include(`${partials}/head/components/close`) %>
 <section class="container">
-	<%- include(`${partials}/sidebar_open`, {id: 'Actions', button_text: 'Actions', sidebar_text: 'Actions'}) %>
+    <%- include(`${partials}/sidebar/button`, {id: 'actions', text: 'Actions', float: true}) %>
+	<%- include(`${partials}/sidebar/open`, {id: 'actions', text: 'Actions'}) %>
 		<%- include(`${partials}/button/modal/open`, {id: 'supplier_add', text: 'Add Supplier', type: 'success'}) %>
-	<%- include(`${partials}/sidebar_close`) %>
+	<%- include(`${partials}/sidebar/close`) %>
     <div class="row">
 		<%- include(`${partials}/sort`, {table: 'suppliers'}) %>
 		<div class="col-12 col-md-8 mb-1">

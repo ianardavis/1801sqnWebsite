@@ -4,24 +4,29 @@
 <%- include(`${partials}/spinner`, {id: 'items'}) %>
 <%- include(`${partials}/head/components/close`) %>
 <section class='container'>
-	<%- include(`${partials}/sidebar_open`, {id: 'Actions', button_text: 'Actions', sidebar_text: 'Actions'}) %>
+
+	<%- include(`${partials}/sidebar/button`, {id: 'actions', text: 'Actions', float: true}) %>
+	<%- include(`${partials}/sidebar/open`, {id: 'actions', text: 'Actions'}) %>
 		<%- include(`${partials}/button/modal/open`, {text: 'New Item', id: 'item_add', type: 'success'}) %>
-	<%- include(`${partials}/sidebar_close`) %>
-	<div class="row justify-content-between">
-		<%- include(`${partials}/sort`, {table: 'items'}) %>
-		<div class="col-12 col-md-4 mb-1">
-			<%- include(`${partials}/sidebar_button`, {id: 'ItemsFilter', text: 'Filter'}) %>
-		</div>
-	</div>
-	<%- include(`${partials}/sidebar_open`, {id: 'ItemsFilter', sidebar_text: 'Filter'}) %>
+	<%- include(`${partials}/sidebar/close`) %>
+
+	<%- include(`${partials}/sidebar/open`, {id: 'filter', text: 'Filter'}) %>
 		<%- include(`${partials}/inputs/select`, {id: 'sel_genders', 	  title: 'Genders', spinner_id: 'genders', reload_id: 'reload_genders', multiple: true, size: '3'}) %>
 		<%- include(`${partials}/inputs/text`,   {id: 'item_description', title: 'Description'}) %>
-	<%- include(`${partials}/sidebar_close`) %>
-	<div class="row">
-		<div class="col-12 col-lg-5 mx-auto">
+	<%- include(`${partials}/sidebar/close`) %>
+	
+	<div class='row justify-content-between'>
+		<%- include(`${partials}/sort`, {table: 'items'}) %>
+		<div class='col-12 col-md-4 mb-1'>
+			<%- include(`${partials}/sidebar/button`, {id: 'filter', text: 'Filter'}) %>
+		</div>
+	</div>
+
+	<div class='row'>
+		<div class='col-12 col-lg-5 mx-auto'>
 	        <table class='table table-sm table-hover'>
 				<thead class='thead-dark'>
-					<th class='w-100'>Description</th>
+					<th class='w-100 sort' data-sort-column='description' data-sort-func='getItems()'>Description</th>
 					<th><i class='fas fa-search'></i></th>
 				</thead>
 				<tbody id='tbl_items'></tbody>
@@ -29,23 +34,24 @@
 			<%- include(`${partials}/limit`, {table: 'items'}) %>
 		</div>
 	</div>
-	<div id="div_modals">
+
+	<div id='div_modals'>
 		<% if (permissions.stores_stock_admin) { %>
-			<div id='mdl_item_add' class="modal fade" tabindex="-1" role="dialog">
-				<div class="modal-dialog" role="document">
-					<form class="modal-content" id='form_item_add'>
-						<div class="modal-header">
-							<h5 class="modal-title">Add Item</h5>
+			<div id='mdl_item_add' class='modal fade' tabindex='-1' role='dialog'>
+				<div class='modal-dialog' role='document'>
+					<form class='modal-content' id='form_item_add'>
+						<div class='modal-header'>
+							<h5 class='modal-title'>Add Item</h5>
 						</div>
-						<div class="modal-body">
-                            <datalist id="list_descriptions"></datalist>
+						<div class='modal-body'>
+                            <datalist id='list_descriptions'></datalist>
 							<%- include(`${partials}/inputs/text`,	 {title: 'Description', name: 'item[description]', required: true}) %>
 							<%- include(`${partials}/inputs/text`,	 {title: 'Size Text 1',	name: 'item[size_text1]',  list_id: 'list_descriptions',  required: true}) %>
 							<%- include(`${partials}/inputs/text`,	 {title: 'Size Text 2',	name: 'item[size_text2]',  list_id: 'list_descriptions'}) %>
 							<%- include(`${partials}/inputs/text`,	 {title: 'Size Text 3',	name: 'item[size_text3]',  list_id: 'list_descriptions'}) %>
 							<%- include(`${partials}/inputs/select`, {title: 'Gender',		name: 'item[gender_id]',   id: 'sel_genders_add', spinner_id: 'genders_add', reload_id: 'reload_genders_add'}) %>
 						</div>
-						<div class="modal-footer">
+						<div class='modal-footer'>
 							<%- include(`${partials}/button/save`) %>
 						</div>
 					</form>
@@ -55,10 +61,10 @@
 	</div>
 </section>
 <%- include(`${partials}/foot/app`) %>
-<script src="/js/utils/list/genders.js"></script>
-<script src="/js/stores/items/index/view.js"></script>
+<script src='/js/utils/list/genders.js'></script>
+<script src='/js/stores/items/index/view.js'></script>
 <% if (permissions.stores_stock_admin) { %>
-	<script src="/js/stores/items/size_descriptions.js"></script>
-	<script src="/js/stores/items/index/add.js"></script>
+	<script src='/js/stores/items/size_descriptions.js'></script>
+	<script src='/js/stores/items/index/add.js'></script>
 <% } %>
 <%- include(`${partials}/foot/components/htmlClose`) %>

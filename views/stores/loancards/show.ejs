@@ -4,13 +4,14 @@
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/head/components/close`) %>
 <section class='container'>
-	<%- include(`${partials}/sidebar_open`, {id: 'Actions', button_text: 'Actions', sidebar_text: 'Actions'}) %>
+    <%- include(`${partials}/sidebar/button`, {id: 'actions', text: 'Actions', float: true}) %>
+	<%- include(`${partials}/sidebar/open`, {id: 'actions', text: 'Actions'}) %>
 		<%- include(`${partials}/button/modal/open`, {id: 'loancard_complete', text: 'Complete', type: 'success'}) %>
 		<%- include(`${partials}/button/form`, 	 {id: 'loancard_file_download', text: 'Download File', colour: 'success'}) %>
 		<%- include(`${partials}/button/form`, 	 {id: 'loancard_file_print', 	text: 'Print File',    colour: 'primary'}) %>
 		<%- include(`${partials}/button/form`, 	 {id: 'loancard_file_delete', 	text: 'Delete File',   colour: 'danger'}) %>
 		<%- include(`${partials}/button/form`, 	 {id: 'delete', 			 	text: 'Cancel', 	   colour: 'danger', align_botton: true}) %>
-    <%- include(`${partials}/sidebar_close`) %>
+    <%- include(`${partials}/sidebar/close`) %>
 	<ul class="nav nav-tabs" id="mainTab" role="tablist">
         <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'loancard'}) %>
         <%- include(`${partials}/tab_head`, {id: 'lines',   title: 'Lines',	  spinner: 'loancard_lines', count_id: 'line'}) %>

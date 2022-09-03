@@ -8,10 +8,10 @@
 	<div class="row justify-content-between">
 		<%- include(`${partials}/sort`, {table: 'order'}) %>
 		<div class="col-12 col-md-4 mb-1">
-			<%- include(`${partials}/sidebar_button`, {id: 'OrdersFilter', text: 'Filter/Actions'}) %>
+			<%- include(`${partials}/sidebar/button`, {id: 'filter', text: 'Filter/Actions'}) %>
 		</div>
 	</div>
-	<%- include(`${partials}/sidebar_open`, {id: 'OrdersFilter', sidebar_text: 'Filter'}) %>
+	<%- include(`${partials}/sidebar/open`, {id: 'filter', text: 'Filter'}) %>
 		<%- include(`${partials}/button/modal/open`, {text: 'New Order', id: 'order_add', type: 'success'}) %>
 		<div class="input-group mb-1">
 			<span class="input-group-text w-30">Status</span>
@@ -28,7 +28,7 @@
 		<button class="btn btn-success w-100 mt-auto" form="form_order_edit">
 			Action Selected Orders
 		</button>
-	<%- include(`${partials}/sidebar_close`) %>
+	<%- include(`${partials}/sidebar/close`) %>
 	<% if (permissions.stores_stock_admin) { %><form id='form_order_edit'><% } %>
 		<table class="table table-sm table-hover">
 			<thead class="thead-dark">

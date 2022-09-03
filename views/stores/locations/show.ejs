@@ -4,10 +4,11 @@
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/head/components/close`) %>
 <section class='container'>
-    <%- include(`${partials}/sidebar_open`, {id: 'Actions', button_text: 'Actions', sidebar_text: 'Actions'}) %>
+    <%- include(`${partials}/sidebar/button`, {id: 'actions', text: 'Actions', float: true}) %>
+    <%- include(`${partials}/sidebar/open`, {id: 'actions', text: 'Actions'}) %>
         <%- include(`${partials}/button/modal/open`, {id: 'location_edit', text: 'Edit', type: 'warning', modal: 'location_edit'}) %>
         <%- include(`${partials}/button/delete`) %>
-    <%- include(`${partials}/sidebar_close`) %>
+    <%- include(`${partials}/sidebar/close`) %>
     <ul class="nav nav-tabs" id="mainTab" role="tablist">
         <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'location'}) %>
         <%- include(`${partials}/tab_head`, {id: 'stocks',  title: 'Stock',   spinner: 'stocks',  count_id: 'stock'}) %>

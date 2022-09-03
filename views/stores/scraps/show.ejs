@@ -4,14 +4,15 @@
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/head/components/close`) %>
 <section class='container'>
-	<%- include(`${partials}/sidebar_open`, {id: 'Actions', button_text: 'Actions', sidebar_text: 'Actions'}) %>
+    <%- include(`${partials}/sidebar/button`, {id: 'actions', text: 'Actions', float: true}) %>
+	<%- include(`${partials}/sidebar/open`, {id: 'actions', text: 'Actions'}) %>
 		<%- include(`${partials}/button/form`, 	 {id: 'scrap_complete', 	 text: 'Complete', 		colour: 'success'}) %>
 		<%- include(`${partials}/button/form`, 	 {id: 'scrap_file_download', text: 'Download File', colour: 'success'}) %>
 		<%- include(`${partials}/button/form`, 	 {id: 'scrap_file_print', 	 text: 'Print File', 	colour: 'primary'}) %>
 		<%- include(`${partials}/button/form`, 	 {id: 'scrap_file_delete', 	 text: 'Delete File', 	colour: 'danger'}) %>
 		<%- include(`${partials}/button/button`, {id: 'lines_action', 		 text: 'Action Lines', 	colour: 'success'}) %>
 		<%- include(`${partials}/button/form`, 	 {id: 'delete', 			 text: 'Cancel', 		colour: 'danger', align_botton: true}) %>
-    <%- include(`${partials}/sidebar_close`) %>
+    <%- include(`${partials}/sidebar/close`) %>
 	<ul class="nav nav-tabs" id="mainTab" role="tablist">
         <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'scrap'}) %>
         <%- include(`${partials}/tab_head`, {id: 'lines',   title: 'Lines',	  spinner: 'scrap_lines', count_id: 'line'}) %>
@@ -33,10 +34,10 @@
 			<div class="row justify-content-between">
 				<%- include(`${partials}/sort`, {table: 'scrap_lines'}) %>
 				<div class="col-12 col-md-4 mb-1">
-					<%- include(`${partials}/sidebar_button`, {id: 'linesFilter', text: 'Filter'}) %>
+					<%- include(`${partials}/sidebar/button`, {id: 'lines_filter', text: 'Filter'}) %>
 				</div>
 			</div>
-			<%- include(`${partials}/sidebar_open`, {id: 'linesFilter', sidebar_text: 'Filter Lines'}) %>
+			<%- include(`${partials}/sidebar/open`, {id: 'lines_filter', text: 'Filter Lines'}) %>
 				<div class="input-group mb-1">
 					<span class="input-group-text w-30">Status</span>
 					<select id="filter_scrap_line_statuses" class="form-select" multiple size="3">
@@ -46,7 +47,7 @@
 					</select>
 				</div>
 				<%- include(`${partials}/filter/size`, {table: 'scrap_line'}) %>
-			<%- include(`${partials}/sidebar_close`) %>
+			<%- include(`${partials}/sidebar/close`) %>
 			<form id='form_actions'>
 				<table class='table table-sm table-hover'>
 					<thead class='thead-dark'>

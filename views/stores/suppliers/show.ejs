@@ -4,14 +4,15 @@
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/head/components/close`) %>
 <section class="container">
-	<%- include(`${partials}/sidebar_open`, {id: 'Actions', button_text: 'Actions', sidebar_text: 'Actions'}) %>
+    <%- include(`${partials}/sidebar/button`, {id: 'actions', text: 'Actions', float: true}) %>
+	<%- include(`${partials}/sidebar/open`, {id: 'actions', text: 'Actions'}) %>
         <%- include(`${partials}/button/modal/open`, {text: 'Edit',        id: 'supplier_edit', type: 'warning', modal: 'supplier_edit'}) %>
         <%- include(`${partials}/button/modal/open`, {text: 'New Address', id: 'address_add',   type: 'success', modal: 'address_add'}) %>
         <form id='form_set_default'>
             <button class='btn btn-success w-100' id='btn_default' disabled>Set Default</button>
         </form>
         <%- include(`${partials}/button/delete`) %>
-	<%- include(`${partials}/sidebar_close`) %>
+	<%- include(`${partials}/sidebar/close`) %>
     <ul class="nav nav-tabs" id="mainTab" role="tablist">
         <%- include(`${partials}/tab_head`, {id: 'details',   title: 'Details',   spinner: 'supplier'}) %>
         <%- include(`${partials}/tab_head`, {id: 'files',     title: 'Files',     spinner: 'files',     count_id: 'file'}) %>
@@ -140,10 +141,10 @@
 	            <div class="row justify-content-between mb-1">
                     <%- include(`${partials}/sort`, {table: 'demands'}) %>
                     <div class="col-12 col-md-4 mb-1">
-                        <%- include(`${partials}/sidebar_button`, {id: 'DemandsFilter', text: 'Filter'}) %>
+                        <%- include(`${partials}/sidebar/button`, {id: 'demands_filter', text: 'Filter'}) %>
                     </div>
                 </div>
-                <%- include(`${partials}/sidebar_open`, {id: 'DemandsFilter', sidebar_text: 'Filter Demands'}) %>
+                <%- include(`${partials}/sidebar/open`, {id: 'demands_filter', text: 'Filter Demands'}) %>
                     <div class="input-group mb-1">
                         <span class="input-group-text w-30">Status</span>
                         <select class='form-select' id='sel_demand_status' multiple size="4">
@@ -153,7 +154,7 @@
                             <option value='3' selected>Closed</option>
                         </select>
                     </div>
-                <%- include(`${partials}/sidebar_close`) %>
+                <%- include(`${partials}/sidebar/close`) %>
                 <table class="table table-sm table-hover">
                     <thead class="thead-dark">
                         <th class='w-50'>Date  </th>

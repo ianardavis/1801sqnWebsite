@@ -4,7 +4,8 @@
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/head/components/close`) %>
 <section class="container">
-	<%- include(`${partials}/sidebar_open`, {id: 'Actions', button_text: 'Actions', sidebar_text: 'Actions'}) %>
+    <%- include(`${partials}/sidebar/button`, {id: 'actions', text: 'Actions', float: true}) %>
+	<%- include(`${partials}/sidebar/open`, {id: 'actions', text: 'Actions'}) %>
         <%- include(`${partials}/button/modal/open`, {text: 'Edit Size',     id: 'size_edit', type: 'warning'}) %>
         <%- include(`${partials}/button/modal/open`, {text: 'Edit Quantity', id: 'qty_edit',  type: 'warning'}) %>
         <form class="input-group mb-3" id='form_mark_as'>
@@ -20,7 +21,7 @@
             <button class="btn btn-success" type="button" id='btn_mark_as' disabled><i class="fas fa-check"></i></button>
         </form>
     	<%- include(`${partials}/button/form`, {id: 'delete', text: 'Cancel', colour: 'danger', align_botton: true}) %>
-    <%- include(`${partials}/sidebar_close`) %>
+    <%- include(`${partials}/sidebar/close`) %>
 	<ul class="nav nav-tabs" id="mainTab" role="tablist">
         <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'issue'}) %>
         <%- include(`${partials}/common/actions/tab_head`) %>

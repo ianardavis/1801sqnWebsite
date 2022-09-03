@@ -4,7 +4,8 @@
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/head/components/close`) %>
 <section class='container'>
-	<%- include(`${partials}/sidebar_open`, {id: 'Actions', button_text: 'Actions', sidebar_text: 'Actions'}) %>
+	<%- include(`${partials}/sidebar/button`, {id: 'actions', text: 'Actions', float: true}) %>
+	<%- include(`${partials}/sidebar/open`, {id: 'actions', text: 'Actions'}) %>
 		<%- include(`${partials}/button/form`, {id: 'complete', text: 'Complete', colour: 'success'}) %>
 		<%- include(`${partials}/button/form`, {id: 'close', 	text: 'Close', 	  colour: 'warning'}) %>
 		<%- include(`${partials}/button/form`, {id: 'download', text: 'Download', colour: 'primary'}) %>
@@ -12,7 +13,7 @@
 			Action Lines
 		</button>
 		<%- include(`${partials}/button/form`, {id: 'delete', 	text: 'Cancel',	  colour: 'danger', align_bottom: true}) %>
-    <%- include(`${partials}/sidebar_close`) %>
+    <%- include(`${partials}/sidebar/close`) %>
 	<ul class="nav nav-tabs" id="mainTab" role="tablist">
         <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'demand'}) %>
         <%- include(`${partials}/tab_head`, {id: 'lines',   title: 'Lines',	  spinner: 'demand_lines',  count_id: 'line'}) %>
@@ -32,10 +33,10 @@
 			<div class="row justify-content-between">
                 <%- include(`${partials}/sort`, {table: 'demand_lines'}) %>
                 <div class="col-12 col-md-4 mb-1">
-                    <%- include(`${partials}/sidebar_button`, {id: 'LinesFilter', text: 'Filter'}) %>
+                    <%- include(`${partials}/sidebar/button`, {id: 'demand_lines', text: 'Filter'}) %>
                 </div>
             </div>
-            <%- include(`${partials}/sidebar_open`, {id: 'LinesFilter', sidebar_text: 'Filter Lines'}) %>
+            <%- include(`${partials}/sidebar/open`, {id: 'demand_lines', text: 'Filter Lines'}) %>
 				<div class="input-group mb-1">
 					<span class="input-group-text w-30">Status</span>
 					<select id="sel_lines_statuses" class="form-select" multiple size="4">
@@ -45,7 +46,7 @@
 						<option value="3">Received</option>
 					</select>
 				</div>
-			<%- include(`${partials}/sidebar_close`) %>
+			<%- include(`${partials}/sidebar/close`) %>
 
 	        <form id='form_lines'>
 				<table class='table table-sm table-hover'>

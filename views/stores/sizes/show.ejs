@@ -5,7 +5,8 @@
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/head/components/close`) %>
 <section class='container'>
-    <%- include(`${partials}/sidebar_open`, {id: 'Actions', button_text: 'Actions', sidebar_text: 'Actions'}) %>
+    <%- include(`${partials}/sidebar/button`, {id: 'actions', text: 'Actions', float: true}) %>
+    <%- include(`${partials}/sidebar/open`, {id: 'actions', text: 'Actions'}) %>
         <%- include(`${partials}/button/modal/open`, {text: 'Edit',               id: 'size_edit',   type: 'warning', modal: 'size_edit'}) %>
         <%- include(`${partials}/button/modal/open`, {text: 'Add Detail',         id: 'detail_add',  type: 'success', modal: 'detail_add'}) %>
         <%- include(`${partials}/button/modal/open`, {text: 'New NSN',            id: 'nsn_add',     type: 'success', modal: 'nsn_add'}) %>
@@ -15,7 +16,7 @@
         <%- include(`${partials}/button/modal/open`, {text: 'New Order',          id: 'order_add',   type: 'success', modal: 'order_add'}) %>
         <%- include(`${partials}/button/modal/open`, {text: 'New Issue',          id: 'issue_add',   type: 'success', modal: 'issue_add'}) %>
         <%- include(`${partials}/button/delete`) %>
-    <%- include(`${partials}/sidebar_close`) %>
+    <%- include(`${partials}/sidebar/close`) %>
     <ul class="nav nav-tabs" id="mainTab" role="tablist">
         <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'size'}) %>
         <%- include(`${partials}/tab_head`, {id: 'nsns',    title: 'NSNs',    spinner: 'nsns',    count_id: 'nsn',    _class: 'has_nsns_element'}) %>
@@ -96,10 +97,10 @@
                 <div class="row justify-content-between">
                     <%- include(`${partials}/sort`, {table: 'orders'}) %>
                     <div class="col-12 col-md-4 mb-1">
-                        <%- include(`${partials}/sidebar_button`, {id: 'OrdersFilter', text: 'Filter'}) %>
+                        <%- include(`${partials}/sidebar/button`, {id: 'orders_filter', text: 'Filter'}) %>
                     </div>
                 </div>
-                <%- include(`${partials}/sidebar_open`, {id: 'OrdersFilter', sidebar_text: 'Filter Orders'}) %>
+                <%- include(`${partials}/sidebar/open`, {id: 'orders_filter', text: 'Filter Orders'}) %>
                     <div class="input-group mb-1">
                         <span class="input-group-text w-30">Status</span>
                         <select id="sel_order_statuses" class="form-select" multiple size="4">
@@ -109,7 +110,7 @@
                             <option value="3">Received</option>
                         </select>
                     </div>
-                <%- include(`${partials}/sidebar_close`) %>
+                <%- include(`${partials}/sidebar/close`) %>
                 <table class='table table-sm table-hover'>
                     <thead class='thead-dark'>
                         <th class='w-50'>Date</th>
@@ -126,10 +127,10 @@
             <div class="row justify-content-between">
                 <%- include(`${partials}/sort`, {table: 'issues'}) %>
                 <div class="col-12 col-md-4 mb-1">
-                    <%- include(`${partials}/sidebar_button`, {id: 'IssuesFilter', text: 'Filter'}) %>
+                    <%- include(`${partials}/sidebar/button`, {id: 'issues_filter', text: 'Filter'}) %>
                 </div>
             </div>
-            <%- include(`${partials}/sidebar_open`, {id: 'IssuesFilter', sidebar_text: 'Filter Issues'}) %>
+            <%- include(`${partials}/sidebar/open`, {id: 'issues_filter', text: 'Filter Issues'}) %>
                 <div class="input-group mb-1">
                     <span class="input-group-text w-30">Status</span>
                     <select id="sel_issue_statuses" class="form-select" multiple size="6">
@@ -141,7 +142,7 @@
                         <option value="5">Returned </option>
                     </select>
                 </div>
-            <%- include(`${partials}/sidebar_close`) %>
+            <%- include(`${partials}/sidebar/close`) %>
             <table class='table table-sm table-hover'>
                 <thead class='thead-dark'>
 					<th class='w-20'>Date</th>

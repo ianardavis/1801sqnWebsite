@@ -6,14 +6,15 @@
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/head/components/close`) %>
 <section class='container'>
-    <%- include(`${partials}/sidebar_open`, {id: 'Actions', button_text: 'Actions', sidebar_text: 'Actions'}) %>
+    <%- include(`${partials}/sidebar/button`, {id: 'actions', text: 'Actions', float: true}) %>
+    <%- include(`${partials}/sidebar/open`, {id: 'actions', text: 'Actions'}) %>
         <%- include(`${partials}/button/modal/open`, {id: 'transfer_add', text: 'Transfer',      type: 'success', modal: 'transfer_add'}) %>
         <%- include(`${partials}/button/modal/open`, {id: 'stock_edit',   text: 'Edit',          type: 'warning', modal: 'stock_edit'}) %>
         <%- include(`${partials}/button/modal/open`, {id: 'receipt_add',  text: 'Receive Stock', type: 'success', modal: 'receipt_add'}) %>
         <%- include(`${partials}/button/modal/open`, {id: 'count_add',    text: 'Count',         type: 'warning', modal: 'count_add'}) %>
         <%- include(`${partials}/button/modal/open`, {id: 'scrap_add',    text: 'Scrap',         type: 'danger',  modal: 'scrap_add'}) %>
         <%- include(`${partials}/button/delete`) %>
-    <%- include(`${partials}/sidebar_close`) %>
+    <%- include(`${partials}/sidebar/close`) %>
     <ul class="nav nav-tabs" id="mainTab" role="tablist">
         <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'stock'}) %>
         <%- include(`${partials}/common/actions/tab_head`) %>

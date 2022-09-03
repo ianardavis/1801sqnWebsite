@@ -147,41 +147,9 @@ module.exports = (app, m, fn) => {
     });
 
     app.put('/issues',             fn.loggedIn(), fn.permissions.check('issuer'),              (req, res) => {
-        if (!req.body.lines || req.body.lines.filter(e => e.status !== '').length === 0) {
-            fn.send_error(res, 'No actions');
-        } else {
-            let actions = [];
-            req.body.lines.filter(e => e.status === '-3') .forEach(issue => {
-                actions.push(fn.issues.restore(issue.issue_id, req.user.user_id));
-            });
-            req.body.lines.filter(e => e.status === '-2') .forEach(issue => {
-                actions.push(fn.issues.remove_from_loancard(issue.issue_id, req.user.user_id));
-            });
-            req.body.lines.filter(e => e.status === '-1').forEach(issue => {
-                actions.push(fn.issues.decline(issue.issue_id, req.user.user_id));
-            });
-            req.body.lines.filter(e => e.status === '0') .forEach(issue => {
-                actions.push(fn.issues.cancel(issue.issue_id, req.user.user_id));
-            });
-            req.body.lines.filter(e => e.status === '2') .forEach(issue => {
-                actions.push(fn.issues.approve(issue.issue_id, req.user.user_id));
-            });
-            if (req.body.lines.filter(e => e.status === '3').length > 0) {
-                actions.push(
-                    fn.issues.order(req.body.lines.filter(e => e.status === '3'), req.user.user_id)
-                );
-            };
-            if (req.body.lines.filter(e => e.status === '4').length > 0) {
-                actions.push(
-                    fn.issues.issue(req.body.lines.filter(e => e.status === '4'), req.user.user_id)
-                );
-            };
-            if (actions.length > 0) {
-                Promise.allSettled(actions)
-                .then(results => res.send({success: true, message: (fn.allSettledResults(results) ? 'Lines actioned' : 'Some lines failed')}))
-                .catch(err => fn.send_error(res, err));
-            } else res.send({success: true, message: 'No actions to perform'});
-        };
+        fn.issues.process_bulk(req.body.lines. req.user.user_id)
+        .then(message => res.send({success: true, message: message}))
+        .catch(err => fn.send_error(res, err));
     });
     app.put('/issues/:id/qty',     fn.loggedIn(), fn.permissions.check('issuer'),              (req, res) => {
         fn.issues.change_qty(req.params.id, req.body.qty , req.user.user_id)

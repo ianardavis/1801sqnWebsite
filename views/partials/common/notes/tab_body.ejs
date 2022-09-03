@@ -2,10 +2,10 @@
     <div class="row justify-content-between">
         <%- include(`${partials}/sort`, {table: 'notes'}) %>
         <div class="col-12 col-md-4 mb-1">
-            <%- include(`${partials}/sidebar_button`, {id: 'NotesFilter', text: 'Filter'}) %>
+            <%- include(`${partials}/sidebar/button`, {id: 'notes', text: 'Filter'}) %>
         </div>
     </div>
-    <%- include(`${partials}/sidebar_open`, {id: 'NotesFilter', sidebar_text: 'Filter Notes'}) %>
+    <%- include(`${partials}/sidebar/open`, {id: 'notes', text: 'Filter Notes'}) %>
         <div class="input-group mb-1">
             <span class="input-group-text w-30">Include</span>
             <select id="sel_system" class="form-select" multiple size="2">
@@ -23,7 +23,7 @@
                 <input type="date" class='form-control' id='note_createdAt_to'>
             </div>
         </div>
-    <%- include(`${partials}/sidebar_close`) %>
+    <%- include(`${partials}/sidebar/close`) %>
 	<table class="table table-sm table-hover">
         <thead class="thead-dark">
             <th class='w-30'>Date</th>

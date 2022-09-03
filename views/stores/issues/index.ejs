@@ -7,10 +7,10 @@
 	<div class="row justify-content-between">
 		<%- include(`${partials}/sort`, {table: 'issues'}) %>
 		<div class="col-12 col-md-4 mb-1">
-			<%- include(`${partials}/sidebar_button`, {id: 'IssuesFilter', text: 'Filter/Actions'}) %>
+			<%- include(`${partials}/sidebar/button`, {id: 'filter', text: 'Filter/Actions'}) %>
 		</div>
 	</div>
-	<%- include(`${partials}/sidebar_open`, {id: 'IssuesFilter', sidebar_text: 'Filter'}) %>
+	<%- include(`${partials}/sidebar/open`, {id: 'filter', text: 'Filter'}) %>
 		<%- include(`${partials}/button/modal/open`, {text: 'New Issue', id: 'issue_add', type: 'success'}) %>
 		<%- include(`${partials}/filter/user`, {append: '_issue', table: 'issue'}) %>
 		<div class="input-group mb-1">
@@ -30,7 +30,7 @@
 		<button class="btn btn-success w-100 mt-auto" form="form_issue_edit">
 			Action Selected Issues
 		</button>
-	<%- include(`${partials}/sidebar_close`) %>
+	<%- include(`${partials}/sidebar/close`) %>
 
 	<%- include(`${partials}/filter/stores/issues`, {user: true}) %>
 	<% if (permissions.issuer) { %><form id='form_issue_edit'><% } %>

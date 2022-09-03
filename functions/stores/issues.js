@@ -22,6 +22,47 @@ module.exports = function (m, fn) {
         });
     };
 
+    fn.issues.process_bulk = function (issues, user_id) {
+        return new Promise((resolve, reject) => {
+            if (!issues || issues.filter(e => e.status !== '').length === 0) {
+                reject(new Error('No actions'));
+            } else {
+                let actions = [];
+                issues.filter(e => e.status === '-3').forEach(issue => {
+                    actions.push(fn.issues.restore(issue.issue_id, user_id));
+                });
+                issues.filter(e => e.status === '-2').forEach(issue => {
+                    actions.push(fn.issues.remove_from_loancard(issue.issue_id, user_id));
+                });
+                issues.filter(e => e.status === '-1').forEach(issue => {
+                    actions.push(fn.issues.decline(issue.issue_id, user_id));
+                });
+                issues.filter(e => e.status ===  '0').forEach(issue => {
+                    actions.push(fn.issues.cancel(issue.issue_id, user_id));
+                });
+                issues.filter(e => e.status ===  '2').forEach(issue => {
+                    actions.push(fn.issues.approve(issue.issue_id, user_id));
+                });
+                if (issues.filter(e => e.status === '3').length > 0) {
+                    actions.push(
+                        fn.issues.order(issues.filter(e => e.status === '3'), user_id)
+                    );
+                };
+                if (issues.filter(e => e.status === '4').length > 0) {
+                    actions.push(
+                        fn.issues.issue(issues.filter(e => e.status === '4'), user_id)
+                    );
+                };
+                if (actions.length > 0) {
+                    Promise.allSettled(actions)
+                    .then(results => resolve(`${results.filter(e => e.status ==='fulfilled').length} of ${actions.length} tasks ompleted`))
+                    .catch(err => reject(err));
+                } else {
+                    reject(new Error('No actions to perform'));
+                };
+            };
+        });
+    };
     function create_check (issue) {
         return new Promise((resolve, reject) => {
             if (!issue) {
