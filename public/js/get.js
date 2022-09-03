@@ -2,11 +2,10 @@ function build_query(options) {
     let queries = [];
     if (!options.action || (options.action !== 'sum' && options.action !== 'count')) {
         if (!options.order) {
-            let order_col = document.querySelector(`#sort_${options.table}`),
-                order_dir = document.querySelector(`#sort_${options.table}_dir`);
-            if (order_col && order_col.value !== "" && order_dir && order_dir.value !== "") {
-                let order_col_parsed = JSON.parse(order_col.value);
-                options.order = order_col_parsed.concat([order_dir.value]);
+            const order = document.querySelector(`.sort-${options.table}`);
+            if (order && order.dataset.column && order.dataset.dir) {
+                let order_col_parsed = JSON.parse(order.dataset.column);
+                options.order = order_col_parsed.concat([order.dataset.dir]);
             };
         };
         if (options.order) queries.push(`order=${ JSON.stringify(options.order)}`);

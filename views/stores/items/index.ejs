@@ -6,7 +6,7 @@
 <section class='container'>
 
 	<%- include(`${partials}/sidebar/button`, {id: 'actions', text: 'Actions', float: true}) %>
-	<%- include(`${partials}/sidebar/open`, {id: 'actions', text: 'Actions'}) %>
+	<%- include(`${partials}/sidebar/open`,   {id: 'actions', text: 'Actions'}) %>
 		<%- include(`${partials}/button/modal/open`, {text: 'New Item', id: 'item_add', type: 'success'}) %>
 	<%- include(`${partials}/sidebar/close`) %>
 
@@ -16,7 +16,6 @@
 	<%- include(`${partials}/sidebar/close`) %>
 	
 	<div class='row justify-content-between'>
-		<%- include(`${partials}/sort`, {table: 'items'}) %>
 		<div class='col-12 col-md-4 mb-1'>
 			<%- include(`${partials}/sidebar/button`, {id: 'filter', text: 'Filter'}) %>
 		</div>
@@ -26,8 +25,9 @@
 		<div class='col-12 col-lg-5 mx-auto'>
 	        <table class='table table-sm table-hover'>
 				<thead class='thead-dark'>
-					<th class='w-100 sort-items' data-column='description' data-dir='ASC' onclick="sort()">
-						<i class="fas arrow-up"></i>Description
+					<th class='w-100 sort-items' data-column='["description"]' data-dir='ASC'>
+						<i class="fas fa-arrow-up"></i>
+						Description
 					</th>
 					<th><i class='fas fa-search'></i></th>
 				</thead>

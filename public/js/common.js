@@ -323,9 +323,49 @@ function getSelectedOptions(id) {
         return Array.from(e.selectedOptions).map(({ value }) => value)
     } else return [];
 };
-function sort(event) {
-    console.log(event);
-    console.log(this);
+function sort(tr, table, func) {
+    if (!tr.classList.contains(`sort-${table}`)) {
+        (tr.parentNode.querySelectorAll(`sort-${table}`)).forEach(e => {
+            e.classList.remove(`sort-${table}`);
+            delete e.dataset.dir;
+        });
+        tr.classList.add(`sort-${table}`);
+    };
+    let i = tr.querySelector('.fas');
+    if (!tr.dataset.dir || tr.dataset.dir === 'DESC') {
+        tr.dataset.dir = 'ASC';
+        if (i) {
+            i.classList.remove('fa-arrow-down')
+            i.classList.add(   'fa-arrow-up');
+        };
+    } else {
+        tr.dataset.dir = 'DESC';
+        if (i) {
+            i.classList.remove('fa-arrow-up')
+            i.classList.add(   'fa-arrow-down');
+        };
+    };
+    func();
+};
+function add_sort_listeners(table, func) {
+    let limit_func = function (e) {
+        let limit = document.querySelector(`.limit_${table} .active`);
+        if (limit) {
+            limit.classList.remove('active');
+            e.target.parentNode.classList.add('active');
+            if (func) func();
+        };
+    };
+    addListener(`limit_${table}_10`,  limit_func);
+    addListener(`limit_${table}_20`,  limit_func);
+    addListener(`limit_${table}_30`,  limit_func);
+    addListener(`limit_${table}_all`, limit_func);
+    let tbl = document.querySelector(`#tbl_${table}`);
+    if (tbl) {
+        tbl.parentElement.querySelectorAll("[data-column]").forEach(th => {
+            th.addEventListener('click', function () {sort(this, table, func)});
+        });
+    };
 };
 let path = window.location.pathname.toString().split('/');
 window.addEventListener('load', function() {
