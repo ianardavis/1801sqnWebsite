@@ -31,12 +31,12 @@
 	<%- include(`${partials}/sidebar/close`) %>
 	<% if (permissions.stores_stock_admin) { %><form id='form_order_edit'><% } %>
 		<table class="table table-sm table-hover">
-			<thead class="thead-dark">
-				<th class='w-15'>Date</th>
-				<th class='w-20'>Description</th>
-				<th class='w-15'>Size</th>
-				<th class='w-15'>Qty</th>
-				<th class='w-20'>Status</th>
+			<thead class="thead-dark" id="tbl_orders_head">
+				<th class='w-15' data-column='["createdAt"]' data-dir="DESC">Date</th>
+				<th class='w-20' data-column='["size","item","description"]'>Item</th>
+				<th class='w-15' data-column='["size","size1"]'				>Size</th>
+				<th class='w-15' data-column='["qty"]'						>Qty</th>
+				<th class='w-20' data-column='["status"]'					>Status</th>
 				<th class='w-15'>Actions</th>
 				<th><i class="fas fa-search"></i></th>
 			</thead>

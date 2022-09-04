@@ -38,9 +38,9 @@
                     <%- include(`${partials}/sort`, {table: 'details'}) %>
                 </div>
 	            <table class='table table-sm table-hover w-100'>
-                    <thead class='thead-dark'>
-                        <th class='w-30'>Name</th>
-                        <th class='w-70'>Value</th>
+                    <thead class='thead-dark' id="tbl_details_head">
+                        <th class='w-30' data-column='["name"]' data-dir="ASC">Name</th>
+                        <th class='w-70' data-column='["value"]'>Value</th>
                         <th><i class='fas fa-search'></i></th>
                     </thead>
                     <tbody id='tbl_details'></tbody>
@@ -54,8 +54,8 @@
             </div>
 	        <% if (permissions.stores_stock_admin) { %><form id='form_nsn_default'><% } %>
             <table class='table table-sm table-hover'>
-                <thead class='thead-dark'>
-					<th class='w-80'>NSN</th>
+                <thead class='thead-dark' id="tbl_nsns_head">
+					<th class='w-80' data-column='["nsn_group","group"]' data-dir="ASC">NSN</th>
                     <th class='w-20'>Default</th>
                     <th><i class='fas fa-search'></i></th>
                 </thead>
@@ -69,9 +69,9 @@
                 <%- include(`${partials}/sort`, {table: 'serials'}) %>
             </div>
 	        <table class='table table-sm table-hover'>
-                <thead class='thead-dark'>
-					<th class='w-50'>Serial #</th>
-					<th class='w-50'>Location</th>
+                <thead class='thead-dark' id="tbl_serials_head">
+					<th class='w-50' data-column='["serial"]'>Serial #</th>
+					<th class='w-50' data-column='["location","location"]'>Location</th>
                     <th><i class='fas fa-search'></i></th>
                 </thead>
                 <tbody id='tbl_serials'></tbody>
@@ -83,9 +83,9 @@
                 <%- include(`${partials}/sort`, {table: 'stocks'}) %>
             </div>
 	        <table class='table table-sm table-hover'>
-                <thead class='thead-dark'>
-					<th class='w-80'>Location</th>
-					<th class='w-20'>Qty     </th>
+                <thead class='thead-dark' id="tbl_stocks_head">
+					<th class='w-80' data-column='["location","location"]' data-dir="ASC">Location</th>
+					<th class='w-20' data-column='["qty"]'>Qty</th>
                     <th><i class='fas fa-search'></i></th>
                 </thead>
                 <tbody id='tbl_stocks'></tbody>
@@ -112,10 +112,10 @@
                     </div>
                 <%- include(`${partials}/sidebar/close`) %>
                 <table class='table table-sm table-hover'>
-                    <thead class='thead-dark'>
-                        <th class='w-50'>Date</th>
-                        <th class='w-10'>Qty</th>
-                        <th class='w-40'>Status</th>
+                    <thead class='thead-dark' id="tbl_orders_head">
+                        <th class='w-50' data-column='["createdAt"]'>Date</th>
+                        <th class='w-10' data-column='["qty"]'      >Qty</th>
+                        <th class='w-40' data-column='["status"]'   >Status</th>
                         <th><i class='fas fa-search'></i></th>
                     </thead>
                     <tbody id='tbl_orders'></tbody>
@@ -144,11 +144,11 @@
                 </div>
             <%- include(`${partials}/sidebar/close`) %>
             <table class='table table-sm table-hover'>
-                <thead class='thead-dark'>
-					<th class='w-20'>Date</th>
-					<th class='w-40'>To</th>
-					<th class='w-10'>Qty</th>
-					<th class='w-30'>Status</th>
+                <thead class='thead-dark' id="tbl_issues_head">
+					<th class='w-20' data-column='["createdAt"]', data-dir="DESC">Date</th>
+					<th class='w-40' data-column='["user_issue","surname"]'>To</th>
+					<th class='w-10' data-column='["qty"]'>Qty</th>
+					<th class='w-30' data-column='["status"]'>Status</th>
                     <th><i class='fas fa-search'></i></th>
                 </thead>
                 <tbody id='tbl_issues'></tbody>

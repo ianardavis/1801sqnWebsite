@@ -2,7 +2,7 @@ function build_query(options) {
     let queries = [];
     if (!options.action || (options.action !== 'sum' && options.action !== 'count')) {
         if (!options.order) {
-            const order = document.querySelector(`.sort-${options.table}`);
+            const order = document.querySelector(`#tbl_${options.table}_head [data-dir]`);
             if (order && order.dataset.column && order.dataset.dir) {
                 let order_col_parsed = JSON.parse(order.dataset.column);
                 options.order = order_col_parsed.concat([order.dataset.dir]);

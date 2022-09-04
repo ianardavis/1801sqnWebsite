@@ -1,7 +1,7 @@
 module.exports = function (m, fn) {
 	fn.holdings = {};
 	// GENERAL FUNCTIONS
-	fn.holding.get = function (holding_id) {
+	fn.holdings.get = function (holding_id) {
 		return new Promise((resolve, reject) => {
 			m.holdings.findOne({
 				where: {holding_id: holding_id}

@@ -12,7 +12,7 @@ function getItems() {
             table: 'items',
             where: where,
             like:  like,
-            func: getItems
+            func:  getItems
         })
         .then(function ([result, options]) {
             result.items.forEach(item => {
@@ -29,4 +29,5 @@ window.addEventListener('load', function () {
     addListener('item_description', getItems, 'input');
     addListener('reload_genders',   getGenders);
     add_sort_listeners('items', getItems);
+    getItems();
 });

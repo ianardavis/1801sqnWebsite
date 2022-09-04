@@ -36,11 +36,11 @@
 		</div>
 	<%- include(`${partials}/sidebar/close`) %>
 	<table class="table table-sm table-hover">
-		<thead class="thead-dark">
-			<th class='w-35'>Date</th>
-			<th class='w-35'>User</th>
-			<th class='w-15'>Lines</th>
-			<th class='w-15'>Status</th>
+		<thead class="thead-dark" id="tbl_loancards_head">
+			<th class='w-35' data-column='["createdAt"]' data-dir="DESC">Date</th>
+			<th class='w-35' data-column='["user_loancard","surname"]' 	>User</th>
+			<th class='w-15' data-column='["lines"]' 					>Lines</th>
+			<th class='w-15' data-column='["status"]' 					>Status</th>
 			<th><i class="fas fa-search"></i></th>
 		</thead>
 		<tbody id="tbl_loancards"></tbody>

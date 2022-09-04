@@ -37,11 +37,11 @@
 			<%- include(`${partials}/button/button`, {id: 'lines_action', text: 'Action Lines', colour: 'success'}) %>
 			<%- include(`${partials}/sort`, {table: 'loancard_lines'}) %>
 	        <table class='table table-sm table-hover'>
-				<thead class='thead-dark'>
-					<th class='w-35'>Item</th>
-					<th class='w-35'>Size</th>
-					<th class='w-10'>Qty</th>
-					<th class='w-10'>Status</th>
+				<thead class='thead-dark' id="'tbl_loancard_lines">
+					<th class='w-35' data-column='["size","item","description"]' data-dir="ASC">Item</th>
+					<th class='w-35' data-column='["size","size1"]'							   >Size</th>
+					<th class='w-10' data-column='["qty"]'									   >Qty</th>
+					<th class='w-10' data-column='["status"]'								   >Status</th>
 					<th class='w-10'>Actions</th>
 					<th><i class='fas fa-search'></i></th>
 				</thead>

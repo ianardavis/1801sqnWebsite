@@ -24,11 +24,11 @@
 		<%- include(`${partials}/filter/date`, {table: 'demands', field: 'createdAt'}) %>
 	<%- include(`${partials}/sidebar/close`) %>
 	<table class="table table-sm table-hover">
-		<thead class="thead-dark">
-			<th class='w-30'>Date</th>
-			<th class='w-30'>Supplier</th>
-			<th class='w-15'>Lines</th>
-			<th class='w-25'>Status</th>
+		<thead class="thead-dark" id='tbl_demands_head'>
+			<th class='w-30' data-column='["createdAt"]' data-dir='ASC'>Date</th>
+			<th class='w-30' data-column='["description"]'			   >Supplier</th>
+			<th class='w-15' data-column='["lines"]'				   >Lines</th>
+			<th class='w-25' data-column='["status"]'				   >Status</th>
 			<th><i class="fas fa-search"></i></th>
 		</thead>
 		<tbody id="tbl_demands"></tbody>

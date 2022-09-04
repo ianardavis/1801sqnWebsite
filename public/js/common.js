@@ -324,12 +324,10 @@ function getSelectedOptions(id) {
     } else return [];
 };
 function sort(tr, table, func) {
-    if (!tr.classList.contains(`sort-${table}`)) {
-        (tr.parentNode.querySelectorAll(`sort-${table}`)).forEach(e => {
-            e.classList.remove(`sort-${table}`);
+    if (!tr.dataset.dir) {
+        (tr.parentNode.querySelectorAll("[data-dir]")).forEach(e => {
             delete e.dataset.dir;
         });
-        tr.classList.add(`sort-${table}`);
     };
     let i = tr.querySelector('.fas');
     if (!tr.dataset.dir || tr.dataset.dir === 'DESC') {
@@ -360,11 +358,17 @@ function add_sort_listeners(table, func) {
     addListener(`limit_${table}_20`,  limit_func);
     addListener(`limit_${table}_30`,  limit_func);
     addListener(`limit_${table}_all`, limit_func);
-    let tbl = document.querySelector(`#tbl_${table}`);
+    let tbl = document.querySelector(`#tbl_${table}_head`);
     if (tbl) {
-        tbl.parentElement.querySelectorAll("[data-column]").forEach(th => {
+        tbl.querySelectorAll("[data-column]").forEach(th => {
+            th.insertAdjacentHTML('afterbegin', '<i class="fas"></i>');
             th.addEventListener('click', function () {sort(this, table, func)});
         });
+        let selected = tbl.parentElement.querySelector("[data-dir]");
+        if (selected) {
+            let i = selected.querySelector('i');
+            if (i) i.classList.add(`fa-arrow-${(selected.dataset.dir === 'ASC' ? 'up' : 'down')}`);
+        };
     };
 };
 let path = window.location.pathname.toString().split('/');

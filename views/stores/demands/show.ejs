@@ -50,11 +50,11 @@
 
 	        <form id='form_lines'>
 				<table class='table table-sm table-hover'>
-					<thead class='thead-dark'>
-						<th class='w-25'>Item</th>
-						<th class='w-30'>Size</th>
-						<th class='w-10'>Qty</th>
-						<th class='w-15'>Status</th>
+					<thead class='thead-dark' id='tbl_demand_lines_head'>
+						<th class='w-25' data-column='["size","item","description"]' data-dir='ASC'>Item</th>
+						<th class='w-30' data-column='["size","size1"]'							   >Size</th>
+						<th class='w-10' data-column='["qty"]'									   >Qty</th>
+						<th class='w-15' data-column='["status"]'								   >Status</th>
 						<th class='w-20'>Action</th>
 						<th><i class='fas fa-search'></i></th>
 					</thead>

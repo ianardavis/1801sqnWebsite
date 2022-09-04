@@ -1,5 +1,3 @@
-const { resolve, reject } = require("core-js/fn/promise");
-
 module.exports = function (m, fn) {
     fn.paid_in_out = {};
     
