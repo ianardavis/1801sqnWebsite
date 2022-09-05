@@ -13,7 +13,7 @@
         </form>
         <%- include(`${partials}/button/delete`) %>
 	<%- include(`${partials}/sidebar/close`) %>
-    <ul class="nav nav-tabs" id="mainTab" role="tablist">
+    <ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
         <%- include(`${partials}/tab_head`, {id: 'details',   title: 'Details',   spinner: 'supplier'}) %>
         <%- include(`${partials}/tab_head`, {id: 'files',     title: 'Files',     spinner: 'files',     count_id: 'file'}) %>
         <%- include(`${partials}/tab_head`, {id: 'addresses', title: 'Addresses', spinner: 'addresses', count_id: 'address'}) %>

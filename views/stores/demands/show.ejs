@@ -14,7 +14,7 @@
 		</button>
 		<%- include(`${partials}/button/form`, {id: 'delete', 	text: 'Cancel',	  colour: 'danger', align_bottom: true}) %>
     <%- include(`${partials}/sidebar/close`) %>
-	<ul class="nav nav-tabs" id="mainTab" role="tablist">
+	<ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
         <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'demand'}) %>
         <%- include(`${partials}/tab_head`, {id: 'lines',   title: 'Lines',	  spinner: 'demand_lines',  count_id: 'line'}) %>
         <%- include(`${partials}/common/actions/tab_head`) %>

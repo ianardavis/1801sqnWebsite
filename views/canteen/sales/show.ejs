@@ -4,7 +4,7 @@
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/head/components/close`) %>
 <section class='container'>
-    <ul class="nav nav-tabs" id="mainTab" role="tablist">
+    <ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
         <%- include(`${partials}/tab_head`, {id: 'details',  title: 'Details',  spinner: 'sale'}) %>
         <%- include(`${partials}/tab_head`, {id: 'lines',    title: 'Lines',    spinner: 'sale_lines', count_id: 'line'}) %>
         <%- include(`${partials}/tab_head`, {id: 'payments', title: 'Payments', spinner: 'payments',   count_id: 'payment'}) %>

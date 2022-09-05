@@ -9,7 +9,7 @@
         <%- include(`${partials}/button/modal/open`, {text: 'Edit', id: 'nsn_edit', type: 'warning', modal: 'nsn_edit'}) %>
         <%- include(`${partials}/button/delete`) %>
     <%- include(`${partials}/sidebar/close`) %>
-    <ul class="nav nav-tabs" id="mainTab" role="tablist">
+    <ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
         <%- include(`${partials}/tab_head`, {id: 'details',   title: 'Details',   spinner: 'nsn'}) %>
         <%- include(`${partials}/tab_head`, {id: 'loancards', title: 'Loancards', spinner: 'loancards', count_id: 'loancard'}) %>
         <%- include(`${partials}/common/actions/tab_head`) %>

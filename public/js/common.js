@@ -305,6 +305,10 @@ function sort(tr, table, func) {
     if (!tr.dataset.dir) {
         (tr.parentNode.querySelectorAll("[data-dir]")).forEach(e => {
             delete e.dataset.dir;
+            e.querySelectorAll('.fas').forEach(e => {
+                 e.classList.remove('fa-arrow-up');
+                 e.classList.remove('fa-arrow-down');
+            });
         });
     };
     let i = tr.querySelector('.fas');

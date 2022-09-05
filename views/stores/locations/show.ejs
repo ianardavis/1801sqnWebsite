@@ -9,7 +9,7 @@
         <%- include(`${partials}/button/modal/open`, {id: 'location_edit', text: 'Edit', type: 'warning', modal: 'location_edit'}) %>
         <%- include(`${partials}/button/delete`) %>
     <%- include(`${partials}/sidebar/close`) %>
-    <ul class="nav nav-tabs" id="mainTab" role="tablist">
+    <ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
         <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'location'}) %>
         <%- include(`${partials}/tab_head`, {id: 'stocks',  title: 'Stock',   spinner: 'stocks',  count_id: 'stock'}) %>
         <%- include(`${partials}/tab_head`, {id: 'serials', title: 'Serials', spinner: 'serials', count_id: 'serial'}) %>

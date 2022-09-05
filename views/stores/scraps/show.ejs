@@ -13,7 +13,7 @@
 		<%- include(`${partials}/button/button`, {id: 'lines_action', 		 text: 'Action Lines', 	colour: 'success'}) %>
 		<%- include(`${partials}/button/form`, 	 {id: 'delete', 			 text: 'Cancel', 		colour: 'danger', align_botton: true}) %>
     <%- include(`${partials}/sidebar/close`) %>
-	<ul class="nav nav-tabs" id="mainTab" role="tablist">
+	<ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
         <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'scrap'}) %>
         <%- include(`${partials}/tab_head`, {id: 'lines',   title: 'Lines',	  spinner: 'scrap_lines', count_id: 'line'}) %>
         <%- include(`${partials}/common/actions/tab_head`) %>

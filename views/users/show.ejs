@@ -18,7 +18,7 @@
         </form>
         <%- include(`${partials}/button/delete`) %>
     <%- include(`${partials}/sidebar/close`) %>
-    <ul class="nav nav-tabs" id="mainTab" role="tablist">
+    <ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
         <%- include(`${partials}/tab_head`, {id: 'details',     spinner: 'user',        title: 'Details'}) %>
         <%- include(`${partials}/tab_head`, {id: 'permissions', spinner: 'permissions', title: 'Permissions', count_id: 'permission', permission: 'user_admin'}) %>
         <%- include(`${partials}/tab_head`, {id: 'issues',      spinner: 'issues',      title: 'Issues',      count_id: 'issue'}) %>

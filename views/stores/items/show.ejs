@@ -11,7 +11,7 @@
         <%- include(`${partials}/button/modal/open`, {text: 'New Size',     id: 'size_add',     type: 'success', modal: 'size_add'}) %>
         <%- include(`${partials}/button/delete`) %>
     <%- include(`${partials}/sidebar/close`) %>
-    <ul class="nav nav-tabs" id="mainTab" role="tablist">
+    <ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
         <%- include(`${partials}/tab_head`, {id: 'details',    title: 'Details',    spinner: 'item'}) %>
         <%- include(`${partials}/tab_head`, {id: 'categories', title: 'Categories', spinner: 'categories', count_id: 'category'}) %>
         <%- include(`${partials}/tab_head`, {id: 'sizes',      title: 'Sizes',      spinner: 'sizes',      count_id: 'size'}) %>
