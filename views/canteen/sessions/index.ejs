@@ -9,12 +9,11 @@
 <%- include(`${partials}/spinner`, {id: 'sessions'}) %>
 <%- include(`${partials}/head/components/close`) %>
 <section class='container'>
-    <%- include(`${partials}/sort`, {table: 'sessions'}) %>
 	<table class="table table-sm table-hover mt-1">
-        <thead class="thead-dark">
-            <th class='w-40'>Start</th>
-            <th class='w-40'>End</th>
-            <th class='w-20'>Status</th>
+        <thead class="thead-dark" id="tbl_sessions_head">
+            <th class='w-40' data-column='["createdAt"]' data-dir="DESC">Start</th>
+            <th class='w-40' data-column='["datetime_end"]'>End</th>
+            <th class='w-20' data-column='["status"]'>Status</th>
             <th><i class='fas fa-search'></i></th>
         </thead>
         <tbody id="tbl_sessions"></tbody>

@@ -85,20 +85,6 @@ function getUsers() {
     });
 };
 addReloadListener(getIssues);
-sort_listeners(
-    'issues',
-    getIssues,
-    [
-        {value: '["createdAt"]',                 text: 'Date', selected: true},
-        {value: '["user_issue","surname"]',      text: 'User Surname'},
-        {value: '["size","item","description"]', text: 'Description'},
-        {value: '["size","size1"]',              text: 'Size 1'},
-        {value: '["size","size2"]',              text: 'Size 2'},
-        {value: '["size","size3"]',              text: 'Size 3'},
-        {value: '["qty"]',                       text: 'Qty'},
-        {value: '["status"]',                    text: 'Status'}
-    ]
-);
 getUsers();
 window.addEventListener('load', function () {
     sidebarOnShow('IssuesFilter', getUsers);
@@ -117,4 +103,6 @@ window.addEventListener('load', function () {
         '/issues',
         {onComplete: getIssues}
     );
+    add_sort_listeners('issues', getIssues);
+    getIssues();
 });

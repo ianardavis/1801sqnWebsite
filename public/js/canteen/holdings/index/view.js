@@ -16,11 +16,7 @@ function getHoldings() {
     });
 };
 addReloadListener(getHoldings);
-sort_listeners(
-    'holdings',
-    getHoldings,
-    [
-        {value: '["description"]', text: 'Description', selected: true},
-        {value: '["cash"]',        text: 'Cash'}
-    ]
-);
+window.addEventListener('load', function () {
+    add_sort_listeners('holdings', getHoldings);
+    getHoldings();
+});

@@ -126,15 +126,6 @@ function get_sizes(event) {
         });
     });
 };
-sort_listeners(
-    'sizes',
-    null,
-    [
-        {value: '["size1"]',     text: 'Size 1', selected: true},
-        {value: '["size2"]',     text: 'Size 2'},
-        {value: '["size3"]',     text: 'Size 3'}
-    ]
-);
 window.addEventListener( "load", function () {
     addListener('tbl_items', toggle_checkbox_on_row_click);
     modalOnShow('issue_measurement', get_items);
@@ -146,4 +137,5 @@ window.addEventListener( "load", function () {
         '/issues',
         {onComplete: getIssues}
     );
+    add_sort_listeners('sizes', get_sizes);
 });

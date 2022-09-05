@@ -7,15 +7,13 @@
 <section class='container'>
     <button id='btn_action' class='btn btn-success w-100 mb-2' form='form_sizes'>Create Orders</button>
     <%- include(`${partials}/inputs/select`, {id: 'sel_suppliers', title: 'Supplier'}) %>
-    <%- include(`${partials}/sort`, {table: 'items'}) %>
     <%- include(`${partials}/inputs/select`, {id: 'sel_items',     title: 'Items'}) %>
-    <%- include(`${partials}/sort`, {table: 'sizes'}) %>
     <form id="form_sizes">
         <table class="table table-sm table-hover">
-            <thead class="thead-dark">
-                <th class='w-20'>Size 1</th>
-                <th class='w-15'>Size 2</th>
-                <th class='w-15'>Size 3</th>
+            <thead class="thead-dark" id="tbl_sizes_head">
+                <th class='w-20' data-column='["size1"]' data-dir="ASC">Size 1</th>
+                <th class='w-15' data-column='["size2"]'>Size 2</th>
+                <th class='w-15' data-column='["size3"]'>Size 3</th>
                 <th class='w-10'>Current Stock</th>
                 <th class='w-10'>Placed Orders</th>
                 <th class='w-10'>Open Demands</th>

@@ -102,24 +102,6 @@ function getSuppliers() {
     });
 };
 addReloadListener(getSizes);
-sort_listeners(
-    'items',
-    getItems,
-    [
-        {value: '["createdAt"]',   text: 'Created'},
-        {value: '["description"]', text: 'Description', selected: true}
-    ]
-);
-sort_listeners(
-    'sizes',
-    getSizes,
-    [
-        {value: '["createdAt"]', text: 'Created'},
-        {value: '["size1"]',     text: 'Size 1', selected: true},
-        {value: '["size2"]',     text: 'Size 2'},
-        {value: '["size3"]',     text: 'Size 3'}
-    ]
-);
 window.addEventListener('load', function () {
     addListener('sel_suppliers', getSizes, 'input');
     addListener('sel_items',     getSizes, 'input');
@@ -129,4 +111,8 @@ window.addEventListener('load', function () {
         '/orders',
         {onComplete: getSizes}
     );
+    // add_sort_listeners('items', getItems);
+    add_sort_listeners('sizes', getSizes);
+    getItems();
+    getSizes();
 });

@@ -59,19 +59,6 @@ function getOrders() {
     });
 };
 addReloadListener(getOrders);
-sort_listeners(
-    'orders',
-    getOrders,
-    [
-        {value: '["createdAt"]',                 text: 'Date', selected: true},
-        {value: '["size","item","description"]', text: 'Description'},
-        {value: '["size","size1"]',              text: 'Size 1'},
-        {value: '["size","size2"]',              text: 'Size 2'},
-        {value: '["size","size3"]',              text: 'Size 3'},
-        {value: '["qty"]',                       text: 'Qty'},
-        {value: '["status"]',                    text: 'Status'}
-    ]
-);
 window.addEventListener('load', function () {
     addListener('filter_order_statuses',       getOrders, 'input');
     addListener('filter_order_createdAt_from', getOrders, 'input');
@@ -86,4 +73,6 @@ window.addEventListener('load', function () {
         '/orders',
         {onComplete: getOrders}
     );
+    add_sort_listeners('orders', getOrders);
+    getOrders();
 });

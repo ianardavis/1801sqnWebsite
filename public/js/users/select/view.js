@@ -40,17 +40,6 @@ function selectUsers() {
         window.opener.selectedUsers(users);
     } else alert_toast('Source window not found');
 };
-sort_listeners(
-    'users',
-    getUsers,
-    [
-        {value: '["createdAt"]',      text: 'Created'},
-        {value: '["service_number"]', text: 'Service #/Bader #'},
-        {value: '["rank_id"]',        text: 'Rank'},
-        {value: '["surname"]',        text: 'Surname', selected: true},
-        {value: '["first_name"]',     text: 'First Name'}
-    ]
-);
 window.addEventListener('load', function () {
     addListener('tbl_users', toggle_checkbox_on_row_click);
     addListener('sel_ranks',    getUsers, 'change');
@@ -58,4 +47,6 @@ window.addEventListener('load', function () {
     addListener('btn_select',   selectUsers);
     listRanks();
     listStatuses();
+    add_sort_listeners('users', getUsers);
+    getUsers();
 })

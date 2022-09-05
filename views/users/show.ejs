@@ -41,9 +41,9 @@
             <div>
                 <h5 class="text-start">Giftaid Registrations</h5>
                 <table class="table table-sm table-hover">
-                    <thead class="thead-dark">
-                        <th class='w-50'>From</th>
-                        <th class='w-50'>To</th>
+                    <thead class="thead-dark" id="tbl_giftaid_head">
+                        <th class='w-50' data-column='["startDate"]' data-dir="DESC">From</th>
+                        <th class='w-50' data-column='["endDate"]'>To</th>
                         <th></th>
                     </thead>
                     <% if (permissions.user_admin) { %>
@@ -64,12 +64,9 @@
         </div>
         <% if (permissions.user_admin || permissions.edit_own_permissions) { %>
             <div class="tab-pane fade" id="permissions" role="tabpanel" aria-labelledby="permissions-tab">
-                <div class="row justify-content-between">
-                    <%- include(`${partials}/sort`, {table: 'permissions'}) %>
-                </div>
 	            <table class="table table-sm table-hover">
-                    <thead class="thead-dark">
-                        <th class='w-100'>Permission</th>
+                    <thead class="thead-dark" id="tbl_permissions_head">
+                        <th class='w-100' data-column='["permission"]' data-dir="ASC">Permission</th>
                     </thead>
                     <tbody id="tbl_permissions"></tbody>
                 </table>
@@ -78,7 +75,6 @@
         <% } %>
         <div class="tab-pane fade" id="issues" role="tabpanel" aria-labelledby="issues-tab">
             <div class="row justify-content-between">
-                <%- include(`${partials}/sort`, {table: 'issues'}) %>
                 <div class="col-12 col-md-4 mb-1">
                     <%- include(`${partials}/sidebar/button`, {id: 'issues_filter', text: 'Filter'}) %>
                 </div>
@@ -118,11 +114,11 @@
             <%- include(`${partials}/sidebar/close`) %>
             <% if (permissions.issuer) { %><form id='form_issue_edit'><% } %>
 	        <table class='table table-sm table-hover'>
-                <thead class="thead-dark">
-                    <th class="w-20">Date</th>
-                    <th class="w-30">Item</th>
-                    <th class="w-20">Size</th>
-                    <th class="w-10">Qty</th>
+                <thead class="thead-dark" id="tbl_issues_head">
+                    <th class="w-20" data-column='["createdAt"]' data-dir="DESC">Date</th>
+                    <th class="w-30" data-column='["size","item","description"]'>Item</th>
+                    <th class="w-20" data-column='["size","size1"]'>Size</th>
+                    <th class="w-10" data-column='["qty"]'>Qty</th>
                     <th class="w-20">
                         <select id="sel_all" class='form-select form-select-sm hidden'>
                             <option>Select All</option>
@@ -143,7 +139,6 @@
         </div>
         <div class="tab-pane fade" id="loancards" role="tabpanel" aria-labelledby="loancards-tab">
             <div class="row justify-content-between">
-                <%- include(`${partials}/sort`, {table: 'loancards'}) %>
                 <div class="col-12 col-md-4 mb-1">
                     <%- include(`${partials}/sidebar/button`, {id: 'loancards_filter', text: 'Filter'}) %>
                 </div>
@@ -170,10 +165,10 @@
                 </div>
             <%- include(`${partials}/sidebar/close`) %>
 	        <table class='table table-sm table-hover'>
-                <thead class="thead-dark">
-                    <th class="w-40">Date</th>
-                    <th class="w-20">Lines</th>
-                    <th class="w-40">Status</th>
+                <thead class="thead-dark" id="tbl_loancards_head">
+                    <th class="w-40" data-column='["createdAt"]' data-dir="DESC">Date</th>
+                    <th class="w-20" data-column='["lines"]'>Lines</th>
+                    <th class="w-40" data-column='["status"]'>Status</th>
                     <th><i class="fas fa-search"></i></th>
                 </thead>
                 <tbody id="tbl_loancards"></tbody>
@@ -325,7 +320,6 @@
                             <%- include(`${partials}/inputs/number`, {title: 'Inside Leg',   classes:['measurement'], data: {field: 'measurement', value: 'Inside Leg'}}) %>
                             <%- include(`${partials}/inputs/number`, {title: 'Skirt Length', classes:['measurement'], data: {field: 'measurement', value: 'Skirt Length'}}) %>
                             <%- include(`${partials}/inputs/number`, {title: 'Height',       classes:['measurement'], data: {field: 'measurement', value: 'Height'}}) %>
-                            <%- include(`${partials}/sort`, {table: 'sizes'}) %>
                             <div id="div_select_items">
                                 <h5>Select Items</h5>
                                 <table class='table table-sm table-hover'>

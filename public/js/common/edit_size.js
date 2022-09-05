@@ -41,17 +41,6 @@ function getSizes_funcs(table, editable_statuses, func, orderable = {orderable: 
             .catch(err => console.log(err));
         });
     };
-    sort_listeners(
-        'sizes',
-        getSizes,
-        [
-            {value: '["createdAt"]', text: 'Created'},
-            {value: '["size1"]',     text: 'Size 1', selected: true},
-            {value: '["size2"]',     text: 'Size 2'},
-            {value: '["size3"]',     text: 'Size 3'}
-        ],
-        false
-    );
     window.addEventListener('load', function () {
         modalOnShow('size_edit', getSizes);
         addFormListener(
@@ -63,5 +52,6 @@ function getSizes_funcs(table, editable_statuses, func, orderable = {orderable: 
                 getActions
             ]}
         );
+        add_sort_listeners('sizes', getSizes);
     });
 };

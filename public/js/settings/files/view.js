@@ -31,12 +31,8 @@ function getFiles() {
         });
     });
 };
-sort_listeners(
-    'files',
-    getGenders,
-    [
-        {value: '["createdAt"]', text: 'Created'},
-        {value: '["filename"]',  text: 'Filename', selected: true}
-    ]
-);
 addReloadListener(getFiles);
+window.addEventListener('load', function () {
+    add_sort_listeners('files', getFiles);
+    getFiles();
+});

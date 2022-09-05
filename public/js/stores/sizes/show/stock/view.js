@@ -20,12 +20,7 @@ function getStocks() {
     });
 };
 addReloadListener(getStocks);
-sort_listeners(
-    'stocks',
-    getStocks,
-    [
-        {value: '["createdAt"]',   text: 'Created', selected: true},
-        {value: '["qty"]',         text: 'Qty'},
-        {value: '["location_id"]', text: 'Location'}
-    ]
-);
+window.addEventListener('load', function () {
+    add_sort_listeners('stocks', getStocks);
+    getStocks();
+});

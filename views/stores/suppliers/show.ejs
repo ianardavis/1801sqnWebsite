@@ -30,9 +30,6 @@
             <%- include(`${partials}/inputs/display`, {id: 'supplier_is_default', title: 'Default Supplier', permission: 'access_settings'}) %>
         </div>
         <div class="tab-pane fade" id="files"     role="tabpanel" aria-labelledby="files-tab">
-            <div class="row justify-content-between mb-1">
-                <%- include(`${partials}/sort`, {table: 'files'}) %>
-            </div>
 	        <table class="table table-sm table-hover">
                 <thead class="thead-dark" id="tbl_files_head">
 					<th class='w-50' data-column='["filename"]' data-dir="ASC">Filename</th>
@@ -59,9 +56,6 @@
             <%- include(`${partials}/limit`, {table: 'files'}) %>
         </div>
         <div class="tab-pane fade" id="addresses" role="tabpanel" aria-labelledby="addresses-tab">
-            <div class="row justify-content-between mb-1">
-                <%- include(`${partials}/sort`, {table: 'addresses'}) %>
-            </div>
 	        <table class="table table-sm table-hover">
                 <thead class="thead-dark" id="tbl_supplier_addresses_head">
 					<th class='w-30' data-column='["type"]' data-dir="ASC">Type</th>
@@ -74,9 +68,6 @@
             <%- include(`${partials}/limit`, {table: 'addresses'}) %>
         </div>
         <div class="tab-pane fade" id="contacts"  role="tabpanel" aria-labelledby="contacts-tab">
-            <div class="row justify-content-between mb-1">
-                <%- include(`${partials}/sort`, {table: 'contacts'}) %>
-            </div>
 	        <table class="table table-sm table-hover">
                 <thead class="thead-dark" id="tbl_contacts_head">
                     <th class='w-30' data-column='["type"]' data-dir="ASC">Type</th>
@@ -110,16 +101,10 @@
             </div>
         </div>
         <div class="tab-pane fade" id="items"     role="tabpanel" aria-labelledby="items-tab">
-            <div class="row justify-content-between mb-1">
-                <%- include(`${partials}/sort`, {table: 'items'}) %>
-            </div>
             <div class="row">
                 <div class="col-12 col-md-6 mx-auto">
                     <select class='form-select mb-1' id="sel_items"></select>
                 </div>
-            </div>
-            <div class="row justify-content-between mb-1">
-                <%- include(`${partials}/sort`, {table: 'sizes'}) %>
             </div>
             <div class="row">
                 <div class="col-12 col-md-6 mx-auto">
@@ -139,7 +124,6 @@
         <% if (permissions.authorised_demander) { %>
             <div class="tab-pane fade" id="demands" role="tabpanel" aria-labelledby="demands-tab">
 	            <div class="row justify-content-between mb-1">
-                    <%- include(`${partials}/sort`, {table: 'demands'}) %>
                     <div class="col-12 col-md-4 mb-1">
                         <%- include(`${partials}/sidebar/button`, {id: 'demands_filter', text: 'Filter'}) %>
                     </div>

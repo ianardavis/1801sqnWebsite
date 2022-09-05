@@ -22,11 +22,7 @@ function getReceipts() {
     });
 };
 addReloadListener(getReceipts);
-sort_listeners(
-    'receipts',
-    getReceipts,
-    [
-        {value: '["createdAt"]', text: 'Date', selected: true},
-        {value: '["qty"]',       text: 'Qty'}
-    ]
-);
+window.addEventListener('load', function () {
+    add_sort_listeners('receipts', getReceipts);
+    getReceipts();
+});

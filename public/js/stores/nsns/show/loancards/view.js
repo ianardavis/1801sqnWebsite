@@ -52,16 +52,9 @@ function viewLoancard(loancard_line_id) {
         set_href('loancard_line_user_link',   (line.user                   ? `/users/${line.user_id})`                  : null));
     });
 };
-sort_listeners(
-    'loancard_lines',
-    getLoancards,
-    [
-        {value: '["createdAt"]', text: 'Created', selected: true},
-        {value: '["action"]',    text: 'Note'},
-        {value: '["user_id"]',   text: 'User'}
-    ]
-);
 addReloadListener(getLoancards);
 window.addEventListener('load', function () {
     modalOnShow('loancard_view', function (event) {viewLoancard(event.relatedTarget.dataset.id)});
+    add_sort_listeners('loancard_lines', getLoancards);
+    getLoancards();
 });

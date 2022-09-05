@@ -4,16 +4,15 @@
     <div id="div_filters">
         <%- include(`${partials}/inputs/select`, {id: 'sel_ranks',    title: 'Rank',   spinner_id: 'ranks',    multiple: true}) %>
         <%- include(`${partials}/inputs/select`, {id: 'sel_statuses', title: 'Status', spinner_id: 'statuses', multiple: true}) %>
-        <%- include(`${partials}/sort`, {table: 'users'}) %>
 	</div>
     <div id="div_users">
         <table class='table table-sm table-hover'>
-            <thead class='thead-dark'>
+            <thead class='thead-dark' id="tbl_users_head">
                 <th class='w-10'><i class="fas fa-check"></i></th>
-                <th class='w-20'>Bader/Service #</th>
-                <th class='w-10'>Rank</th>
-                <th class='w-30'>Surname</th>
-                <th class='w-30'>First Name</th>
+                <th class='w-20' data-column='["service_number"]'>Bader/Service #</th>
+                <th class='w-10' data-column='["rank","rank"]'>Rank</th>
+                <th class='w-30' data-column='["surname"]' data-dir="ASC">Surname</th>
+                <th class='w-30' data-column='["first_name"]'>First Name</th>
             </thead>
             <tbody id='tbl_users'></tbody>
         </table>

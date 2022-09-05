@@ -7,16 +7,15 @@
 <%- include(`${partials}/spinner`, {id: 'paid_in_outs'}) %>
 <%- include(`${partials}/head/components/close`) %>
 <section class='container'>
-    <%- include(`${partials}/sort`, {table: 'paid_in_outs'}) %>
 	<table class="table table-sm table-hover mt-1">
-        <thead class="thead-dark">
-            <th class='w-15'>Date</th>
+        <thead class="thead-dark" id="tbl_paid_in_outs_head">
+            <th class='w-15' data-column='["createdAt"]' data-dir="DESC">Date</th>
             <th class='w-10'>Paid In/Out</th>
-            <th class='w-20'>Holding</th>
+            <th class='w-20' data-column='["holding","description"]'>Holding</th>
             <th class='w-20'>To/From</th>
-            <th class='w-15'>Reason</th>
-            <th class='w-10'>Amount</th>
-            <th class='w-10'>Status</th>
+            <th class='w-15' data-column='["reason"]'>Reason</th>
+            <th class='w-10' data-column='["amount"]'>Amount</th>
+            <th class='w-10' data-column='["status"]'>Status</th>
             <th><i class='fas fa-search'></i></th>
         </thead>
         <tbody id="tbl_paid_in_outs"></tbody>

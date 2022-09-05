@@ -73,15 +73,6 @@ function StartScanning() {
 function GoToEnter(input) {
     if(event.key === 'Enter') gotoLoancard(input.value);
 };
-sort_listeners(
-    'loancards',
-    getLoancards,
-    [
-        {value: '["createdAt"]',        text: 'Created'},
-        {value: '["user_id_loancard"]', text: 'User', selected: true},
-        {value: '["status"]',           text: 'Status'}
-    ]
-);
 addReloadListener(getLoancards);
 window.addEventListener('load', function () {
     addListener('goto_loancard_id', );
@@ -96,4 +87,6 @@ window.addEventListener('load', function () {
     addListener('sel_users',    getLoancards, 'change');
     addListener('createdAt_from', function (){filter()}, 'change');
     addListener('createdAt_to',   function (){filter()}, 'change');
+    add_sort_listeners('loancards', getLoancards);
+    getLoancards();
 });

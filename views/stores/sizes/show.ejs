@@ -34,9 +34,6 @@
             <%- include(`${partials}/inputs/display`, {id: 'has_nsns',    title: 'Has NSNs'}) %>
             <%- include(`${partials}/inputs/display`, {id: 'supplier',    title: 'Supplier', link: true}) %>
             <div id="div_details">
-                <div class="row justify-content-between mb-1">
-                    <%- include(`${partials}/sort`, {table: 'details'}) %>
-                </div>
 	            <table class='table table-sm table-hover w-100'>
                     <thead class='thead-dark' id="tbl_details_head">
                         <th class='w-30' data-column='["name"]' data-dir="ASC">Name</th>
@@ -49,9 +46,6 @@
             </div>
         </div>
         <div     id="nsns"    role="tabpanel" aria-labelledby="nsns-tab"    class="tab-pane fade">
-            <div class="row justify-content-between mb-1">
-                <%- include(`${partials}/sort`, {table: 'nsns'}) %>
-            </div>
 	        <% if (permissions.stores_stock_admin) { %><form id='form_nsn_default'><% } %>
             <table class='table table-sm table-hover'>
                 <thead class='thead-dark' id="tbl_nsns_head">
@@ -65,9 +59,6 @@
             <% if (permissions.stores_stock_admin) { %></form><% } %>
         </div>
         <div     id="serials" role="tabpanel" aria-labelledby="serials-tab" class="tab-pane fade">
-            <div class="row justify-content-between mb-1">
-                <%- include(`${partials}/sort`, {table: 'serials'}) %>
-            </div>
 	        <table class='table table-sm table-hover'>
                 <thead class='thead-dark' id="tbl_serials_head">
 					<th class='w-50' data-column='["serial"]'>Serial #</th>
@@ -79,9 +70,6 @@
             <%- include(`${partials}/limit`, {table: 'serials'}) %>
         </div>
         <div     id="stocks"  role="tabpanel" aria-labelledby="stocks-tab"  class="tab-pane fade">
-            <div class="row justify-content-between mb-1">
-                <%- include(`${partials}/sort`, {table: 'stocks'}) %>
-            </div>
 	        <table class='table table-sm table-hover'>
                 <thead class='thead-dark' id="tbl_stocks_head">
 					<th class='w-80' data-column='["location","location"]' data-dir="ASC">Location</th>
@@ -95,7 +83,6 @@
         <% if (permissions.stores_stock_admin) { %>
             <div id="orders"  role="tabpanel" aria-labelledby="orders-tab"  class="tab-pane fade">
                 <div class="row justify-content-between">
-                    <%- include(`${partials}/sort`, {table: 'orders'}) %>
                     <div class="col-12 col-md-4 mb-1">
                         <%- include(`${partials}/sidebar/button`, {id: 'orders_filter', text: 'Filter'}) %>
                     </div>
@@ -125,7 +112,6 @@
         <% } %>
         <div     id="issues"  role="tabpanel" aria-labelledby="issues-tab"  class="tab-pane fade">
             <div class="row justify-content-between">
-                <%- include(`${partials}/sort`, {table: 'issues'}) %>
                 <div class="col-12 col-md-4 mb-1">
                     <%- include(`${partials}/sidebar/button`, {id: 'issues_filter', text: 'Filter'}) %>
                 </div>

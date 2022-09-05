@@ -36,15 +36,9 @@ function viewGender(gender_id) {
         set_innerText('gender_updatedAt', print_date(gender.updatedAt, true));
     });
 };
-sort_listeners(
-    'genders',
-    getGenders,
-    [
-        {value: '["createdAt"]', text: 'Created'},
-        {value: '["gender"]',    text: 'Gender', selected: true}
-    ]
-);
 addReloadListener(getGenders)
 window.addEventListener('load', function () {
     modalOnShow('gender_view', function (event) {viewGender(event.relatedTarget.dataset.id)});
+    add_sort_listeners('genders', getGenders);
+    getGenders();
 });

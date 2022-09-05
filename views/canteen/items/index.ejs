@@ -10,13 +10,12 @@
 <%- include(`${partials}/head/components/close`) %>
 <section class='container'>
     <%- include(`${partials}/inputs/select`, {title: 'Non-Current Items', id: 'current', options: [{value:'', text: 'Include', selected: true}, {value:'"current":1', text: 'Exclude'}, {value:'"current":0', text: 'Only'}]}) %>
-	<%- include(`${partials}/sort`, {table: 'canteen_items'}) %>
 	<table class="table table-sm table-hover mt-1">
-        <thead class="thead-dark">
-            <th class='w-30'>Name</th>
-            <th class='w-30'>Price</th>
-            <th class='w-30'>Stock</th>
-            <th class='w-10'>Current</th>
+        <thead class="thead-dark" id="tbl_canteen_items_head">
+            <th class='w-30' data-column='["name"]' data-dir="ASC">Name</th>
+            <th class='w-30' data-column='["price"]'>Price</th>
+            <th class='w-30' data-column='["qty"]'>Stock</th>
+            <th class='w-10' data-column='["current"]'>Current</th>
             <th><i class='fas fa-search'></i></th>
         </thead>
         <tbody id="tbl_items"></tbody>
@@ -48,7 +47,6 @@
 </section>
 <%- include(`${partials}/foot/app`) %>
 <script src="/js/canteen/items/index/view.js"></script>
-<script async>getItems()</script>
 <% if (permissions.canteen_stock_admin) { %>
     <script src="/js/canteen/items/index/add.js"></script>
 <% } %>

@@ -9,13 +9,12 @@
 <%- include(`${partials}/spinner`, {id: 'receipts'}) %>
 <%- include(`${partials}/head/components/close`) %>
 <section class='container'>
-    <%- include(`${partials}/sort`, {table: 'receipts'}) %>
 	<table class="table table-sm table-hover mt-1">
-        <thead class="thead-dark">
-            <th class='w-40'>Date</th>
-            <th class='w-40'>Item</th>
-            <th class='w-10'>Qty </th>
-            <th class='w-10'>Cost</th>
+        <thead class="thead-dark" id="tbl_receipts_head">
+            <th class='w-40' data-column='["createdAt"]' data-dir="DESC">Date</th>
+            <th class='w-40' data-column='["item","name"]'>Item</th>
+            <th class='w-10' data-column='["qty"]'>Qty </th>
+            <th class='w-10' data-column='["cost"]'>Cost</th>
             <th><i class='fas fa-search'></i></th>
         </thead>
         <tbody id="tbl_receipts"></tbody>

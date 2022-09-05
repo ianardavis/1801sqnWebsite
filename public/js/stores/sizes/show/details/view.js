@@ -35,19 +35,12 @@ function viewDetail(detail_id) {
     });
 };
 addReloadListener(getDetails);
-sort_listeners(
-    'details',
-    getDetails,
-    [
-        {value: '["createdAt"]', text: 'Created'},
-        {value: '["name"]',      text: 'Name', selected: true},
-        {value: '["value"]',     text: 'Value'}
-    ]
-);
 window.addEventListener('load', function () {
     modalOnShow('detail_view', function (event) {
         if (event.relatedTarget.dataset.id) {
             viewDetail(event.relatedTarget.dataset.id)
         } else modalHide('detail_view');
     });
+    add_sort_listeners('details', getDetails);
+    getDetails();
 });

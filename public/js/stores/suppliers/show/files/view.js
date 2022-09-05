@@ -39,14 +39,8 @@ function viewFile(file_id) {
     });
 };
 addReloadListener(getFiles);
-sort_listeners(
-    'files',
-    getFiles,
-    [
-        {value: '["filename"]',    text: 'Filename', selected: true},
-        {value: '["description"]', text: 'Description'}
-    ]
-);
 window.addEventListener('load', function () {
     modalOnShow('file_view', function (event) {viewFile(event.relatedTarget.dataset.id)});
+    add_sort_listeners('files', getFiles);
+    getFiles();
 });

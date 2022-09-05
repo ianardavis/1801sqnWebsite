@@ -73,24 +73,6 @@ function addInput(size_id, _cell, index) {
     };
 };
 addReloadListener(getItems);
-sort_listeners(
-    'items',
-    getItems,
-    [
-        {value: '["createdAt"]',   text: 'Created'},
-        {value: '["description"]', text: 'Description', selected: true}
-    ]
-);
-sort_listeners(
-    'sizes',
-    getSizes,
-    [
-        {value: '["createdAt"]', text: 'Created'},
-        {value: '["size1"]',     text: 'Size 1', selected: true},
-        {value: '["size2"]',     text: 'Size 2'},
-        {value: '["size3"]',     text: 'Size 3'}
-    ]
-);
 window.addEventListener('load', function () {
     addListener('sel_items', getSizes, 'input');
     addFormListener(
@@ -99,4 +81,6 @@ window.addEventListener('load', function () {
         '/details',
         {onComplete: getSizes}
     );
+    add_sort_listeners('sizes', getSizes);
+    // add_sort_listeners('items', getItems);
 });

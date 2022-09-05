@@ -25,14 +25,8 @@ function getSuppliers() {
     });
 };
 addReloadListener(getSuppliers);
-sort_listeners(
-    'suppliers',
-    getSuppliers,
-    [
-        {value: '["createdAt"]', text: 'Created'},
-        {value: '["name"]',      text: 'Name', selected: true}
-    ]
-);
 window.addEventListener('load', function () {
     inp_supplier_name.addEventListener('input', getSuppliers);
+    add_sort_listeners('suppliers', getSuppliers);
+    getSuppliers();
 });

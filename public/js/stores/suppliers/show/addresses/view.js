@@ -43,20 +43,8 @@ function viewAddress(supplier_address_id) {
     });
 };
 addReloadListener(getAddresses);
-sort_listeners(
-    'addresses',
-    getAddresses,
-    [
-        {value: '["type"]',        text: 'Type', selected: true},
-        {value: '["unit_number"]', text: 'Unit Number'},
-        {value: '["street"]',      text: 'Street'},
-        {value: '["town"]',        text: 'Town'},
-        {value: '["county"]',      text: 'County'},
-        {value: '["country"]',     text: 'Country'},
-        {value: '["postcode"]',    text: 'Postcode'},
-        {value: '["createdAt"]',   text: 'Created'}
-    ]
-);
 window.addEventListener('load', function () {
     modalOnShow('address_view', function (event) {viewAddress(event.relatedTarget.dataset.id)});
+    add_sort_listeners('addresses', getAddresses);
+    getAddresses();
 });

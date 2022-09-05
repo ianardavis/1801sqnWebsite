@@ -16,13 +16,12 @@
             <%- include(`${partials}/inputs/display`, {id: 'sale_status',    title: 'Status'}) %>
         </div>
         <div class="tab-pane fade" id="lines" role="tabpanel" aria-labelledby="lines-tab">
-            <%- include(`${partials}/sort`, {table: 'sale_lines'}) %>
 	        <table class="table table-sm table-hover">
-                <thead class="thead-dark">
-					<th class='w-35'>Date/Time</th>
-					<th class='w-25'>Item</th>
-					<th class='w-10'>Qty</th>
-					<th class='w-15'>Price</th>
+                <thead class="thead-dark" id="tbl_sale_lines_head">
+					<th class='w-35' data-column='["createdAt"]' data-dir="DESC">Date/Time</th>
+					<th class='w-25' data-column='["item","name"]'>Item</th>
+					<th class='w-10' data-column='["qty"]'>Qty</th>
+					<th class='w-15' data-column='["price"]'>Price</th>
 					<th class='w-15'>Total</th>
                     <th><i class='fas fa-search'></i></th>
                 </thead>
@@ -31,13 +30,12 @@
             <%- include(`${partials}/limit`, {table: 'sale_lines'}) %>
         </div>
         <div class="tab-pane fade" id="payments" role="tabpanel" aria-labelledby="payments-tab">
-            <%- include(`${partials}/sort`, {table: 'payments'}) %>
 	        <table class="table table-sm table-hover">
-                <thead class="thead-dark">
-					<th class='w-40'>Date/Time</th>
-					<th class='w-15'>Amount</th>
-					<th class='w-15'>Method</th>
-					<th class='w-30'>User</th>
+                <thead class="thead-dark" id="tbl_payments_head">
+					<th class='w-40' data-column='["createdAt"]' data-dir="DESC">Date/Time</th>
+					<th class='w-15' data-column='["amount"]'>Amount</th>
+					<th class='w-15' data-column='["method"]'>Method</th>
+					<th class='w-30' data-column='["user_payment","surname"]'>User</th>
                     <th><i class='fas fa-search'></i></th>
                 </thead>
                 <tbody id="tbl_payments"></tbody>

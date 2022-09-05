@@ -22,11 +22,7 @@ function getSales() {
     });
 };
 addReloadListener(getSales);
-sort_listeners(
-    'sale_lines',
-    getSales,
-    [
-        {value: '["createdAt"]', text: 'Date', selected: true},
-        {value: '["qty"]',       text: 'Qty'}
-    ]
-);
+window.addEventListener('load', function () {
+    add_sort_listeners('sale_lines', getSales);
+    getSales();
+});

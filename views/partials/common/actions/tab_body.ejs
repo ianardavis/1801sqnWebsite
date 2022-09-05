@@ -1,9 +1,8 @@
 <div class="tab-pane fade" id="actions" role="tabpanel" aria-labelledby="actions-tab">
-    <%- include(`${partials}/sort`, {table: 'actions'}) %>
     <table class='table table-sm table-hover mt-1'>
-        <thead class='thead-dark'>
-            <th class='w-40'>Date</th>
-            <th class='w-60'>Action</th>
+        <thead class='thead-dark' id="tbl_actions_head">
+            <th class='w-40' data-column='["createdAt"]' data-dir="ASC">Date</th>
+            <th class='w-60' data-column='["action"]'>Action</th>
             <th><i class='fas fa-search'></i></th>
         </thead>
         <tbody id='tbl_actions'></tbody>

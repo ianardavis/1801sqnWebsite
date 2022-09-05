@@ -23,15 +23,9 @@ function getLoancards () {
     })
     .catch(err => console.log(err));
 };
-addReloadListener(getLoancards)
-sort_listeners(
-    'loancards',
-    getLoancards,
-    [
-        {value: '["createdAt"]', text: 'Created', selected: true},
-        {value: '["status"]',    text: 'Status'}
-    ]
-);
+addReloadListener(getLoancards);
 window.addEventListener('load', function () {
     addListener('sel_loancard_statuses', getLoancards, 'change');
-})
+    add_sort_listeners('loancards', getLoancards);
+    getLoancards();
+});

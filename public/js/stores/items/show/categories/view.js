@@ -34,18 +34,12 @@ function viewCategory(category_id) {
     });
 };
 addReloadListener(getCategories);
-sort_listeners(
-    'item_categories',
-    getCategories,
-    [
-        {value: '["createdAt"]', text: 'Created', selected: true},
-        {value: '["category"]',  text: 'Category'}
-    ]
-);
 window.addEventListener('load', function () {
     modalOnShow('category_view', function(event) {
         if (event.relatedTarget.dataset.id) {
             viewCategory(event.relatedTarget.dataset.id)
         } else modalHide('category_view');
     });
+    add_sort_listeners('item_categories', getCategories);
+    getCategories();
 });

@@ -56,10 +56,9 @@
         </div>
         <% if (permissions.stores_stock_admin) { %>
             <div class="tab-pane fade" id="genders" role="tabpanel" aria-labelledby="genders-tab">
-                <%- include(`${partials}/sort`, {table: 'genders'}) %>
 	            <table class="table table-sm table-hover">
-                    <thead class="thead-dark">
-                        <th class='w-100'>Gender</th>
+                    <thead class="thead-dark" id="tbl_genders_head">
+                        <th class='w-100' data-column='["gender"]' data-dir="ASC">Gender</th>
                         <th><i class='fas fa-search'></i></th>
                     </thead>
                     <tbody id='tbl_genders'></tbody>
@@ -68,11 +67,10 @@
         <% } %>
         <% if (permissions.supplier_admin) { %>
             <div class="tab-pane fade" id="files" role="tabpanel" aria-labelledby="files-tab">
-                <%- include(`${partials}/sort`, {table: 'files'}) %>
 	            <table class="table table-sm table-hover">
-                    <thead class="thead-dark">
-                        <th class='w-20'>File ID </th>
-                        <th class='w-60'>Filename</th>
+                    <thead class="thead-dark" id="tbl_files_head">
+                        <th class='w-20' data-column='["file_id"]'>File ID </th>
+                        <th class='w-60' data-column='["filename"]' data-dir="ASC">Filename</th>
                         <th class='w-20'>Exists</th>
                         <th><i class='fas fa-trash-alt'></i></th>
                     </thead>
@@ -82,12 +80,11 @@
         <% } %>
         <% if (permissions.supplier_admin) { %>
             <div class="tab-pane fade" id="accounts" role="tabpanel" aria-labelledby="accounts-tab">
-                <%- include(`${partials}/sort`, {table: 'accounts'}) %>
 	            <table class="table table-sm table-hover">
-                    <thead class="thead-dark">
-                        <th class='w-40'>Name  </th>
-                        <th class='w-20'>Number</th>
-                        <th class='w-40'>Owner </th>
+                    <thead class="thead-dark" id="tbl_accounts_head">
+                        <th class='w-40' data-column='["name"]' data-dir="ASC">Name  </th>
+                        <th class='w-20' data-column='["number"]'>Number</th>
+                        <th class='w-40' data-column='["user_account","surname"]'>Owner </th>
                         <th><i class='fas fa-search'></i></th>
                     </thead>
                     <tbody id='tbl_accounts'></tbody>
@@ -105,11 +102,10 @@
             </div>
         <% } %>
         <div class="tab-pane fade" id="settings" role="tabpanel" aria-labelledby="settings-tab">
-            <%- include(`${partials}/sort`, {table: 'settings'}) %>
 	        <table class="table table-sm table-hover">
-                <thead class="thead-dark">
-					<th class='w-50'>Setting</th>
-					<th class='w-50'>Value  </th>
+                <thead class="thead-dark" id="tbl_settings_head">
+					<th class='w-50' data-column='["setting"]' data-dir="ASC">Setting</th>
+					<th class='w-50' data-column='["value"]'>Value  </th>
                     <th><i class='fas fa-search'></i></th>
                 </thead>
                 <tbody id='tbl_settings'></tbody>

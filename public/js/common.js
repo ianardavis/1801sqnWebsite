@@ -257,28 +257,6 @@ function add_page_links(count, limit, offset, table, func) {
         );
     });
 };
-function sort_listeners(table, func, options, getOnLoad = true) {
-    window.addEventListener('load', function () {
-        let limit_func = function (e) {
-            let limit = document.querySelector(`.limit_${table} .active`);
-            if (limit) {
-                limit.classList.remove('active');
-                e.target.parentNode.classList.add('active');
-                if (func) func();
-            };
-        };
-        addListener(`limit_${table}_10`,  limit_func);
-        addListener(`limit_${table}_20`,  limit_func);
-        addListener(`limit_${table}_30`,  limit_func);
-        addListener(`limit_${table}_all`, limit_func);
-        addListener(`sort_${ table}`,     func, 'input');
-        addListener(`sort_${ table}_dir`, func, 'input');
-        clear(`sort_${table}`)
-        .then(sort => options.forEach(o => sort.appendChild(new Option(o).e)))
-        .catch(err => console.log(err))
-        .finally(() => {if (func && getOnLoad) func()});
-    });
-};
 function build_filter_query(table, where = {}) {
     let like  = {},
         gt    = null,

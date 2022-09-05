@@ -76,19 +76,6 @@ function viewLine(line_id) {
     });
 };
 addReloadListener(getLines);
-sort_listeners(
-    'scrap_lines',
-    getLines,
-    [
-        {value: '["createdAt"]',                 text: 'Created', selected: true},
-        {value: '["size","item","description"]', text: 'Description'},
-        {value: '["size","size1"]',              text: 'Size 1'},
-        {value: '["size","size2"]',              text: 'Size 2'},
-        {value: '["size","size3"]',              text: 'Size 3'},
-        {value: '["qty"]',                       text: 'Qty'},
-        {value: '["status"]',                    text: 'Status'}
-    ]
-);
 window.addEventListener('load', function () {
     addListener('filter_scrap_line_statuses', getLines, 'input');
     addListener('filter_scrap_line_size_1',   getLines, 'input');
@@ -96,4 +83,6 @@ window.addEventListener('load', function () {
     addListener('filter_scrap_line_size_3',   getLines, 'input');
     addListener('filter_scrap_line_item',     getLines, 'input');
     modalOnShow('line_view', function (event) {viewLine(event.relatedTarget.dataset.id)});
+    add_sort_listeners('scrap_lines', getLines);
+    getLines();
 });

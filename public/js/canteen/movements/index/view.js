@@ -18,14 +18,7 @@ function getMovements() {
     });
 };
 addReloadListener(getMovements);
-sort_listeners(
-    'movements',
-    getMovements,
-    [
-        {value: '["createdAt"]',       text: 'Date', selected: true},
-        {value: '["holding_id_from"]', text: 'From'},
-        {value: '["holding_id_to"]',   text: 'To'},
-        {value: '["description"]',     text: 'Description'},
-        {value: '["amount"]',          text: 'Amount'}
-    ]
-);
+window.addEventListener('load', function () {
+    add_sort_listeners('movements', getMovements);
+    getMovements();
+});

@@ -23,12 +23,7 @@ function getWriteoffs() {
     })
 };
 addReloadListener(getWriteoffs);
-sort_listeners(
-    'writeoffs',
-    getWriteoffs,
-    [
-        {value: '["createdAt"]', text: 'Date', selected: true},
-        {value: '["reason"]',    text: 'Reason'},
-        {value: '["qty"]',       text: 'Qty'}
-    ]
-);
+window.addEventListener('load', function () {
+    add_sort_listeners('writeoffs', getWriteoffs);
+    getWriteoffs();
+});

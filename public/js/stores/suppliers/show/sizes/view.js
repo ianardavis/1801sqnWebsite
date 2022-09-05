@@ -41,22 +41,8 @@ function getSizes() {
     });
 };
 addReloadListener(getItems);
-sort_listeners(
-    'items',
-    getItems,
-    [
-        {value: '["description"]', text: 'Description', selected: true}
-    ]
-);
-sort_listeners(
-    'sizes',
-    getSizes,
-    [
-        {value: '["size1"]', text: 'Size 1'},
-        {value: '["size2"]', text: 'Size 2'},
-        {value: '["size3"]', text: 'Size 3'},
-    ]
-);
 window.addEventListener('load', function () {
     addListener('sel_items', getSizes, 'input');
+    // add_sort_listeners('items', getItems);
+    add_sort_listeners('sizes', getSizes);
 });

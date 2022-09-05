@@ -49,12 +49,7 @@ function getSales() {
     });
 };
 addReloadListener(getSales);
-sort_listeners(
-    'sales',
-    getSales,
-    [
-        {value: '["createdAt"]', text: 'Time', selected: true},
-        {value: '["qty"]',       text: 'Qty'},
-        {value: '["status"]',    text: 'Status'}
-    ]
-);
+window.addEventListener('load', function () {
+    add_sort_listeners('sales', getSales);
+    getSales();
+});

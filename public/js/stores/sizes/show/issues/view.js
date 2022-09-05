@@ -52,17 +52,9 @@ function viewIssue(issue_id) {
     .catch(err => console.log(err));
 };
 addReloadListener(getIssues);
-sort_listeners(
-    'issues',
-    getIssues,
-    [
-        {value: '["createdAt"]',     text: 'Created'},
-        {value: '["user_id_issue"]', text: 'Issued To', selected: true},
-        {value: '["qty"]',           text: 'Qty'},
-        {value: '["status"]',        text: 'Status'}
-    ]
-);
 window.addEventListener('load', function () {
     document.querySelector('#sel_issue_statuses').addEventListener('change', getIssues);
     modalOnShow('issue_view', function (event) {viewIssue(event.relatedTarget.dataset.id)});
+    add_sort_listeners('issues', getIssues);
+    getIssues();
 });

@@ -22,12 +22,7 @@ function getSerials() {
     });
 };
 addReloadListener(getSerials);
-sort_listeners(
-    'serials',
-    getSerials,
-    [
-        {value: '["createdAt"]',   text: 'Created', selected: true},
-        {value: '["serial"]',      text: 'Serial #'},
-        {value: '["location_id"]', text: 'Location'}
-    ]
-);
+window.addEventListener('load', function () {
+    add_sort_listeners('serials', getSerials);
+    getSerials();
+});

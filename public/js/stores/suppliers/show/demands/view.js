@@ -26,16 +26,8 @@ function getDemands() {
     })
 };
 addReloadListener(getDemands);
-sort_listeners(
-    'demands',
-    getDemands,
-    [
-        {value: '["createdAt"]', text: 'Created'},
-        {value: '["status"]',    text: 'Status'},
-        {value: '["filename"]',  text: 'Filename'},
-        {value: '["user_id"]',   text: 'User'}
-    ]
-);
 window.addEventListener('load', function () {
     addListener('sel_demand_status', getDemands, 'change');
+    add_sort_listeners('demands', getDemands);
+    getDemands();
 });

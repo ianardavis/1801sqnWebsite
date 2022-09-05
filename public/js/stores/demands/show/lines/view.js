@@ -77,18 +77,6 @@ function showLine(demand_line_id) {
     });
 };
 addReloadListener(getLines);
-sort_listeners(
-    'demand_lines',
-    getLines,
-    [
-        {value: '["createdAt"]',                 text: 'Date', selected: true},
-        {value: '["size","item","description"]', text: 'Description'},
-        {value: '["size","size1"]',              text: 'Size1'},
-        {value: '["size","size2"]',              text: 'Size2'},
-        {value: '["size","size3"]',              text: 'Size3'},
-        {value: '["status"]',                    text: 'Status'}
-    ]
-);
 window.addEventListener('load', function () {
     addListener('sel_status', getLines, 'change');
     modalOnShow('line_view', function (event) {showLine(event.relatedTarget.dataset.id)});
@@ -100,4 +88,6 @@ window.addEventListener('load', function () {
             onComplete: getLines
         }
     );
+    add_sort_listeners('demand_lines', getLines);
+    getLines();
 });

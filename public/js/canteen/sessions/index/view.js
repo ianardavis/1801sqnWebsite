@@ -23,12 +23,7 @@ function getSessions() {
     });
 };
 addReloadListener(getSessions);
-sort_listeners(
-    'sessions',
-    getSessions,
-    [
-        {value: '["createdAt"]',    text: 'Start', selected: true},
-        {value: '["datetime_end"]', text: 'End'},
-        {value: '["status"]',       text: 'Status'}
-    ]
-);
+window.addEventListener('load', function () {
+    add_sort_listeners('sessions', getSessions);
+    getSessions();
+});

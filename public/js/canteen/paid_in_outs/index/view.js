@@ -22,16 +22,7 @@ function getPaidInOuts() {
     });
 };
 addReloadListener(getPaidInOuts);
-sort_listeners(
-    'paid_in_outs',
-    getPaidInOuts,
-    [
-        {value: '["createdAt"]',           text: 'Date', selected: true},
-        {value: '["paid_in"]',             text: 'Paid In/Out'},
-        {value: '["holding_id"]',          text: 'Holding'},
-        {value: '["user_id_paid_in_out"]', text: 'To/From'},
-        {value: '["reason"]',              text: 'Reason'},
-        {value: '["amount"]',              text: 'Amount'},
-        {value: '["status"]',              text: 'Status'}
-    ]
-);
+window.addEventListener('load', function () {
+    add_sort_listeners('paid_in_outs', getPaidInOuts);
+    getPaidInOuts();
+});

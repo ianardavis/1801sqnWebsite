@@ -59,23 +59,12 @@ function filter(tbl_issues) {
     });
 };
 addReloadListener(getIssues);
-sort_listeners(
-    'issues',
-    getIssues,
-    [
-        {value: '["createdAt"]',                 text: 'Created', selected: true},
-        {value: '["size","item","description"]', text: 'Description'},
-        {value: '["size","size1"]',              text: 'Size 1'},
-        {value: '["size","size2"]',              text: 'Size 2'},
-        {value: '["size","size3"]',              text: 'Size 3'},
-        {value: '["qty"]',                       text: 'Qty'},
-        {value: '["status"]',                    text: 'Status'}
-    ]
-);
 window.addEventListener('load', function () {
     addListener('sel_issue_statuses', getIssues, 'change');
     addListener('issue_createdAt_from', function (){filter()}, 'change');
     addListener('issue_createdAt_to',   function (){filter()}, 'change');
     addListener('item',           function (){filter()}, 'input');
     addListener('size',           function (){filter()}, 'input');
+    add_sort_listeners('issues', getIssues);
+    getIssues();
 });

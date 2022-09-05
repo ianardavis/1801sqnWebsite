@@ -56,16 +56,6 @@ function getSuppliers() {
     .catch(err =>   getDemands())
 };
 addReloadListener(getDemands);
-sort_listeners(
-    'demands',
-    getDemands,
-    [
-        {value: '["createdAt"]',   text: 'Date', selected: true},
-        {value: '["supplier_id"]', text: 'Supplier'},
-        {value: '["status"]',      text: 'Status'}
-    ],
-    false
-);
 window.addEventListener('load', function () {
     getSuppliers();
     addListener('reload_suppliers', getSuppliers);
@@ -76,4 +66,5 @@ window.addEventListener('load', function () {
     addListener('status_demands_3',              getDemands, 'input');
     addListener('filter_demands_createdAt_from', getDemands, 'input');
     addListener('filter_demands_createdAt_to',   getDemands, 'input');
+    add_sort_listeners('demands', getDemands);
 });

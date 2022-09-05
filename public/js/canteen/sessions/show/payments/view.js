@@ -18,11 +18,7 @@ function getPayments() {
     });
 };
 addReloadListener(getPayments);
-sort_listeners(
-    'payments_session',
-    getPayments,
-    [
-        {value: '["createdAt"]', text: 'Time', selected: true},
-        {value: '["qty"]',       text: 'Qty'}
-    ]
-);
+window.addEventListener('load', function () {
+    add_sort_listeners('payments_session', getPayments);
+    getPayments();
+});

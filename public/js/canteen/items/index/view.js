@@ -22,16 +22,8 @@ function getItems() {
     });
 };
 addReloadListener(getItems);
-sort_listeners(
-    'canteen_items',
-    getItems,
-    [
-        {value: '["name"]',    text: 'Name', selected: true},
-        {value: '["price"]',   text: 'Price'},
-        {value: '["qty"]',     text: 'Stock'},
-        {value: '["current"]', text: 'Current'}
-    ]
-);
 window.addEventListener('load', function () {
     addListener('current', getItems, 'change');
+    add_sort_listeners('canteen_items', getItems);
+    getItems();
 });

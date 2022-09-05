@@ -23,7 +23,6 @@
             <%- include(`${partials}/inputs/display`, {id: 'item_number', title: 'Item Number'}) %>
         </div>
         <div class="tab-pane fade" id="loancards" role="tabpanel" aria-labelledby="loancards-tab">
-            <%- include(`${partials}/sort`, {table: 'loancard_lines'}) %>
 	        <table class='table table-sm table-hover w-100'>
                 <thead class='thead-dark' id="tbl_loancards_head">
 					<th class='w-40' data-column='["createdAt"]' data-dir="DESC">Date</th>

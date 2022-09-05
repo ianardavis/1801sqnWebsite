@@ -39,15 +39,8 @@ function viewContact(supplier_contact_id) {
     });
 };
 addReloadListener(getContacts);
-sort_listeners(
-    'contacts',
-    getContacts,
-    [
-        {value: '["type"]',        text: 'Type', selected: true},
-        {value: '["description"]', text: 'Description'},
-        {value: '["contact"]',     text: 'Contact'}
-    ]
-);
 window.addEventListener('load', function () {
     modalOnShow('contact_view', function (event) {viewContact(event.relatedTarget.dataset.id)});
+    add_sort_listeners('contacts', getContacts);
+    getContacts();
 });

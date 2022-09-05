@@ -51,14 +51,6 @@ function getStocks(location_id) {
     });
 };
 addReloadListener(getLocations);
-sort_listeners(
-    'locations',
-    getLocations,
-    [
-        {value: '["createdAt"]', text: 'Created'},
-        {value: '["location"]',  text: 'Location', selected: true}
-    ]
-);
 window.addEventListener('load', function () {
     addListener('sel_location', function (e) {getStocks(e.target.value)}, 'input');
     addFormListener(
@@ -67,4 +59,6 @@ window.addEventListener('load', function () {
         '/stocks/counts',
         {onComplete: function (e) {getStocks(e.result)}}
     );
+    add_sort_listeners('locations', getStocks);
+    getLocations();
 });

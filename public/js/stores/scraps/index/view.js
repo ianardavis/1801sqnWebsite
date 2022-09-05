@@ -31,15 +31,6 @@ function getSuppliers() {
         blank: {text: 'All'}
     })  
 };
-sort_listeners(
-    'scraps',
-    getScraps,
-    [
-        {value: '["createdAt"]',   text: 'Created', selected: true},
-        {value: '["supplier_id"]', text: 'Supplier'},
-        {value: '["status"]',      text: 'Status'}
-    ]
-);
 addReloadListener(getScraps);
 window.addEventListener('load', function () {
     getSuppliers();
@@ -48,4 +39,6 @@ window.addEventListener('load', function () {
     addListener('filter_scrap_suppliers', getScraps, 'change');
     addListener('createdAt_from',     getScraps, 'change');
     addListener('createdAt_to',       getScraps, 'change');
+    add_sort_listeners('scraps', getScraps);
+    getScraps();
 });

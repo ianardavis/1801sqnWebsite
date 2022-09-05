@@ -16,10 +16,7 @@ function getPermissions () {
     });
 };
 addReloadListener(getPermissions);
-sort_listeners(
-    'permissions',
-    getPermissions,
-    [
-        {value: '["permission"]', text: 'Permission', selected: true}
-    ]
-);
+window.addEventListener('load', function () {
+    add_sort_listeners('permissions', getPermissions);
+    getPermissions();
+});
