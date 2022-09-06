@@ -21,4 +21,6 @@ function getDemandLine() {
         set_href('line_serial_link', (line.serial ? `/serials/${line.serial_id}`: ''));
     });
 };
-addReloadListener(getDemandLine);
+window.addEventListener('load', function () {
+    addListener('reload', getDemandLine);
+});

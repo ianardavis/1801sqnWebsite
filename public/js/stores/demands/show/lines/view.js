@@ -76,8 +76,8 @@ function showLine(demand_line_id) {
         set_href('line_user_link', `/users/${line.user_id}`);
     });
 };
-addReloadListener(getLines);
 window.addEventListener('load', function () {
+    addListener('reload', getLines);
     addListener('sel_status', getLines, 'change');
     modalOnShow('line_view', function (event) {showLine(event.relatedTarget.dataset.id)});
     addFormListener(

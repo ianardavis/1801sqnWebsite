@@ -25,4 +25,6 @@ function getDemand() {
     })
     .catch(err => window.location.assign('/demands'));
 };
-addReloadListener(getDemand);
+window.addEventListener('load', function () {
+    addListener('reload', getDemand);
+});

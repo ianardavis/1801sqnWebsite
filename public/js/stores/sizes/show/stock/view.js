@@ -19,8 +19,8 @@ function getStocks() {
         });
     });
 };
-addReloadListener(getStocks);
 window.addEventListener('load', function () {
+    addListener('reload', getStocks);
     add_sort_listeners('stocks', getStocks);
     getStocks();
 });

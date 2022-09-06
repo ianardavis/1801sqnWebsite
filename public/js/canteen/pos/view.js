@@ -231,8 +231,8 @@ function getSession() {
         set_href('btn_session', `/sessions/${results.sessions[0].session_id}`);
     });
 };
-addReloadListener(getSale);
 window.addEventListener('load', function () {
+    addListener('reload', getSale);
     numberEvents();
     modalOnShow('sale_complete', reset_sale_complete);
     addFormListener(

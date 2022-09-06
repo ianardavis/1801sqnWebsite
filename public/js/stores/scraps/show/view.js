@@ -37,8 +37,8 @@ function getScrap() {
         if (typeof setActionButton === 'function') setActionButton(status);
     });
 };
-addReloadListener(getScrap);
 window.addEventListener('load', function () {
+    addListener('reload', getScrap);
     enable_button('scrap_complete');
     enable_button('scrap_file_download');
     enable_button('scrap_file_print');

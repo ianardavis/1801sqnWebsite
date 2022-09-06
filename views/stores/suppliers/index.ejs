@@ -4,16 +4,15 @@
 <%- include(`${partials}/spinner`, {id: 'suppliers'}) %>
 <%- include(`${partials}/head/components/close`) %>
 <section class="container">
+
     <%- include(`${partials}/sidebar/button`, {id: 'actions', text: 'Actions', float: true}) %>
-	<%- include(`${partials}/sidebar/open`, {id: 'actions', text: 'Actions'}) %>
+	<%- include(`${partials}/sidebar/open`,   {id: 'actions', text: 'Actions'}) %>
+		<input class='form-control form-control-sm w-100' type='text' id='inp_supplier_name' placeholder='Filter by name...'>
 		<%- include(`${partials}/button/modal/open`, {id: 'supplier_add', text: 'Add Supplier', type: 'success'}) %>
 	<%- include(`${partials}/sidebar/close`) %>
-    <div class="row">
-		<div class="col-12 col-md-8 mb-1">
-			<input class='form-control form-control-sm' type='text' id='inp_supplier_name' placeholder='Search by name...'>
-		</div>
-	</div>
+
 	<div class='menu row' id="tbl_suppliers"></div>
+
 	<div id="div_modals">
 		<div id='mdl_supplier_add' class="modal fade" tabindex="-1" role="dialog">
 			<div class="modal-dialog" role="document">
@@ -36,12 +35,12 @@
 </section>
 <%- include(`${partials}/foot/app`) %>
 <script src='/js/constructors/card.js'></script>
+<script src='/js/utils/list/accounts.js'></script>
+
 <script src='/js/stores/suppliers/index/view.js'></script>
 <script src='/js/stores/suppliers/index/sizes/count.js'></script>
 <% if (permissions.access_settings) { %>
 	<script src='/js/stores/suppliers/index/settings/default.js'></script>
 <% } %>
-<script src='/js/utils/list/accounts.js'></script>
-<script src='/js/stores/suppliers/index/accounts/add.js'></script>
 <script src='/js/stores/suppliers/index/add.js'></script>
 <%- include(`${partials}/foot/components/htmlClose`) %>

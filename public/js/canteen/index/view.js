@@ -13,4 +13,6 @@ function checkSession() {
         };
     });
 };
-addReloadListener(checkSession);
+window.addEventListener('load', function () {
+    addListener('reload', checkSession);
+});

@@ -15,8 +15,8 @@ function getPermissions () {
         });
     });
 };
-addReloadListener(getPermissions);
 window.addEventListener('load', function () {
+    addListener('reload', getPermissions);
     add_sort_listeners('permissions', getPermissions);
     getPermissions();
 });

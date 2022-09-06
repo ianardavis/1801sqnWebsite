@@ -50,8 +50,8 @@ function getStocks(location_id) {
         };
     });
 };
-addReloadListener(getLocations);
 window.addEventListener('load', function () {
+    addListener('reload', getLocations);
     addListener('sel_location', function (e) {getStocks(e.target.value)}, 'input');
     addFormListener(
         'stocks',

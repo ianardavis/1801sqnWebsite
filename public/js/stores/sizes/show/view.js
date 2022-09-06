@@ -30,4 +30,6 @@ function getSize() {
     })
     .catch(err => window.location.assign('/items'));
 };
-addReloadListener(getSize);
+window.addEventListener('load', function () {
+    addListener('reload', getSize);
+});

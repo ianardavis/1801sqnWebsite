@@ -33,8 +33,8 @@ function viewGiftaid(giftaid_id) {
         set_innerText('giftaid_view_updatedAt', print_date(giftaid.updatedAt, true));
     });
 };
-addReloadListener(getGiftaids);
 window.addEventListener('load', function () {
+    addListener('reload', getGiftaids);
     getGiftaids();
     modalOnShow('giftaid_view', function (event) {
         if (event.relatedTarget.dataset.id) {

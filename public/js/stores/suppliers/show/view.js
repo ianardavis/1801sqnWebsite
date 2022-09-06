@@ -13,4 +13,7 @@ function getSupplier() {
     })
     .catch(err => window.location.assign('/suppliers'));
 };
-addReloadListener(getSupplier);
+window.addEventListener('load', function () {
+    addListener('reload', getSupplier);
+    getSupplier();
+});

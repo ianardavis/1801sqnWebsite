@@ -22,4 +22,6 @@ function getPayments() {
         });
     });
 };
-addReloadListener(getPayments);
+window.addEventListener('load', function () {
+    addListener('reload', getPayments);
+});

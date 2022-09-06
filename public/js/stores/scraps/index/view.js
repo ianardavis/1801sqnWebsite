@@ -31,8 +31,8 @@ function getSuppliers() {
         blank: {text: 'All'}
     })  
 };
-addReloadListener(getScraps);
 window.addEventListener('load', function () {
+    addListener('reload', getScraps);
     getSuppliers();
     addListener('reload_users', getSuppliers);
     addListener('filter_scrap_statuses', getScraps, 'change');

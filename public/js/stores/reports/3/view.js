@@ -101,8 +101,8 @@ function getSuppliers() {
         id_only: true
     });
 };
-addReloadListener(getSizes);
 window.addEventListener('load', function () {
+    addListener('reload', getSizes);
     addListener('sel_suppliers', getSizes, 'input');
     addListener('sel_items',     getSizes, 'input');
     addFormListener(

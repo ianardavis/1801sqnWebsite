@@ -48,8 +48,8 @@ function getSales() {
         });
     });
 };
-addReloadListener(getSales);
 window.addEventListener('load', function () {
+    addListener('reload', getSales);
     add_sort_listeners('sales', getSales);
     getSales();
 });

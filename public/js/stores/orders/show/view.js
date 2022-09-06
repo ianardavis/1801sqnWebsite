@@ -57,4 +57,6 @@ window.addEventListener('load', function () {
         ]}
     );
 });
-addReloadListener(getOrder);
+window.addEventListener('load', function () {
+    addListener('reload', getOrder);
+});

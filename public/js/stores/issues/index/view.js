@@ -84,8 +84,8 @@ function getUsers() {
         blank:  {text: 'All'}
     });
 };
-addReloadListener(getIssues);
 window.addEventListener('load', function () {
+    addListener('reload', getIssues);
     getUsers();
     sidebarOnShow('IssuesFilter', getUsers);
     modalOnShow('issue_add', () => {sidebarClose('IssuesFilter')});

@@ -42,8 +42,8 @@ function viewAddress(supplier_address_id) {
         set_innerText('address_updatedAt',   print_date(address.address.updatedAt, true));
     });
 };
-addReloadListener(getAddresses);
 window.addEventListener('load', function () {
+    addListener('reload', getAddresses);
     modalOnShow('address_view', function (event) {viewAddress(event.relatedTarget.dataset.id)});
     add_sort_listeners('addresses', getAddresses);
     getAddresses();

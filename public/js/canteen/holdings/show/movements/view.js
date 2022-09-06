@@ -21,4 +21,6 @@ function getMovements() {
         });
     });
 };
-addReloadListener(getMovements);
+window.addEventListener('load', function () {
+    addListener('reload', getMovements);
+});

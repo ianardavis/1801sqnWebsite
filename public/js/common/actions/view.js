@@ -58,8 +58,8 @@ function viewLine(action_id) {
         set_href('action_user_link', `/users/${action.user_id}`);
     });
 };
-addReloadListener(getActions);
 window.addEventListener('load', function () {
+    addListener('reload', getActions);
     modalOnShow('action_view', function (event) {viewLine(event.relatedTarget.dataset.id)});
     modalOnShow('action_view', function (event) {getLinks(event.relatedTarget.dataset.id)});
     add_sort_listeners('actions', getActions);

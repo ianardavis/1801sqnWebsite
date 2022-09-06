@@ -51,7 +51,7 @@ function viewLoancard(loancard_line_id) {
         set_href('loancard_line_user_link', (line.user                   ? `/users/${line.user_id})`                  : null));
     });
 };
-addReloadListener(getLoancards);
 window.addEventListener('load', function () {
+    addListener('reload', getLoancards);
     modalOnShow('loancard_view', function (event) {viewLoancard(event.relatedTarget.dataset.id)});
 });

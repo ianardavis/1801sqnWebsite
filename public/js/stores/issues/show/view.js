@@ -28,7 +28,7 @@ function getIssue() {
     })
     .catch(err => window.location.href = '/issues');
 };
-addReloadListener(getIssue);
 window.addEventListener('load', function () {
+    addListener('reload', getIssue);
     getIssue();
 });

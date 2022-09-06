@@ -38,8 +38,8 @@ function getSizes() {
         });
     });
 };
-addReloadListener(getSizes);
 window.addEventListener('load', function () {
+    addListener('reload', getSizes);
     addFormListener(
         'adjustments',
         'PUT',

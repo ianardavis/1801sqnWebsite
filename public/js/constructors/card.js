@@ -1,10 +1,10 @@
 function Card(options = {}) {
     this.e       = document.createElement('div');
-    let a        = document.createElement('a'),
-        header   = document.createElement('div'),
-        title    = document.createElement('h3'),
-        body     = document.createElement('div'),
-        subtitle = document.createElement('p');
+    let a        = document.createElement('a');
+    let header   = document.createElement('div');
+    let title    = document.createElement('h3');
+    let body     = document.createElement('div');
+    let subtitle = document.createElement('p');
 
     this.e.classList.add('col-12', 'col-sm-6', 'col-lg-4', 'col-xl-3');
 

@@ -17,8 +17,8 @@ function getPayments() {
         });
     });
 };
-addReloadListener(getPayments);
 window.addEventListener('load', function () {
+    addListener('reload', getPayments);
     add_sort_listeners('payments_session', getPayments);
     getPayments();
 });

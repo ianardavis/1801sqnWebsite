@@ -33,8 +33,8 @@ function viewCategory(category_id) {
         set_innerText('category_createdAt', print_date(category.createdAt));
     });
 };
-addReloadListener(getCategories);
 window.addEventListener('load', function () {
+    addListener('reload', getCategories);
     modalOnShow('category_view', function(event) {
         if (event.relatedTarget.dataset.id) {
             viewCategory(event.relatedTarget.dataset.id)

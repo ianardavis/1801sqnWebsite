@@ -36,8 +36,8 @@ function getRanks() {
         id_only: true
     });
 };
-addReloadListener(getUsers);
 window.addEventListener("load", function () {
+    addListener('reload', getUsers);
     addListener('sel_statuses', getUsers, 'change');
     addListener('sel_ranks',    getUsers, 'change');
     addListener('reload_statuses', getStatuses);

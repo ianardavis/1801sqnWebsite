@@ -40,4 +40,6 @@ function getLines() {
         });
     })
 };
-addReloadListener(getLines);
+window.addEventListener('load', function () {
+    addListener('reload', getLines);
+});

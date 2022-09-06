@@ -14,4 +14,6 @@ function getWriteoff() {
         set_href('writeoff_user_link', `/users/${writeoff.user_id}`);
     });
 };
-addReloadListener(getWriteoff);
+window.addEventListener('load', function () {
+    addListener('reload', getWriteoff);
+});

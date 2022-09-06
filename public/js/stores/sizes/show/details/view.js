@@ -34,8 +34,8 @@ function viewDetail(detail_id) {
         set_innerText('detail_updatedAt', print_date(detail.updatedAt));
     });
 };
-addReloadListener(getDetails);
 window.addEventListener('load', function () {
+    addListener('reload', getDetails);
     modalOnShow('detail_view', function (event) {
         if (event.relatedTarget.dataset.id) {
             viewDetail(event.relatedTarget.dataset.id)

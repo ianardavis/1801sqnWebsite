@@ -75,8 +75,8 @@ function viewLine(line_id) {
         set_href('line_user_link', `/users/${line.user_id}`);
     });
 };
-addReloadListener(getLines);
 window.addEventListener('load', function () {
+    addListener('reload', getLines);
     addListener('filter_scrap_line_statuses', getLines, 'input');
     addListener('filter_scrap_line_size_1',   getLines, 'input');
     addListener('filter_scrap_line_size_2',   getLines, 'input');

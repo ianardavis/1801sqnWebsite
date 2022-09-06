@@ -22,8 +22,8 @@ function getSessions() {
         });
     });
 };
-addReloadListener(getSessions);
 window.addEventListener('load', function () {
+    addListener('reload', getSessions);
     add_sort_listeners('sessions', getSessions);
     getSessions();
 });

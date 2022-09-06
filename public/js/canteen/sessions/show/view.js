@@ -14,4 +14,6 @@ function getSession() {
         if (typeof enable_close_button === 'function') enable_close_button(session.status); 
     });
 };
-addReloadListener(getSession);
+window.addEventListener('load', function () {
+    addListener('reload', getSession);
+});

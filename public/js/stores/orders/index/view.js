@@ -58,8 +58,8 @@ function getOrders() {
         });
     });
 };
-addReloadListener(getOrders);
 window.addEventListener('load', function () {
+    addListener('reload', getOrders);
     addListener('filter_order_statuses',       getOrders, 'input');
     addListener('filter_order_createdAt_from', getOrders, 'input');
     addListener('filter_order_createdAt_to',   getOrders, 'input');

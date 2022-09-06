@@ -38,8 +38,8 @@ function viewContact(supplier_contact_id) {
         set_innerText('contact_updatedAt',   print_date(contact.contact.updatedAt, true));
     });
 };
-addReloadListener(getContacts);
 window.addEventListener('load', function () {
+    addListener('reload', getContacts);
     modalOnShow('contact_view', function (event) {viewContact(event.relatedTarget.dataset.id)});
     add_sort_listeners('contacts', getContacts);
     getContacts();

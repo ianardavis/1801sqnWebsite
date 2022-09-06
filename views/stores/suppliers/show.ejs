@@ -401,23 +401,22 @@
 <script>show_tab('<%= tab %>');</script>
 <%- include(`${partials}/common/notes/scripts`) %>
 
-<script src='/js/stores/suppliers/show/view.js'></script>
-<script async>getSupplier()</script>
 <script src="/js/utils/list/accounts.js"></script>
+
+<script src='/js/stores/suppliers/show/view.js'></script>
 <script src="/js/stores/suppliers/show/edit.js"></script>
 <script src="/js/stores/suppliers/show/delete.js"></script>
 
 <% if (permissions.access_settings) { %>
     <script src='/js/stores/suppliers/show/default/view.js'></script>
-    <script async>getDefault()</script>
     <script src='/js/stores/suppliers/show/default/edit.js'></script>
-    <script async>setDefaultBtn()</script>
 <% } %>
 
 <script src="/js/stores/suppliers/show/files/view.js"></script>
 <script src="/js/stores/suppliers/show/files/add.js"></script>
 <script src="/js/stores/suppliers/show/files/edit.js"></script>
 <script src="/js/stores/suppliers/show/files/delete.js"></script>
+
 <script src="/js/stores/suppliers/show/files/details/view.js"></script>
 <script src="/js/stores/suppliers/show/files/details/delete.js"></script>
 <script src="/js/stores/suppliers/show/files/details/add.js"></script>
@@ -427,6 +426,7 @@
 <script src="/js/stores/suppliers/show/addresses/add.js"></script>
 <script src="/js/stores/suppliers/show/addresses/edit.js"></script>
 <script src="/js/stores/suppliers/show/addresses/delete.js"></script>
+
 <script src="/js/stores/suppliers/show/contacts/view.js"></script>
 <script src="/js/stores/suppliers/show/contacts/add.js"></script>
 <script src="/js/stores/suppliers/show/contacts/edit.js"></script>
@@ -438,5 +438,5 @@
     <script src="/js/stores/suppliers/show/demands/view.js"></script>
 <% } %>
 
-    <script src="/js/stores/suppliers/show/accounts/view.js"></script>
+<script src="/js/stores/suppliers/show/accounts/view.js"></script>
 <%- include(`${partials}/foot/components/htmlClose`) %>

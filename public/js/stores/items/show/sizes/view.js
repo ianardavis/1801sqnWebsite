@@ -18,8 +18,8 @@ function getSizes() {
         });
     });
 };
-addReloadListener(getSizes);
 window.addEventListener('load', function () {
+    addListener('reload', getSizes);
     add_sort_listeners('sizes', getSizes);
     getSizes();
 });

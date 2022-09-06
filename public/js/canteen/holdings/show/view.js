@@ -12,4 +12,6 @@ function getHolding() {
         document.querySelectorAll('.holding_id').forEach(e => e.setAttribute('value', holding.holding_id));
     });
 };
-addReloadListener(getHolding);
+window.addEventListener('load', function () {
+    addListener('reload', getHolding);
+});

@@ -23,8 +23,8 @@ function getItems() {
         });
     });
 };
-addReloadListener(getItems);
 window.addEventListener('load', function () {
+    addListener('reload', getItems);
     addListener('sel_genders',      getItems, 'input');
     addListener('item_description', getItems, 'input');
     addListener('reload_genders',   getGenders);

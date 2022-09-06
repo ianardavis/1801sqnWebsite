@@ -16,8 +16,8 @@ function getUser() {
         document.querySelectorAll('.user_id').forEach(e => e.value = user.user_id);
     });
 };
-addReloadListener(getUser);
 window.addEventListener('load', function () {
+    addListener('reload', getUser);
     document.querySelectorAll('.user_id').forEach(e => e.value = path[2]);
     enable_button('user_password');
     addFormListener(

@@ -23,4 +23,6 @@ function getSaleLines() {
         });
     });
 };
-addReloadListener(getSaleLines);
+window.addEventListener('load', function () {
+    addListener('reload', getSaleLines);
+});

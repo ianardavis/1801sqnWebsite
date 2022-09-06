@@ -38,8 +38,8 @@ function viewFile(file_id) {
         set_innerText('file_updatedAt',   print_date(file.updatedAt, true));
     });
 };
-addReloadListener(getFiles);
 window.addEventListener('load', function () {
+    addListener('reload', getFiles);
     modalOnShow('file_view', function (event) {viewFile(event.relatedTarget.dataset.id)});
     add_sort_listeners('files', getFiles);
     getFiles();

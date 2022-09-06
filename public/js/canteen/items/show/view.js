@@ -13,4 +13,6 @@ function getItem() {
         document.querySelectorAll('.item_id').forEach(e => e.setAttribute('value', item.item_id))
     });
 };
-addReloadListener(getItem);
+window.addEventListener('load', function () {
+    addListener('reload', getItem);
+});

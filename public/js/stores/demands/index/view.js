@@ -55,8 +55,8 @@ function getSuppliers() {
     .then(result => getDemands())
     .catch(err =>   getDemands())
 };
-addReloadListener(getDemands);
 window.addEventListener('load', function () {
+    addListener('reload', getDemands);
     getSuppliers();
     addListener('reload_suppliers', getSuppliers);
     addListener('filter_demands_supplier',       getDemands, 'input');

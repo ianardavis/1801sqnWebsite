@@ -2,14 +2,13 @@
     <span class="input-group-text w-30">
         <%= title %>
         <% if (locals.spinner_id) { %>
-            <%- include(`${partials}/spinner`, {id: locals.spinner_id || locals.id, small: true}) %>
+            <%- include(`${partials}/spinner`, {id: spinner_id, small: true}) %>
         <% } %>
     </span>
     <input
-        class="form-control mb-0<% if (locals.classes) {classes.forEach(c => { %> <%= c %><% })} %>"
+        class="form-control mb-0"
         type="text"
         autocomplete='<%= locals.autocomplete || 'off' %>'
-        <% if (locals.data) { %>data-<%= data.field %>='<%= data.value %>'<% } %>
         <% if (locals.id)   { %>id='<%= id %>'<% } %>
         <% if (locals.name) { %>name='<%= name %>'<% } %>
         <% if (locals.onkeydown) { %>onkeydown='<%= onkeydown %>'<% } %>

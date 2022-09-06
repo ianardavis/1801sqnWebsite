@@ -73,11 +73,11 @@ function viewSetting(setting_id) {
         set_innerText('setting_updatedAt', print_date(setting.updatedAt, true));
     });
 };
-addReloadListener(getErrorLog);
-addReloadListener(getOutLog);
-addReloadListener(getPrinter);
-addReloadListener(getSettings);
 window.addEventListener('load', function () {
+    addListener('reload', getErrorLog);
+    addListener('reload', getOutLog);
+    addListener('reload', getPrinter);
+    addListener('reload', getSettings);
     modalOnShow('setting_view', function (event) {viewSetting(event.relatedTarget.dataset.id)});
     add_sort_listeners('settings', getSettings);
     getSettings();

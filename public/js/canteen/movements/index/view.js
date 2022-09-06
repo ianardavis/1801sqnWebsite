@@ -17,8 +17,8 @@ function getMovements() {
         })
     });
 };
-addReloadListener(getMovements);
 window.addEventListener('load', function () {
+    addListener('reload', getMovements);
     add_sort_listeners('movements', getMovements);
     getMovements();
 });

@@ -72,8 +72,8 @@ function addInput(size_id, _cell, index) {
         });
     };
 };
-addReloadListener(getItems);
 window.addEventListener('load', function () {
+    addListener('reload', getItems);
     addListener('sel_items', getSizes, 'input');
     addFormListener(
         'sizes',

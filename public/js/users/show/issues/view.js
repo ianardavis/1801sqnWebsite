@@ -58,8 +58,8 @@ function filter(tbl_issues) {
         else row.classList.add(   'hidden');
     });
 };
-addReloadListener(getIssues);
 window.addEventListener('load', function () {
+    addListener('reload', getIssues);
     addListener('sel_issue_statuses', getIssues, 'change');
     addListener('issue_createdAt_from', function (){filter()}, 'change');
     addListener('issue_createdAt_to',   function (){filter()}, 'change');

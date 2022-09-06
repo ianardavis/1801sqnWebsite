@@ -73,8 +73,8 @@ function StartScanning() {
 function GoToEnter(input) {
     if(event.key === 'Enter') gotoLoancard(input.value);
 };
-addReloadListener(getLoancards);
 window.addEventListener('load', function () {
+    addListener('reload', getLoancards);
     addListener('goto_loancard_id', );
     modalOnShow('loancard_open', StartScanning);
     modalOnHide('loancard_open', StopScanning);

@@ -48,7 +48,7 @@ function viewCategory(category_id) {
         set_innerText('updatedAt_category', print_date(category.updatedAt, true));
     });
 };
-addReloadListener(getCategories)
 window.addEventListener('load', function () {
+    addListener('reload', getCategories);
     modalOnShow('category_view', function (event) {viewCategory(event.relatedTarget.dataset.id)});
 });

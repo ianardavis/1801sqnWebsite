@@ -43,8 +43,8 @@ function viewNote(note_id) {
         set_href('note_user_link', `/users/${note.user_id}`);
     });
 };
-addReloadListener(getNotes);
 window.addEventListener('load', function () {
+    addListener('reload', getNotes);
     modalOnShow('note_view', function(event) {
         if (event.relatedTarget.dataset.id) {
             viewNote(event.relatedTarget.dataset.id)

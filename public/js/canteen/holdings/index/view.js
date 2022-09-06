@@ -15,8 +15,8 @@ function getHoldings() {
         });
     });
 };
-addReloadListener(getHoldings);
 window.addEventListener('load', function () {
+    addListener('reload', getHoldings);
     add_sort_listeners('holdings', getHoldings);
     getHoldings();
 });

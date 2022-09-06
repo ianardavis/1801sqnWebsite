@@ -34,8 +34,8 @@ function viewCategoryEdit(category_id) {
         listCategories({select: 'sel_category_edit', selected: category.parent_category_id || ''});
     });
 };
-addReloadListener(loadCategoriesEdit)
 window.addEventListener('load', function () {
+    addListener('reload', loadCategoriesEdit);
     modalOnShow('category_view', function (event) {categoryEditBtn(event.relatedTarget.dataset.id)});
     modalOnShow('category_edit', function (event) {viewCategoryEdit(event.relatedTarget.dataset.id)});
     addFormListener(

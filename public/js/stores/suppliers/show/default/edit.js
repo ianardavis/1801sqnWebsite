@@ -21,4 +21,5 @@ window.addEventListener("load", function () {
             ]
         }
     );
+    setDefaultBtn();
 });

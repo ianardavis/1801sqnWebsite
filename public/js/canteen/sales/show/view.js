@@ -11,4 +11,6 @@ function getSale() {
         set_innerText('sale_status',    statuses[sale.status] || 'Unknown');
     });
 };
-addReloadListener(getSale);
+window.addEventListener('load', function () {
+    addListener('reload', getSale);
+});

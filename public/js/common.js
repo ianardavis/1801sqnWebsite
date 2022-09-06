@@ -125,12 +125,6 @@ function clear(id) {
         };
     })
 };
-function addReloadListener(func) {
-    window.addEventListener('load', function () {
-        let e = document.querySelector('#reload')
-        if (e) e.addEventListener('click', func);
-    });
-};
 function addListener(btn, func, event = 'click') {
     let e = document.querySelector(`#${btn}`)
     if (e) e.addEventListener(event, func);

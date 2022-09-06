@@ -40,8 +40,8 @@ function getSizes() {
         };
     });
 };
-addReloadListener(getItems);
 window.addEventListener('load', function () {
+    addListener('reload', getItems);
     addListener('sel_items', getSizes, 'input');
     // add_sort_listeners('items', getItems);
     add_sort_listeners('sizes', getSizes);

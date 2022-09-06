@@ -22,4 +22,6 @@ function getLoancardLine() {
         set_href('line_serial_link', (line.serial ? `/serials/${line.serial_id}`: null));
     });
 };
-addReloadListener(getLoancardLine);
+window.addEventListener('load', function () {
+    addListener('reload', getLoancardLine);
+});

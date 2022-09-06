@@ -7,3 +7,6 @@ function getDefault() {
         set_innerText('supplier_is_default', yesno((setting.value === path[2])));
     });
 };
+window.addEventListener('load', function () {
+    getDefault();
+});

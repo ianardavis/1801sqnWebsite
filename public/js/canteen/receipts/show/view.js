@@ -14,4 +14,6 @@ function getReceipt() {
         set_href('user_link', `/users/${receipt.user_id}`);
     })
 };
-addReloadListener(getReceipt);
+window.addEventListener('load', function () {
+    addListener('reload', getReceipt);
+});

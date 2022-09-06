@@ -42,8 +42,8 @@ function viewAccount(account_id) {
         set_href('account_user_link', `/users/${account.user_id}`);
     });
 };
-addReloadListener(getAccounts);
 window.addEventListener('load', function () {
+    addListener('reload', getAccounts);
     modalOnShow('account_view', function (event) {viewAccount(event.relatedTarget.dataset.id)});
     add_sort_listeners('accounts', getAccounts);
     getAccounts();
