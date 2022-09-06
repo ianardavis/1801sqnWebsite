@@ -51,4 +51,5 @@ window.addEventListener('load', function () {
         'GET',
         `/loancards/${path[2]}/print`
     );
+    getLoancard();
 });

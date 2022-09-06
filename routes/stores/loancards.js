@@ -1,5 +1,4 @@
 module.exports = (app, m, fn) => {
-    let op = require('sequelize').Op;
     app.get('/loancards',              fn.loggedIn(), fn.permissions.get('access_stores'),         (req, res) => res.render('stores/loancards/index'));
     app.get('/loancards/:id',          fn.loggedIn(), fn.permissions.get('access_stores'),         (req, res) => res.render('stores/loancards/show'));
     app.get('/loancard_lines/:id',     fn.loggedIn(), fn.permissions.get('access_stores'),         (req, res) => res.render('stores/loancard_lines/show'));
@@ -64,7 +63,7 @@ module.exports = (app, m, fn) => {
                 {
                     model: m.loancard_lines,
                     as:    'lines',
-                    where: {status: {[op.ne]: 0}},
+                    where: {status: {[fn.op.ne]: 0}},
                     required: false
                 },
                 fn.inc.users.user(),
@@ -129,7 +128,7 @@ module.exports = (app, m, fn) => {
                 fn.inc.stores.loancard({
                     required: true,
                     where: {
-                        date_due: {[op.lte]: Date.now()},
+                        date_due: {[fn.op.lte]: Date.now()},
                         ...(req.allowed ? null : {user_id_issue: req.user.user_id})
                     },
                     include: [fn.inc.users.user({as: 'user_loancard'})]
@@ -181,52 +180,8 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.put('/loancard_lines',         fn.loggedIn(), fn.permissions.check('issuer'),              (req, res) => {
-        let actions = [];
-        req.body.lines.filter(e => e.status === '3').forEach(line => actions.push(fn.loancards.lines.return({...line, user_id: req.user.user_id})));
-        req.body.lines.filter(e => e.status === '0').forEach(line => actions.push(fn.loancards.lines.cancel({...line, user_id: req.user.user_id})));
-        Promise.allSettled(actions)
-        .then(results => {
-            let loancards = [],
-                loancard_checks = [];
-            results.filter(e => e.status === 'fulfilled').forEach(e => {if (!loancards.includes(e.value)) loancards.push(e.value)});
-            loancards.forEach(loancard => {
-                loancard_checks.push(new Promise((resolve, reject) => {
-                    m.loancards.findOne({
-                        where: {loancard_id: loancard},
-                        include: [{
-                            model: m.loancard_lines,
-                            as:    'lines',
-                            where: {status: {[op.or]: [1, 2]}},
-                            required: false
-                        }]
-                    })
-                    .then(loancard => {
-                        if      (loancard.status === 0) reject(new Error('Loancard has already been cancelled'))
-                        else if (loancard.status === 1) {
-                            if (!loancard.lines || loancard.lines.length === 0) {
-                                fn.loancards.cancel({loancard_id: loancard.loancard_id, user_id: req.user.user_id, noforce: true})
-                                .then(result => resolve(result))
-                                .catch(err => reject(err));
-                            } else resolve(false);
-                        } else if (loancard.status === 2) {
-                            if (!loancard.lines || loancard.lines.length === 0) {
-                                fn.loancards.close({loancard_id: loancard.loancard_id, user_id: req.user.user_id})
-                                .then(result => resolve(result))
-                                .catch(err => reject(err));
-                            } else resolve(false);
-                        } else if (loancard.status === 3) reject(new Error('Loancard has already been closed'))
-                        else reject(new Error('Unknown loancard status'));
-                    })
-                    .catch(err => {
-                        console.log(err);
-                        reject(err);
-                    });
-                }));
-            });
-            Promise.allSettled(loancard_checks)
-            .then(results => res.send({success: true, message: 'Lines actioned'}))
-            .catch(err => fn.send_error(res, err));
-        })
+        fn.loancards.lines.process(req.body.lines, req.user.user_id)
+        .then(result => res.send({success: true, message: 'Lines actioned'}))
         .catch(err => fn.send_error(res, err));
     });
     

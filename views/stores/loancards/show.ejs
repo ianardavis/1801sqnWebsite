@@ -46,8 +46,8 @@
 				</thead>
 				<tbody id='tbl_lines'></tbody>
 			</table>
-			<%- include(`${partials}/limit`, {table: 'loancard_lines'}) %>
 			<% if (permissions.issuer) { %></form><% } %>
+			<%- include(`${partials}/limit`, {table: 'loancard_lines'}) %>
 		</div>
         <%- include(`${partials}/common/actions/tab_body`) %>
         <%- include(`${partials}/common/notes/tab_body`) %>
@@ -93,20 +93,17 @@
 </section>
 <%- include(`${partials}/foot/app`) %>
 <script src="/js/common/radios/nil_cancel.js"></script>
-<script src="/js/common/radios/return.js"></script>
 <script>show_tab('<%= tab %>')</script>
 <%- include(`${partials}/common/notes/scripts`) %>
 <%- include(`${partials}/common/actions/scripts`) %>
 
 <script src="/js/stores/loancards/show/view.js"></script>
-<script async>getLoancard()</script>
-
 <script src="/js/stores/loancards/show/lines/view.js"></script>
-<script async>getLines()</script>
 <% if (permissions.issuer) { %>
-	<script src="/js/stores/loancards/show/edit.js"></script>
+	<script src="/js/common/radios/return.js"></script>
 	<script src="/js/utils/list/stocks.js"></script>
 	<script src="/js/utils/list/serials.js"></script>
-	<script src="/js/stores/loancard_lines/edit.js"></script>
+	<script src="/js/stores/loancards/show/edit.js"></script>
+	<script src="/js/stores/loancards/show/lines/edit.js"></script>
 <% } %>
 <%- include(`${partials}/foot/components/htmlClose`) %>

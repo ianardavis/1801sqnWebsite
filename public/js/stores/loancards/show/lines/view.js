@@ -86,4 +86,5 @@ addReloadListener(getLines);
 window.addEventListener('load', function () {
     addListener('sel_status', getLines, 'change');
     modalOnShow('line_view', function (event) {viewLine(event.relatedTarget.dataset.id)});
+    getLines();
 });
