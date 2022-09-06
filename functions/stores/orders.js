@@ -65,7 +65,7 @@ module.exports = function (m, fn) {
                                 let actions = [];
                                 result.issue_ids.forEach(issue_id => {
                                     actions.push(new Promise((resolve, reject) => {
-                                        fn.issues.get(issue_id)
+                                        fn.issues.get({issue_id: issue_id})
                                         .then(issue => {
                                             if (issue.status === 3) {
                                                 fn.update(issue, {status: 2})

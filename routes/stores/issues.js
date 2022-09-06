@@ -2,7 +2,7 @@ module.exports = (app, m, fn) => {
     const op = require('sequelize').Op;
     app.get('/issues',             fn.loggedIn(), fn.permissions.get(  'access_stores', true), (req, res) => res.render('stores/issues/index'));
     app.get('/issues/:id',         fn.loggedIn(), fn.permissions.get(  'access_stores', true), (req, res) => {
-        fn.issues.get(req.params.id)
+        fn.issues.get({issue_id: req.params.id})
         .then(issue => {
             if (
                 !req.allowed &&
@@ -76,26 +76,15 @@ module.exports = (app, m, fn) => {
     app.get('/get/issue',          fn.loggedIn(), fn.permissions.check('access_stores', true), (req, res) => {
         fn.allowed(req.user.user_id, 'access_users', true)
         .then(allowed_users => {
-            m.issues.findOne({
-                where: req.query.where,
-                include: [
-                    fn.inc.stores.size(),
-                    fn.inc.users.user({as: 'user_issue'}),
-                    fn.inc.users.user()
-                ]
-            })
+            fn.issues.get(req.query.where)
             .then(issue => {
-                if (issue) {
-                    if (
-                        issue.user_id_issue === req.user.user_id ||
-                        allowed_users       &&  req.allowed
-                    ) {
-                        res.send({success: true, result: issue});
-                    } else {
-                        fn.send_error(res, 'Permission denied');
-                    };
+                if (
+                    issue.user_id_issue === req.user.user_id ||
+                    allowed_users       &&  req.allowed
+                ) {
+                    res.send({success: true, result: issue});
                 } else {
-                    res.send({success: false, message: 'Issue not found'});
+                    fn.send_error(res, 'Permission denied');
                 };
             })
             .catch(err => fn.send_error(res, err));

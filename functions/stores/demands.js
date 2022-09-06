@@ -697,7 +697,7 @@ module.exports = function (m, fn) {
                             if (!links || links.length === 0) resolve([])
                             else {
                                 let get_issues = [];
-                                links.forEach(e => get_issues.push(fn.issues.get(e.id)));
+                                links.forEach(e => get_issues.push(fn.issues.get({issue_id: e.id})));
                                 Promise.allSettled(get_issues)
                                 .then(results => {
                                     let users = [];

@@ -473,7 +473,7 @@ module.exports = function (m, fn) {
                             let issue_actions = [];
                             result.issue_ids.forEach(issue_id => {
                                 issue_actions.push(new Promise((resolve, reject) => {
-                                    fn.issues.get(issue_id)
+                                    fn.issues.get({issue_id: issue_id})
                                     .then(issue => {
                                         fn.update(issue, {status: 2})
                                         .then(result => resolve({table: 'issues', id: issue.issue_id}))
@@ -780,7 +780,7 @@ module.exports = function (m, fn) {
                                 };
                                 result.issue_ids.forEach(issue_id => {
                                     update_actions.push(new Promise((resolve, reject) => {
-                                        fn.issues.get(issue_id)
+                                        fn.issues.get({issue_id: issue_id})
                                         .then(issue => {
                                             if      (issue.status === 0) reject(new Error('Issue is already cancelled'))
                                             else if (issue.status === 1) reject(new Error('Issue is pending approval'))
