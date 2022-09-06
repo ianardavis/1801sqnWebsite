@@ -141,7 +141,7 @@ module.exports = function (m, fn) {
     };
     fn.stocks.transfer = function (stock_id_from, location_to, qty, user_id) {
         return new Promise((resolve, reject) => {
-            fn.stocks.get(stock_id_from)
+            fn.stocks.get({stock_id: stock_id_from})
             .then(stock_from => {
                 if (qty > stock_from.qty) reject(new Error('Transfer quantity is greater than stock quantity'))
                 else {

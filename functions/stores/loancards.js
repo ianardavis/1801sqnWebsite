@@ -365,11 +365,17 @@ module.exports = function (m, fn) {
                     } else if (loancard.status === 1) {
                         fn.loancards.cancel({loancard_id: loancard.loancard_id, user_id: user_id, noforce: true})
                         .then(result => resolve(result))
-                        .catch(err => reject(err));
+                        .catch(err => {
+                            console.log(err);
+                            reject(err);
+                        });
                     } else if (loancard.status === 2) {
                         fn.loancards.close({loancard_id: loancard.loancard_id, user_id: user_id})
                         .then(result => resolve(result))
-                        .catch(err => reject(err));
+                        .catch(err => {
+                            console.log(err);
+                            reject(err);
+                        });
                     } else if (loancard.status === 3) {
                         resolve(false);
                     } else {
@@ -696,10 +702,13 @@ module.exports = function (m, fn) {
         return new Promise((resolve, reject) => {
             fn.loancards.lines.get(options.loancard_line_id)
             .then(line => {
-                if      (line.status === 0) reject(new Error('This line has been cancelled'))
-                else if (line.status === 1) reject(new Error('This line is still pending'))
-                else if (line.status === 3) reject(new Error('This line has already been returned'))
-                else if (line.status === 2) {
+                if (line.status === 0) {
+                    reject(new Error('This line has been cancelled'))
+                } else if (line.status === 1) {
+                    reject(new Error('This line is still pending'))
+                } else if (line.status === 3) {
+                    reject(new Error('This line has already been returned'))
+                } else if (line.status === 2) {
                     fn.sizes.get(line.size_id)
                     .then(size => {
                         m.locations.findOrCreate({
