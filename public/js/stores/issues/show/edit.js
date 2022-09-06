@@ -16,10 +16,9 @@ function get_qty() {
         table: 'issue',
         where: {issue_id: path[2]}
     })
-    .then(function ([result, options]) {
-        console.log(result);
-        if (result.issue.status === 1 || result.issue.status === 2) {
-            set_value('issue_qty_edit', result.issue.qty);
+    .then(function ([issue, options]) {
+        if (issue.status === 1 || issue.status === 2) {
+            set_value('issue_qty_edit', issue.qty);
         } else {
             modalHide('qty_edit');
             alert_toast('Not an editable status');
