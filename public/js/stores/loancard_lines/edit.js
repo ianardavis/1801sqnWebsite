@@ -55,10 +55,10 @@ function return_options() {
                             where: {size_id: line.size_id},
                             index: options.index
                         })
-                        .then(function ([stocks, options]) {
+                        .then(function ([result, options]) {
                             let locations_list = document.createElement('datalist'), locs = [];
                             locations_list.setAttribute('id', `locations_${options.index}`);
-                            stocks.forEach(e => {
+                            result.stocks.forEach(e => {
                                 if (!locs.includes(e.location.location)) {
                                     locs.push(e.location.location);
                                     locations_list.appendChild(new Option({value: e.location.location}).e)
