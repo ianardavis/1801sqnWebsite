@@ -553,20 +553,27 @@ module.exports = function (m, fn) {
     fn.issues.change_qty = function (issue_id, qty, user_id) {
         return new Promise((resolve, reject) => {
             qty = Number(qty);
-            if (!qty || !Number.isInteger(qty) || qty < 1) reject(new Error('Invalid qty'))
-            else {
+            if (!qty || !Number.isInteger(qty) || qty < 1) {
+                reject(new Error('Invalid qty'));
+            } else {
                 fn.issues.get({issue_id: issue_id})
                 .then(issue => {
-                    if (![1, 2].includes(issue.status)) reject(new Error('Only requested or approved issues can have their qty edited'))
-                    else {
-                        fn.update(issue, {qty: qty})
+                    if (![1, 2].includes(issue.status)) {
+                        reject(new Error('Only requested or approved issues can have their quantity edited'));
+                    } else {
+                        let start_qty = issue.qty;
+                        issue.update({qty: qty})
                         .then(result => {
-                            fn.actions.create(
-                                `ISSUE | UPDATED | Qty changed From: ${issue.qty} to: ${qty}`,
-                                user_id,
-                                [{table: 'issues', id: issue.issue_id}]
-                            )
-                            .then(result => resolve(true));
+                            if (result) {
+                                fn.actions.create(
+                                    `ISSUE | UPDATED | Quantity changed From: ${start_qty} to: ${qty}`,
+                                    user_id,
+                                    [{table: 'issues', id: issue.issue_id}]
+                                )
+                                .then(result => resolve(true));
+                            } else {
+                                reject(new Error('Issue not updated'));
+                            };
                         })
                         .catch(err => reject(err));
                     };

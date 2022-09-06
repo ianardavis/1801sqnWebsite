@@ -136,7 +136,7 @@ module.exports = (app, m, fn) => {
     });
 
     app.put('/issues',             fn.loggedIn(), fn.permissions.check('issuer'),              (req, res) => {
-        fn.issues.process_bulk(req.body.lines. req.user.user_id)
+        fn.issues.process_bulk(req.body.lines, req.user.user_id)
         .then(message => res.send({success: true, message: message}))
         .catch(err => fn.send_error(res, err));
     });

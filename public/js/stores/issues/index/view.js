@@ -85,8 +85,8 @@ function getUsers() {
     });
 };
 addReloadListener(getIssues);
-getUsers();
 window.addEventListener('load', function () {
+    getUsers();
     sidebarOnShow('IssuesFilter', getUsers);
     modalOnShow('issue_add', () => {sidebarClose('IssuesFilter')});
     addListener('filter_issue_user',           getIssues, 'input');
