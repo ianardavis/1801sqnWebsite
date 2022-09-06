@@ -17,6 +17,7 @@ function get_qty() {
         where: {issue_id: path[2]}
     })
     .then(function ([result, options]) {
+        console.log(result);
         if (result.issue.status === 1 || result.issue.status === 2) {
             set_value('issue_qty_edit', result.issue.qty);
         } else {
