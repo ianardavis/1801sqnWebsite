@@ -8,6 +8,8 @@
 	<%- include(`${partials}/sidebar/open`,   {id: 'actions', text: 'Actions'}) %>
         <%- include(`${partials}/button/modal/open`, {text: 'Edit',        id: 'supplier_edit', type: 'warning', modal: 'supplier_edit'}) %>
         <%- include(`${partials}/button/modal/open`, {text: 'New Address', id: 'address_add',   type: 'success', modal: 'address_add'}) %>
+        <%- include(`${partials}/button/modal/open`, {text: 'New Contact', id: 'contact_add',   type: 'success', modal: 'contact_add'}) %>
+        <%- include(`${partials}/button/modal/open`, {text: 'New Note',    id: 'note_add',      type: 'success', modal: 'note_add'}) %>
         <form id='form_set_default'>
             <button class='btn btn-success w-100' id='btn_default' disabled>Set Default</button>
         </form>
@@ -36,21 +38,6 @@
 					<th class='w-50' data-column='["description"]'>Description</th>
                     <th><i class='fas fa-search'></i></th>
                 </thead>
-                <form id='form_file_add'>
-                    <input class='supplier_id' type="hidden" name='file[supplier_id]'>
-                    <tbody>
-                        <tr>
-                            <td>
-                                <input class="form-control form-control-sm" type="file" id="file_upload" name='uploaded'>
-                            </td>
-                            <td>
-                                <datalist id="file_descriptions"></datalist>
-                                <input class='form-control form-control-sm' type="text" autocomplete='off' id='file_description_add' name="file[description]" placeholder="Required" list="file_descriptions" required>
-                            </td>
-                            <td><button class='btn btn-sm btn-success'><i class="fas fa-file-upload"></i></button></td>
-                        </tr>
-                    </tbody>
-                </form>
                 <tbody id="tbl_files"></tbody>
             </table>
             <%- include(`${partials}/limit`, {table: 'files'}) %>
@@ -75,23 +62,6 @@
                     <th class="w-40" data-column='["contact","contact"]'>Contact</th>
                     <th><i class='fas fa-search'></i></th>
                 </thead>
-                <form id='form_contact_add'>
-                    <input class='supplier_id' type="hidden" name='supplier_id'>
-                    <tbody>
-                        <tr>
-                            <td>
-                                <input class='form-control form-control-sm' type="text" autocomplete='off' id='contact_type_add'        name="type"                 placeholder="Required" required>
-                            </td>
-                            <td>
-                                <input class='form-control form-control-sm' type="text" autocomplete='off' id='contact_description_add' name="contact[description]" placeholder="Required" required>
-                            </td>
-                            <td>
-                                <input class='form-control form-control-sm' type="text" autocomplete='off' id='contact_contact_add'     name="contact[contact]"     placeholder="Required" required>
-                            </td>
-                            <td><button class='btn btn-sm btn-success'><i class="fas fa-check"></i></button></td>
-                        </tr>
-                    </tbody>
-                </form>
                 <tbody id="tbl_contacts"></tbody>
             </table>
             <%- include(`${partials}/limit`, {table: 'contacts'}) %>
@@ -111,7 +81,7 @@
                     </table>
                     <%- include(`${partials}/limit`, {table: 'items'}) %>
                 </div>
-                <div class="col-12 col-md-6"> <!-- mx-auto -->
+                <div class="col-12 col-md-6">
                     <table class="table table-sm table-hover">
                         <thead class="thead-dark" id="tbl_sizes_head">
                             <th class='w-35' data-column='["size1"]' data-dir="ASC">Size 1</th>
@@ -246,6 +216,23 @@
                         <%- include(`${partials}/button/modal/close`) %>
                     </div>
                 </div>
+            </div>
+        </div>
+        <div id='mdl_file_add'         class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <form class="modal-content" id="form_file_add">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add File</h5>
+                    </div>
+                    <div class="modal-body">
+                        <input class='supplier_id' type="hidden" name='file[supplier_id]'>
+                        <%- include(`${partials}/inputs/text`, {id: 'file_description_add', name: 'file[description]', title: 'Type', required: true, list_id: 'file_descriptions'}) %>
+                        <%- include(`${partials}/inputs/file`, {id: 'file_upload',          name: 'uploaded',          title: 'File', required: true}) %>
+                    </div>
+                    <div class="modal-footer">
+                        <%- include(`${partials}/button/save`) %>
+                    </div>
+                </form>
             </div>
         </div>
         <div id='mdl_file_edit'        class="modal fade" tabindex="-1" role="dialog">
@@ -388,6 +375,24 @@
                         <%- include(`${partials}/button/modal/close`) %>
                     </div>
                 </div>
+            </div>
+        </div>
+        <div id='mdl_contact_add'      class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <form class="modal-content" id="form_contact_add">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add Address</h5>
+                    </div>
+                    <div class="modal-body">
+                        <input class='supplier_id' type="hidden" name='supplier_id'>
+                        <%- include(`${partials}/inputs/text`, {id: 'contact_type_add',        name: 'type',                 title: 'Type',        required: true}) %>
+                        <%- include(`${partials}/inputs/text`, {id: 'contact_description_add', name: 'contact[description]', title: 'Description', required: true}) %>
+                        <%- include(`${partials}/inputs/text`, {id: 'contact_contact_add',     name: 'contact[contact]',     title: 'Contact',     required: true}) %>
+                    </div>
+                    <div class="modal-footer">
+                        <%- include(`${partials}/button/save`) %>
+                    </div>
+                </form>
             </div>
         </div>
         <div id='mdl_contact_edit'     class="modal fade" tabindex="-1" role="dialog">

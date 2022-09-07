@@ -42,3 +42,26 @@
         </form>
     </div>
 </div>
+<div id='mdl_note_add' class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <form class="modal-content" id='form_note_add'>
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    Note
+                </h5>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" name='note[_table]' id="note_add_table">
+                <input type="hidden" name='note[id]'     id="note_add_id">
+                <script>
+                    document.querySelector('#note_add_table').value = path[1];
+                    document.querySelector('#note_add_id')   .value = path[2];
+                </script>
+                <%- include(`${partials}/inputs/textarea`, {name: 'note[note]', id: 'note_add_note', title: 'Note', rows: 5, required: true}) %>
+            </div>
+            <div class="modal-footer">
+                <input type="submit" class="btn btn-success w-100" value='Save Note'>
+            </div>
+        </form>
+    </div>
+</div>

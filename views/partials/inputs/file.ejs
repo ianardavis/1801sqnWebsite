@@ -1,0 +1,12 @@
+<div class="input-group mb-1">
+    <span class="input-group-text w-30">
+        <%= title %>
+    </span>
+    <input
+        class="form-control mb-0"
+        type="file"
+        <% if (locals.id)       { %>id='<%= id %>'    <% } %>
+        <% if (locals.name)     { %>name='<%= name %>'<% } %>
+        <% if (locals.required) { %>required          <% } %>
+    >
+</div>

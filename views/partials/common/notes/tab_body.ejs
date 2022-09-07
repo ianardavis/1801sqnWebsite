@@ -1,4 +1,5 @@
 <div class="tab-pane fade" id="notes" role="tabpanel">
+
     <div class="row justify-content-between">
         <div class="col-12 col-md-4 mb-1">
             <%- include(`${partials}/sidebar/button`, {id: 'notes', text: 'Filter'}) %>
@@ -23,27 +24,13 @@
             </div>
         </div>
     <%- include(`${partials}/sidebar/close`) %>
+    
 	<table class="table table-sm table-hover">
         <thead class="thead-dark" id="tbl_notes_head">
             <th class='w-30' data-column='["createdAt"]' data-dir="DESC">Date</th>
             <th class='w-70' data-column='["note"]'>Note</th>
             <th><i class="fas fa-search"></i></th>
         </thead>
-        <form id='form_note_add'>
-            <input type="hidden" name='note[_table]' id="note_add_table">
-            <input type="hidden" name='note[id]'     id="note_add_id">
-            <script>
-                document.querySelector('#note_add_table').value = path[1];
-                document.querySelector('#note_add_id')   .value = path[2];
-            </script>
-            <tbody>
-                <tr>
-                    <td></td>
-                    <td><textarea class='form-control form-control-sm' name="note[note]" id="note_add_note" rows="1" placeholder="Required" required></textarea></td>
-                    <td><button class='btn btn-sm btn-success'><i class="fas fa-plus"></i></button></td>
-                </tr>
-            </tbody>
-        </form>
         <tbody id="tbl_notes"></tbody>
     </table>
     <%- include(`${partials}/limit`, {table: 'notes'}) %>
