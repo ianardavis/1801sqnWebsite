@@ -28,9 +28,11 @@ function addAddressEditBtn(address_id) {
         })
         .then(function ([address, options]) {
             address_edit_btn.appendChild(new Modal_Button(
-                _search(),
+                _edit(),
                 'address_edit',
-                [{field: 'id', value: address.supplier_address_id}]
+                [{field: 'id', value: address.supplier_address_id}],
+                false,
+                {colour: 'warning'}
             ).e);
         });
     });

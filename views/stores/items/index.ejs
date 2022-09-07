@@ -5,21 +5,12 @@
 <%- include(`${partials}/head/components/close`) %>
 <section class='container'>
 
-	<%- include(`${partials}/sidebar/button`, {id: 'actions', text: 'Actions', float: true}) %>
-	<%- include(`${partials}/sidebar/open`,   {id: 'actions', text: 'Actions'}) %>
+	<%- include(`${partials}/sidebar/button`, {id: 'actions', text: 'Actions/Filter', float: true}) %>
+	<%- include(`${partials}/sidebar/open`,   {id: 'actions', text: 'Actions/Filter'}) %>
 		<%- include(`${partials}/button/modal/open`, {text: 'New Item', id: 'item_add', type: 'success'}) %>
-	<%- include(`${partials}/sidebar/close`) %>
-
-	<%- include(`${partials}/sidebar/open`, {id: 'filter', text: 'Filter'}) %>
 		<%- include(`${partials}/inputs/select`, {id: 'sel_genders', 	  title: 'Genders', spinner_id: 'genders', reload_id: 'reload_genders', multiple: true, size: '3'}) %>
 		<%- include(`${partials}/inputs/text`,   {id: 'item_description', title: 'Description'}) %>
 	<%- include(`${partials}/sidebar/close`) %>
-	
-	<div class='row justify-content-between'>
-		<div class='col-12 col-md-4 mb-1'>
-			<%- include(`${partials}/sidebar/button`, {id: 'filter', text: 'Filter'}) %>
-		</div>
-	</div>
 
 	<div class='row'>
 		<div class='col-12 col-lg-5 mx-auto'>

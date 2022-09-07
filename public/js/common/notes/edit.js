@@ -28,7 +28,7 @@ function addNoteEditBtn(note_id) {
                         {field: 'bs-dismiss', value: 'modal'}
                     ],
                     false,
-                    {classes: ['float-end']},
+                    {classes: ['float-end'], colour: 'warning'},
                 ).e);
             };
         });

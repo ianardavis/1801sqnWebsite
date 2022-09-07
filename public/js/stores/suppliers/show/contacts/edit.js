@@ -24,9 +24,11 @@ function addContactEditBtn(contact_id) {
         })
         .then(function ([contact, options]) {
             contact_edit_btn.appendChild(new Modal_Button(
-                _search(),
+                _edit(),
                 'contact_edit',
-                [{field: 'id', value: contact.supplier_contact_id}]
+                [{field: 'id', value: contact.supplier_contact_id}],
+                false,
+                {colour: 'warning'}
             ).e);
         });
     });

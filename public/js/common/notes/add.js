@@ -1,4 +1,5 @@
 window.addEventListener('load', function () {
+    enable_button('note_add');
     addFormListener(
         'note_add',
         'POST',
@@ -10,4 +11,6 @@ window.addEventListener('load', function () {
             ]
         }
     );
+    set_value('note_add_table', path[1]);
+    set_value('note_add_id',    path[2]);
 });

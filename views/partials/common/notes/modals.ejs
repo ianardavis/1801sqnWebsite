@@ -57,7 +57,14 @@
                     document.querySelector('#note_add_table').value = path[1];
                     document.querySelector('#note_add_id')   .value = path[2];
                 </script>
-                <%- include(`${partials}/inputs/textarea`, {name: 'note[note]', id: 'note_add_note', title: 'Note', rows: 5, required: true}) %>
+                <textarea
+                    class='form-control form-control-sm'
+                    name="note[note]"
+                    id="note_add_note"
+                    rows="5"
+                    placeholder="Required"
+                    required
+                ></textarea>
             </div>
             <div class="modal-footer">
                 <input type="submit" class="btn btn-success w-100" value='Save Note'>

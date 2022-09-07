@@ -99,7 +99,7 @@ function Modal_Button(image, modal, data, small = true, options = {}) {
     this.e = new Anchor(
         image,
         {
-            classes: ['btn', 'btn-primary'].concat((small ? ['btn-sm'] : [])).concat(options.classes || []),
+            classes: ['btn', `btn-${options.colour || 'primary'}`].concat((small ? ['btn-sm'] : [])).concat(options.classes || []),
             attributes: [
                 {field: 'data-bs-toggle', value: 'modal'},
                 {field: 'data-bs-target', value: `#mdl_${modal}`}

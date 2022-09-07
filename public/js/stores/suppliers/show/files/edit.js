@@ -18,7 +18,8 @@ function fileEditBtn(file_id) {
                 _edit(),
                 'file_edit',
                 [{field: 'id', value: file_id}],
-                false
+                false,
+                {colour: 'warning'}
             ).e
         );
     });
