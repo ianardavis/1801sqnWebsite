@@ -5,13 +5,15 @@ module.exports = (app, m, fn) => {
     
     app.get('/get/items/supplier',     fn.loggedIn(), fn.permissions.check('access_stores'),      (req, res) => {
         m.items.findAndCountAll({
+            distinct: true,
             include: [{
                 model: m.sizes,
-                where: req.query.where
+                where: req.query.where,
+                attributes: ['size_id']
             }],
             ...fn.pagination(req.query)
         })
-        .then(results => {console.log(results);fn.send_res('items', res, results, req.query)})
+        .then(results => fn.send_res('items', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/items/uniform',      fn.loggedIn(), fn.permissions.check('access_stores'),      (req, res) => {
