@@ -2,10 +2,9 @@ function get_items() {
     clear('tbl_items')
     .then(tbl_items => {
         get({
-            table:    'items',
-            location: 'items/supplier',
-            where:    {supplier_id: path[2]},
-            func:     get_items
+            table: 'items',
+            where: {supplier_id: path[2]},
+            func:  get_items
         })
         .then(function ([result, options]) {
             set_count('item', result.count);
@@ -51,4 +50,5 @@ window.addEventListener('load', function () {
     addListener('reload', get_items);
     add_sort_listeners('items', get_items);
     add_sort_listeners('sizes', get_sizes);
+    get_items();
 });

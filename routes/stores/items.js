@@ -3,17 +3,6 @@ module.exports = (app, m, fn) => {
     app.get('/items',                  fn.loggedIn(), fn.permissions.get('access_stores'),        (req, res) => res.render('stores/items/index'));
     app.get('/items/:id',              fn.loggedIn(), fn.permissions.get('access_stores'),        (req, res) => res.render('stores/items/show'));
     
-    app.get('/get/items/supplier',     fn.loggedIn(), fn.permissions.check('access_stores'),      (req, res) => {
-        m.items.findAndCountAll({
-            include: [{
-                model: m.sizes,
-                where: req.query.where
-            }],
-            ...fn.pagination(req.query)
-        })
-        .then(results => fn.send_res('items', res, results, req.query))
-        .catch(err => fn.send_error(res, err));
-    });
     app.get('/get/items/uniform',      fn.loggedIn(), fn.permissions.check('access_stores'),      (req, res) => {
         m.items.findAndCountAll({
             include: [{
