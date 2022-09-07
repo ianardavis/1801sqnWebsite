@@ -5,7 +5,7 @@ function getNSNGroups(options = {}) {
             table:                   'nsn_groups',
             selected:                options.selected,
             selected_classification: options.selected_classification || null,
-            order: ["group", "ASC"]
+            order: ["code", "ASC"]
         })
         .then(function ([result, options]) {
             sel_nsn_groups.appendChild(new Option({
@@ -36,7 +36,7 @@ function getNSNClassifications(options = {}) {
                 table:    'nsn_classes',
                 where: {nsn_group_id: group.value},
                 selected: options.selected || null,
-                order: ["class", "ASC"]
+                order: ["code", "ASC"]
             })
             .then(function ([result, options]) {
                 sel_nsn_classes.appendChild(
@@ -64,7 +64,7 @@ function getNSNCountries(options = {}) {
         get({
             table:    'nsn_countries',
             selected: options.selected,
-            order: ["country", "ASC"]
+            order: ["code", "ASC"]
         })
         .then(function ([result, options]) {
             sel_nsn_countries.appendChild(
