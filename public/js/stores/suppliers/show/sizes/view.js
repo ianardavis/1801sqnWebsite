@@ -8,6 +8,7 @@ function get_items() {
             func:     get_items
         })
         .then(function ([result, options]) {
+            console.log(result);
             set_count('item', result.count);
             result.items.forEach(item => {
                 let row = tbl_items.insertRow(-1);

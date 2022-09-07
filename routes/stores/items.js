@@ -11,7 +11,7 @@ module.exports = (app, m, fn) => {
             }],
             ...fn.pagination(req.query)
         })
-        .then(results => fn.send_res('items', res, results, req.query))
+        .then(results => {console.log(results);fn.send_res('items', res, results, req.query)})
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/items/uniform',      fn.loggedIn(), fn.permissions.check('access_stores'),      (req, res) => {
