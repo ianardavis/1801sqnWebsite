@@ -58,6 +58,7 @@ function add_cell(row, options = {}) {
 
     if      (options.text) cell.innerText = options.text || '';
     else if (options.html) cell.innerHTML = options.html || '';
+
     if      (options.append) {
         if (Array.isArray(options.append)) options.append.forEach(e => cell.appendChild(e))
         else cell.appendChild(options.append);
@@ -66,7 +67,6 @@ function add_cell(row, options = {}) {
     if (options.id)       cell.setAttribute('id', options.id);
     if (options.classes)  options.classes.forEach(e => cell.classList.add(e));
     if (options.data)     options.data.forEach(e => cell.setAttribute(`data-${e.field}`, e.value));
-    if (options.ellipsis) cell.classList.add('ellipsis1');
     return cell;
 };
 function show(id) {

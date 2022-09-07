@@ -17,7 +17,7 @@ function getNotes() {
             result.notes.forEach(note => {
                 let row = tbl_notes.insertRow(-1);
                 add_cell(row, table_date(note.createdAt));
-                add_cell(row, {text: note.note, ellipsis: true});
+                add_cell(row, {text: note.note});
                 add_cell(row, {append: new Modal_Button(
                     _search(),
                     'note_view',

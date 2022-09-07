@@ -1,32 +1,39 @@
-function getItems() {
-    clear('sel_items')
-    .then(sel_items => {
-        sel_items.appendChild(new Option({text: '...Select Item'}).e);
+function get_items() {
+    clear('tbl_items')
+    .then(tbl_items => {
         get({
-            table: 'items',
+            table:    'items',
             location: 'items/supplier',
-            where: {supplier_id: path[2]}
+            where:    {supplier_id: path[2]},
+            func:     get_items
         })
         .then(function ([result, options]) {
             set_count('item', result.count);
             result.items.forEach(item => {
-                sel_items.appendChild(new Option({value: item.item_id, text: item.description}).e);
+                let row = tbl_items.insertRow(-1);
+                row.setAttribute('data-item_id', item.item_id);
+                row.addEventListener('click', function () {
+                    tbl_items.querySelectorAll('.selected_item').forEach(e => e.classList.remove('selected_item'));
+                    row.classList.add('selected_item');
+                    get_sizes();
+                });
+                add_cell(row, {text: item.description});
             });
         });
     });
 };
-function getSizes() {
+function get_sizes() {
     clear('tbl_sizes')
     .then(tbl_sizes => {
-        let item_id = document.querySelector('#sel_items') || {value: ''};
-        if (item_id.value) {
+        let selected_item = document.querySelector('.selected_item');
+        if (selected_item) {
             get({
                 table: 'sizes',
                 where: {
-                    item_id: item_id.value,
+                    item_id: selected_item.dataset.item_id,
                     supplier_id: path[2]
                 },
-                func: getSizes
+                func: get_sizes
             })
             .then(function ([result, options]) {
                 result.sizes.forEach(size => {
@@ -41,8 +48,7 @@ function getSizes() {
     });
 };
 window.addEventListener('load', function () {
-    addListener('reload', getItems);
-    addListener('sel_items', getSizes, 'input');
-    // add_sort_listeners('items', getItems);
-    add_sort_listeners('sizes', getSizes);
+    addListener('reload', get_items);
+    add_sort_listeners('items', get_items);
+    add_sort_listeners('sizes', get_sizes);
 });

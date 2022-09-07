@@ -5,7 +5,7 @@
 <%- include(`${partials}/head/components/close`) %>
 <section class="container">
     <%- include(`${partials}/sidebar/button`, {id: 'actions', text: 'Actions', float: true}) %>
-	<%- include(`${partials}/sidebar/open`, {id: 'actions', text: 'Actions'}) %>
+	<%- include(`${partials}/sidebar/open`,   {id: 'actions', text: 'Actions'}) %>
         <%- include(`${partials}/button/modal/open`, {text: 'Edit',        id: 'supplier_edit', type: 'warning', modal: 'supplier_edit'}) %>
         <%- include(`${partials}/button/modal/open`, {text: 'New Address', id: 'address_add',   type: 'success', modal: 'address_add'}) %>
         <form id='form_set_default'>
@@ -102,17 +102,21 @@
         </div>
         <div class="tab-pane fade" id="items"     role="tabpanel" aria-labelledby="items-tab">
             <div class="row">
-                <div class="col-12 col-md-6 mx-auto">
-                    <select class='form-select mb-1' id="sel_items"></select>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-12 col-md-6 mx-auto">
+                <div class="col-12 col-md-6">
                     <table class="table table-sm table-hover">
-                        <thead class="thead-dark">
-                            <th class='w-35'>Size 1</th>
-                            <th class='w-35'>Size 2</th>
-                            <th class='w-30'>Size 3</th>
+                        <thead class="thead-dark" id="tbl_items_head">
+                            <th class='w-100' data-column='["description"]' data-dir="ASC">Description</th>
+                        </thead>
+                        <tbody id="tbl_items"></tbody>
+                    </table>
+                    <%- include(`${partials}/limit`, {table: 'items'}) %>
+                </div>
+                <div class="col-12 col-md-6"> <!-- mx-auto -->
+                    <table class="table table-sm table-hover">
+                        <thead class="thead-dark" id="tbl_sizes_head">
+                            <th class='w-35' data-column='["size1"]' data-dir="ASC">Size 1</th>
+                            <th class='w-35' data-column='["size2"]'               >Size 2</th>
+                            <th class='w-30' data-column='["size3"]'               >Size 3</th>
                             <th><i class="fas fa-search"></i></th>
                         </thead>
                         <tbody id="tbl_sizes"></tbody>
@@ -123,26 +127,29 @@
         </div>
         <% if (permissions.authorised_demander) { %>
             <div class="tab-pane fade" id="demands" role="tabpanel" aria-labelledby="demands-tab">
+
 	            <div class="row justify-content-between mb-1">
                     <div class="col-12 col-md-4 mb-1">
                         <%- include(`${partials}/sidebar/button`, {id: 'demands_filter', text: 'Filter'}) %>
                     </div>
                 </div>
+
                 <%- include(`${partials}/sidebar/open`, {id: 'demands_filter', text: 'Filter Demands'}) %>
                     <div class="input-group mb-1">
                         <span class="input-group-text w-30">Status</span>
                         <select class='form-select' id='sel_demand_status' multiple size="4">
-                            <option value='0'>Cancelled</option>
-                            <option value='1' selected>Draft</option>
-                            <option value='2' selected>Complete</option>
-                            <option value='3' selected>Closed</option>
+                            <option value='0'         >Cancelled</option>
+                            <option value='1' selected>Draft    </option>
+                            <option value='2' selected>Complete </option>
+                            <option value='3' selected>Closed   </option>
                         </select>
                     </div>
                 <%- include(`${partials}/sidebar/close`) %>
+
                 <table class="table table-sm table-hover">
                     <thead class="thead-dark" id="tbl_demands_head">
                         <th class='w-50' data-column='["createdAt"]' data-dir="DESC">Date  </th>
-                        <th class='w-50' data-column='["status"]'>Status</th>
+                        <th class='w-50' data-column='["status"]'                   >Status</th>
 					    <th><i class="fas fa-search"></i></th>
                     </thead>
                     <tbody id="tbl_demands"></tbody>
@@ -154,6 +161,7 @@
     </div>
     <div id="div_modals">
         <%- include(`${partials}/common/notes/modals`) %>
+
         <div id='mdl_supplier_edit'    class="modal fade" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
                 <form class="modal-content" id='form_supplier_edit'>
@@ -172,6 +180,7 @@
                 </form>
             </div>
         </div>
+
         <div id='mdl_account_view'     class="modal fade" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
@@ -193,6 +202,7 @@
                 </div>
             </div>
         </div>
+
         <div id='mdl_file_view'        class="modal fade" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
@@ -255,6 +265,7 @@
                 </form>
             </div>
         </div>
+
         <div id='mdl_file_detail_edit' class="modal fade" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
                 <form class="modal-content" id='form_file_detail_edit'>
@@ -273,6 +284,7 @@
                 </form>
             </div>
         </div>
+
         <div id='mdl_address_view'     class="modal fade" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
@@ -349,6 +361,7 @@
                 </form>
             </div>
         </div>
+
         <div id='mdl_contact_view'     class="modal fade" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
