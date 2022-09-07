@@ -2,9 +2,10 @@ function get_items() {
     clear('tbl_items')
     .then(tbl_items => {
         get({
-            table: 'items',
-            where: {supplier_id: path[2]},
-            func:  get_items
+            table:    'items',
+            location: 'items/supplier',
+            where:    {supplier_id: path[2]},
+            func:     get_items
         })
         .then(function ([result, options]) {
             set_count('item', result.count);
