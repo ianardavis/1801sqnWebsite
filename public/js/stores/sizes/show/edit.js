@@ -30,7 +30,7 @@ window.addEventListener('load', function () {
         `/sizes/${path[2]}`,
         {
             onComplete: [
-                getSize,
+                get_size,
                 function () {modalHide('size_edit')}
             ]
         }

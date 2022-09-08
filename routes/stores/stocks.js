@@ -1,3 +1,5 @@
+const { reject } = require('core-js/fn/promise');
+
 module.exports = (app, m, fn) => {
     let op = require('sequelize').Op;
     app.get('/stocks/:id',          fn.loggedIn(), fn.permissions.get('access_stores'),        (req, res) => res.render('stores/stocks/show'));
@@ -37,21 +39,8 @@ module.exports = (app, m, fn) => {
     });
 
     app.post('/stocks',             fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
-        fn.sizes.get(req.body.stock.size_id)
-        .then(size => {
-            m.locations.findOrCreate({where: {location: req.body.location}})
-            .then(([location, created]) => {
-                m.stocks.findOrCreate({
-                    where: {
-                        size_id:     size.size_id,
-                        location_id: location.location_id
-                    }
-                })
-                .then(([stock, created]) => res.send({success: true, message: 'Stock location added'}))
-                .catch(err => fn.send_error(res, err));
-            })
-            .catch(err => fn.send_error(res, err));
-        })
+        fn.stocks.create(req.body.stock.size_id, req.body.location)
+        .then(([stock, created]) => res.send({success: true, message: 'Stock location added'}))
         .catch(err => fn.send_error(res, err));
     });
     app.post('/stocks/receipts',    fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
@@ -84,8 +73,8 @@ module.exports = (app, m, fn) => {
         .then(stock => {
             m.locations.findOrCreate({where: {location: req.body.location}})
             .then(([location, created]) => {
-                fn.update(stock, {location_id: location.location_id})
-                .then(result => res.send({success: true, message: 'Stock saved'}))
+                stock.update({location_id: location.location_id})
+                .then(result => res.send({success: result, message: `Stock ${(result ? '' : 'not ')}saved`}))
                 .catch(err => fn.send_error(res, err));
             })
             .catch(err => fn.send_error(res, err));

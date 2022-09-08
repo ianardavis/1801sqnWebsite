@@ -12,7 +12,7 @@ function getNSNs() {
                 try {
                     let row = tbl_nsns.insertRow(-1);
                     add_cell(row, {text: print_nsn(nsn)});
-                    add_cell(row, {html: (nsn.size.nsn_id === nsn.nsn_id ? '<i class="fas fa-check"></i>' : '')});
+                    add_cell(row, {html: (nsn.size.nsn_id === nsn.nsn_id ? _check() : '')});
                     add_cell(row, {
                         append: new Modal_Button(
                             _search(),
@@ -32,8 +32,8 @@ function viewNSN(event) {
         spinner: 'nsn_view'
     })
     .then(function([nsn, options]) {
-        set_innerText('nsn_group_id',   `${String(nsn.nsn_group.code).padStart(2, '0')} | ${nsn.nsn_group.group}`);
-        set_innerText('nsn_class_id',   `${String(nsn.nsn_class.code).padStart(2, '0')} | ${nsn.nsn_class.class}`);
+        set_innerText('nsn_group_id',   `${String(nsn.nsn_group.code)  .padStart(2, '0')} | ${nsn.nsn_group.group}`);
+        set_innerText('nsn_class_id',   `${String(nsn.nsn_class.code)  .padStart(2, '0')} | ${nsn.nsn_class.class}`);
         set_innerText('nsn_country_id', `${String(nsn.nsn_country.code).padStart(2, '0')} | ${nsn.nsn_country.country}`);
         set_innerText('item_number',    nsn.item_number);
         set_innerText('nsn_id',         nsn.nsn_id);

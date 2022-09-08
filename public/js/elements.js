@@ -1,9 +1,9 @@
-function _check()              {return '<i class="fas fa-check"></i>'}
-function _search()             {return '<i class="fas fa-search"></i>'}
-function _edit()               {return '<i class="fas fa-pencil-alt"></i>'}
-function _move(attribute = '') {return `<i class="fas fa-align-justify"${attribute}></i>`}
-function _delete()             {return '<i class="fas fa-trash-alt"></i>'}
-function random_id()           {return Math.floor(Math.random()*10000)};
+function _check()        {return '<i class="fas fa-check"></i>'}
+function _search()       {return '<i class="fas fa-search"></i>'}
+function _edit()         {return '<i class="fas fa-pencil-alt"></i>'}
+function _move(att = '') {return `<i class="fas fa-align-justify"${att}></i>`}
+function _delete()       {return '<i class="fas fa-trash-alt"></i>'}
+function random_id()     {return Math.floor(Math.random()*10000)};
 
 function List_Item(text, caret) {
     this.e = new LI({classes: ['list-group-item', 'text-start', 'p-4']}).e;

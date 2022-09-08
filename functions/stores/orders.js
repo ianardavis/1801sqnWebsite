@@ -376,8 +376,10 @@ module.exports = function (m, fn) {
                 if (qty && qty > 0) {
                     let links = [];
                     serials.forEach(serial => {
-                        if (links.indexOf({table: 'locations', id: serial.value.location_id}) === -1) {
-                            links.push({table: 'locations', id: serial.value.location_id});
+                        if (serial.location_id) {
+                            if (links.indexOf({table: 'locations', id: serial.value.location_id}) === -1) {
+                                links.push({table: 'locations', id: serial.value.location_id});
+                            };
                         };
                         links.push({table: 'serials', id: serial.value.serial_id})
                     });

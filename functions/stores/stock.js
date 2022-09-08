@@ -37,11 +37,11 @@ module.exports = function (m, fn) {
                             .catch(err => reject(err));
                         } else if (options.location) {
                             fn.locations.get({location: options.location})
-                            .then(location_id => {
+                            .then(location => {
                                 m.stocks.findOrCreate({
                                     where: {
                                         size_id:     size.size_id,
-                                        location_id: location_id
+                                        location_id: location.location_id
                                     },
                                     include: [m.locations]
                                 })
@@ -54,6 +54,26 @@ module.exports = function (m, fn) {
                     .catch(err => reject(err));
                 } else reject(new Error('No size or stock ID submitted'));
             } else reject(new Error('No size, location or stock ID submitted'));
+        });
+    };
+    fn.stocks.create = function (size_id, location) {
+        return new Promise((resolve, reject) => {
+            fn.sizes.get(size_id)
+            .then(size => {
+                m.locations.findOrCreate({where: {location: location}})
+                .then(([location, created]) => {
+                    m.stocks.findOrCreate({
+                        where: {
+                            size_id:     size.size_id,
+                            location_id: location.location_id
+                        }
+                    })
+                    .then(([stock, created]) => resolve(true))
+                    .catch(err => reject(err));
+                })
+                .catch(err => reject(err));
+            })
+            .catch(err => reject(err));
         });
     };
     fn.stocks.scrap = function (stock_id, details, user_id) {

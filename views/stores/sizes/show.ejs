@@ -5,17 +5,17 @@
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/head/components/close`) %>
 <section class='container'>
-    
+
     <%- include(`${partials}/sidebar/button`, {id: 'actions', text: 'Actions', float: true}) %>
-    <%- include(`${partials}/sidebar/open`, {id: 'actions', text: 'Actions'}) %>
+    <%- include(`${partials}/sidebar/open`,   {id: 'actions', text: 'Actions'}) %>
         <%- include(`${partials}/button/modal/open`, {text: 'Edit',               id: 'size_edit',   type: 'warning', modal: 'size_edit'}) %>
         <%- include(`${partials}/button/modal/open`, {text: 'Add Detail',         id: 'detail_add',  type: 'success', modal: 'detail_add'}) %>
-        <%- include(`${partials}/button/modal/open`, {text: 'New NSN',            id: 'nsn_add',     type: 'success', modal: 'nsn_add'}) %>
-        <%- include(`${partials}/button/modal/open`, {text: 'New Serial',         id: 'serial_add',  type: 'success', modal: 'serial_add'}) %>
-        <%- include(`${partials}/button/modal/open`, {text: 'New Stock Location', id: 'stock_add',   type: 'success', modal: 'stock_add'}) %>
+        <%- include(`${partials}/button/modal/open`, {text: 'New NSN',            id: 'nsn_add',     type: 'success', modal: 'nsn_add',    classes: ['has_nsns_element']}) %>
+        <%- include(`${partials}/button/modal/open`, {text: 'New Serial',         id: 'serial_add',  type: 'success', modal: 'serial_add', classes: ['serial_element']}) %>
+        <%- include(`${partials}/button/modal/open`, {text: 'New Stock Location', id: 'stock_add',   type: 'success', modal: 'stock_add',  classes: ['stock_element']}) %>
         <%- include(`${partials}/button/modal/open`, {text: 'Receive Stock',      id: 'receipt_add', type: 'success', modal: 'receipt_add'}) %>
-        <%- include(`${partials}/button/modal/open`, {text: 'New Order',          id: 'order_add',   type: 'success', modal: 'order_add'}) %>
-        <%- include(`${partials}/button/modal/open`, {text: 'New Issue',          id: 'issue_add',   type: 'success', modal: 'issue_add'}) %>
+        <%- include(`${partials}/button/modal/open`, {text: 'New Order',          id: 'order_add',   type: 'success', modal: 'order_add',  classes: ['orderable_element']}) %>
+        <%- include(`${partials}/button/modal/open`, {text: 'New Issue',          id: 'issue_add',   type: 'success', modal: 'issue_add',  classes: ['issueable_element']}) %>
         <%- include(`${partials}/button/delete`) %>
     <%- include(`${partials}/sidebar/close`) %>
 
@@ -396,7 +396,6 @@
 <script>show_tab('<%= tab %>');</script>
 <%- include(`${partials}/common/notes/scripts`) %>
 <script src="/js/stores/sizes/show/view.js"></script>
-<script async>getSize()</script>
 <script src="/js/stores/sizes/show/details/view.js"></script>
 <script src="/js/stores/sizes/show/nsns/view.js"></script>
 <script src="/js/stores/sizes/show/serials/view.js"></script>

@@ -436,8 +436,8 @@ module.exports = function (m, fn) {
                                 get_loancard_link('locations', line.loancard_line_id)
                                 .then(link => {
                                     fn.locations.get({location_id: link.id})
-                                    .then(location_id => {
-                                        fn.serials.return_to_stock(line.serial_id, location_id)
+                                    .then(location => {
+                                        fn.serials.return_to_stock(line.serial_id, location.location_id)
                                         .then(serial => resolve({issue_ids: [serial.issue_id], links: [{table: 'serials', id: serial.serial_id}]}))
                                         .catch(err => reject(err));
                                     })

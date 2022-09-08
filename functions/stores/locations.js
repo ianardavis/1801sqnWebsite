@@ -1,7 +1,17 @@
 module.exports = function (m, fn) {
     fn.locations = {};
-    fn.locations.get = function (location_id) {
-        return m.locations.findOne({where: {location_id: location_id}})
+    function get (location_id) {
+        return new Promise((resolve, reject) => {
+            m.locations.findOne({where: {location_id: location_id}})
+            .then(location => {
+                if (location) {
+                    resolve(location);
+                } else {
+                    reject(new Error('Location not found'));
+                };
+            })
+            .catch(err => reject(err));
+        });
     }
     fn.locations.create = function (location) {
         return new Promise((resolve, reject) => {
@@ -20,12 +30,12 @@ module.exports = function (m, fn) {
     fn.locations.get = function (options = {}) {
         return new Promise((resolve, reject) => {
             if (options.location_id) {
-                fn.locations.get(options.location_id)
-                .then(location => resolve(location.location_id))
+                get(options.location_id)
+                .then(location => resolve(location))
                 .catch(err => reject(err));
             } else if (options.location) {
                 m.locations.findOrCreate({where: {location: options.location}})
-                .then(([location, created]) => resolve(location.location_id))
+                .then(([location, created]) => resolve(location))
                 .catch(err => reject(err));
             } else reject(new Error('No location specified'))
         });
