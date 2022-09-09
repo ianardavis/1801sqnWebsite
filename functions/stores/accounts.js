@@ -27,4 +27,29 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
+    fn.accounts.delete = function (account_id) {
+        return new Promise((resolve, reject) => {
+            fn.accounts.get(account_id)
+            .then(account => {
+                account.destroy()
+                .then(result => {
+                    if (result) {
+                        m.suppliers.update(
+                            {account_id: null},
+                            {where: {account_id: account.account_id}}
+                        )
+                        .then(result => resolve(true))
+                        .catch(err => {
+                            console.log(err);
+                            resolve(false)
+                        });
+                    } else {
+                        reject(new Error('Account not deleted'));
+                    };
+                })
+                .catch(err => reject(err));
+            })
+            .catch(err => reject(err));
+        });
+    };
 };

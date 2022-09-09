@@ -4,6 +4,7 @@
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/head/components/close`) %>
 <section class="container">
+
     <%- include(`${partials}/sidebar/button`, {id: 'actions', text: 'Actions', float: true}) %>
 	<%- include(`${partials}/sidebar/open`,   {id: 'actions', text: 'Actions'}) %>
         <%- include(`${partials}/button/modal/open`, {text: 'Edit',        id: 'supplier_edit', type: 'warning', modal: 'supplier_edit'}) %>
@@ -15,6 +16,7 @@
         </form>
         <%- include(`${partials}/button/delete`) %>
 	<%- include(`${partials}/sidebar/close`) %>
+
     <ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
         <%- include(`${partials}/tab_head`, {id: 'details',   title: 'Details',   spinner: 'supplier'}) %>
         <%- include(`${partials}/tab_head`, {id: 'files',     title: 'Files',     spinner: 'files',     count_id: 'file'}) %>
@@ -333,7 +335,7 @@
                         <h5 class="modal-title">Edit Address</h5>
                     </div>
                     <div class="modal-body">
-                        <input type="hidden" id='supplier_address_id_edit' name='supplier_address_id'>
+                        <input type="hidden" id='supplier_address_id_edit' name='address_id'>
                         <%- include(`${partials}/inputs/text`, {id: 'address_type_edit',        name: 'address[type]',        title: 'Type',        required: true}) %>
                         <%- include(`${partials}/inputs/text`, {id: 'address_unit_number_edit', name: 'address[unit_number]', title: 'Unit/Number', required: true}) %>
                         <%- include(`${partials}/inputs/text`, {id: 'address_street_edit',      name: 'address[street]',      title: 'Street',      required: true}) %>
@@ -402,7 +404,7 @@
                         <h5 class="modal-title">Edit Contact</h5>
                     </div>
                     <div class="modal-body">
-                        <input type="hidden" id='supplier_contact_id_edit' name='supplier_contact_id'>
+                        <input type="hidden" id='supplier_contact_id_edit' name='contact_id'>
                         <%- include(`${partials}/inputs/text`, {id: 'contact_type_edit',        name: 'contact[type]',        title: 'Type',        required: true}) %>
                         <%- include(`${partials}/inputs/text`, {id: 'contact_description_edit', name: 'contact[description]', title: 'Description', required: true}) %>
                         <%- include(`${partials}/inputs/text`, {id: 'contact_contact_edit',     name: 'contact[contact]',     title: 'Contact',     required: true}) %>

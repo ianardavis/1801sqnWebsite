@@ -242,6 +242,22 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
+
+    fn.demands.download = function (req, res) {
+        fn.demands.get({demand_id: req.params.id})
+        .then(demand => {
+            if (demand.filename) {
+                fn.fs.download('demands', demand.filename, res);
+            } else {
+                fn.demands.raise(demand.demand_id, req.user)
+                .then(file => {
+                    fn.fs.download('demands', file, res);
+                })
+                .catch(err => fn.send_error(res, err));
+            };
+        })
+        .catch(err => fn.send_error(res, err));
+    };
     
     fn.demands.lines.get     = function (where, includes = [], allowNull = false) {
         return new Promise((resolve, reject) => {
@@ -272,59 +288,123 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
-    fn.demands.lines.create  = function (options = {}) {
+
+    function check_for_demand_details(size_id) {
         return new Promise((resolve, reject) => {
             fn.sizes.get(
-                options.size_id,
+                size_id,
                 [fn.inc.stores.details({
                     where: {name: {[fn.op.or]:['Demand Page', 'Demand Cell']}}
                 })]
             )
             .then(size => {
-                if      (!size.details)                                       reject(new Error('No demand page/cell for this size'))
-                else if (!size.details.filter(e => e.name === 'Demand Page')) reject(new Error('No demand page for this size'))
-                else if (!size.details.filter(e => e.name === 'Demand Cell')) reject(new Error('No demand cell for this size'))
-                else {
-                    fn.demands.get({demand_id: options.demand_id})
-                    .then(demand => {
-                        if      (demand.status    !== 1)                  reject(new Error('Lines can only be added to draft demands'))
-                        else if (size.supplier_id !== demand.supplier_id) reject(new Error('Size is not from this supplier'))
-                        else {
-                            m.demand_lines.findOrCreate({
-                                where: {
-                                    demand_id: demand.demand_id,
-                                    size_id:   size.size_id
-                                },
-                                defaults: {
-                                    qty:     options.qty,
-                                    user_id: options.user_id
-                                }
-                            })
-                            .then(([line, created]) => {
-                                let action = null;
-                                if (created) action = new Promise(r => r(true))
-                                else action = line.increment('qty', {by: options.qty})
-                                action
-                                .then(result => {
-                                    let links = [];
-                                    options.orders.forEach(e => links.push({table: 'orders', id: e.order_id}));
-                                    create_line_action(
-                                        `${(created ? 'CREATED' : `INCREMENTED | By ${options.qty}`)}`,
-                                        line.demand_line_id,
-                                        options.user_id,
-                                        links
-                                    )
-                                    .then(result => resolve(line.demand_line_id));
-                                })
-                                .catch(err => reject(err));
-                            })
-                            .catch(err => reject(err));
-                        };
-                    })
-                    .catch(err => reject(err));
+                if (!size.details) {
+                    reject(new Error('No demand page/cell for this size'));
+                } else if (!size.details.filter(e => e.name === 'Demand Page')) {
+                    reject(new Error('No demand page for this size'));
+                } else if (!size.details.filter(e => e.name === 'Demand Cell')) {
+                    reject(new Error('No demand cell for this size'));
+                } else {
+                    resolve(size);
                 };
             })
             .catch(err => reject(err));
+        });
+    };
+    function check_demand(demand_id, size) {
+        return new Promise((resolve, reject) => {
+            fn.demands.get({demand_id: demand_id})
+            .then(demand => {
+                if (demand.status !== 1) {
+                    reject(new Error('Lines can only be added to draft demands'));
+                } else if (size.supplier_id !== demand.supplier_id) {
+                    reject(new Error('Size and demand are not for the same supplier'));
+                } else {
+                    resolve(demand);
+                };
+            })
+            .catch(err => reject(err));
+        });
+    };
+    function create_line(demand_id, size_id, qty, user_id) {
+        return new Promise((resolve, reject) => {
+            m.demand_lines.findOrCreate({
+                where: {
+                    demand_id: demand_id,
+                    size_id:   size_id
+                },
+                defaults: {
+                    qty:     qty,
+                    user_id: user_id
+                }
+            })
+            .then(([line, created]) => {
+                if (created) {
+                    resolve(line.demand_line_id);
+                } else {
+                    line.increment('qty', {by: qty})
+                    .then(result => {
+                        if (result) {
+                            resolve(line.demand_line_id);
+                        } else {
+                            reject(new Error('Line not incremented'));
+                        };
+                    });
+                };
+            })
+            .catch(err => reject(err));
+        });
+    };
+    fn.demands.lines.create  = function (size_id, demand_id, qty, user_id, orders = []) {
+        return new Promise((resolve, reject) => {
+            check_for_demand_details(size_id)
+            .then(size => {
+                check_demand(demand_id, size)
+                .then(demand => {
+                    create_line(
+                        demand.demand_id,
+                        size.size_id,
+                        qty,
+                        user_id
+                    )
+                    .then(line_id => {
+                        let links = [];
+                        orders.forEach(e => links.push({table: 'orders', id: e.order_id}));
+                        create_line_action(
+                            `${(created ? 'CREATED' : `INCREMENTED | By ${qty}`)}`,
+                            line_id,
+                            user_id,
+                            links
+                        )
+                        .then(result => resolve(line.demand_line_id));
+                    })
+                    .catch(err => reject(err));
+                })
+                .catch(err => reject(err));
+            })
+            .catch(err => reject(err));
+        });
+    };
+    fn.demands.lines.create_bulk = function (lines, demand_id, user_id) {
+        return new Promise((resolve, reject) => {
+            if (!lines || lines.length === 0) {
+                reject(new Error('No lines'));
+            } else {
+                let actions = [];
+                lines.forEach(line => {
+                    actions.push(
+                        fn.demands.lines.create(
+                            line.size_id,
+                            demand_id,
+                            line.qty,
+                            user_id
+                        )
+                    );
+                });
+                Promise.all(actions)
+                .then(result => resolve(true))
+                .catch(err => reject(err));
+            };
         });
     };
     fn.demands.lines.receive = function (line, user_id) {

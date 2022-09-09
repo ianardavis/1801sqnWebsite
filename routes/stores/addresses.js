@@ -26,47 +26,23 @@ module.exports = (app, m, fn) => {
     });
 
     app.post('/addresses',       fn.loggedIn(), fn.permissions.check('supplier_admin'), (req, res) => {
-        fn.suppliers.get(req.body.supplier_id)
-        .then(supplier => {
-            m.addresses.findOrCreate({
-                where:    req.body.address,
-                defaults: {type: req.body.type}
-            })
-            .then(([address, created]) => {
-                m.supplier_addresses.create({
-                    supplier_id: supplier.supplier_id,
-                    address_id: address.address_id
-                })
-                .then(supplier_address => res.send({success: true, message: 'Address created'}))
-                .catch(err => fn.send_error(res, err));
-            })
-            .catch(err => fn.send_error(res, err));
-        })
+        fn.suppliers.addresses.create(req.body.supplier, req.body.address, req.body.type)
+        .then(result => res.send({success: true, message: 'Address created'}))
         .catch(err => fn.send_error(res, err));
     });
     app.put('/addresses',        fn.loggedIn(), fn.permissions.check('supplier_admin'), (req, res) => {
-        fn.suppliers.addresses.get(req.body.supplier_address_id)
-        .then(address => {
-            if (!address.address) {
-                fn.send_error(res, 'No address for this record');
-            } else {
-                fn.update(address.address, req.body.address)
-                .then(result => res.send({success: true, message: 'Address updated'}))
-                .catch(err => fn.send_error(res, err));
-            };
-        })
+        fn.suppliers.addresses.edit(
+            req.body.address_id,
+            req.body.address,
+            req.user.user_id
+        )
+        .then(result => res.send({success: true, message: 'Address updated'}))
         .catch(err => fn.send_error(res, err));
     });
+
     app.delete('/addresses/:id', fn.loggedIn(), fn.permissions.check('supplier_admin'), (req, res) => {
-        fn.suppliers.addresses.get(req.params.id)
-        .then(address => {
-            let actions = [];
-            if (address.address) actions.push(address.address.destroy());
-            actions.push(address.destroy())
-            Promise.all(actions)
-            .then(result => res.send({success: true, message: 'Address deleted'}))
-            .catch(err => fn.send_error(res, err));
-        })
+        fn.suppliers.addresses.delete(req.params.id)
+        .then(result => res.send({success: true, message: 'Address deleted'}))
         .catch(err => fn.send_error(res, err));
     });
 };

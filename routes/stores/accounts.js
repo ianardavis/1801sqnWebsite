@@ -39,23 +39,8 @@ module.exports = (app, m, fn) => {
     });
 
     app.delete('/accounts/:id', fn.loggedIn(), fn.permissions.check('supplier_admin'), (req, res) => {
-        fn.accounts.get(req.params.id)
-        .then(account => {
-            account.destroy()
-            .then(result => {
-                if (!result) {
-                    fn.send_error(res, 'Account not deleted');
-                } else {
-                    m.suppliers.update(
-                        {account_id: null},
-                        {where: {account_id: account.account_id}}
-                    )
-                    .then(result => res.send({success: true, message: 'Account deleted'}))
-                    .catch(err => fn.send_error(res, `Error updating suppliers: ${err.message}`));
-                };
-            })
-            .catch(err => fn.send_error(res, `Error deleting account: ${err.message}`));
-        })
-        .catch(err => fn.send_error(res, `Error getting account: ${err.message}`));
+        fn.accounts.delete(req.params.id)
+        .then(result => res.send({success: true, message: 'Account deleted'}))
+        .catch(err => fn.send_error(res, err));
     });
 };

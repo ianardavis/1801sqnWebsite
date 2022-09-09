@@ -268,13 +268,13 @@ module.exports = function (m, fn) {
                                 let line_actions = [];
                                 supplier.sizes.forEach(size => {
                                     line_actions.push(new Promise((resolve, reject) => {
-                                        fn.demands.lines.create({
-                                            demand_id: demand_id,
-                                            size_id:   size.size_id,
-                                            qty:       size.qty,
-                                            orders:    size.orders,
-                                            user_id:   user_id
-                                        })
+                                        fn.demands.lines.create(
+                                            size.size_id,
+                                            demand_id,
+                                            size.qty,
+                                            user_id,
+                                            size.orders
+                                        )
                                         .then(demand_line_id => {
                                             let order_updates = [];
                                             size.orders.forEach(e => order_updates.push(update_order_status(e, 2, user_id)))
