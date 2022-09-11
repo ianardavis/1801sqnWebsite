@@ -1,7 +1,7 @@
 <button
     id="btn_<%= id %>"
     type='button'
-    class="btn btn-<%= type %> w-100 mb-2<% if (locals.classes) {classes.foreach(c => %><%= c %><% )} %>"
+    class="btn btn-<%= type %> w-100 mb-2<% if (locals.classes) {classes.forEach(c => { %> <%= c %><% })} %>"
     role="tab"
     data-bs-toggle="modal"
     data-bs-target="#mdl_<%= id %>"

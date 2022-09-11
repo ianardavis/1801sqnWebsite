@@ -11,16 +11,11 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/contact',     fn.loggedIn(), fn.permissions.check('access_stores'),  (req, res) => {
-        m.supplier_contacts.findOne({
-            where: req.query.where,
-            include: [m.contacts]
-        })
-        .then(contact => {
-            if (contact) res.send({success: true, result: contact})
-            else res.send({success: false, message: 'Contact not found'});
-        })
+        fn.suppliers.contacts.get(req.query.where)
+        .then(contact => res.send({success: true, result: contact}))
         .catch(err => fn.send_error(res, err));
     });
+
     app.post('/contacts',       fn.loggedIn(), fn.permissions.check('supplier_admin'), (req, res) => {
         fn.suppliers.contacts.create(
             req.body.supplier_id,
@@ -39,6 +34,7 @@ module.exports = (app, m, fn) => {
         .then(result => res.send({success: true, message: 'Contact updated'}))
         .catch(err => fn.send_error(res, err));
     });
+    
     app.delete('/contacts/:id', fn.loggedIn(), fn.permissions.check('supplier_admin'), (req, res) => {
         fn.suppliers.contacts.delete(req.params.id)
         .then(result => res.send({success: true, message: 'Contact deleted'}))
