@@ -1,16 +1,7 @@
 module.exports = (app, m, fn) => {
     app.get('/get/account',     fn.loggedIn(), fn.permissions.check('access_stores'),  (req, res) => {
-        m.accounts.findOne({
-            where: req.query.where,
-            include: [fn.inc.users.user()]
-        })
-        .then(account => {
-            if (account) {
-                res.send({success: true, result: account});
-            } else {
-                res.send({success: false, message: 'Account not found'});
-            };
-        })
+        fn.accounts.get(req.query.where)
+        .then(account => res.send({success: true, result: account}))
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/accounts',    fn.loggedIn(), fn.permissions.check('access_stores'),  (req, res) => {

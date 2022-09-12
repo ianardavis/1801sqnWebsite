@@ -4,7 +4,7 @@ function get_size() {
         where: {size_id: path[2]}
     })
     .then(function ([size, options]) {
-        set_breadcrumb(`${print_size_text(size.item)}: ${print_size(size)}`);
+        console.log(size);
         set_innerText('issueable',   yesno(size.issueable));
         set_innerText('orderable',   yesno(size.orderable));
         set_innerText('has_serials', yesno(size.has_serials));
@@ -12,6 +12,7 @@ function get_size() {
         set_innerText('supplier',    (size.supplier ? size.supplier.name : ''));
         set_innerText('item',        size.item.description);
 
+        set_breadcrumb(`${print_size_text(size.item)}: ${print_size(size)}`);
         set_href('supplier_link', (size.supplier ? `/suppliers/${size.supplier_id}` : ''));
         set_href('item',          `/items/${size.item_id}`);
 
@@ -39,4 +40,5 @@ function get_size() {
 };
 window.addEventListener('load', function () {
     addListener('reload', get_size);
+    get_size();
 });

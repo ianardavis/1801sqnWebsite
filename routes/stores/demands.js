@@ -82,7 +82,11 @@ module.exports = (app, m, fn) => {
     });
 
     app.post('/sizes/:id/demand',    fn.loggedIn(), fn.permissions.check('authorised_demander'), (req, res) => {
-        fn.demands.lines.create_bulk(req.body.lines, req.body.demand_id, req.user.user_id)
+        fn.demands.lines.create_bulk(
+            req.body.lines,
+            req.body.demand_id,
+            req.user.user_id
+        )
         .then(result => res.send({success: true, message: `Line(s) created`}))
         .catch(err => fn.send_error(res, err));
     });
@@ -96,18 +100,25 @@ module.exports = (app, m, fn) => {
     });
 
     app.put('/demands/:id/complete', fn.loggedIn(), fn.permissions.check('authorised_demander'), (req, res) => {
-        fn.demands.complete(req.params.id, req.user)
+        fn.demands.complete(
+            req.params.id,
+            req.user
+        )
         .then(result => res.send(result))
         .catch(err => fn.send_error(res, err));
     });
     app.put('/demands/:id/close',    fn.loggedIn(), fn.permissions.check('authorised_demander'), (req, res) => {
-        fn.demands.close(req.params.id, req.user.user_id)
+        fn.demands.close(
+            req.params.id,
+            req.user.user_id
+        )
         .then(result => res.send({success: true, message: 'Demand closed'}))
         .catch(err => fn.send_error(res, err));
     });
     app.put('/demand_lines',         fn.loggedIn(), fn.permissions.check('authorised_demander'), (req, res) => {
-        if (!req.body.lines || req.body.lines.length === 0) fn.send_error(res, 'No lines submitted')
-        else {
+        if (!req.body.lines || req.body.lines.length === 0) {
+            fn.send_error(res, 'No lines submitted');
+        } else {
             let actions = [];
             req.body.lines.filter(e => e.status === '0').forEach(line => {
                 actions.push(

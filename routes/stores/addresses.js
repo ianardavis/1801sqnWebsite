@@ -11,22 +11,17 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/address',      fn.loggedIn(), fn.permissions.check('access_stores'),  (req, res) => {
-        m.supplier_addresses.findOne({
-            where: req.query.where,
-            include: [fn.inc.stores.address()]
-        })
-        .then(address => {
-            if (address) {
-                res.send({success: true, result: address});
-            } else {
-                res.send({success: false, message: 'Address not found'});
-            };
-        })
+        fn.suppliers.addresses.get(req.query.where)
+        .then(address => res.send({success: true, result: address}))
         .catch(err => fn.send_error(res, err));
     });
 
     app.post('/addresses',       fn.loggedIn(), fn.permissions.check('supplier_admin'), (req, res) => {
-        fn.suppliers.addresses.create(req.body.supplier, req.body.address, req.body.type)
+        fn.suppliers.addresses.create(
+            req.body.supplier,
+            req.body.address,
+            req.body.type
+        )
         .then(result => res.send({success: true, message: 'Address created'}))
         .catch(err => fn.send_error(res, err));
     });

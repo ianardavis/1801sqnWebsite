@@ -1,5 +1,3 @@
-const { reject } = require('core-js/fn/promise');
-
 module.exports = (app, m, fn) => {
     let op = require('sequelize').Op;
     app.get('/stocks/:id',          fn.loggedIn(), fn.permissions.get('access_stores'),        (req, res) => res.render('stores/stocks/show'));
