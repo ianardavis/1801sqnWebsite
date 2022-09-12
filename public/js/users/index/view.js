@@ -5,7 +5,7 @@ function getUsers() {
             statuses = getSelectedOptions('sel_statuses'),
             ranks    = getSelectedOptions('sel_ranks');
         if (statuses.length > 0) where.status_id = statuses;
-        if (ranks.length > 0) where.rank_id = ranks;
+        if (ranks   .length > 0) where.rank_id   = ranks;
         get({
             table: 'users',
             where: where,
@@ -37,9 +37,9 @@ function getRanks() {
     });
 };
 window.addEventListener("load", function () {
-    addListener('reload', getUsers);
-    addListener('sel_statuses', getUsers, 'change');
-    addListener('sel_ranks',    getUsers, 'change');
+    addListener('reload',          getUsers);
+    addListener('sel_statuses',    getUsers, 'change');
+    addListener('sel_ranks',       getUsers, 'change');
     addListener('reload_statuses', getStatuses);
     addListener('reload_ranks',    getRanks);
 	Promise.allSettled([

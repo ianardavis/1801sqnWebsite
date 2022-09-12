@@ -79,7 +79,7 @@ function getIssues() {
     });
 };
 function getUsers() {
-    return listUsers({
+    return listCurrentUsers({
         select: 'filter_issue_user',
         blank:  {text: 'All'}
     });
