@@ -321,7 +321,7 @@ module.exports = function (m, fn) {
         });
     };
 
-    fn.issues.mark_as = function (issue_id, status, user_id) {
+    function mark_check(issue_id, status) {
         return new Promise((resolve, reject) => {
             if (status in statuses) {
                 fn.issues.get({issue_id: issue_id})
@@ -329,27 +329,36 @@ module.exports = function (m, fn) {
                     if (issue.status === Number(status)) {
                         reject(new Error('Status has not changed'));
                     } else {
-                        issue.update({status: Number(status)})
-                        .then(result => {
-                            if (result) {
-                                const status_text = statuses[status];
-                                fn.actions.create(
-                                    `ISSUE | ${status_text.toUpperCase()} | Set manually`,
-                                    user_id,
-                                    [{table: 'issues', id: issue.issue_id}]
-                                )
-                                .then(result => resolve(`Issue marked as ${status_text}`));
-                            } else {
-                                reject(new Error('Issue not updated'));
-                            };
-                        })
-                        .catch(err => reject(res, err));
+                        resolve(issue);
                     };
                 })
                 .catch(err => reject(err));
             } else {
                 reject(new Error('Invalid status'));
             };
+        });
+    };
+    fn.issues.mark_as = function (issue_id, status, user_id) {
+        return new Promise((resolve, reject) => {
+            mark_check(issue_id, status)
+            .then(issue => {
+                issue.update({status: Number(status)})
+                .then(result => {
+                    if (result) {
+                        const status_text = statuses[status];
+                        fn.actions.create(
+                            `ISSUE | ${status_text.toUpperCase()} | Set manually`,
+                            user_id,
+                            [{table: 'issues', id: issue.issue_id}]
+                        )
+                        .then(result => resolve(`Issue marked as ${status_text}`));
+                    } else {
+                        reject(new Error('Issue not updated'));
+                    };
+                })
+                .catch(err => reject(res, err));
+            })
+            .catch(err => reject(err));
         });
     };
 

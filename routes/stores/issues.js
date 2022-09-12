@@ -150,7 +150,7 @@ module.exports = (app, m, fn) => {
         .then(result => res.send({success: true, message: 'Size updated'}))
         .catch(err => fn.send_error(res, err));
     });
-    app.put('/issues/:id/mark_as', fn.loggedIn(), fn.permissions.check('issuer'),              (req, res) => {
+    app.put('/issues/:id/mark',    fn.loggedIn(), fn.permissions.check('issuer'),              (req, res) => {
         fn.issues.mark_as(req.params.id, req.body.issue.status, req.user.user_id)
         .then(message => res.send({success: true, message: message}))
         .catch(err => fn.send_error(res, err));
