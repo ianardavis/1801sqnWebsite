@@ -344,49 +344,6 @@ module.exports = function (m, fn) {
         });
     };
 
-    function add_issues_to_loancards(user, user_id) {
-        return new Promise((resolve, reject) => {
-            fn.loancards.create({
-                user_id_loancard: user.user_id,
-                user_id: user_id
-            })
-            .then(loancard_id => {
-                let issue_actions = [];
-                user.issues.forEach(issue => {
-                    issue_actions.push(
-                        new Promise((resolve, reject) => {
-                            fn.loancards.lines.create(loancard_id, issue.issue, user_id, issue.line)
-                            .then(links => {
-                                update_issue_status(
-                                    issue.issue,
-                                    4,
-                                    user_id,
-                                    `ADDED TO LOANCARD`,
-                                    links
-                                )
-                                .then(result => resolve(result))
-                                .catch(err => reject(err));
-                            })
-                            .catch(err => reject(err));
-                        })
-                    );
-                });
-                Promise.allSettled(issue_actions)
-                .then(results => {
-                    if (results.filter(e => e.status === 'rejected' ).length > 0) console.log(results);
-                    if (results.filter(e => e.status === 'fulfilled').length > 0) {
-                        resolve(true);
-
-                    } else {
-                        reject(new Error('All lines failed'));
-
-                    };
-                })
-                .catch(err => reject(err));
-            })
-            .catch(err => reject(err));
-        });
-    };
     function sort_issues_by_user(lines) {
         return new Promise((resolve, reject) => {
             let actions = [], users = [];
@@ -436,6 +393,49 @@ module.exports = function (m, fn) {
                     reject(new Error('No valid issues to add'));
 
                 };
+            })
+            .catch(err => reject(err));
+        });
+    };
+    function add_issues_to_loancards(user, user_id) {
+        return new Promise((resolve, reject) => {
+            fn.loancards.create({
+                user_id_loancard: user.user_id,
+                user_id: user_id
+            })
+            .then(loancard_id => {
+                let issue_actions = [];
+                user.issues.forEach(issue => {
+                    issue_actions.push(
+                        new Promise((resolve, reject) => {
+                            fn.loancards.lines.create(loancard_id, issue.issue, user_id, issue.line)
+                            .then(links => {
+                                update_issue_status(
+                                    issue.issue,
+                                    4,
+                                    user_id,
+                                    `ADDED TO LOANCARD`,
+                                    links
+                                )
+                                .then(result => resolve(result))
+                                .catch(err => reject(err));
+                            })
+                            .catch(err => reject(err));
+                        })
+                    );
+                });
+                Promise.allSettled(issue_actions)
+                .then(results => {
+                    if (results.filter(e => e.status === 'rejected' ).length > 0) console.log(results);
+                    if (results.filter(e => e.status === 'fulfilled').length > 0) {
+                        resolve(true);
+
+                    } else {
+                        reject(new Error('All lines failed'));
+
+                    };
+                })
+                .catch(err => reject(err));
             })
             .catch(err => reject(err));
         });

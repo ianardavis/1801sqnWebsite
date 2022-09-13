@@ -11,7 +11,7 @@ module.exports = function (m, fn) {
             })
             .then(loancard => {
                 if (loancard) {
-                    resolve(laoncard);
+                    resolve(loancard);
                 } else {
                     reject(new Error('Loancard not found'));
                 };
@@ -566,17 +566,16 @@ module.exports = function (m, fn) {
                 check_nsn(size, line)
                 .then(nsn_id => {
                     let action = null;
+                    const args = [size.size_id, nsn_id, loancard.loancard_id, user_id, line, issue];
                     if (size.has_serials) {
-                        action = add_serial(size.size_id, nsn_id, loancard.loancard_id, user_id, line);
+                        action = add_serial(...args);
                     } else {
-                        action = add_stock( size.size_id, nsn_id, loancard.loancard_id, user_id, line);
+                        action = add_stock(...args);
                     };
                     action
-                    .then(result => {
-                        resolve(result);
-                        // issue.update({status: 4})
-                        // .then(result => resolve(result))
-                        // .catch(err => resolve(false));
+                    .then(links => {
+                        if (nsn_id) links.push({table: 'nsns', id: nsn_id});
+                        resolve(links);
                     })
                     .catch(err => reject(err));
                 })
@@ -585,7 +584,7 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         })
     };
-    function add_serial(size_id, nsn_id, loancard_id, user_id, issue_id, line) {
+    function add_serial(size_id, nsn_id, loancard_id, user_id, line, issue) {
         return new Promise((resolve, reject) => {
             let actions = [];
             line.serials.forEach(serial => {
@@ -603,23 +602,17 @@ module.exports = function (m, fn) {
                         .then(loancard_line => {
                             const resolve_obj = [
                                 {table: 'loancard_lines', id: loancard_line.loancard_line_id},
-                                {table: 'serials', id: serial.serial_id}
-                                // ...(nsn_id ? {nsn_id: nsn_id} : {})
+                                {table: 'serials',        id: serial.serial_id}
                             ];
                             serial.update({
-                                issue_id:    issue_id,
+                                issue_id:    issue.issue_id,
                                 location_id: null
                             })
                             .then(result => {
                                 fn.actions.create(
                                     'LOANCARD LINE | CREATED',
                                     user_id,
-                                    [
-                                        {table: 'loancard_lines', id: loancard_line.loancard_line_id},
-                                        // {table: 'serials',        id: serial.serial_id},
-                                        // {table: 'issues',         id: issue_id},
-                                        // ...(nsn_id ? {table: 'nsns', id: nsn_id} : {})
-                                    ]
+                                    [{table: 'loancard_lines', id: loancard_line.loancard_line_id}]
                                 )
                                 .then(action => resolve(resolve_obj));
                             })
@@ -658,7 +651,7 @@ module.exports = function (m, fn) {
         });
     };
 
-    function add_stock(size_id, nsn_id, loancard_id, user_id, line) {
+    function add_stock(size_id, nsn_id, loancard_id, user_id, line, issue) {
         return new Promise((resolve, reject) => {
             check_stock(size_id, line)
             .then(stock => {
@@ -676,19 +669,13 @@ module.exports = function (m, fn) {
                     .then(result => {
                         const resolve_obj = [
                             {table: 'loancard_lines', id: loancard_line.loancard_line_id},
-                            {table: 'stocks', id: stock.stock_id}
-                            // ...(nsn_id ? {nsn_id: nsn_id} : {})
+                            {table: 'stocks',         id: stock.stock_id}
                         ];
                         if (created) {
                             fn.actions.create(
                                 'LOANCARD LINE | CREATED',
                                 user_id,
-                                [
-                                    {table: 'loancard_lines', id: loancard_line.loancard_line_id},
-                                    // {table: 'stocks',         id: stock.stock_id},
-                                    // {table: 'issues',         id: line.issue_id},
-                                    // (nsn_id ? {table: 'nsns', id: nsn_id} : {})
-                                ]
+                                [{table: 'loancard_lines', id: loancard_line.loancard_line_id}]
                             )
                             .then(action => resolve(resolve_obj));
                         } else {
