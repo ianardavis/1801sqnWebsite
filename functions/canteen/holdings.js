@@ -91,7 +91,7 @@ module.exports = function (m, fn) {
 			fn.holding.get(holding_id)
 			.then(holding => {
 				let cash = fn.sessions.countCash(balance);
-				fn.update(holding, {cash: cash})
+				holding.update({cash: cash})
 				.then(result => {
 					let state = (cash === holding.cash ?
 						'correct' : 

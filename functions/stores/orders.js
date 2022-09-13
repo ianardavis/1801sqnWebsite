@@ -59,7 +59,7 @@ module.exports = function (m, fn) {
                         get_issues_for_order(order.order_id)
                         .then(result => {
                             let oa = [];
-                            result.order_links.forEach(e => oa.push(fn.update(e, {active: false})));
+                            result.order_links.forEach(e => oa.push(e.update({active: false})));
                             Promise.allSettled(oa)
                             .then(update_result => {
                                 let actions = [];
@@ -68,7 +68,7 @@ module.exports = function (m, fn) {
                                         fn.issues.get({issue_id: issue_id})
                                         .then(issue => {
                                             if (issue.status === 3) {
-                                                fn.update(issue, {status: 2})
+                                                issue.update({status: 2})
                                                 .then(result => resolve(issue.issue_id))
                                                 .catch(err => reject(err));
                                             } else reject(new Error('Order is not in "ordered" status'));
@@ -408,7 +408,7 @@ module.exports = function (m, fn) {
         return new Promise((resolve, reject) => {
             let qty_original = order.qty;
             if (qty > qty_original) {
-                fn.update(order, {qty: qty})
+                order.update({qty: qty})
                 .then(result => resolve({
                     action: ` | Order qty increased from ${qty_original} to ${qty} on receipt`,
                     order:  order
@@ -446,7 +446,7 @@ module.exports = function (m, fn) {
                     .then(size => {
                         if (size.item_id !== order.size.item_id) reject(new Error('New size is for a different item'))
                         else {
-                            fn.update(order, {size_id: size.size_id})
+                            order.update({size_id: size.size_id})
                             .then(result => {
                                 fn.actions.create(
                                     `ORDER | UPDATED | Size changed From: ${fn.print_size(order.size)} to: ${fn.print_size(size)}`,
@@ -474,7 +474,7 @@ module.exports = function (m, fn) {
                     if (order.status !== 1) reject(new Error('Only placed orders can have their qty edited'))
                     else {
                         let qty_original = order.qty;
-                        fn.update(order, {qty: qty})
+                        order.update({qty: qty})
                         .then(result => {
                             fn.actions.create(
                                 `ORDER | UPDATED | Qty changed From: ${qty_original} to: ${qty}`,
@@ -493,7 +493,7 @@ module.exports = function (m, fn) {
 
     function update_order_status(order, status, user_id, action, links = []) {
         return new Promise((resolve, reject) => {
-            fn.update(order, {status: status})
+            order.update({status: status})
             .then(result => {
                 if (action) {
                     fn.actions.create(

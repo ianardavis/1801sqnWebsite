@@ -31,8 +31,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     'qty': {
       type: DataTypes.INTEGER,
-      allowNull: false,
-      defaultValue: '1',
+      allowNull: true,
       comment: "null"
     },
     'status': {

@@ -213,7 +213,7 @@ module.exports = function (m, fn) {
                 } else if (sale.status === 1) {
                     process_payments(sale.sale_id, _sale, user_id)
                     .then(change => {
-                        let actions = [fn.update(sale, {status: 2})];
+                        let actions = [sale.update({status: 2})];
                         sale.lines.forEach(line => actions.push(subtract_sold_qty_from_stock(line.item_id, line.qty)));
                         Promise.all(actions)
                         .then(result => resolve(change))

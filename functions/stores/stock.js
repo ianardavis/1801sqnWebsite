@@ -117,7 +117,7 @@ module.exports = function (m, fn) {
             fn.stocks.get({stock_id: stock_id})
             .then(stock => {
                 let variance = qty - stock.qty;
-                fn.update(stock, {qty: qty})
+                stock.update({qty: qty})
                 .then(result => {
                     fn.actions.create(
                         `COUNT | ${(variance < 0 ? 

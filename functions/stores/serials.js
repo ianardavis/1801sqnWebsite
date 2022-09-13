@@ -173,7 +173,7 @@ module.exports = function (m, fn) {
                 if      (!serial.issue_id)   reject(new Error('Serial # not issued'))
                 else if (serial.location_id) reject(new Error('Serial # already in stock'))
                 else {
-                    fn.update(serial, {
+                    serial.update({
                         location_id: location_id,
                         issue_id:    null
                     })

@@ -37,7 +37,7 @@ module.exports = (app, m, fn) => {
         .then(note => {
             if (note.system) fn.send_error(res, 'System generated notes can not be edited')
             else {
-                fn.update(note, req.body.note)
+                note.update(req.body.note)
                 .then(note => res.send({success: true, message: 'Note saved'}))
                 .catch(err => fn.send_error(res, err));
             };

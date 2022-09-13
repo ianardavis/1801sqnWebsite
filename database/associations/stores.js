@@ -21,6 +21,8 @@ module.exports = function (m) {
     m.file_details.belongsTo(m.files,        {foreignKey: 'file_id',     targetKey: 'file_id'});
     
     m.issues         .hasOne(   m.sizes,           {foreignKey: 'size_id',     sourceKey:  'size_id',    constraints: false});
+    m.issues         .belongsTo(m.loancard_lines,  {foreignKey: 'loancard_line_id', targetKey: 'loancard_line_id'});
+    m.issues         .belongsTo(m.orders,          {foreignKey: 'order_id',         targetKey: 'order_id'});
     m.items          .hasOne (  m.genders,         {foreignKey: 'gender_id',   sourceKey: 'gender_id',   constraints: false});
     m.items          .hasMany(  m.sizes,           {foreignKey: 'item_id',     targetKey: 'item_id'});
     m.items          .hasMany(  m.item_attributes, {foreignKey: 'item_id',     targetKey: 'item_id', as: 'attributes'});
@@ -34,6 +36,7 @@ module.exports = function (m) {
     m.loancard_lines.hasOne(   m.serials,        {foreignKey: 'serial_id',   sourceKey: 'serial_id',   constraints: false});
     m.loancard_lines.belongsTo(m.loancards,      {foreignKey: 'loancard_id', targetKey: 'loancard_id'});
     m.loancard_lines.hasOne(   m.nsns,           {foreignKey: 'nsn_id',      sourceKey: 'nsn_id',      constraints: false});
+    m.loancard_lines.hasMany(  m.issues,         {foreignKey: 'loancard_line_id', sourceKey: 'loancard_line_id'});
     
     m.locations.hasMany(m.stocks,  {foreignKey: 'location_id', targetKey: 'location_id'});
     m.locations.hasMany(m.serials, {foreignKey: 'location_id', targetKey: 'location_id'});
@@ -50,7 +53,8 @@ module.exports = function (m) {
     m.nsn_groups   .belongsTo(m.nsns,           {foreignKey: 'nsn_group_id',   targetKey: 'nsn_group_id',                       as: 'nsn_group'});
     m.nsn_countries.belongsTo(m.nsns,           {foreignKey: 'nsn_country_id', targetKey: 'nsn_country_id',                     as: 'nsn_country'});
     
-    m.orders.hasOne(m.sizes, {foreignKey: 'size_id', sourceKey: 'size_id', constraints: false});
+    m.orders.hasOne( m.sizes,  {foreignKey: 'size_id',  sourceKey: 'size_id', constraints: false});
+    m.orders.hasMany(m.issues, {foreignKey: 'order_id', sourceKey: 'order_id'});
     
     m.serials.belongsTo(m.sizes,          {foreignKey: 'size_id',     targetKey: 'size_id'});
     m.serials.belongsTo(m.loancard_lines, {foreignKey: 'serial_id',   targetKey: 'serial_id'});

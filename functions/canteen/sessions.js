@@ -89,7 +89,7 @@ module.exports = function (m, fn) {
                                     let counted = fn.sessions.countCash(balance),
                                         cash_in = counted - holding.cash,
                                         actions = [];
-                                    actions.push(fn.update(holding, {cash: counted}));
+                                    actions.push(holding.update({cash: counted}));
                                     if (cash_in !== 0) {
                                         actions.push(
                                             m.movements.create({
@@ -113,14 +113,11 @@ module.exports = function (m, fn) {
                                     };
                                     Promise.all(actions)
                                     .then(results => {
-                                        fn.update(
-                                            session,
-                                            {
-                                                status:        2,
-                                                datetime_end:  Date.now(),
-                                                user_id_close: user_id
-                                            }
-                                        )
+                                        session.update({
+                                            status:        2,
+                                            datetime_end:  Date.now(),
+                                            user_id_close: user_id
+                                        })
                                         .then(result => resolve({takings: takings, cash_in: cash_in}))
                                         .catch(err => reject(err));
                                     })

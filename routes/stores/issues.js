@@ -130,15 +130,74 @@ module.exports = (app, m, fn) => {
     });
 
     app.post('/issues',            fn.loggedIn(), fn.permissions.check('issuer',        true), (req, res) => {
-        fn.issues.bulk_create(req.body.issues, req.user.user_id, req.allowed)
+        fn.issues.create(req.body.issues, req.user.user_id, (allowed ? 2 : 1))
         .then(result => res.send({success: true, message: 'Issues added'}))
         .catch(err => fn.send_error(res, err));
     });
 
+    function check_for_valid_lines_to_update(issues) {
+        return new Promise((resolve, reject) => {
+            if (!issues) {
+                reject(new Error('No lines submitted'));
+            } else {
+                const submitted = issues.filter(e => e.status !== '').length;
+                if (submitted === 0) {
+                    reject(new Error('No lines submitted'));
+                } else {
+                    resolve(issues);
+                };
+            };
+        });
+    };
     app.put('/issues',             fn.loggedIn(), fn.permissions.check('issuer'),              (req, res) => {
-        fn.issues.process_bulk(req.body.lines, req.user.user_id)
-        .then(message => res.send({success: true, message: message}))
-        .catch(err => fn.send_error(res, err));
+        check_for_valid_lines_to_update(req.body.lines)
+        .then(issues => {
+            let actions = [];
+            const user_id = req.user.user_id;
+
+            issues.filter(e => e.status === '-1').forEach(issue => {
+                actions.push(fn.issues.decline(issue.issue_id, user_id));
+            });
+
+            issues.filter(e => e.status ===  '2').forEach(issue => {
+                actions.push(fn.issues.approve(issue.issue_id, user_id));
+            });
+
+            if (issues.filter(e => e.status === '3').length > 0) {
+                actions.push(
+                    fn.issues.order(issues.filter(e => e.status === '3'), user_id)
+                );
+            };
+
+            issues.filter(e => e.status ===  '-3' || e.status ===  '-2').forEach(issue => {
+                actions.push(fn.issues.cancel(issue.issue_id, issue.status, user_id));
+            });
+
+            issues.filter(e => e.status === '0').forEach(issue => {
+                actions.push(fn.issues.restore(issue.issue_id, user_id));
+            });
+
+            if (issues.filter(e => e.status === '4').length > 0) {
+                actions.push(
+                    fn.issues.issue(issues.filter(e => e.status === '4'), user_id)
+                );
+            };
+
+            if (actions.length > 0) {
+                Promise.allSettled(actions)
+                .then(results => {
+                    const resolved = results.filter(e => e.status ==='fulfilled').length;
+                    const message = `${resolved} of ${submitted} tasks completed`;
+                    res.send({success: true, message: message})
+                })
+                .catch(err => fn.send_error(res, err));
+            } else {
+                fn.send_error(res, 'No actions to perform');
+            };
+        })
+        .catch(err => {
+
+        });
     });
     app.put('/issues/:id/qty',     fn.loggedIn(), fn.permissions.check('issuer'),              (req, res) => {
         fn.issues.change_qty(req.params.id, req.body.qty , req.user.user_id)
@@ -156,9 +215,9 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
 
-    app.delete('/issues/:id',      fn.loggedIn(), fn.permissions.check('issuer',        true), (req, res) => {
-        fn.issues.cancel(req.params.id, req.user.user_id)
-        .then(result => res.send({success: true, message: 'Issue cancelled'}))
+    app.delete('/issues/:id',      fn.loggedIn(), fn.permissions.check('access_stores'),       (req, res) => {
+        fn.issues.cancel_own(req.params.id,req.user.user_id)
+        .then(result => res.send({success: true, message: 'Request cancelled'}))
         .catch(err => fn.send_error(res, err));
     });
 };

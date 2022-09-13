@@ -1,5 +1,6 @@
 const statuses = {0: 'cancelled', 1: 'requested', 2: 'approved', 3: 'ordered', 4: 'issued', 5: 'returned'};
 module.exports = function (m, fn) {
+    // Common functions
     fn.issues = {};
     fn.issues.get = function (where) {
         return new Promise((resolve, reject) => {
@@ -22,48 +23,62 @@ module.exports = function (m, fn) {
         });
     };
 
-    fn.issues.process_bulk = function (issues, user_id) {
+    function update_issue_status(issue, status, user_id, action, links = []) {
         return new Promise((resolve, reject) => {
-            if (!issues || issues.filter(e => e.status !== '').length === 0) {
-                reject(new Error('No actions'));
-            } else {
-                let actions = [];
-                issues.filter(e => e.status === '-3').forEach(issue => {
-                    actions.push(fn.issues.restore(issue.issue_id, user_id));
-                });
-                issues.filter(e => e.status === '-2').forEach(issue => {
-                    actions.push(fn.issues.remove_from_loancard(issue.issue_id, user_id));
-                });
-                issues.filter(e => e.status === '-1').forEach(issue => {
-                    actions.push(fn.issues.decline(issue.issue_id, user_id));
-                });
-                issues.filter(e => e.status ===  '0').forEach(issue => {
-                    actions.push(fn.issues.cancel(issue.issue_id, user_id));
-                });
-                issues.filter(e => e.status ===  '2').forEach(issue => {
-                    actions.push(fn.issues.approve(issue.issue_id, user_id));
-                });
-                if (issues.filter(e => e.status === '3').length > 0) {
-                    actions.push(
-                        fn.issues.order(issues.filter(e => e.status === '3'), user_id)
-                    );
-                };
-                if (issues.filter(e => e.status === '4').length > 0) {
-                    actions.push(
-                        fn.issues.issue(issues.filter(e => e.status === '4'), user_id)
-                    );
-                };
-                if (actions.length > 0) {
-                    Promise.allSettled(actions)
-                    .then(results => resolve(`${results.filter(e => e.status ==='fulfilled').length} of ${actions.length} tasks ompleted`))
-                    .catch(err => reject(err));
+            issue.update({status: status})
+            .then(result => {
+                if (result) {
+                    fn.actions.create(
+                        `ISSUE | ${action}`,
+                        user_id,
+                        [{table: 'issues', id: issue.issue_id}].concat(links)
+                    )
+                    .then(action => resolve(true));
                 } else {
-                    reject(new Error('No actions to perform'));
+                    reject(new Error('Issue status not updated'));
                 };
+            })
+            .catch(err => reject(err));
+        });
+    };
+
+    function mark_check(issue_id, status) {
+        return new Promise((resolve, reject) => {
+            if (status in statuses) {
+                fn.issues.get({issue_id: issue_id})
+                .then(issue => {
+                    if (issue.status === Number(status)) {
+                        reject(new Error('Status has not changed'));
+                    } else {
+                        resolve(issue);
+                    };
+                })
+                .catch(err => reject(err));
+            } else {
+                reject(new Error('Invalid status'));
             };
         });
     };
-    function create_check (issue) {
+    fn.issues.mark_as = function (issue_id, status, user_id) {
+        return new Promise((resolve, reject) => {
+            mark_check(issue_id, status)
+            .then(issue => {
+                const status_text = statuses[status];
+                update_issue_status(
+                    issue,
+                    Number(status),
+                    user_id,
+                    `${status_text.toUpperCase()} | Set manually`
+                )
+                .then(result => resolve(`Issue marked as ${status_text}`))
+                .catch(err => reject(err));
+            })
+            .catch(err => reject(err));
+        });
+    };
+
+    // Specific functions
+    function check_users_and_sizes_present (issue) {
         return new Promise((resolve, reject) => {
             if (!issue) {
                 reject(new Error('No users or sizes entered'));
@@ -73,23 +88,6 @@ module.exports = function (m, fn) {
                 reject(new Error('No sizes entered'));
             } else {
                 resolve(true);
-            };
-        });
-    };
-    function post_create (created, issue, qty) {
-        return new Promise((resolve, reject) => {
-            if (created) {
-                resolve(true);
-            } else {
-                issue.increment('qty', {by: qty})
-                .then(result => {
-                    if (result) {
-                        resolve(true);
-                    } else {
-                        reject(new Error('Issue not updated'));
-                    };
-                })
-                .catch(err => reject(err));
             };
         });
     };
@@ -113,16 +111,29 @@ module.exports = function (m, fn) {
                         }
                     })
                     .then(([issue, created]) => {
-                        post_create(created, issue, qty)
-                        .then(result => {
+                        if (created) {
                             fn.actions.create(
-                                `ISSUE | ${(created ? 'CREATED' : `INCREMENTED | By ${qty}`)}`,
+                                'ISSUE | CREATED',
                                 user_id,
                                 [{table: 'issues', id: issue.issue_id}]
                             )
                             .then(action => resolve(issue.issue_id));
-                        })
-                        .catch(err => reject(err));
+                        } else {
+                            issue.increment('qty', {by: qty})
+                            .then(result => {
+                                if (result) {
+                                    fn.actions.create(
+                                        `ISSUE | INCREMENTED | By ${qty}`,
+                                        user_id,
+                                        [{table: 'issues', id: issue.issue_id}]
+                                    )
+                                    .then(action => resolve(issue.issue_id));
+                                } else {
+                                    reject(new Error('Issue not incremented'));
+                                };
+                            })
+                            .catch(err => reject(err));
+                        };
                     })
                     .catch(err => reject(err));
                 } else {
@@ -132,9 +143,9 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
-    fn.issues.bulk_create = function (issue, user_id, allowed) {
+    fn.issues.create = function (issue, user_id, status) {
         return new Promise((resolve, reject) => {
-            create_check(issue)
+            check_users_and_sizes_present(issue)
             .then(result => {
                 let actions = [];
                 issue.users.forEach(user => {
@@ -145,79 +156,91 @@ module.exports = function (m, fn) {
                                 size.size_id,
                                 size.qty,
                                 user_id,
-                                (allowed ? 2 : 1)
+                                status
                             )
                         );
                     });
                 });
                 Promise.all(actions)
-                .then(result => resolve(true))
+                .then(issue_ids => resolve(issue_ids))
                 .catch(err => reject(err));
             })
             .catch(err => reject(err));
         });
     };
 
-    fn.issues.decline = function (issue_id, user_id) {
+    // Functions whilst issue is pending
+    function check_issue_is_pending_approval(issue_id) {
         return new Promise((resolve, reject) => {
             fn.issues.get({issue_id: issue_id})
             .then(issue => {
-                if (issue.status !== 1) reject(new Error('Issue is not pending approval'))
-                else {
-                    update_issue_status(issue, 0, user_id, 'DECLINED')
-                    .then(action => resolve(true))
-                    .catch(err => reject(err));
+                if (issue.status !== 1) {
+                    reject(new Error('Issue is not pending approval'));
+                } else {
+                    resolve(issue);
                 };
+            })
+            .catch(err => reject(err));
+        });
+    };
+    fn.issues.decline = function (issue_id, user_id) {
+        return new Promise((resolve, reject) => {
+            check_issue_is_pending_approval(issue_id)
+            .then(issue => {
+                update_issue_status(issue, -1, user_id, 'DECLINED')
+                .then(action => resolve(true))
+                .catch(err => reject(err));
             })
             .catch(err => reject(err));
         });
     };
     fn.issues.approve = function (issue_id, user_id) {
         return new Promise((resolve, reject) => {
-            fn.issues.get({issue_id: issue_id})
+            check_issue_is_pending_approval(issue_id)
             .then(issue => {
-                if (issue.status !== 1) reject(new Error('Issue is not pending approval'))
-                else {
-                    update_issue_status(issue, 2, user_id, 'APPROVED')
+                update_issue_status(issue, 2, user_id, 'APPROVED')
+                .then(action => resolve(true))
+                .catch(err => reject(err));
+            })
+            .catch(err => reject(err));
+        });
+    };
+    fn.issues.cancel_own = function (issue_id, user_id) {
+        return new Promise((resolve, reject) => {
+            check_issue_is_pending_approval(issue_id)
+            .then(issue => {
+                if (issue.user_id_issue === user_id) {
+                    update_issue_status(issue, -1, user_id, 'CANCELLED BY REQUESTER')
                     .then(action => resolve(true))
                     .catch(err => reject(err));
+                } else {
+                    reject('This is not your request');
                 };
             })
             .catch(err => reject(err));
         });
     };
 
-    function cancel_check(issue, allowed, user_id) {
+    // Functions whilst approved or ordered
+    function check_issue_is_approved_or_ordered(issue_id) {
         return new Promise((resolve, reject) => {
-            if (!allowed && issue.user_id_issue !== user_id) {
-                reject(new Error('Permission denied'));
-            } else {
-                if (issue.status === 0) {
-                    reject(new Error('Issue has already been cancelled/declined'));
-                } else if (issue.status === 4) {
-                    reject(new Error('Issue has already been added to a loancard'));
-                } else if (issue.status === 5) {
-                    reject(new Error('Issue has already been returned'));
+            fn.issues.get({issue_id: issue_id})
+            .then(issue => {
+                if (issue.status === 2 || issue.status === 3) {
+                    resolve(issue);
                 } else {
-                    resolve(true);
-                };
-            };
+                    reject(new Error('Issue does not have a status of approved or ordered'));
+                }
+            })
+            .catch(err => reject(err));
         });
     };
-    fn.issues.cancel  = function (issue_id, user_id) {
+    fn.issues.cancel  = function (issue_id, status, user_id) {
         return new Promise((resolve, reject) => {
-            fn.allowed(user_id, 'issuer', true)
-            .then(allowed => {
-                fn.issues.get({issue_id: issue_id})
-                .then(issue => {
-                    cancel_check(issue, allowed, user_id)
-                    .then(result => {
-                        update_issue_status(issue, 0, user_id, 'CANCELLED')
-                        .then(action => resolve(true))
-                        .catch(err => reject(err));
-                    })
-                    .catch(err => reject(err));
-                })
+            check_issue_is_approved_or_ordered(issue_id)
+            .then(issue => {
+                update_issue_status(issue, status, user_id, 'CANCELLED')
+                .then(action => resolve(true))
                 .catch(err => reject(err));
             })
             .catch(err => reject(err));
@@ -257,7 +280,7 @@ module.exports = function (m, fn) {
                             )
                             .then(result => {
                                 let issue_updates = [];
-                                size.issues.forEach(e => issue_updates.push(fn.update(e, {status: 3})));
+                                size.issues.forEach(e => issue_updates.push(e.update({status: 3})));
                                 Promise.allSettled(issue_updates)
                                 .then(result => resolve({success: true, message: 'Issue ordered'}))
                                 .catch(err => {
@@ -321,99 +344,6 @@ module.exports = function (m, fn) {
         });
     };
 
-    function mark_check(issue_id, status) {
-        return new Promise((resolve, reject) => {
-            if (status in statuses) {
-                fn.issues.get({issue_id: issue_id})
-                .then(issue => {
-                    if (issue.status === Number(status)) {
-                        reject(new Error('Status has not changed'));
-                    } else {
-                        resolve(issue);
-                    };
-                })
-                .catch(err => reject(err));
-            } else {
-                reject(new Error('Invalid status'));
-            };
-        });
-    };
-    fn.issues.mark_as = function (issue_id, status, user_id) {
-        return new Promise((resolve, reject) => {
-            mark_check(issue_id, status)
-            .then(issue => {
-                issue.update({status: Number(status)})
-                .then(result => {
-                    if (result) {
-                        const status_text = statuses[status];
-                        fn.actions.create(
-                            `ISSUE | ${status_text.toUpperCase()} | Set manually`,
-                            user_id,
-                            [{table: 'issues', id: issue.issue_id}]
-                        )
-                        .then(result => resolve(`Issue marked as ${status_text}`));
-                    } else {
-                        reject(new Error('Issue not updated'));
-                    };
-                })
-                .catch(err => reject(res, err));
-            })
-            .catch(err => reject(err));
-        });
-    };
-
-    fn.issues.issue   = function (issues, user_id) {
-        return new Promise((resolve, reject) => {
-            if (!issues || issues.length === 0) resolve(false)
-            else {
-                sort_issues_by_user(issues)
-                .then(users => {
-                    let actions = [];
-                    users.forEach(user => actions.push(add_issues_to_loancards(user, user_id)))
-                    Promise.all(actions)
-                    .then(result => resolve(true))
-                    .catch(err => reject(err));
-                })
-                .catch(err => reject(err));
-            };
-        });
-    };
-    function sort_issues_by_user(lines) {
-        return new Promise((resolve, reject) => {
-            let actions = [], users = [];
-            lines.forEach(line => {
-                actions.push(
-                    new Promise((resolve, reject) => {
-                        fn.issues.get({issue_id: line.issue_id})
-                        .then(issue => {
-                            if      (!issue.size)                                                            reject( new Error('Size not found'))
-                            else if (issue.size.has_nsns    &&  !line.nsn_id)                                resolve(new Error('No NSN specified'))
-                            else if (issue.size.has_serials && (!line.serials || line.serials.length === 0)) resolve(new Error('No Serial #(s) specified'))
-                            else if (issue.size.has_serials &&   line.serials.length < issue.qty)            resolve(new Error('Not enough Serial #(s) specified'))
-                            else {
-                                let index = users.findIndex(e => e.user_id === issue.user_id_issue);
-                                if (index === -1) {
-                                    users.push({
-                                        user_id: issue.user_id_issue,
-                                        issues:  [{issue: issue, line: line}]
-                                    });
-                                } else users[index].issues.push({issue: issue, line: line});
-                                resolve(true);
-                            };
-                        })
-                        .catch(err => reject(err));
-                    })
-                );
-            });
-            Promise.allSettled(actions)
-            .then(results => {
-                fn.allSettledResults(results);
-                if (users.length > 0) resolve(users)
-                else reject(new Error('No valid issues to add'));
-            })
-            .catch(err => reject(err));
-        });
-    };
     function add_issues_to_loancards(user, user_id) {
         return new Promise((resolve, reject) => {
             fn.loancards.create({
@@ -426,20 +356,107 @@ module.exports = function (m, fn) {
                     issue_actions.push(
                         new Promise((resolve, reject) => {
                             fn.loancards.lines.create(loancard_id, issue.issue, user_id, issue.line)
-                            .then(result => resolve(result))
+                            .then(links => {
+                                update_issue_status(
+                                    issue.issue,
+                                    4,
+                                    user_id,
+                                    `ADDED TO LOANCARD`,
+                                    links
+                                )
+                                .then(result => resolve(result))
+                                .catch(err => reject(err));
+                            })
                             .catch(err => reject(err));
                         })
                     );
                 });
                 Promise.allSettled(issue_actions)
                 .then(results => {
-                    if (results.filter(e => e.status === 'rejected').length > 0) console.log(results);
-                    if (results.filter(e => e.status === 'fulfilled').length > 0) resolve(true)
-                    else reject(new Error('All lines failed'));
+                    if (results.filter(e => e.status === 'rejected' ).length > 0) console.log(results);
+                    if (results.filter(e => e.status === 'fulfilled').length > 0) {
+                        resolve(true);
+
+                    } else {
+                        reject(new Error('All lines failed'));
+
+                    };
                 })
                 .catch(err => reject(err));
             })
             .catch(err => reject(err));
+        });
+    };
+    function sort_issues_by_user(lines) {
+        return new Promise((resolve, reject) => {
+            let actions = [], users = [];
+            lines.forEach(line => {
+                actions.push(
+                    new Promise((resolve, reject) => {
+                        fn.issues.get({issue_id: line.issue_id})
+                        .then(issue => {
+                            if (!issue.size) {
+                                reject( new Error('Size not found'));
+
+                            } else if (issue.size.has_nsns && !line.nsn_id) {
+                                resolve(new Error('No NSN specified'));
+                                
+                            } else if (issue.size.has_serials && (!line.serials || line.serials.length === 0)) {
+                                resolve(new Error('No Serial #(s) specified'));
+
+                            } else if (issue.size.has_serials && line.serials.length < issue.qty) {
+                                resolve(new Error('Not enough Serial #(s) specified'));
+
+                            } else {
+                                let index = users.findIndex(e => e.user_id === issue.user_id_issue);
+                                if (index === -1) {
+                                    users.push({
+                                        user_id: issue.user_id_issue,
+                                        issues:  [{issue: issue, line: line}]
+                                    });
+
+                                } else {
+                                    users[index].issues.push({issue: issue, line: line});
+
+                                };
+                                resolve(true);
+                            };
+                        })
+                        .catch(err => reject(err));
+                    })
+                );
+            });
+            Promise.allSettled(actions)
+            .then(results => {
+                fn.allSettledResults(results);
+                if (users.length > 0) {
+                    resolve(users);
+
+                } else {
+                    reject(new Error('No valid issues to add'));
+
+                };
+            })
+            .catch(err => reject(err));
+        });
+    };
+    fn.issues.issue   = function (issues, user_id) {
+        return new Promise((resolve, reject) => {
+            if (!issues || issues.length === 0) {
+                resolve(false);
+
+            } else {
+                sort_issues_by_user(issues)
+                .then(users => {
+                    let actions = [];
+                    users.forEach(user => actions.push(add_issues_to_loancards(user, user_id)))
+                    Promise.all(actions)
+                    .then(result => resolve(true))
+                    .catch(err => reject(err));
+                })
+                .catch(err => reject(err));
+
+            };
         });
     };
 
@@ -456,7 +473,7 @@ module.exports = function (m, fn) {
                         } else if (line.status === 1) {
                             line.decrement('qty', {by: issue.qty})
                             .then(result => {
-                                fn.update(issue, {status: 2})
+                                issue.update({status: 2})
                                 .then(result => {
                                     line.reload()
                                     .then(line => {
@@ -530,31 +547,48 @@ module.exports = function (m, fn) {
         });
     };
 
-    fn.issues.change_size = function (issue_id, size_id, user_id) {
+    function change_check(issue_id) {
         return new Promise((resolve, reject) => {
             fn.issues.get({issue_id: issue_id})
             .then(issue => {
-                if      (![1, 2].includes(issue.status)) reject(new Error('Only requested or approved issues can have their size edited'))
-                else if (!issue.size)                    reject(new Error('Error getting issue size'))
-                else {
-                    fn.sizes.get(size_id)
-                    .then(size => {
-                        if (size.item_id !== issue.size.item_id) reject(new Error('New size is for a different item'))
-                        else {
-                            fn.update(issue, {size_id: size.size_id})
-                            .then(result => {
+                if (!issue.size) {
+                    reject(new Error('Error getting issue size'));
+                } else if (issue.status === 1 || issue.status === 2) {
+                    resolve(issue);
+                } else {
+                    reject(new Error('Only issues with a status of requested or approved can have their quantity or size edited'));
+                };
+            })
+            .catch(err => reject(err));
+        });
+    };
+    fn.issues.change_size = function (issue_id, size_id, user_id) {
+        return new Promise((resolve, reject) => {
+            change_check(issue_id)
+            .then(issue => {
+                fn.sizes.get(size_id)
+                .then(new_size => {
+                    if (new_size.item_id !== issue.size.item_id) {
+                        reject(new Error('New size is for a different item'));
+                    } else {
+                        const start_size = issue.size;
+                        issue.update({size_id: new_size.size_id})
+                        .then(result => {
+                            if (result) {
                                 fn.actions.create(
-                                    `ISSUE | UPDATED | Size changed From: ${fn.print_size(issue.size)} to: ${fn.print_size(size)}`,
+                                    `ISSUE | UPDATED | Size changed From: ${fn.print_size(start_size)} to: ${fn.print_size(new_size)}`,
                                     user_id,
                                     [{table: 'issues', id: issue.issue_id}]
                                 )
                                 .then(result => resolve(true));
-                            })
-                            .catch(err => reject(err));
-                        }
-                    })
-                    .catch(err => reject(err));
-                };
+                            } else {
+                                reject(new Error('Issue not updated'));
+                            };
+                        })
+                        .catch(err => reject(err));
+                    }
+                })
+                .catch(err => reject(err));
             })
             .catch(err => reject(err));
         });
@@ -565,45 +599,26 @@ module.exports = function (m, fn) {
             if (!qty || !Number.isInteger(qty) || qty < 1) {
                 reject(new Error('Invalid qty'));
             } else {
-                fn.issues.get({issue_id: issue_id})
+                change_check(issue_id)
                 .then(issue => {
-                    if (![1, 2].includes(issue.status)) {
-                        reject(new Error('Only requested or approved issues can have their quantity edited'));
-                    } else {
-                        let start_qty = issue.qty;
-                        issue.update({qty: qty})
-                        .then(result => {
-                            if (result) {
-                                fn.actions.create(
-                                    `ISSUE | UPDATED | Quantity changed From: ${start_qty} to: ${qty}`,
-                                    user_id,
-                                    [{table: 'issues', id: issue.issue_id}]
-                                )
-                                .then(result => resolve(true));
-                            } else {
-                                reject(new Error('Issue not updated'));
-                            };
-                        })
-                        .catch(err => reject(err));
-                    };
+                    let start_qty = issue.qty;
+                    issue.update({qty: qty})
+                    .then(result => {
+                        if (result) {
+                            fn.actions.create(
+                                `ISSUE | UPDATED | Quantity changed From: ${start_qty} to: ${qty}`,
+                                user_id,
+                                [{table: 'issues', id: issue.issue_id}]
+                            )
+                            .then(result => resolve(true));
+                        } else {
+                            reject(new Error('Issue not updated'));
+                        };
+                    })
+                    .catch(err => reject(err));
                 })
                 .catch(err => reject(err));
             };
-        });
-    };
-
-    function update_issue_status(issue, status, user_id, action) {
-        return new Promise((resolve, reject) => {
-            fn.update(issue, {status: status})
-            .then(result => {
-                fn.actions.create(
-                    `ISSUE | ${action}`,
-                    user_id,
-                    [{table: 'issues', id: issue.issue_id}]
-                )
-                .then(action => resolve(true));
-            })
-            .catch(err => reject(err));
         });
     };
 };

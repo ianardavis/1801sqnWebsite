@@ -230,7 +230,7 @@ module.exports = function (m, fn) {
                         if (lines && lines.length > 0) {
                             reject(new Error('This demand has pending or open lines'));
                         } else {
-                            fn.update(demand, {status: 3})
+                            demand.update({status: 3})
                             .then(result => {
                                 create_demand_action('CLOSED', demand.demand_id, user_id)
                                 .then(result => resolve(true));

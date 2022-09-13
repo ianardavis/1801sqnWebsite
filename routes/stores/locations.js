@@ -26,7 +26,7 @@ module.exports = (app, m, fn) => {
                 .then(new_location => {
                     if (new_location && location.location_id !== new_location.location_id) fn.send_error(res, 'Location already exists') ///merge???
                     else {
-                        fn.update(location, {location: req.body.location})
+                        location.update({location: req.body.location})
                         .then(result => res.send({success: true, message: 'Location saved'}))
                         .catch(err => fn.send_error(res, err));
                     };

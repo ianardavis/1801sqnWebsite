@@ -57,19 +57,6 @@ module.exports = function (m, fn) {
         };
         return record;
     };
-    fn.update = function (model, fields) {
-        return new Promise((resolve, reject) => {
-            model.update(fields)
-            .then(result => {
-                if (!result) {
-                    reject(new Error('Record not updated'));
-                } else {
-                    resolve(true);
-                };
-            })
-            .catch(err => reject(err));
-        });
-    };
     fn.print_size = function (size) {
         let text = [];
         ['1', '2', '3'].forEach(s => {

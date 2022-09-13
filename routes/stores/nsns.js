@@ -57,39 +57,40 @@ module.exports = (app, m, fn) => {
     });
 
     app.post('/nsns',             fn.loggedIn(), fn.permissions.check('stores_stock_admin'),   (req, res) => {
-        fn.sizes.get(req.body.nsn.size_id)
-        .then(size => {
-            fn.nsns.groups.get(req.body.nsn.nsn_group_id)
-            .then(nsn_group => {
-                fn.nsns.classes.get(req.body.nsn.nsn_class_id)
-                .then(nsn_class => {
-                    fn.nsns.countries.get(req.body.nsn.nsn_country_id)
-                    .then(nsn_country => {
-                        m.nsns.findOrCreate({
-                            where: {
-                                nsn_group_id:   nsn_group.nsn_group_id,
-                                nsn_class_id:   nsn_class.nsn_class_id,
-                                nsn_country_id: nsn_country.nsn_country_id,
-                                item_number:    req.body.nsn.item_number
-                            },
-                            defaults: {size_id: req.body.nsn.size_id}
+        Promise.all([
+            fn.sizes.get(req.body.nsn.size_id),
+            fn.nsns.groups   .get(req.body.nsn.nsn_group_id),
+            fn.nsns.classes  .get(req.body.nsn.nsn_class_id),
+            fn.nsns.countries.get(req.body.nsn.nsn_country_id)
+        ])
+        .then(([size, nsn_group, nsn_class, nsn_country]) => {
+            m.nsns.findOrCreate({
+                where: {
+                    nsn_group_id:   nsn_group.nsn_group_id,
+                    nsn_class_id:   nsn_class.nsn_class_id,
+                    nsn_country_id: nsn_country.nsn_country_id,
+                    item_number:    req.body.nsn.item_number
+                },
+                defaults: {size_id: req.body.nsn.size_id}
+            })
+            .then(([nsn, created]) => {
+                if (created) {
+                    if (req.body.default === '1') {
+                        size.update({nsn_id: nsn.nsn_id})
+                        .then(result => {
+                            const message = `NSN added. ${(result ? 'Set': 'Not set')} to default`;
+                            res.send({success: true, message: message});
                         })
-                        .then(([nsn, created]) => {
-                            if (!created) fn.send_error(res, 'NSN already exists')
-                            else if (req.body.default === '1') {
-                                fn.update(size, {nsn_id: nsn.nsn_id})
-                                .then(result => res.send({success: true,  message: `NSN added and set to default`}))
-                                .catch(err => {
-                                    console.log(err);
-                                    res.send({success: true,  message: `NSN added, error setting as default: ${err.message}`});
-                                })
-                            } else res.send({success: true,  message: 'NSN added'});
+                        .catch(err => {
+                            console.log(err);
+                            res.send({success: true, message: `NSN added. Error setting to default: ${err.message}`});
                         })
-                        .catch(err => fn.send_error(res, err));
-                    })
-                    .catch(err => fn.send_error(res, err));
-                })
-                .catch(err => fn.send_error(res, err));
+                    } else {
+                        res.send({success: true,  message: 'NSN added'});
+                    }
+                } else {
+                    fn.send_error(res, 'NSN already exists');
+                };
             })
             .catch(err => fn.send_error(res, err));
         })
@@ -97,27 +98,20 @@ module.exports = (app, m, fn) => {
     });
     
     app.put('/nsns/:id',          fn.loggedIn(), fn.permissions.check('stores_stock_admin'),   (req, res) => {
-        fn.nsns.get(req.params.id)
-        .then(nsn => {
-            fn.nsns.groups.get(req.body.nsn.nsn_group_id)
-            .then(nsn_group => {
-                fn.nsns.classes.get(req.body.nsn.nsn_class_id)
-                .then(nsn_class => {
-                    fn.nsns.countries.get(req.body.nsn.nsn_country_id)
-                    .then(nsn_country => {
-                        fn.update(nsn, {
-                            nsn_group_id:   nsn_group  .nsn_group_id,
-                            nsn_class_id:   nsn_class  .nsn_class_id,
-                            nsn_country_id: nsn_country.nsn_country_id,
-                            item_number:    req.body.nsn.item_number
-                        })
-                        .then(result => res.send({success: true, message: 'NSN saved'}))
-                        .catch(err => fn.send_error(res, err));
-                    })
-                    .catch(err => fn.send_error(res, err));
-                })
-                .catch(err => fn.send_error(res, err));
+        Promise.all([
+            fn.nsns.get(req.params.id),
+            fn.nsns.groups   .get(req.body.nsn.nsn_group_id),
+            fn.nsns.classes  .get(req.body.nsn.nsn_class_id),
+            fn.nsns.countries.get(req.body.nsn.nsn_country_id)
+        ])
+        .then(([nsn, nsn_group, nsn_class, nsn_country]) => {
+            nsn.update({
+                nsn_group_id:   nsn_group  .nsn_group_id,
+                nsn_class_id:   nsn_class  .nsn_class_id,
+                nsn_country_id: nsn_country.nsn_country_id,
+                item_number:    req.body.nsn.item_number
             })
+            .then(result => res.send({success: true, message: 'NSN saved'}))
             .catch(err => fn.send_error(res, err));
         })
         .catch(err => fn.send_error(res, err));

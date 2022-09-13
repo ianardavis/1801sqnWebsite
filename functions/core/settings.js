@@ -32,7 +32,7 @@ module.exports = function (m, fn) {
             .then(([setting, created]) => {
                 if (created) resolve(true)
                 else {
-                    fn.update(setting, {value: value})
+                    setting.update({value: value})
                     .then(result => resolve(true))
                     .catch(err => reject(err));
                 };

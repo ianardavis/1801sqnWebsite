@@ -124,7 +124,7 @@ module.exports = (app, m, fn) => {
             .then(([detail, created]) => {
                 if (created) res.send({success: true, message: 'Detail added'})
                 else {
-                    fn.update(detail, {
+                    detail.update({
                         value:   req.body.detail.value,
                         user_id: req.user.user_id
                     })

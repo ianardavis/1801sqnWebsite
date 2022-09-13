@@ -1,4 +1,4 @@
-let statuses = {'0': 'Cancelled', '1': 'Requested', '2': 'Approved', '3': 'Ordered', '4': 'Issued', '5': 'Returned'};
+const statuses = {0: 'Cancelled', 1: 'Requested', 2: 'Approved', 3: 'Ordered', 4: 'Issued', 5: 'Returned'};
 function getIssue() {
     disable_button('size_edit');
     disable_button('qty_edit');
@@ -18,15 +18,54 @@ function getIssue() {
         set_innerText('issue_qty',        issue.qty);
         set_innerText('issue_createdAt',  print_date(issue.createdAt, true));
         set_innerText('issue_updatedAt',  print_date(issue.updatedAt, true));
-        set_innerText('issue_status',     statuses[issue.status]);
         set_innerText('issue_user',       print_user(issue.user));
         set_href('issue_user_link',       `/users/${issue.user_id}`);
         set_href('issue_user_issue_link', `/users/${issue.user_id_issue}`);
         set_href('issue_size_link',       `/sizes/${issue.size_id}`);
         set_href('issue_item_link',       `/items/${issue.size.item_id}`);
         if (typeof enable_edit === 'function') enable_edit(issue);
+
+        for (s=1; s<=5; s++) {
+            set_badge(s, 'secondary', statuses[s]);
+        };
+        if ([-3, -2, -1, 1, 2, 3, 4, 5].includes(issue.status)) {
+            if ([-3, -2, 1, 2, 3, 4, 5].includes(issue.status)) {
+                set_badge(1, 'success');
+            } else {
+                set_badge(1, 'danger', 'Declined');
+            };
+            
+            if (issue.status === -3 || issue.status >= 2) {
+                set_badge(2, 'success');
+            } else if (issue.status === -2) {
+                set_badge(2, 'danger', 'Cancelled');
+            };
+
+            if (issue.status >= 3) {
+                set_badge(3, 'success');
+            } else if (issue.status === -3) {
+                set_badge(3, 'danger', 'Cancelled');
+            };
+
+            if (issue.status >= 4) set_badge(4, 'success');
+            
+            if (issue.status >= 5) set_badge(5, 'success');
+        };
     })
-    .catch(err => window.location.href = '/issues');
+    .catch(err => {
+        alert(err);
+        window.location.href = '/issues';
+    });
+};
+function set_badge(bdg, colour, text = '') {
+    let badge = document.querySelector(`#bdg_status_${bdg}`);
+    if (badge) {
+        badge.classList.remove('text-bg-success');
+        badge.classList.remove('text-bg-danger');
+        badge.classList.remove('text-bg-secondary');
+        badge.classList.add(`text-bg-${colour}`);
+        if (text) badge.innerText = text;
+    };
 };
 window.addEventListener('load', function () {
     addListener('reload', getIssue);

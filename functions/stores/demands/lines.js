@@ -249,7 +249,7 @@ module.exports = function (m, fn) {
                                 .then(results => {
                                     //Change the demand line link to non active
                                     let link_actions = [];
-                                    result.links.forEach(e => link_actions.push(fn.update(e, {active: false})))
+                                    result.links.forEach(e => link_actions.push(e.update({active: false})))
                                     Promise.allSettled(actions)
                                     .then(result => {
                                         let order_links = [];
