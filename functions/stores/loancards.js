@@ -600,26 +600,33 @@ module.exports = function (m, fn) {
                             user_id:     user_id
                         })
                         .then(loancard_line => {
-                            const resolve_obj = [
-                                {table: 'loancard_lines', id: loancard_line.loancard_line_id},
-                                {table: 'serials',        id: serial.serial_id}
-                            ];
-                            serial.update({
-                                issue_id:    issue.issue_id,
-                                location_id: null
+                            m.issue_loancard_lines.create({
+                                issue_id: issue.issue_id,
+                                loancard_line_id: loancard_line.loancard_line_id
                             })
-                            .then(result => {
-                                fn.actions.create(
-                                    'LOANCARD LINE | CREATED',
-                                    user_id,
-                                    [{table: 'loancard_lines', id: loancard_line.loancard_line_id}]
-                                )
-                                .then(action => resolve(resolve_obj));
+                            .then(link_line => {
+                                const resolve_obj = [
+                                    {table: 'loancard_lines', id: loancard_line.loancard_line_id},
+                                    {table: 'serials',        id: serial.serial_id}
+                                ];
+                                serial.update({
+                                    issue_id:    issue.issue_id,
+                                    location_id: null
+                                })
+                                .then(result => {
+                                    fn.actions.create(
+                                        'LOANCARD LINE | CREATED',
+                                        user_id,
+                                        [{table: 'loancard_lines', id: loancard_line.loancard_line_id}]
+                                    )
+                                    .then(action => resolve(resolve_obj));
+                                })
+                                .catch(err => {
+                                    console.log(err);
+                                    resolve(resolve_obj)
+                                });
                             })
-                            .catch(err => {
-                                console.log(err);
-                                resolve(resolve_obj)
-                            });
+                            .catch(err => reject(err));
                         })
                         .catch(err => reject(err));
                     })
@@ -667,20 +674,27 @@ module.exports = function (m, fn) {
                 .then(([loancard_line, created]) => {
                     stock.decrement('qty', {by: line.qty})
                     .then(result => {
-                        const resolve_obj = [
-                            {table: 'loancard_lines', id: loancard_line.loancard_line_id},
-                            {table: 'stocks',         id: stock.stock_id}
-                        ];
-                        if (created) {
-                            fn.actions.create(
-                                'LOANCARD LINE | CREATED',
-                                user_id,
-                                [{table: 'loancard_lines', id: loancard_line.loancard_line_id}]
-                            )
-                            .then(action => resolve(resolve_obj));
-                        } else {
-                            resolve(resolve_obj);
-                        };
+                        m.issue_loancard_lines.create({
+                            issue_id: issue.issue_id,
+                            loancard_line_id: loancard_line.loancard_line_id
+                        })
+                        .then(link_line => {
+                            const resolve_obj = [
+                                {table: 'loancard_lines', id: loancard_line.loancard_line_id},
+                                {table: 'stocks',         id: stock.stock_id}
+                            ];
+                            if (created) {
+                                fn.actions.create(
+                                    'LOANCARD LINE | CREATED',
+                                    user_id,
+                                    [{table: 'loancard_lines', id: loancard_line.loancard_line_id}]
+                                )
+                                .then(action => resolve(resolve_obj));
+                            } else {
+                                resolve(resolve_obj);
+                            };
+                        })
+                        .catch(err => reject(err));
                     })
                     .catch(err => reject(err));
                 })

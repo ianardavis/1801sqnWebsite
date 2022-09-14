@@ -15,8 +15,10 @@ module.exports = function (m, fn) {
             .then(issue => {
                 if (issue) {
                     resolve(issue);
+
                 } else {
                     reject(new Error('Issue not found'));
+
                 };
             })
             .catch(err => reject(err));
@@ -34,8 +36,10 @@ module.exports = function (m, fn) {
                         [{table: 'issues', id: issue.issue_id}].concat(links)
                     )
                     .then(action => resolve(true));
+
                 } else {
                     reject(new Error('Issue status not updated'));
+
                 };
             })
             .catch(err => reject(err));
@@ -49,13 +53,17 @@ module.exports = function (m, fn) {
                 .then(issue => {
                     if (issue.status === Number(status)) {
                         reject(new Error('Status has not changed'));
+
                     } else {
                         resolve(issue);
+
                     };
                 })
                 .catch(err => reject(err));
+
             } else {
                 reject(new Error('Invalid status'));
+
             };
         });
     };
@@ -78,83 +86,102 @@ module.exports = function (m, fn) {
     };
 
     // Specific functions
-    function check_users_and_sizes_present (issue) {
+    function check_users_and_sizes_present (issues) {
         return new Promise((resolve, reject) => {
-            if (!issue) {
+            if (!issues) {
                 reject(new Error('No users or sizes entered'));
-            } else if (!issue.users || issue.users.length === 0) {
+
+            } else if (!issues.users || issues.users.length === 0) {
                 reject(new Error('No users entered'));
-            } else if (!issue.sizes || issue.sizes.length === 0) {
+
+            } else if (!issues.sizes || issues.sizes.length === 0) {
                 reject(new Error('No sizes entered'));
+
             } else {
-                resolve(true);
+                resolve([issues.users, issues.sizes]);
+
             };
         });
     };
-    function create_issue (user_id_issue, size_id, qty, user_id, status) {
+    function issue_line_to_user (user_id_issue, line, user_id, status) {
         return new Promise((resolve, reject) => {
             Promise.all([
                 fn.users.get(user_id_issue),
-                fn.sizes.get(size_id)
+                fn.sizes.get(line.size_id)
             ])
             .then(([user, size]) => {
                 if (size.issueable) {
-                    m.issues.findOrCreate({
-                        where: {
-                            user_id_issue: user.user_id,
-                            size_id:       size.size_id,
-                            status:        status
-                        },
-                        defaults: {
-                            user_id: user_id,
-                            qty:     qty
-                        }
-                    })
-                    .then(([issue, created]) => {
-                        if (created) {
-                            fn.actions.create(
-                                'ISSUE | CREATED',
-                                user_id,
-                                [{table: 'issues', id: issue.issue_id}]
-                            )
-                            .then(action => resolve(issue.issue_id));
-                        } else {
-                            issue.increment('qty', {by: qty})
-                            .then(result => {
-                                if (result) {
-                                    fn.actions.create(
-                                        `ISSUE | INCREMENTED | By ${qty}`,
-                                        user_id,
-                                        [{table: 'issues', id: issue.issue_id}]
-                                    )
-                                    .then(action => resolve(issue.issue_id));
-                                } else {
-                                    reject(new Error('Issue not incremented'));
-                                };
-                            })
-                            .catch(err => reject(err));
-                        };
+                    create_issue(
+                        user.user_id,
+                        size.size_id,
+                        status,
+                        line.qty,
+                        user_id
+                    )
+                    .then(([issue_id, action]) => {
+                        fn.actions.create(
+                            `ISSUE | ${action}`,
+                            user_id,
+                            [{table: 'issues', id: issue_id}]
+                        )
+                        .then(action => resolve(issue.issue_id));
                     })
                     .catch(err => reject(err));
+
                 } else {
                     reject(new Error('Size can not be issued'));
+
                 };
             })
             .catch(err => reject(err));
         });
     };
-    fn.issues.create = function (issue, user_id, status) {
+    function create_issue(user_id_issue, size_id, status, qty, user_id) {
         return new Promise((resolve, reject) => {
-            check_users_and_sizes_present(issue)
-            .then(result => {
+            m.issues.findOrCreate({
+                where: {
+                    user_id_issue: user_id_issue,
+                    size_id:       size_id,
+                    status:        status
+                },
+                defaults: {
+                    user_id: user_id,
+                    qty:     qty
+                }
+            })
+            .then(([issue, created]) => {
+                if (created) {
+                    resolve([issue.issue_id, 'CREATED']);
+
+                } else {
+                    issue.increment('qty', {by: qty})
+                    .then(result => {
+                        if (result) {
+                            resolve([issue.issue_id, `INCREMENTED | By ${qty}`]);
+
+                        } else {
+                            reject(new Error('Issue not incremented'));
+
+                        };
+                    })
+                    .catch(err => reject(err));
+
+                };
+            })
+            .catch(err => reject(err));
+        });
+    };
+    fn.issues.create = function (issues, user_id, status) {
+        return new Promise((resolve, reject) => {
+            check_users_and_sizes_present(issues)
+            .then(([users, lines]) => {
                 let actions = [];
-                issue.users.forEach(user => {
-                    issue.sizes.forEach(size => {
+                users.forEach(user => {
+                    lines.forEach(line => {
                         actions.push(
-                            create_issue(
+                            issue_line_to_user(
                                 user.user_id_issue,
-                                size.size_id,
-                                size.qty,
+                                line,
                                 user_id,
                                 status
                             )
@@ -253,16 +280,79 @@ module.exports = function (m, fn) {
             .then(issue => {
                 if (issue.status !== 0) {
                     reject(new Error('Issue is not cancelled/declined'));
+
                 } else {
                     update_issue_status(issue, 2, user_id, 'RESTORED')
                     .then(action => resolve(true))
                     .catch(err => reject(err));
+
                 };
             })
             .catch(err => reject(err));
         });
     };
     
+    function sort_issues_by_size(lines) {
+        return new Promise((resolve, reject) => {
+            get_line_issues(lines)
+            .then(issues => {
+                let sizes = [];
+                issues.forEach(issue => {
+                    let index = sizes.findIndex(e => e.size_id === issue.size_id);
+                    if (index === -1) {
+                        sizes.push({
+                            size_id:   issue.size_id,
+                            issue_ids: [issue.issue_id],
+                            issues:    [issue],
+                            qty:       issue.qty
+                        });
+
+                    } else {
+                        sizes[index].issue_ids.push(issue.issue_id);
+                        sizes[index].issues.push(issue);
+                        sizes[index].qty += Number(issue.qty);
+
+                    };
+                });
+                if (sizes.length > 0) {
+                    resolve(sizes);
+
+                } else {
+                    reject(new Error('No valid issues to order'));
+
+                };
+            })
+            .catch(err => reject(err));
+        });
+    };
+    function get_line_issues(lines) {
+        return new Promise((resolve, reject) => {
+            let actions = [];
+            lines.forEach(line => {
+                actions.push(
+                    new Promise((resolve, reject) => {
+                        fn.issues.get({issue_id: line.issue_id})
+                        .then(issue => {
+                            if (!issue.size) {
+                                reject(new Error('Size not found'));
+
+                            } else if (issue.status !== 2) {
+                                reject(new Error('Only approved issues can be ordered'));
+
+                            } else {
+                                resolve(issue);
+                                
+                            };
+                        })
+                        .catch(err => reject(err));
+                    })
+                );
+            });
+            Promise.all(actions)
+            .then(issues => resolve(issues))
+            .catch(err => reject(err));
+        });
+    };
     fn.issues.order   = function (issues, user_id) {
         return new Promise((resolve, reject) => {
             fn.allowed(user_id, 'stores_stock_admin')
@@ -278,67 +368,15 @@ module.exports = function (m, fn) {
                                 user_id,
                                 size.issue_ids
                             )
-                            .then(result => {
-                                let issue_updates = [];
-                                size.issues.forEach(e => issue_updates.push(e.update({status: 3})));
-                                Promise.allSettled(issue_updates)
-                                .then(result => resolve({success: true, message: 'Issue ordered'}))
-                                .catch(err => {
-                                    console.log(err);
-                                    resolve({success: true, message: `Issue ordered. Error updating issue: ${err.message}`});
-                                });
-                            })
+                            .then(order => resolve(true))
                             .catch(err => reject(err));
                         }));
                     })
-                    Promise.allSettled(actions)
-                    .then(results => {
-                        fn.allSettledResults(results);
-                        resolve(true);
-                    })
+                    Promise.all(actions)
+                    .then(results => resolve(true))
                     .catch(err => reject(err));
                 })
                 .catch(err => reject(err));
-            })
-            .catch(err => reject(err));
-        });
-    };
-    function sort_issues_by_size(lines) {
-        return new Promise((resolve, reject) => {
-            let actions = [], sizes = [];
-            lines.forEach(line => {
-                actions.push(
-                    new Promise((resolve, reject) => {
-                        fn.issues.get({issue_id: line.issue_id})
-                        .then(issue => {
-                            if      (!issue.size)        reject(new Error('Size not found'))
-                            else if (issue.status !== 2) reject(new Error('Only approved issues can be ordered'))
-                            else {
-                                let index = sizes.findIndex(e => e.size_id === issue.size_id);
-                                if (index === -1) {
-                                    sizes.push({
-                                        size_id:   issue.size_id,
-                                        issue_ids: [issue.issue_id],
-                                        issues:    [issue],
-                                        qty:       issue.qty
-                                    });
-                                } else {
-                                    sizes[index].issue_ids.push(issue.issue_id);
-                                    sizes[index].issues.push(issue);
-                                    sizes[index].qty += Number(issue.qty);
-                                };
-                                resolve(true);
-                            };
-                        })
-                        .catch(err => reject(err));
-                    })
-                );
-            });
-            Promise.allSettled(actions)
-            .then(results => {
-                fn.allSettledResults(results);
-                if (sizes.length > 0) resolve(sizes)
-                else reject(new Error('No valid issues to order'));
             })
             .catch(err => reject(err));
         });

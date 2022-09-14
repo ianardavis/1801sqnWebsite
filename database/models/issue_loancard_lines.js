@@ -1,37 +1,20 @@
 /* jshint indent: 2 */
 
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('issues', {
-    'issue_id': {
+  return sequelize.define('issue_loancard_lines', {
+    'issue_loancard_line_id': {
       type: DataTypes.UUIDV4,
       allowNull: false,
       defaultValue: sequelize.fn('stores.uuid_generate_v1'),
       comment: "null",
       primaryKey: true
     },
-    'user_id_issue': {
+    'issue_id': {
       type: DataTypes.UUIDV4,
       allowNull: false,
       comment: "null"
     },
-    'size_id': {
-      type: DataTypes.UUIDV4,
-      allowNull: false,
-      comment: "null"
-    },
-    'qty': {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      defaultValue: '1',
-      comment: "null"
-    },
-    'status': {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      defaultValue: '1',
-      comment: "null"
-    },
-    'user_id': {
+    'loancard_line_id': {
       type: DataTypes.UUIDV4,
       allowNull: false,
       comment: "null"
@@ -47,7 +30,7 @@ module.exports = function(sequelize, DataTypes) {
       comment: "null"
     }
   }, {
-    tableName: 'issues',
+    tableName: 'issue_loancard_lines',
     schema: 'stores'
   });
 };

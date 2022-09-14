@@ -144,17 +144,17 @@ module.exports = (app, m, fn) => {
                 if (submitted === 0) {
                     reject(new Error('No lines submitted'));
                 } else {
-                    resolve(issues);
+                    resolve([issues, submitted]);
                 };
             };
         });
     };
     app.put('/issues',             fn.loggedIn(), fn.permissions.check('issuer'),              (req, res) => {
         check_for_valid_lines_to_update(req.body.lines)
-        .then(issues => {
+        .then(([issues, submitted]) => {
             let actions = [];
             const user_id = req.user.user_id;
-
+            
             issues.filter(e => e.status === '-1').forEach(issue => {
                 actions.push(fn.issues.decline(issue.issue_id, user_id));
             });
@@ -163,10 +163,9 @@ module.exports = (app, m, fn) => {
                 actions.push(fn.issues.approve(issue.issue_id, user_id));
             });
 
-            if (issues.filter(e => e.status === '3').length > 0) {
-                actions.push(
-                    fn.issues.order(issues.filter(e => e.status === '3'), user_id)
-                );
+            const to_order = issues.filter(e => e.status === '3');
+            if (to_order.length > 0) {
+                actions.push(fn.issues.order(to_order, user_id));
             };
 
             issues.filter(e => e.status ===  '-3' || e.status ===  '-2').forEach(issue => {
@@ -177,10 +176,9 @@ module.exports = (app, m, fn) => {
                 actions.push(fn.issues.restore(issue.issue_id, user_id));
             });
 
-            if (issues.filter(e => e.status === '4').length > 0) {
-                actions.push(
-                    fn.issues.issue(issues.filter(e => e.status === '4'), user_id)
-                );
+            const to_issue = issues.filter(e => e.status === '4')
+            if (to_issue.length > 0) {
+                actions.push(fn.issues.issue(to_issue, user_id));
             };
 
             if (actions.length > 0) {
@@ -195,9 +193,7 @@ module.exports = (app, m, fn) => {
                 fn.send_error(res, 'No actions to perform');
             };
         })
-        .catch(err => {
-
-        });
+        .catch(err => fn.send_error(res, err));
     });
     app.put('/issues/:id/qty',     fn.loggedIn(), fn.permissions.check('issuer'),              (req, res) => {
         fn.issues.change_qty(req.params.id, req.body.qty , req.user.user_id)

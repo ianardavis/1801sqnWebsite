@@ -159,12 +159,14 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
-    fn.orders.create     = function (size_id, qty, user_id, issue_ids = []) {
+    fn.orders.create     = function (size_id, qty, user_id, issues = []) {
         return new Promise((resolve, reject) => {
             fn.sizes.get(size_id)
             .then(size => {
-                if (!size.orderable) reject(new Error('This size can not ordered'))
-                else {
+                if (!size.orderable) {
+                    reject(new Error('This size can not ordered'));
+
+                } else {
                     m.orders.findOrCreate({
                         where: {
                             size_id: size.size_id,
@@ -176,12 +178,13 @@ module.exports = function (m, fn) {
                         }
                     })
                     .then(([order, created]) => {
-                        if (!Array.isArray(issue_ids)) issue_ids = [issue_ids]
+                        if (!Array.isArray(issues)) issues = [issues]
                         let links = [];
-                        if (issue_ids && issue_ids.length > 0) {
-                            issue_ids.forEach(id => links.push({table: 'issues', id: id}));
+                        if (issues && issues.length > 0) {
+                            issues.forEach(issue => links.push({table: 'issues', id: issue.issue_id}));
                         };
                         if (created) {
+                            issues.forEach(issue => issue.update({status: 3}));
                             fn.actions.create(
                                 'ORDER | CREATED',
                                 user_id,
@@ -193,6 +196,7 @@ module.exports = function (m, fn) {
                         } else {
                             order.increment('qty', {by: qty})
                             .then(result => {
+                                issues.forEach(issue => issue.update({status: 3}));
                                 fn.actions.create(
                                     `ORDER | INCREMENTED | By ${qty}`,
                                     user_id,
