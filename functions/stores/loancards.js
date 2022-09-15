@@ -428,14 +428,20 @@ module.exports = function (m, fn) {
         return new Promise((resolve, reject) => {
             fn.loancards.lines.get(
                 line_id,
-                [m.issues]
+                [m.issues, m.sizes]
             )
             .then(line => {
                 if (line.status === 0) {
                     reject(new Error('This line has already been cancelled'));
 
                 } else if (line.status === 1) {
-                    resolve(line);
+                    if (line.size) {
+                        resolve(line);
+
+                    } else {
+                        reject(new Error('Size not found'));
+
+                    };
                     
                 } else if (line.status === 2) {
                     reject(new Error('This line has already been completed'));
@@ -496,7 +502,7 @@ module.exports = function (m, fn) {
                 fn.stocks.get({size_id: size_id, location: location})
                 .then(stock => {
                     fn.stocks.return(stock.stock_id, qty)
-                    .then(link => resolve(link))
+                    .then(link => resolve([link, qty]))
                     .catch(err => reject(err));
                 })
                 .catch(err => reject(err));
@@ -508,17 +514,17 @@ module.exports = function (m, fn) {
         return new Promise((resolve, reject) => {
             cancel_line_check(return_line.loancard_line_id)
             .then(line => {
-                line.update({status: 0})
-                .then(result => {
-                    update_issues_and_destroy_links(line.issues)
-                    .then(([issues, links]) => {
-                        return_to_location(
-                            line.serial_id,
-                            return_line.location,
-                            issues,
-                            line.size_id
-                        )
-                        .then(link => {
+                update_issues_and_destroy_links(line.issues)
+                .then(([issues, links]) => {
+                    return_to_location(
+                        line.serial_id,
+                        return_line.location,
+                        issues,
+                        line.size_id
+                    )
+                    .then(([link, qty]) => {
+                        line.update({status: 0})
+                        .then(result => {
                             fn.actions.create(
                                 'LOANCARD LINE | CANCELLED',
                                 user_id,
@@ -726,9 +732,12 @@ module.exports = function (m, fn) {
     };
 
     
-    fn.loancards.lines.return = function (options = {}) {
+    function return_line_check(line_id) {
         return new Promise((resolve, reject) => {
-            fn.loancards.lines.get(options.loancard_line_id)
+            fn.loancards.lines.get(
+                line_id,
+                [m.issues, m.sizes]
+            )
             .then(line => {
                 if (line.status === 0) {
                     reject(new Error('This line has been cancelled'));
@@ -736,153 +745,141 @@ module.exports = function (m, fn) {
                 } else if (line.status === 1) {
                     reject(new Error('This line is still pending'));
 
+                } else if (line.status === 2) {
+                    if (line.size) {
+                        resolve(line);
+
+                    } else {
+                        reject(new Error('Size not found'));
+                    };
                 } else if (line.status === 3) {
                     reject(new Error('This line has already been returned'));
 
-                } else if (line.status === 2) {
-                    fn.sizes.get(line.size_id)
-                    .then(size => {
-                        m.locations.findOrCreate({
-                            where: {location: options.location}
-                        })
-                        .then(([location, created]) => {
-                            let return_action = null;
-                            if (line.serial_id) {
-                                return_action = new Promise((resolve, reject) => {
-                                    fn.serials.return(line.serial_id, options.location)
-                                    .then(serial => resolve({issue_ids: [serial.issue_id], links: [{table: 'serials', id: serial.serial_id}]}))
-                                    .catch(err => reject(err));
-                                });
-                            } else {
-                                return_action = new Promise((resolve, reject) => {
-                                    m.stocks.findOrCreate({
-                                        where: {
-                                            size_id:     size.size_id,
-                                            location_id: location.location_id
-                                        }
-                                    })
-                                    .then(([stock, created]) => {
-                                        stock.increment('qty', {by: line.qty})
-                                        .then(result => {
-                                            get_loancard_links('issues', line.loancard_line_id)
-                                            .then(links => {
-                                                let issues = [];
-                                                links.forEach(link => issues.push(link.id));
-                                                resolve({issue_ids: issues, links: [{table: 'stocks', id: stock.stock_id}]})
-                                            })
-                                            .catch(err => reject(err));
-                                        })
-                                        .catch(err => reject(err));
-                                    })
-                                    .catch(err => reject(err));
-                                });
-                            };
-                            return_action
-                            .then(result => {
-                                let update_actions = [], issue_links = [];
-                                if ((options.qty < line.qty) && options.qty >= 1) {
-                                    update_actions.push(new Promise((resolve, reject) => {
-                                        m.loancard_lines.create({
-                                            loancard_id: line.loancard_id,
-                                            size_id:     line.size_id,
-                                            serial_id:   line.serial_id,
-                                            nsn_id:      line.nsn_id,
-                                            qty:         line.qty - options.qty,
-                                            status:      2,
-                                            user_id:     line.user_id
-                                        })
-                                        .then(new_line => {
-                                            line.update({qty: options.qty})
-                                            .then(result => {
-                                                fn.actions.create(
-                                                    'LOANCARD LINE | CREATED | From partial return',
-                                                    options.user_id,
-                                                    [
-                                                        {table: 'loancard_lines', id: line.loancard_line},
-                                                        {table: 'loancard_lines', id: new_line.loancard_line}
-                                                    ]
-                                                )
-                                                .then(result => resolve(true));
-                                            })
-                                            .catch(err => reject(err));
-                                        })
-                                        .catch(err => reject(err));
-                                    }));
-                                };
-                                result.issue_ids.forEach(issue_id => {
-                                    update_actions.push(new Promise((resolve, reject) => {
-                                        fn.issues.get({issue_id: issue_id})
-                                        .then(issue => {
-                                            if      (issue.status === 0) reject(new Error('Issue is already cancelled'))
-                                            else if (issue.status === 1) reject(new Error('Issue is pending approval'))
-                                            else if (issue.status === 2) reject(new Error('Issue is not issued'))
-                                            else if (issue.status === 3) reject(new Error('Issue is ordered but not issued'))
-                                            else if (issue.status === 4) {
-                                                issue.update({status: 5})
-                                                .then(result => {
-                                                    issue_links.push({table: 'issues', id: issue.issue_id})
-                                                    resolve(true);
-                                                })
-                                                .catch(err => reject(err));
-                                            } else reject(new Error('Unknown issue status'));
-                                        })
-                                    }));
-                                })
-                                update_actions.push(line.update({status: 3}));
-                                Promise.allSettled(update_actions)
-                                .then(results => {
-                                    if (results.filter(e => e.status === 'rejected').length > 0) console.log(results);
-                                    fn.actions.create(
-                                        'LOANCARD LINE | RETURNED',
-                                        options.user_id,
-                                        [
-                                            {table: 'loancard_lines', id: line.loancard_line_id},
-                                            {table: 'locations',      id: location.location_id}
-                                        ].concat(issue_links).concat(result.links)
-                                    )
-                                    .then(result => resolve(line.loancard_id));
-                                })
-                                .catch(err => resolve(line.loancard_id));
-                            })
-                            .catch(err => reject(err));
-                        })
-                        .catch(err => reject(err));
-                    })
-                    .catch(err => reject(err));
-                } else reject(new Error('Unknown line status'));
+                } else {
+                    reject(new Error('Unknown line status'));
+
+                };
             })
             .catch(err => reject(err));
         });
     };
-    function get_loancard_links(table, loancard_line_id) {
+    function update_issues(issues) {
         return new Promise((resolve, reject) => {
-            m.action_links.findAll({
-                where: {
-                    _table: table,
-                    active: true
-                },
-                include: [{
-                    model: m.actions,
-                    where: {action: 
-                        {[fn.op.or]: [
-                            'LOANCARD LINE | CREATED',
-                            {[fn.op.startsWith]: 'LOANCARD LINE | INCREMENTED'}
-                        ]}
-                    },
-                    include: [{
-                        model: m.action_links,
-                        as: 'links',
-                        where: {
-                            _table: 'loancard_lines',
-                            id:     loancard_line_id,
-                            active: true
-                        }
-                    }]
-                }]
-            })
-            .then(link => {
-                if (!link) reject(new Error(`No link found for ${table}`))
-                else resolve(link)
+            let actions = [];
+            let links = [];
+            issues.forEach(issue => {
+                actions.push(new Promise((resolve, reject) => {
+                    issue.update({status: 5})
+                    .then(result => {
+                        if (result) {
+                            links.push({table: 'issues', id: issue.issue_id});
+                            resolve(issue);
+
+                        } else {
+                            reject(new Error('Issue not updated'));
+
+                        };
+                    })
+                    .catch(err => reject(err));
+                }));
+            });
+            Promise.all(actions)
+            .then(resolved_issues => resolve([resolved_issues, links]))
+            .catch(err => reject(err));
+        });
+    };
+    fn.loancards.lines.return = function (options = {}) {
+        return new Promise((resolve, reject) => {
+            return_line_check(options.loancard_line_id)
+            .then(line => {
+                update_issues(line.issues)
+                .then(([issues, links]) => {
+                    return_to_location(
+                        line.serial_id,
+                        options.location,
+                        issues,
+                        line.size_id
+                    )
+                    .then(([link, qty]) => {
+                        let update_actions = [], issue_links = [];
+                        if ((options.qty < line.qty) && options.qty >= 1) {
+                            update_actions.push(new Promise((resolve, reject) => {
+                                m.loancard_lines.create({
+                                    loancard_id: line.loancard_id,
+                                    size_id:     line.size_id,
+                                    serial_id:   line.serial_id,
+                                    nsn_id:      line.nsn_id,
+                                    qty:         line.qty - options.qty,
+                                    status:      2,
+                                    user_id:     line.user_id
+                                })
+                                .then(new_line => {
+                                    line.update({qty: options.qty})
+                                    .then(result => {
+                                        fn.actions.create(
+                                            'LOANCARD LINE | CREATED | From partial return',
+                                            options.user_id,
+                                            [
+                                                {table: 'loancard_lines', id: line.loancard_line},
+                                                {table: 'loancard_lines', id: new_line.loancard_line}
+                                            ]
+                                        )
+                                        .then(result => resolve(true));
+                                    })
+                                    .catch(err => reject(err));
+                                })
+                                .catch(err => reject(err));
+                            }));
+                        };
+                        result.issue_ids.forEach(issue_id => {
+                            update_actions.push(new Promise((resolve, reject) => {
+                                fn.issues.get({issue_id: issue_id})
+                                .then(issue => {
+                                    if (issue.status === 0) {
+                                        reject(new Error('Issue is already cancelled'));
+
+                                    } else if (issue.status === 1) {
+                                        reject(new Error('Issue is pending approval'));
+
+                                    } else if (issue.status === 2) {
+                                        reject(new Error('Issue is not issued'));
+
+                                    } else if (issue.status === 3) {
+                                        reject(new Error('Issue is ordered but not issued'));
+
+                                    } else if (issue.status === 4) {
+                                        issue.update({status: 5})
+                                        .then(result => {
+                                            issue_links.push({table: 'issues', id: issue.issue_id})
+                                            resolve(true);
+                                        })
+                                        .catch(err => reject(err));
+
+                                    } else {
+                                        reject(new Error('Unknown issue status'));
+                                    };
+                                })
+                            }));
+                        })
+                        update_actions.push(line.update({status: 3}));
+                        Promise.allSettled(update_actions)
+                        .then(results => {
+                            if (results.filter(e => e.status === 'rejected').length > 0) console.log(results);
+                            fn.actions.create(
+                                'LOANCARD LINE | RETURNED',
+                                options.user_id,
+                                [
+                                    {table: 'loancard_lines', id: line.loancard_line_id},
+                                    {table: 'locations',      id: location.location_id}
+                                ].concat(issue_links).concat(result.links)
+                            )
+                            .then(result => resolve(line.loancard_id));
+                        })
+                        .catch(err => resolve(line.loancard_id));
+                    })
+                    .catch(err => reject(err));
+                })
+                .catch(err => reject(err));
             })
             .catch(err => reject(err));
         });

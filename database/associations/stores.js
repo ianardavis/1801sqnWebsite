@@ -29,12 +29,14 @@ module.exports = function (m) {
     m.item_categories.hasOne(   m.categories,      {foreignKey: 'category_id', sourceKey: 'category_id', constraints: false});
     m.item_categories.belongsTo(m.items,           {foreignKey: 'item_id',     targetKey: 'item_id'});
     m.items.belongsToMany(m.genders, {through: m.item_genders});
+    m.genders.belongsToMany(m.items, {through: m.item_genders});
     
     m.loancards     .hasMany(  m.loancard_lines, {foreignKey: 'loancard_id', sourceKey: 'loancard_id', as: 'lines'});
     m.loancard_lines.hasOne(   m.sizes,          {foreignKey: 'size_id',     sourceKey: 'size_id',     constraints: false});
     m.loancard_lines.hasOne(   m.serials,        {foreignKey: 'serial_id',   sourceKey: 'serial_id',   constraints: false});
     m.loancard_lines.belongsTo(m.loancards,      {foreignKey: 'loancard_id', targetKey: 'loancard_id'});
     m.loancard_lines.hasOne(   m.nsns,           {foreignKey: 'nsn_id',      sourceKey: 'nsn_id',      constraints: false});
+    m.loancard_lines.belongsToMany(m.issues, {through: m.issue_loancard_lines});
     
     m.locations.hasMany(m.stocks,  {foreignKey: 'location_id', targetKey: 'location_id'});
     m.locations.hasMany(m.serials, {foreignKey: 'location_id', targetKey: 'location_id'});
@@ -75,17 +77,17 @@ module.exports = function (m) {
     m.stocks.hasOne(   m.locations,   {foreignKey: 'location_id', sourceKey: 'location_id', constraints: false});
     m.stocks.hasMany(  m.adjustments, {foreignKey: 'stock_id',    targetKey: 'stock_id'});
     
-    m.suppliers         .hasMany(  m.sizes,              {foreignKey: 'supplier_id', targetKey: 'supplier_id'});
-    m.suppliers         .hasMany(  m.demands,            {foreignKey: 'supplier_id', targetKey: 'supplier_id'});
-    m.suppliers         .hasOne(   m.accounts,           {foreignKey: 'account_id',  sourceKey: 'account_id',  constraints: false});
-    m.suppliers         .hasMany(  m.files,              {foreignKey: 'supplier_id', targetKey: 'supplier_id'});
-    m.supplier_addresses.hasOne(   m.addresses,          {foreignKey: 'address_id',  sourceKey: 'address_id',  constraints: false});
-    m.supplier_contacts .hasOne(   m.contacts,           {foreignKey: 'contact_id',  sourceKey: 'contact_id',  constraints: false});
-    m.addresses         .belongsTo(m.supplier_addresses, {foreignKey: 'address_id',  targetKey: 'address_id'});
-    m.contacts          .belongsTo(m.supplier_contacts,  {foreignKey: 'contact_id',  targetKey: 'contact_id'});
+    m.suppliers.hasMany(      m.sizes,     {foreignKey: 'supplier_id', targetKey: 'supplier_id'});
+    m.suppliers.hasMany(      m.demands,   {foreignKey: 'supplier_id', targetKey: 'supplier_id'});
+    m.suppliers.hasOne(       m.accounts,  {foreignKey: 'account_id',  sourceKey: 'account_id',  constraints: false});
+    m.suppliers.hasMany(      m.files,     {foreignKey: 'supplier_id', targetKey: 'supplier_id'});
+    m.suppliers.belongsToMany(m.addresses, {through: m.supplier_addresses});
+    m.suppliers.belongsToMany(m.contacts,  {through: m.supplier_contacts});
+    m.addresses.belongsToMany(m.suppliers, {through: m.supplier_addresses});
+    m.contacts .belongsToMany(m.suppliers, {through: m.supplier_contacts});
 
     m.scraps     .belongsTo(m.suppliers,   {foreignKey: 'supplier_id', targetKey: 'supplier_id'});
-    m.scraps     .hasMany(  m.scrap_lines, {foreignKey: 'scrap_id',    targetKey: 'scrap_id', as: 'lines'});
+    m.scraps     .hasMany(  m.scrap_lines, {foreignKey: 'scrap_id',    targetKey: 'scrap_id',  as: 'lines'});
     m.scrap_lines.hasOne(   m.sizes,       {foreignKey: 'size_id',     sourceKey: 'size_id',   constraints: false});
     m.scrap_lines.belongsTo(m.scraps,      {foreignKey: 'scrap_id',    targetKey: 'scrap_id'});
     m.scrap_lines.hasOne(   m.serials,     {foreignKey: 'serial_id',   sourceKey: 'serial_id', constraints: false});

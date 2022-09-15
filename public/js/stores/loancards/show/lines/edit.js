@@ -1,20 +1,56 @@
 function return_options() {
-    edit_option('3', 2);
-};
-function cancel_options() {
-    edit_option('0', 1);
-};
-function edit_option(button_value, line_status) {
     clear(`details_${this.dataset.id}`)
     .then(div_details => {
-        if (this.value === button_value) {
+        if (this.value === '3') {
             get({
                 table: 'loancard_line',
                 where: {loancard_line_id: this.dataset.id},
                 index: this.dataset.index
             })
             .then(function ([line, options]) {
-                if (line.status === line_status) {
+                if (line.status === 2) {
+                    div_details.appendChild(new Text_Input({
+                        attributes: [
+                            {field: 'name',        value: `lines[][${options.index}][location]`},
+                            {field: 'required',    value: true},
+                            {field: 'placeholder', value: 'Location'},
+                            {field: 'list',        value: `locations_${options.index}`}
+                        ],
+                        options: [{text: 'Enter Location'}]
+                    }).e);
+                    get_locations(div_details, (line.serial_id), line.size_id, options.index);
+
+                    line.issues.forEach(issue => {
+                        console.log(issue);/////////////////////
+                    });
+                    if (!line.serial_id) {
+                        div_details.appendChild(new Number_Input({
+                            attributes: [
+                                {field: 'min',         value: '1'},
+                                {field: 'max',         value: line.qty},
+                                {field: 'value',       value: line.qty},
+                                {field: 'placeholder', value: 'Quantity'},
+                                {field: 'name',        value: `lines[][${options.index}][qty]`},
+                                {field: 'required',    value: true}
+                            ]
+                        }).e);
+                    };
+                };
+            });
+        };
+    });
+};
+function cancel_options() {
+    clear(`details_${this.dataset.id}`)
+    .then(div_details => {
+        if (this.value === '0') {
+            get({
+                table: 'loancard_line',
+                where: {loancard_line_id: this.dataset.id},
+                index: this.dataset.index
+            })
+            .then(function ([line, options]) {
+                if (line.status === 1) {
                     div_details.appendChild(new Text_Input({
                         attributes: [
                             {field: 'name',        value: `lines[][${options.index}][location]`},

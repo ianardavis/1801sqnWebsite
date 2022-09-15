@@ -100,6 +100,7 @@ module.exports = (app, m, fn) => {
         m.loancard_lines.findOne({
             where: req.query.where,
             include: [
+                {model: m.issues, include: [m.sizes]},
                 fn.inc.stores.size(),
                 fn.inc.users.user(),
                 fn.inc.stores.loancard({
@@ -115,8 +116,13 @@ module.exports = (app, m, fn) => {
             ]
         })
         .then(line => {
-            if (line) res.send({success: true, result: line})
-            else res.send({success: false, message: 'Line not found'});
+            if (line) {
+                res.send({success: true, result: line});
+
+            } else {
+                res.send({success: false, message: 'Line not found'});
+
+            };
         })
         .catch(err => fn.send_error(res, err));
     });
