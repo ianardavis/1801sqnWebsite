@@ -1,13 +1,13 @@
 module.exports = function (m, fn) {
     fn.loancards = {lines: {}};
-    fn.loancards.get = function (loancard_id) {
+    fn.loancards.get = function (loancard_id, includes = []) {
         return new Promise((resolve, reject) => {
             m.loancards.findOne({
                 where: {loancard_id: loancard_id},
                 include: [
                     fn.inc.users.user(),
                     fn.inc.users.user({as: 'user_loancard'})
-                ]
+                ].concat(includes)
             })
             .then(loancard => {
                 if (loancard) {
@@ -159,63 +159,61 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         })
     };
+    function cancel_loancard_check(loancard_id) {
+        return new Promise((resolve, reject) => {
+            fn.loancards.get(
+                options.loancard_id,
+                [{
+                    model: m.loancard_lines,
+                    as: 'lines',
+                    where: {status: {[fn.op.or]: [1, 2, 3]}},
+                    required: false
+                }]
+            )
+            .then(loancard => {
+                if (loancard.status === 0) {
+                    reject(new Error('This loancard has already been cancelled'));
+
+                } else if (loancard.status === 1) {
+                    if (loancard.lines && loancard.lines > 0) {
+                        reject(new Error('You can not cancel a loancard with uncancelled lines'));
+
+                    } else {
+                        resolve(loancard);
+
+                    };
+                } else if (loancard.status === 2) {
+                    reject(new Error('This loancard has already been completed'));
+
+                } else if (loancard.status === 3) {
+                    reject(new Error('This loancard has already been closed'));
+
+                } else {
+                    reject(new Error('Unknown loancard status'));
+                };
+            })
+            .then(err => reject(err));
+        });
+    };
     fn.loancards.cancel    = function (options = {}) {
         return new Promise((resolve, reject) => {
-            fn.loancards.get(options.loancard_id)
+            cancel_loancard_check(options.loancard_id)
             .then(loancard => {
-                if      (loancard.status === 0) reject(new Error('This loancard has already been cancelled'))
-                else if (loancard.status === 2) reject(new Error('This loancard has already been completed'))
-                else if (loancard.status === 3) reject(new Error('This loancard has already been closed'))
-                else if (loancard.status === 1) {
-                    let catch_opts = [2, 3];
-                    if (options.noForce) catch_opts.push(1);
-                    m.loancard_lines.count({
-                        where: {
-                            loancard_id: loancard.loancard_id,
-                            status: {[fn.op.or]: catch_opts}
-                        }
-                    })
-                    .then(line_count => {
-                        if (line_count && line_count > 0) reject(new Error(`Can not cancel a loancard with ${(options.noForce === true ? 'draft, ' : '')}complete or returned lines`))
-                        else {
-                            let actions = [];
-                            actions.push(loancard.update({status: 0}));
-                            actions.push(
-                                new Promise((resolve, reject) => {
-                                    m.loancard_lines.findAll({
-                                        where: {
-                                            loancard_id: loancard.loancard_id,
-                                            status:      1
-                                        }
-                                    })
-                                    .then(lines => {
-                                        let line_actions = [];
-                                        lines.forEach(line => {
-                                            line_actions.push(fn.loancards.lines.cancel({loancard_line_id: line.loancard_line_id, user_id: options.user_id}))
-                                        });
-                                        Promise.allSettled(line_actions)
-                                        .then(action => resolve(true))
-                                        .catch(err => reject(err));
-                                    })
-                                    .catch(err => reject(err));
-                                }));
-                            Promise.all(actions)
-                            .then(result => {
-                                if (!result) reject(new Error('Loancard not updated'))
-                                else {
-                                    fn.actions.create(
-                                        'LOANCARD | CANCELLED',
-                                        options.user_id,
-                                        [{table: 'loancards', id: loancard.loancard_id}]
-                                    )
-                                    .then(action => resolve(true));
-                                };
-                            })
-                            .catch(err => reject(err));
-                        };
-                    })
-                    .catch(err => reject(err));
-                } else reject(new Error('Unknown loancard status'));
+                loancard.update({status: 0})
+                .then(result => {
+                    if (result) {
+                        fn.actions.create(
+                            'LOANCARD | CANCELLED',
+                            options.user_id,
+                            [{table: 'loancards', id: loancard.loancard_id}]
+                        )
+                        .then(action => resolve(true));
+
+                    } else {
+                        reject(new Error('Loancard not cancelled'));
+                    };
+                })
+                .catch(err => reject(err));
             })
             .catch(err => reject(err));
         });
@@ -334,7 +332,7 @@ module.exports = function (m, fn) {
                 actions.push(fn.loancards.lines.return({...line, user_id: user_id}));
             });
             lines.filter(e => e.status === '0').forEach(line => {
-                actions.push(fn.loancards.lines.cancel({...line, user_id: user_id}));
+                actions.push(fn.loancards.lines.cancel(line, user_id));
             });
             Promise.allSettled(actions)
             .then(results => {
@@ -407,130 +405,136 @@ module.exports = function (m, fn) {
         });
     };
 
-    fn.loancards.lines.get = function (loancard_line_id) {
+    fn.loancards.lines.get = function (loancard_line_id, includes = []) {
         return new Promise((resolve, reject) => {
             m.loancard_lines.findOne({
                 where: {loancard_line_id: loancard_line_id},
-                include: [m.loancards]
+                include: [m.loancards].concat(includes)
             })
             .then(line => {
-                if (line) resolve(line)
-                else reject(new Error('Line not found'));
+                if (line) {
+                    resolve(line);
+
+                } else {
+                    reject(new Error('Line not found'));
+
+                };
             })
             .catch(err => reject(err));
         });
     };
-    fn.loancards.lines.cancel = function (options = {}) {
+
+    function cancel_line_check(line_id) {
         return new Promise((resolve, reject) => {
-            fn.loancards.lines.get(options.loancard_line_id)
+            fn.loancards.lines.get(
+                line_id,
+                [m.issues]
+            )
             .then(line => {
-                if      (line.status === 0) reject(new Error('This line has already been cancelled'))
-                else if (line.status === 2) reject(new Error('This line has already been completed'))
-                else if (line.status === 3) reject(new Error('This line has already been returned'))
-                else if (line.status === 1) {
-                    line.update({status: 0})
+                if (line.status === 0) {
+                    reject(new Error('This line has already been cancelled'));
+
+                } else if (line.status === 1) {
+                    resolve(line);
+                    
+                } else if (line.status === 2) {
+                    reject(new Error('This line has already been completed'));
+
+                } else if (line.status === 3) {
+                    reject(new Error('This line has already been returned'));
+
+                } else {
+                    reject(new Error('Unknown line status'));
+
+                };
+            })
+            .catch(err => reject(err));
+        });
+    };
+    function update_issues_and_destroy_links(issues) {
+        return new Promise((resolve, reject) => {
+            let actions = [];
+            let links = [];
+            issues.forEach(issue => {
+                actions.push(new Promise((resolve, reject) => {
+                    issue.issue_loancard_line.destroy()
                     .then(result => {
-                        let cancel_action = null;
-                        if (line.serial_id) {
-                            cancel_action = new Promise((resolve, reject) => {
-                                get_loancard_link('locations', line.loancard_line_id)
-                                .then(link => {
-                                    fn.locations.get({location_id: link.id})
-                                    .then(location => {
-                                        fn.serials.return_to_stock(line.serial_id, location.location_id)
-                                        .then(serial => resolve({issue_ids: [serial.issue_id], links: [{table: 'serials', id: serial.serial_id}]}))
-                                        .catch(err => reject(err));
-                                    })
-                                    .catch(err => reject(err));
-                                })
-                                .catch(err => reject(err));
-                            });
-                        } else {
-                            cancel_action = new Promise((resolve, reject) => {
-                                get_loancard_link('stocks', line.loancard_line_id)
-                                .then(link => {
-                                    fn.stocks.get({stock_id: link.id})
-                                    .then(stock => {
-                                        stock.increment(stock, {by: line.qty})
-                                        .then(result => {
-                                            get_loancard_links('issues', line.loancard_line_id)
-                                            .then(issue_links => {
-                                                let issues = [];
-                                                issue_links.forEach(link => issues.push(link.id));
-                                                resolve({issue_ids: issues, links: [{table: 'stocks', id: stock.stock_id}]});
-                                            })
-                                            .catch(err => reject(err));
-                                        })
-                                        .catch(err => reject(err));
-                                    })
-                                    .catch(err => reject(err));
-                                })
-                                .catch(err => reject(err));
-                            });
-                        };
-                        cancel_action
-                        .then(result => {
-                            let issue_actions = [];
-                            result.issue_ids.forEach(issue_id => {
-                                issue_actions.push(new Promise((resolve, reject) => {
-                                    fn.issues.get({issue_id: issue_id})
-                                    .then(issue => {
-                                        issue.update({status: 2})
-                                        .then(result => resolve({table: 'issues', id: issue.issue_id}))
-                                        .catch(err => reject(err));
-                                    })
-                                    .catch(err => reject(err));
-                                }));
-                            });
-                            Promise.allSettled(issue_actions)
-                            .then(results => {
-                                let issue_links = [];
-                                results.filter(e => e.status === 'fulfilled').forEach(e => issue_links.push(e.value));
-                                fn.actions.create(
-                                    'LOANCARD LINE | CANCELLED',
-                                    options.user_id,
-                                    [{table: 'loancard_lines', id: line.loancard_line_id}].concat(result.links).concat(issue_links)
-                                )
-                                .then(result => resolve(line.loancard_id));
+                        if (result) {
+                            issue.update({status: 2})
+                            .then(result => {
+                                if (result) {
+                                    links.push({table: 'issues', id: issue.issue_id});
+                                    resolve(issue);
+
+                                } else {
+                                    reject(new Error('Issue not updated'));
+
+                                };
                             })
                             .catch(err => reject(err));
 
+                        } else {
+                            reject(new Error('Link not destroyed'));
+
+                        };
+                    })
+                    .catch(err => reject(err));
+                }));
+            });
+            Promise.all(actions)
+            .then(resolved_issues => resolve([resolved_issues, links]))
+            .catch(err => reject(err));
+        });
+    };
+    function return_to_location(serial_id, location, issues, size_id) {
+        if (serial_id) {
+            return fn.serials.return(serial_id, location);
+
+        } else {
+            return new Promise((resolve, reject) => {
+                const qty = issues.reduce((prev, curr) => prev.qty + curr.qty, 0);
+                fn.stocks.get({size_id: size_id, location: location})
+                .then(stock => {
+                    fn.stocks.return(stock.stock_id, qty)
+                    .then(link => resolve(link))
+                    .catch(err => reject(err));
+                })
+                .catch(err => reject(err));
+            });
+
+        };
+    };
+    fn.loancards.lines.cancel = function (return_line, user_id) {
+        return new Promise((resolve, reject) => {
+            cancel_line_check(return_line.loancard_line_id)
+            .then(line => {
+                line.update({status: 0})
+                .then(result => {
+                    update_issues_and_destroy_links(line.issues)
+                    .then(([issues, links]) => {
+                        return_to_location(
+                            line.serial_id,
+                            return_line.location,
+                            issues,
+                            line.size_id
+                        )
+                        .then(link => {
+                            fn.actions.create(
+                                'LOANCARD LINE | CANCELLED',
+                                user_id,
+                                [
+                                    {table: 'loancard_lines', id: line.loancard_line_id},
+                                    link
+                                ].concat(links)
+                            )
+                            .then(result => resolve(line.loancard_id));
                         })
                         .catch(err => reject(err));
                     })
                     .catch(err => reject(err));
-                } else reject(new Error('Unknown line status'));
+                })
+                .catch(err => reject(err));
             })
-            .catch(err => reject(err));
-        });
-    };
-    function get_loancard_link(table, loancard_line_id) {
-        return new Promise((resolve, reject) => {
-            m.action_links.findOne({
-                where: {
-                    _table: table,
-                    active: true
-                },
-                include: [{
-                    model: m.actions,
-                    where: {
-                        action: {[fn.op.or]: [
-                            'LOANCARD LINE | CREATED',
-                            {[fn.op.startsWith]: 'LOANCARD LINE | INCREMENTED'}
-                        ]}
-                    },
-                    include: [{
-                        model: m.action_links,
-                        as: 'links',
-                        where: {
-                            _table: 'loancard_lines',
-                            id:     loancard_line_id,
-                            active: true
-                        }
-                    }]
-                }]
-            })
-            .then(link => resolve(link))
             .catch(err => reject(err));
         });
     };
@@ -727,11 +731,14 @@ module.exports = function (m, fn) {
             fn.loancards.lines.get(options.loancard_line_id)
             .then(line => {
                 if (line.status === 0) {
-                    reject(new Error('This line has been cancelled'))
+                    reject(new Error('This line has been cancelled'));
+
                 } else if (line.status === 1) {
-                    reject(new Error('This line is still pending'))
+                    reject(new Error('This line is still pending'));
+
                 } else if (line.status === 3) {
-                    reject(new Error('This line has already been returned'))
+                    reject(new Error('This line has already been returned'));
+
                 } else if (line.status === 2) {
                     fn.sizes.get(line.size_id)
                     .then(size => {
@@ -742,7 +749,7 @@ module.exports = function (m, fn) {
                             let return_action = null;
                             if (line.serial_id) {
                                 return_action = new Promise((resolve, reject) => {
-                                    fn.serials.return_to_stock(line.serial_id, location.location_id)
+                                    fn.serials.return(line.serial_id, options.location)
                                     .then(serial => resolve({issue_ids: [serial.issue_id], links: [{table: 'serials', id: serial.serial_id}]}))
                                     .catch(err => reject(err));
                                 });

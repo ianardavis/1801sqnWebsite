@@ -22,6 +22,7 @@ module.exports = function (m, fn) {
                         else reject(new Error('Stock not found'));
                     })
                     .catch(err => reject(err));
+
                 } else if (options.size_id) {
                     fn.sizes.get(options.size_id)
                     .then(size => {
@@ -35,6 +36,7 @@ module.exports = function (m, fn) {
                             })
                             .then(([stock, created]) => resolve(stock))
                             .catch(err => reject(err));
+                            
                         } else if (options.location) {
                             fn.locations.get({location: options.location})
                             .then(location => {
@@ -49,11 +51,21 @@ module.exports = function (m, fn) {
                                 .catch(err => reject(err));
                             })
                             .catch(err => reject(err));
-                        } else reject(new Error('No location details submitted'));
+
+                        } else {
+                            reject(new Error('No location details submitted'));
+                        
+                        };
                     })
                     .catch(err => reject(err));
-                } else reject(new Error('No size or stock ID submitted'));
-            } else reject(new Error('No size, location or stock ID submitted'));
+
+                } else {
+                    reject(new Error('No size or stock ID submitted'));
+
+                };
+            } else {
+                reject(new Error('No size, location or stock ID submitted'));
+            };
         });
     };
     fn.stocks.create = function (size_id, location) {
@@ -159,19 +171,40 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
+    fn.stocks.return = function (stock_id, qty) {
+        return new Promise((resolve, reject) => {
+            fn.stocks.get({stock_id: stock_id})
+            .then(stock => {
+                stock.increment(stock, {by: qty})
+                .then(result => {
+                    if (result) {
+                        resolve({table: 'stocks', id: stock_id});
+
+                    } else {
+                        reject(new Error('Stock record not updated'));
+                    }
+                })
+                .catch(err => reject(err));
+            })
+            .catch(err => reject(err));
+        });
+    };
     fn.stocks.transfer = function (stock_id_from, location_to, qty, user_id) {
         return new Promise((resolve, reject) => {
             fn.stocks.get({stock_id: stock_id_from})
             .then(stock_from => {
-                if (qty > stock_from.qty) reject(new Error('Transfer quantity is greater than stock quantity'))
-                else {
+                if (qty > stock_from.qty) {
+                    reject(new Error('Transfer quantity is greater than stock quantity'));
+
+                } else {
                     m.locations.findOrCreate({where: {location: location_to}})
                     .then(([location, created]) => {
                         if (
                             stock_from.location_id       === location.location_id ||
                             stock_from.location.location === location.location
                         ) {
-                            reject(new Error('Transfer to and from locations are the same'))
+                            reject(new Error('Transfer to and from locations are the same'));
+
                         } else {
                             m.stocks.findOrCreate({
                                 where:    {

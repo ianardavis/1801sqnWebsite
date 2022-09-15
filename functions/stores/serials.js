@@ -166,19 +166,30 @@ module.exports = function (m, fn) {
             };
         });
     };
-    fn.serials.return_to_stock = function (serial_id, location_id) {
+    fn.serials.return = function (serial_id, location) {
         return new Promise((resolve, reject) => {
             fn.serials.get(serial_id)
             .then(serial => {
-                if      (!serial.issue_id)   reject(new Error('Serial # not issued'))
-                else if (serial.location_id) reject(new Error('Serial # already in stock'))
-                else {
-                    serial.update({
-                        location_id: location_id,
-                        issue_id:    null
+                if (!serial.issue_id) {
+                    reject(new Error('Serial # not issued'));
+
+                } else if (serial.location_id) {
+                    reject(new Error('Serial # already in stock'));
+
+                } else {
+                    m.locations.findOrCreate({
+                        where: {location: location}
                     })
-                    .then(result => resolve([serial]))
+                    .then(([location, created]) => {
+                        serial.update({
+                            location_id: location.location_id,
+                            issue_id:    null
+                        })
+                        .then(result => resolve({table: 'serials', id: serial.serial_id}))
+                        .catch(err => reject(err));
+                    })
                     .catch(err => reject(err));
+
                 };
             })
             .catch(err => reject(err));

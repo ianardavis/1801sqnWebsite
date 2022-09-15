@@ -28,17 +28,36 @@ function getLines() {
                             ]
                         }).e
                     });
-                    let radios = [], args = [line.loancard_line_id, row_index, return_options];
+                    
+                    let radios = [];
                     if (line.status === 1 || line.status === 2) {
-                        if (typeof nil_radio    === 'function') radios.push(nil_radio(   ...args));
+                        if (typeof nil_radio === 'function') {
+
+                            radios.push(nil_radio(line.loancard_line_id, row_index));
+
+                            if (line.status === 1) {
+                                if (
+                                    typeof cancel_options === 'function' &&
+                                    typeof cancel_radio   === 'function'
+                                ) {
+                                    radios.push(cancel_radio(line.loancard_line_id, row_index, cancel_options));
+                                };
+                            };
+        
+                            if (line.status === 2) {
+                                if (
+                                    typeof return_options === 'function' &&
+                                    typeof return_radio   === 'function'
+        
+                                ) {
+                                    radios.push(return_radio(line.loancard_line_id, row_index, return_options));
+                                };
+                            };
+                            
+                            radios.push(new Div({attributes: [{field: 'id', value: `details_${line.loancard_line_id}`}]}).e);
+                        };
                     };
-                    if (line.status === 1) {
-                        if (typeof cancel_radio === 'function') radios.push(cancel_radio(...args));
-                    };
-                    if (line.status === 2) {
-                        if (typeof return_radio === 'function') radios.push(return_radio(...args));
-                    };
-                    radios.push(new Div({attributes: [{field: 'id', value: `${line.loancard_line_id}_details`}]}).e);
+                    
                     add_cell(row, {append: radios});
                     add_cell(row, {append: 
                         new Modal_Button(
@@ -57,9 +76,6 @@ function getLines() {
                 row_index++
             });
             return true;
-        })
-        .then(result => {
-            if (typeof enable_radios === 'function') enable_radios(tbl_lines);
         });
     });
 };

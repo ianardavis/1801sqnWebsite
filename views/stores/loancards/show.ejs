@@ -92,7 +92,6 @@
 	</div>
 </section>
 <%- include(`${partials}/foot/app`) %>
-<script src="/js/common/radios/nil_cancel.js"></script>
 <script>show_tab('<%= tab %>')</script>
 <%- include(`${partials}/common/notes/scripts`) %>
 <%- include(`${partials}/common/actions/scripts`) %>
@@ -100,6 +99,7 @@
 <script src="/js/stores/loancards/show/view.js"></script>
 <script src="/js/stores/loancards/show/lines/view.js"></script>
 <% if (permissions.issuer) { %>
+	<script src="/js/common/radios/nil_cancel.js"></script>
 	<script src="/js/common/radios/return.js"></script>
 	<script src="/js/utils/list/stocks.js"></script>
 	<script src="/js/utils/list/serials.js"></script>

@@ -196,14 +196,14 @@ module.exports = (app, m, fn) => {
         })
         .catch(err => fn.send_error(res, err));
     });
-    app.delete('/loancard_lines/:id',  fn.loggedIn(), fn.permissions.check('issuer'),              (req, res) => {
-        fn.loancards.lines.cancel({
-            loancard_line_id: req.params.id,
-            user_id: req.user.user_id
-        })
-        .then(result => res.send({success: true, message: 'Line cancelled'}))
-        .catch(err => fn.send_error(res, err));
-    });
+    // app.delete('/loancard_lines/:id',  fn.loggedIn(), fn.permissions.check('issuer'),              (req, res) => {
+    //     fn.loancards.lines.cancel({
+    //         loancard_line_id: req.params.id,
+    //         user_id: req.user.user_id
+    //     })
+    //     .then(result => res.send({success: true, message: 'Line cancelled'}))
+    //     .catch(err => fn.send_error(res, err));
+    // });
     app.delete('/loancards/:id/file',  fn.loggedIn(), fn.permissions.check('issuer'),              (req, res) => {
         fn.fs.delete_file({
             table:   'loancards',

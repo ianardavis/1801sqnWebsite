@@ -24,6 +24,11 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
+    function fulfilled(results) {
+        const fulfilled = results.filter(e => e.status === 'fulfilled');
+        let issues = [];
+        fulfilled.forEach(issue => issues.push(issue.value));
+    };
 
     function update_issue_status(issue, status, user_id, action, links = []) {
         return new Promise((resolve, reject) => {
@@ -294,7 +299,7 @@ module.exports = function (m, fn) {
     
     function sort_issues_by_size(lines) {
         return new Promise((resolve, reject) => {
-            get_line_issues(lines)
+            get_line_issues_for_order(lines)
             .then(issues => {
                 let sizes = [];
                 issues.forEach(issue => {
@@ -325,7 +330,7 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
-    function get_line_issues(lines) {
+    function get_line_issues_for_order(lines) {
         return new Promise((resolve, reject) => {
             let actions = [];
             lines.forEach(line => {
@@ -341,15 +346,15 @@ module.exports = function (m, fn) {
 
                             } else {
                                 resolve(issue);
-                                
+
                             };
                         })
                         .catch(err => reject(err));
                     })
                 );
             });
-            Promise.all(actions)
-            .then(issues => resolve(issues))
+            Promise.allSettled(actions)
+            .then(issues => resolve(fulfilled(issues)))
             .catch(err => reject(err));
         });
     };
@@ -385,6 +390,35 @@ module.exports = function (m, fn) {
     function sort_issues_by_user(lines) {
         return new Promise((resolve, reject) => {
             let actions = [], users = [];
+            get_line_issues_for_issue(lines)
+            .then(issues => {
+                issues.forEach(issue => {
+                    let index = users.findIndex(e => e.user_id === issue.user_id_issue);
+                    if (index === -1) {
+                        users.push({
+                            user_id: issue.user_id_issue,
+                            issues:  [{issue: issue, line: line}]
+                        });
+
+                    } else {
+                        users[index].issues.push({issue: issue, line: line});
+
+                    };
+                });
+                if (users.length > 0) {
+                    resolve(users);
+
+                } else {
+                    reject(new Error('No valid issues to add'));
+
+                };
+            })
+            .catch(err => reject(err));
+        });
+    };
+    function get_line_issues_for_issue(lines) {
+        return new Promise((resolve, reject) => {
+            let actions = [];
             lines.forEach(line => {
                 actions.push(
                     new Promise((resolve, reject) => {
@@ -394,44 +428,25 @@ module.exports = function (m, fn) {
                                 reject( new Error('Size not found'));
 
                             } else if (issue.size.has_nsns && !line.nsn_id) {
-                                resolve(new Error('No NSN specified'));
+                                reject(new Error('No NSN specified'));
                                 
                             } else if (issue.size.has_serials && (!line.serials || line.serials.length === 0)) {
-                                resolve(new Error('No Serial #(s) specified'));
+                                reject(new Error('No Serial #(s) specified'));
 
                             } else if (issue.size.has_serials && line.serials.length < issue.qty) {
-                                resolve(new Error('Not enough Serial #(s) specified'));
+                                reject(new Error('Not enough Serial #(s) specified'));
 
                             } else {
-                                let index = users.findIndex(e => e.user_id === issue.user_id_issue);
-                                if (index === -1) {
-                                    users.push({
-                                        user_id: issue.user_id_issue,
-                                        issues:  [{issue: issue, line: line}]
-                                    });
-
-                                } else {
-                                    users[index].issues.push({issue: issue, line: line});
-
-                                };
-                                resolve(true);
+                                resolve(issue);
+                                
                             };
                         })
                         .catch(err => reject(err));
                     })
                 );
             });
-            Promise.allSettled(actions)
-            .then(results => {
-                fn.allSettledResults(results);
-                if (users.length > 0) {
-                    resolve(users);
-
-                } else {
-                    reject(new Error('No valid issues to add'));
-
-                };
-            })
+            Promise.all(actions)
+            .then(issues => resolve(fulfilled(issues)))
             .catch(err => reject(err));
         });
     };
@@ -448,6 +463,7 @@ module.exports = function (m, fn) {
                         new Promise((resolve, reject) => {
                             fn.loancards.lines.create(loancard_id, issue.issue, user_id, issue.line)
                             .then(links => {
+                                links.push({table: 'issues', id: issue.issue.issue_id});
                                 update_issue_status(
                                     issue.issue,
                                     4,
