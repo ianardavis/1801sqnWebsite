@@ -7,7 +7,7 @@ module.exports = (app, m, fn) => {
             fn.loancards.get(loancard_id)
             .then(loancard => {
                 if (!loancard.filename) {
-                    fn.loancards.createPDF(loancard.loancard_id)
+                    fn.loancards.pdf.create(loancard.loancard_id)
                     .then(filename => resolve(filename))
                     .catch(err => reject(err));
                 } else resolve(loancard.filename);
@@ -176,7 +176,7 @@ module.exports = (app, m, fn) => {
             date_due: req.body.date_due || add_years(7)
         })
         .then(result => {
-            fn.loancards.createPDF(req.params.id)
+            fn.loancards.pdf.create(req.params.id)
             .then(filename => res.send({success: true, message: `Loancard completed. Filename: ${filename}`}))
             .catch(err => {
                 console.log(err);

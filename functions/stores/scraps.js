@@ -98,16 +98,20 @@ module.exports = function (m, fn) {
                 .then(([line, created]) => {
                     if (created) {
                         resolve(true);
+
                     } else {
                         line.increment('qty', {by: options.qty})
                         .then(result => {
                             if (result) {
                                 resolve(result);
+
                             } else {
                                 reject(new Error('Existing scrap line not incremented'));
+
                             };
                         })
                         .catch(err => reject(err));
+                        
                     };
                 })
                 .catch(err => reject(err));
