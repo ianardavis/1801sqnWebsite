@@ -72,6 +72,11 @@ window.addEventListener('load', function () {
         ]}
     );
     addFormListener(
+        'migrate_actions',
+        'PUT',
+        '/migrate_actions'
+    );
+    addFormListener(
         'git_pull',
         'POST',
         '/git_pull'

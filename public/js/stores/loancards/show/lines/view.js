@@ -32,7 +32,6 @@ function getLines() {
                     let radios = [];
                     if (line.status === 1 || line.status === 2) {
                         if (typeof nil_radio === 'function') {
-
                             radios.push(nil_radio(line.loancard_line_id, row_index));
 
                             if (line.status === 1) {

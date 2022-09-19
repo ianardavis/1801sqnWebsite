@@ -206,13 +206,15 @@ function Hidden_Input(options = {}) {
 function Number_Input(options = {}) {
     this.e = new Input({
         classes:    ['form-control', 'form-control-sm'].concat(options.classes    || []),
-        attributes: [{field: 'type', value: 'number'}] .concat(options.attributes || [])
+        attributes: [{field: 'type', value: 'number'}] .concat(options.attributes || []),
+        ...(options.listener ? {listener: options.listener} : {})
     }).e;
 };
 function Text_Input(options = {}) {
     this.e = new Input({
         classes:    ['form-control', 'form-control-sm'].concat(options.classes    || []),
-        attributes: [{field: 'type', value: 'text'}]   .concat(options.attributes || [])
+        attributes: [{field: 'type', value: 'text'}]   .concat(options.attributes || []),
+        ...(options.listener ? {listener: options.listener} : {})
     }).e;
 };
 function Input(options = {}) {

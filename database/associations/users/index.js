@@ -4,7 +4,5 @@ module.exports = function (m) {
     fs
     .readdirSync(__dirname)
     .filter(file => file !== "index.js")
-    .forEach(file => {
-        require(path.join(__dirname, file))(m)
-    });
+    .forEach(file => require(path.join(__dirname, file))(m));
 };

@@ -45,6 +45,11 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.DATE,
       allowNull: true,
       comment: "null"
+    },
+    'order_id': {
+      type: DataTypes.UUIDV4,
+      allowNull: true,
+      comment: "null"
     }
   }, {
     tableName: 'issues',

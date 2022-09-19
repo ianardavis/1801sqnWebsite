@@ -51,6 +51,38 @@ module.exports = (app, m, fn) => {
         .then(result => res.send({success: result, message: `Setting ${(result ? '' : 'not ')}updated`}))
         .catch(err => fn.send_error(res, err));
     });
+    app.put('/migrate_actions', fn.loggedIn(), fn.permissions.check('access_settings'), (req, res) => {
+        m.actions.findAll({
+            where: {action: {[fn.op.or]:['LOANCARD LINE | CREATED', 'Issue added to loancard']}},
+            include: [{
+                model: m.action_links, 
+                as: 'links',
+                where: {_table: {[fn.op.or]:['loancard_lines', 'issues']}}
+            }]
+        })
+        .then(actions => {
+            let acts = [];
+            actions.forEach(action => {
+                const issue_id         = action.links.filter(e => e._table === 'issues')        [0].id;
+                const loancard_line_id = action.links.filter(e => e._table === 'loancard_lines')[0].id;
+                acts.push(
+                    m.issue_loancard_lines.create({
+                        issue_id: issue_id,
+                        loancard_line_id: loancard_line_id
+                    })
+                );
+            });
+            Promise.allSettled(acts)
+            .then(results => {
+                let fails = results.filter(e => e.status === 'rejected');
+                console.log('fails: ', fails);
+                res.send({success: true, message: `Actions ${(fails.length === 0 ? '' : 'not ')}migrated`})
+            })
+            .catch(err => fn.send_error(res, err));
+        })
+        .catch(err => fn.send_error(res, err));
+    });
+    
 
     app.post('/settings',       fn.loggedIn(), fn.permissions.check('access_settings'), (req, res) => {
         m.settings.create({...req.body.setting, ...{user_id: req.user.user_id}})

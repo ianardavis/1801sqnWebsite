@@ -19,27 +19,82 @@ function return_options() {
                         options: [{text: 'Enter Location'}]
                     }).e);
                     get_locations(div_details, (line.serial_id), line.size_id, options.index);
-
-                    line.issues.forEach(issue => {
-                        console.log(issue);/////////////////////
-                    });
+                    
                     if (!line.serial_id) {
-                        div_details.appendChild(new Number_Input({
-                            attributes: [
-                                {field: 'min',         value: '1'},
-                                {field: 'max',         value: line.qty},
-                                {field: 'value',       value: line.qty},
-                                {field: 'placeholder', value: 'Quantity'},
-                                {field: 'name',        value: `lines[][${options.index}][qty]`},
-                                {field: 'required',    value: true}
-                            ]
-                        }).e);
+                        let div_issues = document.createElement('div');
+                        const line_id = `issues_${line.loancard_line_id}`;
+                        let total_qty = new Number_Input({
+                            attributes: [{field: 'disabled', value: true}]
+                        }).e
+                        div_details.appendChild(total_qty);
+                        function update_qty() {
+                            let qty = 0;
+                            const inputs = div_issues.querySelectorAll('input.issue_input');
+                            inputs.forEach(e => qty += e.value);
+                            if (Number(qty) <= 0) {
+                                document.querySelector(`#rad_${line.loancard_line_id}_nil`).click();
+                            } else {
+                                total_qty.value = Number(qty);
+                            };
+                        };
+                        
+                        let p = document.createElement('p');
+                        p.appendChild(new Anchor(
+                            'Issues',
+                            {
+                                data: [{field: 'bs-toggle', value: 'collapse'}],
+                                attributes: [
+                                    {field: 'href',          value: `#${line_id}`},
+                                    {field: 'role',          value: 'button'},
+                                    {field: 'aria-expanded', value: 'false'},
+                                    {field: 'aria-controls', value: line_id}
+                                ]
+                            }
+                        ).e);
+                        div_issues.appendChild(p);
+                        let collapse = document.createElement('div');
+                        collapse.classList.add('collapse');
+                        collapse.setAttribute('id', line_id);
+                        let issue_index = 0;
+                        line.issues.forEach(issue => {
+                            let issue_p = document.createElement('p');
+                            issue_p.innerText = print_date(issue.createdAt);
+                            issue_p.appendChild(new Number_Input({
+                                classes: ['issue_input'],
+                                attributes: [
+                                    {field: 'min',         value: '0'},
+                                    {field: 'max',         value: issue.qty},
+                                    {field: 'value',       value: issue.qty},
+                                    {field: 'placeholder', value: 'Quantity'},
+                                    {field: 'name',        value: `lines[][${options.index}][issues][${issue_index}][qty]`},
+                                    {field: 'required',    value: true}
+                                ],
+                                listener: {event: 'change', func: update_qty}
+                            }).e);
+                            issue_p.appendChild(new Hidden_Input({
+                                attributes: [
+                                    {field: 'value',    value: issue.issue_id},
+                                    {field: 'name',     value: `lines[][${options.index}][issues][${issue_index}][issue_id]`},
+                                    {field: 'required', value: true}
+                                ],
+                                listener: {event: 'change', func: update_qty}
+                            }).e);
+                            collapse.appendChild(issue_p);
+                            issue_index++;
+                        });
+                        div_issues .appendChild(collapse);
+                        div_details.appendChild(div_issues);
+                        update_qty();
                     };
                 };
             });
         };
     });
 };
+function add_issue_inputs() {
+
+};
+
 function cancel_options() {
     clear(`details_${this.dataset.id}`)
     .then(div_details => {

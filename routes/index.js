@@ -1,5 +1,5 @@
 module.exports = function (app, m) {
-    let fs = require('fs');
+    const fs = require('fs');
     let fn = {};
     require(`${process.env.ROOT}/middleware/loggedIn.js`)(fn);
     require(`${process.env.ROOT}/middleware/permissions.js`)(m.permissions, fn);
@@ -17,4 +17,5 @@ module.exports = function (app, m) {
     app.get('*',                       (req, res) => res.render('site/404'));
     app.put('*',                       (req, res) => res.send({success: false, message: 'Unknown request'}));
     app.post('*',                      (req, res) => res.send({success: false, message: 'Unknown request'}));
+    app.delete('*',                    (req, res) => res.send({success: false, message: 'Unknown request'}));
 };
