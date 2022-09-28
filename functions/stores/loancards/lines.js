@@ -441,48 +441,48 @@ module.exports = function (m, fn) {
     function update_issue(line, user_id) {
         return new Promise((resolve, reject) => {
             line.qty = Number(line.qty);
-            fn.issues.get({issue_id: line.issue_id})
-            .then(issue => {
-                if (line.qty > issue.qty) {
-                    reject(new Error('Receive quantity is greater than the issue quantity'));
-                } else if (line.qty === 0) {
-                    reject(new Error('Receive quantity is 0'));
-                } else {
-                    issue.update({status: 5})
-                    .then(result => {
-                        if (result) {
-                            if (line.qty < issue.qty) {
-                                issue.update({qty: line.qty})
-                                .then(result => {
-                                    if (result) {
-                                        m.issues.create({
-                                            user_id_issue: issue.user_id_issue,
-                                            size_id:       issue.size_id,
-                                            qty:           issue.qty - line.qty,
-                                            status:        4,
-                                            order_id:      issue.order_id,
-                                            user_id:       user_id
-                                        })
-                                        .then(new_issue => {
-                                            resolve({new_issue: new_issue});
-                                        })
-                                        .catch(err => reject(err));
-                                    } else {
-                                        reject(new Error('Quantity not updated'));
-                                    };
-                                })
-                                .catch(err => reject(err));
+            if (line.qty <= 0) {
+                reject(new Error('Receive quantity is 0 or less'));
+            } else {
+                fn.issues.get({issue_id: line.issue_id})
+                .then(issue => {
+                    if (line.qty > issue.qty) {
+                        reject(new Error('Receive quantity is greater than the issue quantity'));
+                    } else {
+                        issue.update({status: 5})
+                        .then(result => {
+                            if (result) {
+                                if (line.qty < issue.qty) {
+                                    issue.update({qty: line.qty})
+                                    .then(result => {
+                                        if (result) {
+                                            m.issues.create({
+                                                user_id_issue: issue.user_id_issue,
+                                                size_id:       issue.size_id,
+                                                qty:           issue.qty - line.qty,
+                                                order_id:      issue.order_id,
+                                                status:        4,
+                                                user_id:       user_id
+                                            })
+                                            .then(new_issue => resolve({new_issue: new_issue}))
+                                            .catch(err => reject(err));
+                                        } else {
+                                            reject(new Error('Quantity not updated'));
+                                        };
+                                    })
+                                    .catch(err => reject(err));
+                                } else {
+                                    resolve({});
+                                };
                             } else {
-                                resolve(null);
+                                reject(new Error('Status not updated'));
                             };
-                        } else {
-                            reject(new Error('STatus not updated'));
-                        };
-                    })
-                    .catch(err => reject(err));
-                };
-            })
-            .catch(err => reject(err));
+                        })
+                        .catch(err => reject(err));
+                    };
+                })
+                .catch(err => reject(err));
+            };
         });
     };
     fn.loancards.lines.return = function (options = {}, user_id) {
@@ -493,14 +493,8 @@ module.exports = function (m, fn) {
                 let actions = [];
                 options.issues.forEach(issue => {
                     actions.push(update_issue(issue, user_id));
-                    // get issue check issued
-                        // if full issue : 
-                            // mark issue as returned
-                        // if partial issue :
-                            // duplicate issue
-                                // new issue: qty to remaining qty, status issued (resolve new issue)
-                                // old issue: qty to returned  qty, status returned
                 });
+                
                 // return stock or serial to location
 
                 resolve(line.loancard_id);

@@ -8,7 +8,7 @@ module.exports = (app, m, fn) => {
             fn.scraps.get({scrap_id: scrap_id})
             .then(scrap => {
                 if (!scrap.filename) {
-                    fn.scraps.createPDF(scrap.scrap_id)
+                    fn.scraps.pdf.create(scrap.scrap_id)
                     .then(filename => resolve(filename))
                     .catch(err => reject(err));
                 } else resolve(scrap.filename);
