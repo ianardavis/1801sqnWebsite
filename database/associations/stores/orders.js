@@ -1,4 +1,12 @@
 module.exports = function (m) {
+    m.orders.belongsToMany(
+        m.demand_lines,
+        {
+            foreignKey:'order_id',
+            through: m.order_demand_lines
+        }
+    );
+
     m.orders.hasOne(
         m.sizes,
         {

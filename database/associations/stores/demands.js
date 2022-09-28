@@ -50,4 +50,12 @@ module.exports = function (m) {
             constraints: false
         }
     );
+    
+    m.demand_lines.belongsToMany(
+        m.orders, 
+        {
+            through: m.order_demand_lines,
+            foreignKey:'demand_line_id'
+        }
+    );
 };
