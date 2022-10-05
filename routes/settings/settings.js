@@ -75,7 +75,10 @@ module.exports = (app, m, fn) => {
             Promise.allSettled(acts)
             .then(results => {
                 let fails = results.filter(e => e.status === 'rejected');
-                console.log('fails: ', fails);
+                fails.forEach(fail => {
+                    console.log(fail.reason)
+                });
+                // console.log('fails: ', fails);
                 res.send({success: true, message: `Actions ${(fails.length === 0 ? '' : 'not ')}migrated`})
             })
             .catch(err => fn.send_error(res, err));
