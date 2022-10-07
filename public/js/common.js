@@ -31,6 +31,21 @@ function set_breadcrumb(text, id = 'breadcrumb', href = null) {
         if (href) e.setAttribute('href', href);
     };
 };
+function clear_statuses(max, statuses) {
+    for (s=1; s<=max; s++) {
+        set_badge(s, 'secondary', statuses[s]);
+    };
+};
+function set_badge(bdg, colour, text = '') {
+    let badge = document.querySelector(`#bdg_status_${bdg}`);
+    if (badge) {
+        badge.classList.remove('text-bg-success');
+        badge.classList.remove('text-bg-danger');
+        badge.classList.remove('text-bg-secondary');
+        badge.classList.add(`text-bg-${colour}`);
+        if (text) badge.innerText = text;
+    };
+};
 function set_href(id, value = null) {
     let e = document.querySelector(`#${id}`);
     if (e) {

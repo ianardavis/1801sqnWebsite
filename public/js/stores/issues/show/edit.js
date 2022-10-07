@@ -34,7 +34,8 @@ function get_sizes() {
             where: {issue_id: path[2]}
         })
         .then(function ([result, options]) {
-            if (result.issue.status === 1 || result.issue.status === 2) {
+            console.log(result);
+            if (result.status === 1 || result.status === 2) {
                 get({
                     table: 'sizes',
                     where: {

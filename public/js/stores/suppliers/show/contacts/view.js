@@ -13,10 +13,11 @@ function getContacts() {
                 add_cell(row, {text: contact.type});
                 add_cell(row, {text: contact.description});
                 add_cell(row, {text: contact.contact});
+                console.log(contact);
                 add_cell(row, {append: new Modal_Button(
                     _search(),
                     'contact_view',
-                    [{field: 'id', value: contact.supplier_contact.supplier_contact_id}]
+                    [{field: 'id', value: contact.suppliers[0].supplier_contacts.supplier_contact_id}]
                 ).e});
             });
         });

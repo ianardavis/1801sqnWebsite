@@ -37,7 +37,10 @@ module.exports = (app, m, fn) => {
                 let readStream = fs.createReadStream(settings[0].value);
                 readStream.on('open',  ()  => {readStream.pipe(res)});
                 readStream.on('close', ()  => {res.end()});
-                readStream.on('error', err => {res.end(err)});
+                readStream.on('error', err => {
+                    console.log(err);
+                    res.end();
+                });
             } else {
                 fn.send_error(res, 'Multiple log locations');
             };
@@ -107,6 +110,38 @@ module.exports = (app, m, fn) => {
             else {
                 res.send({success: false, message: 'Setting not found'});
             };
+        })
+        .catch(err => fn.send_error(res, err));
+    });
+
+    app.put('/migrate_actions', fn.loggedIn(), fn.permissions.check('access_settings'), (req, res) => {
+        m.actions.findAll({
+            where: {action: {[fn.op.or]:['DEMAND LINE | CREATED', 'Order added to demand', {[fn.op.like]: '%DEMAND LINE | INCREMENTED%'}]}},
+            include: [{
+                model: m.action_links, 
+                as: 'links',
+                where: {_table: {[fn.op.or]:['demand_lines', 'orders']}}
+            }]
+        })
+        .then(actions => {
+            let acts = [];
+            actions.forEach(action => {
+                const order_id       = action.links.filter(e => e._table === 'orders')      [0].id;
+                const demand_line_id = action.links.filter(e => e._table === 'demand_lines')[0].id;
+                acts.push(
+                    m.order_demand_lines.create({
+                        order_id: order_id,
+                        demand_line_id: demand_line_id
+                    })
+                );
+            });
+            Promise.allSettled(acts)
+            .then(results => {
+                let fails = results.filter(e => e.status === 'rejected');
+                console.log('fails: ', fails);
+                res.send({success: true, message: `Actions ${(fails.length === 0 ? '' : 'not ')}migrated`})
+            })
+            .catch(err => fn.send_error(res, err));
         })
         .catch(err => fn.send_error(res, err));
     });

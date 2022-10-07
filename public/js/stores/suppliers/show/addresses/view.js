@@ -13,10 +13,11 @@ function getAddresses() {
                 add_cell(row, {text: address.type});
                 add_cell(row, {text: address.unit_number});
                 add_cell(row, {text: address.street});
+                console.log(address);
                 add_cell(row, {append: new Modal_Button(
                     _search(),
                     'address_view',
-                    [{field: 'id', value: address.supplier_address.supplier_address_id}]
+                    [{field: 'id', value: address.suppliers[0].supplier_addresses.supplier_address_id}]
                 ).e});
             });
         });

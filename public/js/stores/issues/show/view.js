@@ -1,4 +1,4 @@
-const statuses = {0: 'Cancelled', 1: 'Requested', 2: 'Approved', 3: 'Ordered', 4: 'Issued', 5: 'Returned'};
+const statuses = {0: 'Cancelled', 1: 'Requested', 2: 'Approved', 3: 'Ordered', 4: 'Added To Loancard', 5: 'Returned'};
 function getIssue() {
     disable_button('size_edit');
     disable_button('qty_edit');
@@ -25,9 +25,7 @@ function getIssue() {
         set_href('issue_item_link',       `/items/${issue.size.item_id}`);
         if (typeof enable_edit === 'function') enable_edit(issue);
 
-        for (s=1; s<=5; s++) {
-            set_badge(s, 'secondary', statuses[s]);
-        };
+        clear_statuses(5, statuses);
         if ([-3, -2, -1, 1, 2, 3, 4, 5].includes(issue.status)) {
             if ([-3, -2, 1, 2, 3, 4, 5].includes(issue.status)) {
                 set_badge(1, 'success');
@@ -56,16 +54,6 @@ function getIssue() {
         alert(err);
         window.location.href = '/issues';
     });
-};
-function set_badge(bdg, colour, text = '') {
-    let badge = document.querySelector(`#bdg_status_${bdg}`);
-    if (badge) {
-        badge.classList.remove('text-bg-success');
-        badge.classList.remove('text-bg-danger');
-        badge.classList.remove('text-bg-secondary');
-        badge.classList.add(`text-bg-${colour}`);
-        if (text) badge.innerText = text;
-    };
 };
 window.addEventListener('load', function () {
     addListener('reload', getIssue);

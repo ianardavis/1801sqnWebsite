@@ -45,6 +45,7 @@ window.addEventListener('load', function () {
     enable_button('logs_flush');
     enable_button('git_pull');
     enable_button('pm2_reload');
+    enable_button('migrate_actions');
     addFormListener(
         'setting_edit',
         'PUT',
@@ -61,6 +62,11 @@ window.addEventListener('load', function () {
         'POST',
         '/printers',
         {onComplete: getPrinter}
+    );
+    addFormListener(
+        'migrate_actions',
+        'PUT',
+        '/migrate_actions'
     );
     addFormListener(
         'logs_flush',

@@ -9,11 +9,16 @@
 		<%- include(`${partials}/button/form`, {id: 'complete', text: 'Complete', colour: 'success'}) %>
 		<%- include(`${partials}/button/form`, {id: 'close', 	text: 'Close', 	  colour: 'warning'}) %>
 		<%- include(`${partials}/button/form`, {id: 'download', text: 'Download', colour: 'primary'}) %>
-		<button id="btn_action" type='button' class="btn btn-success w-100 mb-2" form='form_lines' disabled>
+		<button id="btn_action" class="btn btn-success w-100 mb-2" form='form_lines' disabled>
 			Action Lines
 		</button>
 		<%- include(`${partials}/button/form`, {id: 'delete', 	text: 'Cancel',	  colour: 'danger', align_bottom: true}) %>
     <%- include(`${partials}/sidebar/close`) %>
+    <div class="row mb-1">
+        <span class="badge text-bg-secondary w-33" id="bdg_status_1">Draft</span>
+        <span class="badge text-bg-secondary w-33" id="bdg_status_2">Complete </span>
+        <span class="badge text-bg-secondary w-34" id="bdg_status_3">Closed</span>
+    </div>
 	<ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
         <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'demand'}) %>
         <%- include(`${partials}/tab_head`, {id: 'lines',   title: 'Lines',	  spinner: 'demand_lines',  count_id: 'line'}) %>
@@ -26,7 +31,6 @@
 			<%- include(`${partials}/inputs/display`, {id: 'demand_user',	   title: 'Raised By', link: true}) %>
 			<%- include(`${partials}/inputs/display`, {id: 'demand_createdAt', title: 'Date'}) %>
 			<%- include(`${partials}/inputs/display`, {id: 'demand_updatedAt', title: 'Last Updated'}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'demand_status',    title: 'Status'}) %>
 			<%- include(`${partials}/inputs/display`, {id: 'demand_file',      title: 'Filename'}) %>
 		</div>
 		<div class="tab-pane fade" id="lines" role="tabpanel" aria-labelledby="lines-tab">
@@ -82,10 +86,10 @@
 <%- include(`${partials}/common/actions/scripts`) %>
 
 <script src="/js/stores/demands/show/view.js"></script>
-<script async>getDemand()</script>
 <script src="/js/stores/demands/show/edit.js"></script>
 <script src="/js/stores/demands/show/delete.js"></script>
 <script src="/js/stores/demands/show/lines/view.js"></script>
+<script src="/js/stores/demands/show/lines/edit.js"></script>
 <script src="/js/stores/stocks/list.js"></script>
 <script src="/js/stores/serials/list.js"></script>
 <%- include(`${partials}/foot/components/htmlClose`) %>

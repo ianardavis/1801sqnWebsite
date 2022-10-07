@@ -1,9 +1,19 @@
 module.exports = function (m, fn) {
     fn.orders = {};
     fn.orders.get = function (order_id) {
-        return m.orders.findOne({
-            where: {order_id: order_id},
-            include: [fn.inc.stores.size({supplier: true})]
+        return new Promise((resolve, reject) => {
+            m.orders.findOne({
+                where: {order_id: order_id},
+                include: [fn.inc.stores.size({supplier: true})]
+            })
+            .then(order => {
+                if (order) {
+                    resolve(order);
+                } else {
+                    reject(new Error('Order not found'));
+                };
+            })
+            .catch(err => reject(err));
         });
     };
     function create_normalise_lines(lines) {
@@ -315,13 +325,20 @@ module.exports = function (m, fn) {
             .then(allowed => {
                 fn.orders.get(order_id)
                 .then(order => {
-                    if (!order.size) reject(new Error('Could not find size'))
-                    else {
+                    if (!order.size) {
+                        reject(new Error('Could not find size'));
+
+                    } else {
                         check_status(order.status, links)
                         .then(result => {
                             let action = null;
-                            if (order.size.has_serials) action = receive_serials(order, receipt.serials, user_id)
-                            else                        action = receive_stock(  order, receipt,         user_id)
+                            if (order.size.has_serials) {
+                                action = receive_serials(order, receipt.serials, user_id);
+
+                            } else {
+                                action = receive_stock(order, receipt, user_id);
+                                
+                            };
                             action
                             .then(receive_result => {
                                 receive_qty_variance(order, receive_result.qty, user_id)
@@ -350,13 +367,25 @@ module.exports = function (m, fn) {
     };
     function check_status(status, links) {
         return new Promise((resolve, reject) => {
-            if      (![0, 1, 2, 3].includes(status)) reject(new Error('Unknown status'))
-            else if (order.status === 0)             reject(new Error('Order has already been cancelled'))
-            else if (order.status === 3)             reject(new Error('Order has already been received'))
-            else {
-                if      (status === 1)                                            resolve(true)
-                else if (links.findIndex(e => e.table === 'demand_lines') !== -1) resolve(true)
-                else reject(new Error('Order has been demanded. Receipt must be processed through the demand'));
+            if (![0, 1, 2, 3].includes(status)) {
+                reject(new Error('Unknown status'));
+
+            } else if (status === 0) {
+                reject(new Error('Order has already been cancelled'));
+
+            } else if (status === 3) {
+                reject(new Error('Order has already been received'));
+
+            } else {
+                if (status === 1) {
+                    resolve(true);
+
+                } else if (links.findIndex(e => e.table === 'demand_lines') !== -1) {
+                    resolve(true);
+
+                } else {
+                    reject(new Error('Order has been demanded. Receipt must be processed through the demand'));
+                };
             };
         });
     };
