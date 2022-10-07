@@ -30,8 +30,8 @@
     "passport-local-mysql": "^5.0.10",
     "pdf-to-printer": "^2.0.4",
     "pdfkit": "^0.11.0",
-    "pg": "^8.5.1",
-    "pg-hstore": "^2.3.3",
+    "pg": "^8.8.0",
+    "pg-hstore": "^2.3.4",
     "sequelize": "^6.3.5"
   }
 }
