@@ -4,8 +4,8 @@ function getIssues() {
     .then(tbl_issues => {
         get({
             table: 'issues',
-            ...build_filter_query('issue'),
-            func:  getIssues
+            func:  getIssues,
+            ...build_filter_query('issue')
         })
         .then(function ([result, options]) {
             let row_index = 0;
@@ -14,7 +14,7 @@ function getIssues() {
                 add_cell(row, table_date(issue.createdAt));
                 add_cell(row, {text: print_user(issue.user_issue)});
                 add_cell(row, {text: (issue.size && issue.size.item ? issue.size.item.description : '')});
-                add_cell(row, {text: (issue.size ? print_size(issue.size) : '')});
+                add_cell(row, {text: print_size(issue.size)});
                 add_cell(row, {text: issue.qty});
                 add_cell(row, {
                     text: issue_statuses[issue.status] || 'Unknown',
@@ -25,48 +25,9 @@ function getIssues() {
                         ]
                     }).e
                 });
-                let radios = [], args = [issue.issue_id, row_index, issue_options];
-                if ([0, 1, 2, 3].includes(issue.status)) {
-                    if (typeof nil_radio     === 'function') radios.push(nil_radio(    ...args));
-                };
-                if (issue.status === 0) {
-                    if (typeof restore_radio === 'function') radios.push(restore_radio(...args));
-                };
-                if (issue.status === 1) {
-                    if (typeof decline_radio === 'function') radios.push(decline_radio(...args));
-                    if (typeof approve_radio === 'function') radios.push(approve_radio(...args));
-                };
-                if (issue.status === 2 || issue.status === 3) {
-                    if (typeof cancel_radio  === 'function') radios.push(cancel_radio( ...args));
-                };
-                if (issue.status === 2) {
-                    if (typeof order_radio   === 'function') radios.push(order_radio(  ...args));
-                };
-                if (issue.status === 2 || issue.status === 3) {
-                    if (typeof issue_radio   === 'function') radios.push(issue_radio(  ...args));
-                };
-                if (issue.status === 4 ) {
-                    if (typeof loancard_radio === 'function') {
-                        get({
-                            table: 'issue_loancard',
-                            where: {issue_id: issue.issue_id},
-                            index: row_index
-                        })
-                        .then(function ([loancard_line, options]) {
-                            if (loancard_line.status === 1) {
-                                let radio_div   = tbl_issues.querySelector(`#row_${issue.issue_id}`),
-                                    details_div = tbl_issues.querySelector(`#details_${issue.issue_id}`);
-                                if (radio_div) {
-                                    if (typeof nil_radio === 'function') {
-                                        radio_div.insertBefore(nil_radio(...args), details_div);
-                                    };
-                                    radio_div.insertBefore(loancard_radio(...args), details_div);
-                                };
-                            };
-                        });
-                    };
-                };
-                radios.push(new Div({attributes: [{field: 'id', value: `details_${issue.issue_id}`}]}).e);
+
+                let radios = row_radios(issue.issue_id, issue.status, row_index);
+
                 add_cell(row, {
                     id: `row_${issue.issue_id}`,
                     append: radios
@@ -77,6 +38,31 @@ function getIssues() {
             hide_spinner('issues');
         });
     });
+};
+function row_radios(issue_id, status, index) {
+    let radios = [];
+    const args = [issue_id, index, issue_options];
+    if ([0, 1, 2, 3].includes(status)) {
+        if (typeof     nil_radio === 'function') radios.push(nil_radio(    ...args));
+    };
+    if (status === 0) {
+        if (typeof restore_radio === 'function') radios.push(restore_radio(...args));
+    };
+    if (status === 1) {
+        if (typeof decline_radio === 'function') radios.push(decline_radio(...args));
+        if (typeof approve_radio === 'function') radios.push(approve_radio(...args));
+    };
+    if (status === 2 || status === 3) {
+        if (typeof  cancel_radio === 'function') radios.push(cancel_radio( ...args));
+    };
+    if (status === 2) {
+        if (typeof   order_radio === 'function') radios.push(order_radio(  ...args));
+    };
+    if (status === 2 || status === 3) {
+        if (typeof   issue_radio === 'function') radios.push(issue_radio(  ...args));
+    };
+    radios.push(new Div({attributes: [{field: 'id', value: `details_${issue_id}`}]}).e);
+    return radios;
 };
 function getUsers() {
     return listCurrentUsers({
@@ -89,6 +75,7 @@ window.addEventListener('load', function () {
     getUsers();
     sidebarOnShow('IssuesFilter', getUsers);
     modalOnShow('issue_add', () => {sidebarClose('IssuesFilter')});
+    addListener('btn_users_reload',            getUsers);
     addListener('filter_issue_user',           getIssues, 'input');
     addListener('filter_issue_statuses',       getIssues, 'input');
     addListener('filter_issue_createdAt_from', getIssues, 'input');

@@ -46,7 +46,7 @@ module.exports = function (m, fn) {
                     let order_actions = [];
                     sizes.forEach(size => {
                         order_actions.push(
-                            fn.orders.create(size.size_id, size.qty, user_id, size.issue_ids)
+                            fn.orders.create(size.size_id, size.qty, user_id)
                         );
                     });
                     Promise.allSettled(order_actions)
@@ -169,7 +169,7 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
-    fn.orders.create     = function (size_id, qty, user_id, issues = []) {
+    fn.orders.create     = function (size_id, qty, user_id) {
         return new Promise((resolve, reject) => {
             fn.sizes.get(size_id)
             .then(size => {
@@ -188,31 +188,20 @@ module.exports = function (m, fn) {
                         }
                     })
                     .then(([order, created]) => {
-                        if (!Array.isArray(issues)) issues = [issues]
-                        let links = [];
-                        if (issues && issues.length > 0) {
-                            issues.forEach(issue => links.push({table: 'issues', id: issue.issue_id}));
-                        };
                         if (created) {
-                            issues.forEach(issue => issue.update({status: 3}));
                             fn.actions.create(
                                 'ORDER | CREATED',
                                 user_id,
-                                [
-                                    {table: 'orders', id: order.order_id}
-                                ].concat(links)
+                                [{table: 'orders', id: order.order_id}]
                             )
                             .then(action => resolve(order));
                         } else {
                             order.increment('qty', {by: qty})
                             .then(result => {
-                                issues.forEach(issue => issue.update({status: 3}));
                                 fn.actions.create(
                                     `ORDER | INCREMENTED | By ${qty}`,
                                     user_id,
-                                    [
-                                        {table: 'orders', id: order.order_id}
-                                    ].concat(links)
+                                    [{table: 'orders', id: order.order_id}]
                                 )
                                 .then(action => resolve(order));
                             })

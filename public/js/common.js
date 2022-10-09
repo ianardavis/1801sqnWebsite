@@ -117,7 +117,11 @@ function print_account(account) {
     else return '';
 };
 function print_size(size) {
-    return `${size.size1}${(size.size2 ? `/${size.size2}` : '')}${(size.size3 ? `/${size.size3}` : '')}`
+    if (size) {
+        return `${size.size1}${(size.size2 ? `/${size.size2}` : '')}${(size.size3 ? `/${size.size3}` : '')}`;
+    } else {
+        return '';
+    };
 };
 function print_size_text(item) {
     return `${item.size_text1}${(item.size_text2 ? `/${item.size_text2}` : '')}${(item.size_text3 ? `/${item.size_text3}` : '')}`

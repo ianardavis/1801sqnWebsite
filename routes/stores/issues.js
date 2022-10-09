@@ -33,10 +33,21 @@ module.exports = (app, m, fn) => {
             .then(allowed_users => {
                 if (!allowed_users || !allowed_stores) {
                     if (user_id_issue && user_id_issue !== '') {
-                        if (user_id_issue === user_id) resolve(false)
-                        else reject(new Error('Permission denied'));
-                    } else resolve(true);
-                } else resolve(false);
+                        if (user_id_issue === user_id) {
+                            resolve(false);
+
+                        } else {
+                            reject(new Error('Permission denied'));
+
+                        };
+                    } else {
+                        resolve(true);
+
+                    };
+                } else {
+                    resolve(false);
+
+                };
             })
             .catch(err => reject(err));
         });
@@ -48,7 +59,7 @@ module.exports = (app, m, fn) => {
             issues_allowed(req.allowed, query.where.user_id_issue, req.user.user_id)
             .then(add_user_id_issue => {
                 if (!query.offset || isNaN(query.offset)) query.offset = 0;
-                if (isNaN(query.limit))                   delete query.limit;
+                if (isNaN(query.limit)) delete query.limit;
                 if (add_user_id_issue) query.where.user_id_issue = req.user.user_id;
                 let where   = fn.build_query(req.query),
                     include = [
@@ -139,10 +150,12 @@ module.exports = (app, m, fn) => {
         return new Promise((resolve, reject) => {
             if (!issues) {
                 reject(new Error('No lines submitted'));
+                
             } else {
                 const submitted = issues.filter(e => e.status !== '').length;
                 if (submitted === 0) {
                     reject(new Error('No lines submitted'));
+                    
                 } else {
                     resolve([issues, submitted]);
                 };
@@ -184,6 +197,7 @@ module.exports = (app, m, fn) => {
             if (actions.length > 0) {
                 Promise.allSettled(actions)
                 .then(results => {
+                    console.log(results);
                     const resolved = results.filter(e => e.status ==='fulfilled').length;
                     const message = `${resolved} of ${submitted} tasks completed`;
                     res.send({success: true, message: message})
