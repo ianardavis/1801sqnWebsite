@@ -141,7 +141,7 @@ module.exports = (app, m, fn) => {
     });
 
     app.post('/issues',            fn.loggedIn(), fn.permissions.check('issuer',        true), (req, res) => {
-        fn.issues.create(req.body.issues, req.user.user_id, (allowed ? 2 : 1))
+        fn.issues.create(req.body.issues, req.user.user_id, (req.allowed ? 2 : 1))
         .then(result => res.send({success: true, message: 'Issues added'}))
         .catch(err => fn.send_error(res, err));
     });
