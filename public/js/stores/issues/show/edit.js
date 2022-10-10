@@ -67,6 +67,9 @@ function get_sizes() {
     });
 };
 window.addEventListener('load', function () {
+    modalOnShow('qty_edit',  get_qty);
+    modalOnShow('size_edit', get_sizes);
+    
     addFormListener(
         'mark_as',
         'PUT',
@@ -78,8 +81,6 @@ window.addEventListener('load', function () {
             ]
         }
     );
-
-    modalOnShow('qty_edit', get_qty);
     addFormListener(
         'qty_edit',
         'PUT',
@@ -89,8 +90,6 @@ window.addEventListener('load', function () {
             getActions
         ]}
     );
-    
-    modalOnShow('size_edit', get_sizes);
     addFormListener(
         'size_edit',
         'PUT',

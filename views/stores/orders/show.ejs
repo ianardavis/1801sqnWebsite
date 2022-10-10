@@ -6,8 +6,25 @@
 <section class='container'>
     <%- include(`${partials}/sidebar/button`, {id: 'actions', text: 'Actions', float: true}) %>
 	<%- include(`${partials}/sidebar/open`, {id: 'actions', text: 'Actions'}) %>
-		
+		<%- include(`${partials}/button/modal/open`, {text: 'Edit Size',     id: 'size_edit', type: 'warning'}) %>
+		<%- include(`${partials}/button/modal/open`, {text: 'Edit Quantity', id: 'qty_edit',  type: 'warning'}) %>
+		<form class="input-group mb-3" id='form_mark_as'>
+			<label class="input-group-text" for="sel_mark_as">Mark Order As:</label>
+			<select class="form-select" id="sel_mark_as" name='order[status]'>
+				<option value="0" id='btn_mark_0' disabled>Cancelled</option>
+				<option value="1" id='btn_mark_1' disabled>Placed	</option>
+				<option value="2" id='btn_mark_2' disabled>Demanded	</option>
+				<option value="3" id='btn_mark_3' disabled>Received	</option>
+			</select>
+			<button class="btn btn-success" id='btn_mark_as' disabled><i class="fas fa-save"></i></button>
+		</form>
+    	<%- include(`${partials}/button/form`, {id: 'delete', text: 'Cancel', colour: 'danger', align_botton: true}) %>
 	<%- include(`${partials}/sidebar/close`) %>
+    <div class="row mb-1">
+        <span class="badge text-bg-secondary w-33" id="bdg_status_1">Placed</span>
+        <span class="badge text-bg-secondary w-33" id="bdg_status_2">Demanded</span>
+        <span class="badge text-bg-secondary w-34" id="bdg_status_3">Received</span>
+    </div>
 	<ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
 		<%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'order'}) %>
 		<%- include(`${partials}/common/actions/tab_head`) %>
@@ -15,28 +32,12 @@
   	</ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
-            <div class="input-group mb-1">
-                <span class="input-group-text w-30">Actions</span>
-                <%- include(`${partials}/button/delete`, {text: 'Cancel', no_ms4: true}) %>
-            </div>
 			<%- include(`${partials}/inputs/display`, {id: 'item_name', title: 'Item', link: true}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'size_desc', title: 'Size', link: true, edit: {modal: 'size_edit', tip: 'Edit Size'}}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'qty',	 	title: 'Quantity', 		   edit: {modal: 'qty_edit',  tip: 'Edit Qty'}}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'size_desc', title: 'Size', link: true}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'qty',	 	title: 'Quantity'}) %>
 			<%- include(`${partials}/inputs/display`, {id: 'createdAt', title: 'Date'}) %>
 			<%- include(`${partials}/inputs/display`, {id: 'updatedAt', title: 'Last Updated'}) %>
-			<div class="input-group mb-1">
-				<span class="input-group-text w-30">Status</span>
-				<p class="form-control mb-0" id='status'></p>
-				<%- include(`${partials}/button/button`, {id: 'mark_cancelled', text: '0', colour: 'danger', 	form: 'mark_cancelled', tip: 'Mark as cancelled'}) %>
-				<%- include(`${partials}/button/button`, {id: 'mark_placed', 	text: '1', colour: 'success',	form: 'mark_placed',    tip: 'Mark as placed'}) %>
-				<%- include(`${partials}/button/button`, {id: 'mark_demanded',  text: '2', colour: 'warning',	form: 'mark_demanded',  tip: 'Mark as demanded'}) %>
-				<%- include(`${partials}/button/button`, {id: 'mark_received',  text: '3', colour: 'secondary', form: 'mark_received',  tip: 'Mark as received'}) %>
-			</div>
-			<form id="form_mark_cancelled"></form>
-			<form id="form_mark_placed"	  ></form>
-			<form id="form_mark_demanded" ></form>
-			<form id="form_mark_received" ></form>
-			<%- include(`${partials}/inputs/display`, {id: 'user', title: 'Raised By', link: true}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'user', 		title: 'Raised By', link: true}) %>
 		</div>
         <%- include(`${partials}/common/actions/tab_body`) %>
         <%- include(`${partials}/common/notes/tab_body`) %>
@@ -54,7 +55,6 @@
 <%- include(`${partials}/common/actions/scripts`) %>
 
 <script src="/js/stores/orders/show/view.js"></script>
-<script async>getOrder()</script>
 <% if (permissions.stores_stock_admin) { %>
 	<script src="/js/stores/orders/show/delete.js"></script>
 	<script async>setDeleteButton()</script>
