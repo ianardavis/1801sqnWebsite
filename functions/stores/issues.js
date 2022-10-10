@@ -129,7 +129,7 @@ module.exports = function (m, fn) {
                             user_id,
                             [{table: 'issues', id: issue_id}]
                         )
-                        .then(action => resolve(issue.issue_id));
+                        .then(action => resolve(issue_id));
                     })
                     .catch(err => reject(err));
 
