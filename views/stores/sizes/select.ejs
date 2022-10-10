@@ -9,9 +9,9 @@
 	    <table class='table table-sm table-hover'>
             <thead class='thead-dark'>
                 <th class='w-10'><i class="fas fa-check"></i></th>
-                <th class='w-25' id='size_text1'></th>
-                <th class='w-25' id='size_text2'></th>
-                <th class='w-25' id='size_text3'></th>
+                <th class='w-25' id='size_text1' data-column='["size1"]' data-dir='ASC'></th>
+                <th class='w-25' id='size_text2' data-column='["size2"]'></th>
+                <th class='w-25' id='size_text3' data-column='["size3"]'></th>
                 <th class='w-15'>Qty</th>
             </thead>
             <tbody id='tbl_sizes'></tbody>
@@ -20,9 +20,8 @@
     </div>
 </section>
 <%- include(`${partials}/foot/app`) %>
-<script src="/js/search/select.js"></script>
-<script src="/js/stores/sizes/select/view.js"></script>
 <script src="/js/utils/list/items.js"></script>
 <script src="/js/utils/list/sizes.js"></script>
-<script async>getItems()</script>
+<script src="/js/search/select.js"></script>
+<script src="/js/stores/sizes/select/view.js"></script>
 <%- include(`${partials}/foot/components/htmlClose`) %>

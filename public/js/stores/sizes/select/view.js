@@ -59,5 +59,5 @@ window.addEventListener('load', function () {
     addListener('filter_items', getItems, 'input');
     add_sort_listeners('sizes', getSizes);
     // add_sort_listeners('items', getItems);
-
+    getItems();
 });
