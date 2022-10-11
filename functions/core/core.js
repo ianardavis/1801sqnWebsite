@@ -144,4 +144,20 @@ module.exports = function (m, fn) {
     fn.run_cmd = function (cmd) {
         return execSync(cmd, { encoding: 'utf-8' });
     };
+    fn.check_for_valid_lines_to_update = function (lines) {
+        return new Promise((resolve, reject) => {
+            if (!lines) {
+                reject(new Error('No lines submitted'));
+                
+            } else {
+                const submitted = lines.filter(e => e.status !== '').length;
+                if (submitted === 0) {
+                    reject(new Error('No lines submitted'));
+                    
+                } else {
+                    resolve([lines, submitted]);
+                };
+            };
+        });
+    };
 };

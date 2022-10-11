@@ -7,8 +7,13 @@ module.exports = function (m, fn) {
                 include: [m.items]
             })
             .then(size => {
-                if (size) resolve(size)
-                else reject(new Error('Size not found'));
+                if (size) {
+                    resolve(size);
+
+                } else {
+                    reject(new Error('Size not found'));
+
+                };
             })
             .catch(err => reject(err));
         });
@@ -28,8 +33,13 @@ module.exports = function (m, fn) {
         return new Promise((resolve, reject) => {
             m.details.findOne({where: where})
             .then(detail => {
-                if (detail) resolve(detail)
-                else reject(new Error('Detail not found'));
+                if (detail) {
+                    resolve(detail);
+                    
+                } else {
+                    reject(new Error('Detail not found'));
+                    
+                };
             })
             .catch(err => reject(err));
         });

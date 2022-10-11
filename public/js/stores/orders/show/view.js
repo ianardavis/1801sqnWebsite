@@ -1,51 +1,50 @@
 let statuses = {0: 'Cancelled', 1: 'Placed', 2: 'Demanded', 3: 'Received'};
 function getOrder() {
+    disable_button('mark_as');
+    for (let i=0; i<=5 ; i++) {
+        disable_button(`mark_${i}`);
+    };
     get({
         table: 'order',
         where: {order_id: path[2]}
     })
     .then(function ([order, options]) {
         set_breadcrumb(order.order_id);
-        set_innerText('size_desc', print_size(order.size));
-        set_innerText('item_name', order.size.item.description);
-        set_innerText('qty',       order.qty);
-        set_innerText('createdAt', print_date(order.createdAt, true));
-        set_innerText('updatedAt', print_date(order.updatedAt, true));
-        set_innerText('user',      print_user(order.user));
-        set_href('user_link',      `/users/${order.user_id}`);
-        set_href('size_desc_link', `/sizes/${order.size_id}`);
-        set_href('item_name_link', `/items/${order.size.item_id}`);
+        set_innerText('order_size',      print_size(order.size));
+        set_innerText('order_item',      order.size.item.description);
+        set_innerText('order_qty',       order.qty);
+        set_innerText('order_createdAt', print_date(order.createdAt, true));
+        set_innerText('order_updatedAt', print_date(order.updatedAt, true));
+        set_innerText('order_user',      print_user(order.user));
 
-        clear_statuses(3, statuses);
-        if ([0, 1, 2, 3].includes(order.status)) {
-            if (order.status === 0) {
-                set_badge(1, 'danger', 'Cancelled');
+        set_href('order_user_link', `/users/${order.user_id}`);
+        set_href('order_size_link', `/sizes/${order.size_id}`);
+        set_href('order_item_link', `/items/${order.size.item_id}`);
 
-            } else {
-                set_badge(1, 'success');
-                if (order.status > 1) {
-                    set_badge(2, 'success');
-                };
-                if (order.status > 2) {
-                    set_badge(3, 'success');
-                };
-            };
-        };
+        if (typeof set_mark_as_options === 'function') set_mark_as_options(order.status);
+
+        set_status_badges(order.status);
     })
     .catch(err => window.location.href = '/orders');
 };
+function set_status_badges(status) {
+    clear_statuses(3, statuses);
+    if ([0, 1, 2, 3].includes(status)) {
+        if (status === 0) {
+            set_badge(1, 'danger', 'Cancelled');
+
+        } else {
+            set_badge(1, 'success');
+            if (status > 1) {
+                set_badge(2, 'success');
+            };
+            if (status > 2) {
+                set_badge(3, 'success');
+            };
+        };
+    };
+};
 window.addEventListener('load', function () {
-    addFormListener(
-        'mark_as',
-        'PUT',
-        `/issues/${path[2]}/mark`,
-        {
-            onComplete: [
-                getOrder,
-                getActions
-            ]
-        }
-    );
     addListener('reload', getOrder);
     getOrder();
 });

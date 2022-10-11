@@ -34,11 +34,22 @@ function XHR_ErrorListener(XHR, spinner) {
 };
 function eventParse(event) {
     try {
-        if      (!event)                                        reject(new Error('No event'))
-        else if (!event.target)                                 reject(new Error('No target'))
-        else if (!event.target.responseText)                    reject(new Error('No response'))
-        else if (typeof event.target.responseText !== 'string') reject(new Error('No valid response'))
-        else return JSON.parse(event.target.responseText);
+        if (!event) {
+            reject(new Error('No event'));
+
+        } else if (!event.target) {
+            reject(new Error('No target'));
+
+        } else if (!event.target.responseText) {
+            reject(new Error('No response'));
+
+        } else if (typeof event.target.responseText !== 'string') {
+            reject(new Error('No valid response'));
+
+        } else {
+            return JSON.parse(event.target.responseText);
+        
+        };
     } catch (err) {
         return {};
     };
@@ -52,8 +63,10 @@ function get(options) {
         XHR.addEventListener("load", function (event) {
             hide_spinner(options.spinner || options.table || '');
             try {
-                if (options.streamAction) options.streamAction(event.target.responseText)
-                else {
+                if (options.streamAction) {
+                    options.streamAction(event.target.responseText);
+
+                } else {
                     let response = eventParse(event);
                     if (response.success) {
                         if (options.func) {
@@ -65,13 +78,14 @@ function get(options) {
                                 options.func
                             );
                         };
-                        // console.log(response);
                         resolve([response.result, options]);
+
                     } else {
                         console.log(`********* Error getting ${options.table} *********`);
                         console.log(response.message || response);
                         console.log('*******************************************');
                         reject(new Error(response.message));
+
                     };
                 };
             } catch (error) {
@@ -79,6 +93,7 @@ function get(options) {
                 console.log(error);
                 console.log('*******************************************');
                 reject(error);
+                
             };
         });
         XHR.addEventListener("error", function () {reject()});

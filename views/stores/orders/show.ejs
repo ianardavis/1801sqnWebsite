@@ -12,13 +12,13 @@
 			<label class="input-group-text" for="sel_mark_as">Mark Order As:</label>
 			<select class="form-select" id="sel_mark_as" name='order[status]'>
 				<option value="0" id='btn_mark_0' disabled>Cancelled</option>
-				<option value="1" id='btn_mark_1' disabled>Placed	</option>
-				<option value="2" id='btn_mark_2' disabled>Demanded	</option>
-				<option value="3" id='btn_mark_3' disabled>Received	</option>
+				<option value="1" id='btn_mark_1' disabled>Placed</option>
+				<option value="2" id='btn_mark_2' disabled>Demanded</option>
+				<option value="3" id='btn_mark_3' disabled>Received</option>
 			</select>
 			<button class="btn btn-success" id='btn_mark_as' disabled><i class="fas fa-save"></i></button>
 		</form>
-    	<%- include(`${partials}/button/form`, {id: 'delete', text: 'Cancel', colour: 'danger', align_botton: true}) %>
+    	<%- include(`${partials}/button/form`, {id: 'delete', text: 'Cancel', colour: 'danger', align_bottom: true}) %>
 	<%- include(`${partials}/sidebar/close`) %>
     <div class="row mb-1">
         <span class="badge text-bg-secondary w-33" id="bdg_status_1">Placed</span>
@@ -32,12 +32,12 @@
   	</ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
-			<%- include(`${partials}/inputs/display`, {id: 'item_name', title: 'Item', link: true}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'size_desc', title: 'Size', link: true}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'qty',	 	title: 'Quantity'}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'createdAt', title: 'Date'}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'updatedAt', title: 'Last Updated'}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'user', 		title: 'Raised By', link: true}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'order_item', 	  title: 'Item', link: true}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'order_size', 	  title: 'Size', link: true}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'order_qty',	 	  title: 'Quantity'}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'order_createdAt', title: 'Date'}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'order_updatedAt', title: 'Last Updated'}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'order_user', 	  title: 'Raised By', link: true}) %>
 		</div>
         <%- include(`${partials}/common/actions/tab_body`) %>
         <%- include(`${partials}/common/notes/tab_body`) %>
@@ -54,11 +54,9 @@
 <%- include(`${partials}/common/notes/scripts`) %>
 <%- include(`${partials}/common/actions/scripts`) %>
 
-<script src="/js/stores/orders/show/view.js"></script>
 <% if (permissions.stores_stock_admin) { %>
+	<script src="/js/stores/orders/show/edit.js"></script>
 	<script src="/js/stores/orders/show/delete.js"></script>
-	<script async>setDeleteButton()</script>
 <% } %>
-<script>getSizes_funcs('order', [1], getOrder);</script>
-<script>getQty_funcs(  'order', [1], getOrder);</script>
+<script src="/js/stores/orders/show/view.js"></script>
 <%- include(`${partials}/foot/components/htmlClose`) %>

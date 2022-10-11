@@ -1,4 +1,4 @@
-const statuses = {0: 'cancelled', 1: 'requested', 2: 'approved', 3: 'ordered', 4: 'issued', 5: 'returned'};
+const statuses = {0: 'cancelled', 1: 'requested', 2: 'approved', 3: 'ordered', 4: 'added to loancard', 5: 'returned'};
 module.exports = function (m, fn) {
     // Common functions
     fn.issues = {};
@@ -563,26 +563,29 @@ module.exports = function (m, fn) {
             change_check(issue_id)
             .then(issue => {
                 fn.sizes.get(size_id)
-                .then(new_size => {
-                    if (new_size.item_id !== issue.size.item_id) {
+                .then(size => {
+                    if (size.item_id !== issue.size.item_id) {
                         reject(new Error('New size is for a different item'));
+
                     } else {
-                        const start_size = issue.size;
-                        issue.update({size_id: new_size.size_id})
+                        const original_size = issue.size;
+                        issue.update({size_id: size.size_id})
                         .then(result => {
                             if (result) {
                                 fn.actions.create(
-                                    `ISSUE | UPDATED | Size changed From: ${fn.print_size(start_size)} to: ${fn.print_size(new_size)}`,
+                                    `ISSUE | UPDATED | Size changed From: ${fn.print_size(original_size)} to: ${fn.print_size(size)}`,
                                     user_id,
                                     [{table: 'issues', id: issue.issue_id}]
                                 )
                                 .then(result => resolve(true));
+
                             } else {
                                 reject(new Error('Issue not updated'));
+
                             };
                         })
                         .catch(err => reject(err));
-                    }
+                    };
                 })
                 .catch(err => reject(err));
             })
@@ -594,21 +597,24 @@ module.exports = function (m, fn) {
             qty = Number(qty);
             if (!qty || !Number.isInteger(qty) || qty < 1) {
                 reject(new Error('Invalid qty'));
+
             } else {
                 change_check(issue_id)
                 .then(issue => {
-                    let start_qty = issue.qty;
+                    let original_qty = issue.qty;
                     issue.update({qty: qty})
                     .then(result => {
                         if (result) {
                             fn.actions.create(
-                                `ISSUE | UPDATED | Quantity changed From: ${start_qty} to: ${qty}`,
+                                `ISSUE | UPDATED | Quantity changed From: ${original_qty} to: ${qty}`,
                                 user_id,
                                 [{table: 'issues', id: issue.issue_id}]
                             )
                             .then(result => resolve(true));
+
                         } else {
                             reject(new Error('Issue not updated'));
+
                         };
                     })
                     .catch(err => reject(err));

@@ -20,4 +20,5 @@ window.addEventListener( "load", function () {
             ]
         }
     );
+    setDeleteButton();
 });

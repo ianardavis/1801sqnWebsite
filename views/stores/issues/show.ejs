@@ -13,21 +13,21 @@
             <select class="form-select" id="sel_mark_as" name='issue[status]'>
                 <option value="0" id='btn_mark_0' disabled>Cancelled</option>
                 <option value="1" id='btn_mark_1' disabled>Requested</option>
-                <option value="2" id='btn_mark_2' disabled>Approved </option>
-                <option value="3" id='btn_mark_3' disabled>Ordered  </option>
-                <option value="4" id='btn_mark_4' disabled>Issued   </option>
-                <option value="5" id='btn_mark_5' disabled>Returned </option>
+                <option value="2" id='btn_mark_2' disabled>Approved</option>
+                <option value="3" id='btn_mark_3' disabled>Ordered</option>
+                <option value="4" id='btn_mark_4' disabled>Issued</option>
+                <option value="5" id='btn_mark_5' disabled>Returned</option>
             </select>
             <button class="btn btn-success" id='btn_mark_as' disabled><i class="fas fa-save"></i></button>
         </form>
-    	<%- include(`${partials}/button/form`, {id: 'delete', text: 'Cancel', colour: 'danger', align_botton: true}) %>
+    	<%- include(`${partials}/button/form`, {id: 'delete', text: 'Cancel', colour: 'danger', align_bottom: true}) %>
     <%- include(`${partials}/sidebar/close`) %>
     <div class="row mb-1">
         <span class="badge text-bg-secondary w-20" id="bdg_status_1">Requested</span>
-        <span class="badge text-bg-secondary w-20" id="bdg_status_2">Approved </span>
-        <span class="badge text-bg-secondary w-20" id="bdg_status_3">Ordered  </span>
+        <span class="badge text-bg-secondary w-20" id="bdg_status_2">Approved</span>
+        <span class="badge text-bg-secondary w-20" id="bdg_status_3">Ordered</span>
         <span class="badge text-bg-secondary w-20" id="bdg_status_4">Added To Loancard</span>
-        <span class="badge text-bg-secondary w-20" id="bdg_status_5">Returned </span>
+        <span class="badge text-bg-secondary w-20" id="bdg_status_5">Returned</span>
     </div>
 	<ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
         <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'issue'}) %>
@@ -50,48 +50,11 @@
 	<div id="div_modals">
         <%- include(`${partials}/common/notes/modals`) %>
         <%- include(`${partials}/common/actions/modals`) %>
-        <div id='mdl_size_edit' class="modal fade" tabindex="-1" role="dialog">
-            <div class="modal-dialog modal-lg" role="document">
-                <form class="modal-content" id='form_size_edit'>
-                    <div class="modal-header">
-                        <h5 class="modal-title">Edit Size</h5>
-                    </div>
-                    <div class="modal-body">
-                        <table class='table table-sm table-hover'>
-                            <thead class='thead-dark' id="tbl_sizes_head">
-                                <th class='w-35' data-column='["size1"]' data-dir="ASC">Size 1</th>
-                                <th class='w-35' data-column='["size2"]'>Size 2</th>
-                                <th class='w-30' data-column='["size3"]'>Size 3</th>
-                                <th><i class="fas fa-check"></i></th>
-                            </thead>
-                            <tbody id='tbl_sizes'></tbody>
-                        </table>
-                    </div>
-                    <div class="modal-footer">
-                        <%- include(`${partials}/button/save`) %>
-                    </div>
-                </form>
-            </div>
-        </div>
-        <div id='mdl_qty_edit'  class="modal fade" tabindex="-1" role="dialog">
-            <div class="modal-dialog modal-lg" role="document">
-                <form class="modal-content" id='form_qty_edit'>
-                    <div class="modal-header">
-                        <h5 class="modal-title">Edit Quantity</h5>
-                    </div>
-                    <div class="modal-body">
-                        <%- include(`${partials}/inputs/number`, {title: 'Qty', id: 'issue_qty_edit', name: 'qty'}) %>
-                    </div>
-                    <div class="modal-footer">
-                        <%- include(`${partials}/button/save`) %>
-                    </div>
-                </form>
-            </div>
-        </div>
+        <%- include(`${partials}/modals/size_edit`) %>
+        <%- include(`${partials}/modals/qty_edit`) %>
 	</div>
 </section>
 <%- include(`${partials}/foot/app`) %>
-<script src="/js/search/select.js"></script>
 <script>show_tab('<%= tab %>')</script>
 <%- include(`${partials}/common/notes/scripts`) %>
 <%- include(`${partials}/common/actions/scripts`) %>

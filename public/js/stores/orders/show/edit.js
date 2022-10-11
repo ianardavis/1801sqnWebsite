@@ -8,12 +8,12 @@ function set_mark_as_options(status) {
 };
 function get_qty() {
     get({
-        table: 'issue',
-        where: {issue_id: path[2]}
+        table: 'order',
+        where: {order_id: path[2]}
     })
-    .then(function ([issue, options]) {
-        if (issue.status === 1 || issue.status === 2) {
-            set_value('inp_qty_edit', issue.qty);
+    .then(function ([order, options]) {
+        if (order.status === 1) {
+            set_value('inp_qty_edit', order.qty);
         } else {
             modalHide('qty_edit');
             alert_toast('Not an editable status');
@@ -25,16 +25,16 @@ function get_sizes() {
     clear('tbl_sizes')
     .then(tbl_sizes => {
         get({
-            table: 'issue',
-            where: {issue_id: path[2]}
+            table: 'order',
+            where: {order_id: path[2]}
         })
         .then(function ([result, options]) {
-            if (result.status === 1 || result.status === 2) {
+            if (result.status === 1) {
                 get({
                     table: 'sizes',
                     where: {
                         item_id: result.size.item_id,
-                        issueable: true
+                        orderable: true
                     }
                 })
                 .then(function ([result, options]) {
@@ -66,14 +66,14 @@ window.addEventListener('load', function () {
     enable_button('size_edit');
     enable_button('qty_edit');
     add_sort_listeners('sizes', get_sizes);
-    
+
     addFormListener(
         'mark_as',
         'PUT',
-        `/issues/${path[2]}/mark`,
+        `/orders/${path[2]}/mark`,
         {
             onComplete: [
-                getIssue,
+                getOrder,
                 getActions
             ]
         }
@@ -81,18 +81,18 @@ window.addEventListener('load', function () {
     addFormListener(
         'size_edit',
         'PUT',
-        `/issues/${path[2]}/size`,
+        `/orders/${path[2]}/size`,
         {onComplete: [
-            getIssue,
+            getOrder,
             getActions
         ]}
     );
     addFormListener(
         'qty_edit',
         'PUT',
-        `/issues/${path[2]}/qty`,
+        `/orders/${path[2]}/qty`,
         {onComplete: [
-            getIssue,
+            getOrder,
             getActions
         ]}
     );
