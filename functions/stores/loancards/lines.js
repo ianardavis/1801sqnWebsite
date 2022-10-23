@@ -257,9 +257,9 @@ module.exports = function (m, fn) {
                         action = add_stock(...args);
                     };
                     action
-                    .then(links => {
+                    .then(([loancard_line_id, links]) => {
                         if (nsn_id) links.push({table: 'nsns', id: nsn_id});
-                        resolve(links);
+                        resolve([loancard_line_id, links]);
                     })
                     .catch(err => reject(err));
                 })
@@ -290,8 +290,11 @@ module.exports = function (m, fn) {
                             })
                             .then(link_line => {
                                 const resolve_obj = [
-                                    {table: 'loancard_lines', id: loancard_line.loancard_line_id},
-                                    {table: 'serials',        id: serial.serial_id}
+                                    loancard_line.loancard_line_id,
+                                    [
+                                        {table: 'loancard_lines', id: loancard_line.loancard_line_id},
+                                        {table: 'serials',        id: serial.serial_id}
+                                    ]
                                 ];
                                 serial.update({
                                     issue_id:    issue.issue_id,
@@ -364,8 +367,11 @@ module.exports = function (m, fn) {
                         })
                         .then(link_line => {
                             const resolve_obj = [
-                                {table: 'loancard_lines', id: loancard_line.loancard_line_id},
-                                {table: 'stocks',         id: stock.stock_id}
+                                loancard_line.loancard_line_id,
+                                [
+                                    {table: 'loancard_lines', id: loancard_line.loancard_line_id},
+                                    {table: 'stocks',         id: stock.stock_id}
+                                ]
                             ];
                             if (created) {
                                 fn.actions.create(

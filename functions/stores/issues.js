@@ -488,7 +488,7 @@ module.exports = function (m, fn) {
                     issue_actions.push(
                         new Promise((resolve, reject) => {
                             fn.loancards.lines.create(loancard_id, issue.issue, user_id, issue.line)
-                            .then(links => {
+                            .then(([loancard_line_id, links]) => {
                                 links.push({table: 'issues', id: issue.issue.issue_id});
                                 update_issue_status(
                                     issue.issue,
@@ -506,7 +506,7 @@ module.exports = function (m, fn) {
                 });
                 Promise.allSettled(issue_actions)
                 .then(results => {
-                    if (results.filter(e => e.status === 'rejected' ).length > 0) console.log(results);
+                    results.filter(e => e.status === 'rejected' ).forEach(e => console.log(e));
                     if (results.filter(e => e.status === 'fulfilled').length > 0) {
                         resolve(true);
 
