@@ -423,18 +423,22 @@ module.exports = function (m, fn) {
                         .then(links => {
                             if (!links || links.length === 0) {
                                 resolve([]);
+
                             } else {
                                 let get_issues = [];
                                 links.forEach(e => get_issues.push(fn.issues.get({issue_id: e.id})));
                                 Promise.allSettled(get_issues)
                                 .then(results => {
                                     let users = [];
-                                    results.filter(e => e.status === 'fulfilled').forEach(result => {
-                                        if (result.value.user_issue) users.push(result.value.user_issue)
-                                    });
+                                    results
+                                        .filter(e => e.status === 'fulfilled')
+                                        .forEach(result => {
+                                            if (result.value.user_issue) users.push(result.value.user_issue)
+                                        });
                                     resolve(users);
                                 })
-                                .catch(err => reject(err))
+                                .catch(err => reject(err));
+
                             };
                         })
                         .catch(err => reject(err))

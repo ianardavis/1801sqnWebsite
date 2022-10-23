@@ -454,6 +454,7 @@ module.exports = function (m, fn) {
                 .then(issue => {
                     if (line.qty > issue.qty) {
                         reject(new Error('Receive quantity is greater than the issue quantity'));
+
                     } else {
                         issue.update({status: 5})
                         .then(result => {
@@ -485,6 +486,7 @@ module.exports = function (m, fn) {
                             };
                         })
                         .catch(err => reject(err));
+                        
                     };
                 })
                 .catch(err => reject(err));

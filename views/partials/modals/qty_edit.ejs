@@ -5,7 +5,7 @@
                 <h5 class="modal-title">Edit Quantity</h5>
             </div>
             <div class="modal-body">
-                <%- include(`${partials}/inputs/number`, {title: 'Qty', id: 'inp_qty_edit', name: 'qty'}) %>
+                <%- include(`${partials}/inputs/number`, {title: 'Qty', id: 'inp_qty_edit', name: 'qty', min: '1'}) %>
             </div>
             <div class="modal-footer">
                 <%- include(`${partials}/button/save`) %>

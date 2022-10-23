@@ -36,13 +36,22 @@
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
-			<%- include(`${partials}/inputs/display`, {id: 'issue_user_issue', title: 'For',  link: true}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'issue_item',	   title: 'Item', link: true}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'issue_size',	   title: 'Size', link: true}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'issue_user_issue', title: 'For',   link: true}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'issue_item',	   title: 'Item',  link: true}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'issue_size',	   title: 'Size',  link: true}) %>
 			<%- include(`${partials}/inputs/display`, {id: 'issue_qty',	 	   title: 'Quantity'}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'issue_order',	   title: 'Order', link: true}) %>
 			<%- include(`${partials}/inputs/display`, {id: 'issue_createdAt',  title: 'Date Raised'}) %>
 			<%- include(`${partials}/inputs/display`, {id: 'issue_updatedAt',  title: 'Last Updated'}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'issue_user',       title: 'By',   link: true}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'issue_user',       title: 'By',    link: true}) %>
+            <h6>Loancard Lines for this Issue</h6>
+            <table class="table table-sm table-hover">
+                <thead class="thead-dark" id="tbl_issue_loancard_lines_head">
+                    <th class='w-100'>ID</th>
+                    <th><i class="fas fa-search"></i></th>
+                </thead>
+                <tbody id="tbl_issue_loancard_lines"></tbody>
+            </table>
 		</div>
         <%- include(`${partials}/common/actions/tab_body`) %>
         <%- include(`${partials}/common/notes/tab_body`) %>

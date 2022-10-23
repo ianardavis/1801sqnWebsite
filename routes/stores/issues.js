@@ -66,7 +66,7 @@ module.exports = (app, m, fn) => {
         };
     });
     app.get('/get/issue',       fn.loggedIn(), fn.permissions.check('issuer',        true), (req, res) => {
-        fn.issues.get(req.query.where)
+        fn.issues.get(req.query.where, {order: true, loancard_lines: true})
         .then(issue => {
             if (
                 req.allowed ||
@@ -123,6 +123,7 @@ module.exports = (app, m, fn) => {
             if (actions.length > 0) {
                 Promise.allSettled(actions)
                 .then(results => {
+                    results.filter(e => e.status === 'rejected').forEach(fail => console.log(fail));
                     const resolved = results.filter(e => e.status ==='fulfilled').length;
                     const message = `${resolved} of ${submitted} tasks completed`;
                     res.send({success: true, message: message})

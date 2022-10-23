@@ -1,5 +1,3 @@
-const { reject } = require("core-js/fn/promise");
-
 const statuses = {0: 'cancelled', 1: 'placed', 2: 'demanded', 3: 'received'};
 module.exports = function (m, fn) {
     fn.orders = {};

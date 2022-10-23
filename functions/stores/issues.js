@@ -2,15 +2,22 @@ const statuses = {0: 'cancelled', 1: 'requested', 2: 'approved', 3: 'ordered', 4
 module.exports = function (m, fn) {
     // Common functions
     fn.issues = {};
-    fn.issues.get = function (where) {
+    fn.issues.get = function (where, include = {}) {
         return new Promise((resolve, reject) => {
+            let includes = [
+                fn.inc.stores.size(),
+                fn.inc.users.user(),
+                fn.inc.users.user({as: 'user_issue'})
+            ];
+            if (include.loancard_lines) includes.push({
+                model: m.loancard_lines,
+                include: [m.loancards]
+            });
+            if (include.order) includes.push(m.orders);
+            
             m.issues.findOne({
                 where: where,
-                include: [
-                    fn.inc.stores.size(),
-                    fn.inc.users.user(),
-                    fn.inc.users.user({as: 'user_issue'})
-                ]
+                include: includes
             })
             .then(issue => {
                 if (issue) {
@@ -28,6 +35,7 @@ module.exports = function (m, fn) {
         const fulfilled = results.filter(e => e.status === 'fulfilled');
         let issues = [];
         fulfilled.forEach(issue => issues.push(issue.value));
+        return issues;
     };
 
     function update_issue_status(issue, status, user_id, action, links = []) {

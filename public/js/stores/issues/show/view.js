@@ -14,13 +14,30 @@ function getIssue() {
         set_innerText('issue_size',       print_size(issue.size));
         set_innerText('issue_item',       issue.size.item.description);
         set_innerText('issue_qty',        issue.qty);
+        set_innerText('issue_order',      issue.order_id);
         set_innerText('issue_createdAt',  print_date(issue.createdAt, true));
         set_innerText('issue_updatedAt',  print_date(issue.updatedAt, true));
         set_innerText('issue_user',       print_user(issue.user));
 
+        clear('tbl_issue_loancard_lines')
+        .then(tbl_issue_loancard_lines => {
+            issue.loancard_lines.forEach(line => {
+                let row = tbl_issue_loancard_lines.insertRow(-1);
+                add_cell(row, {text: line.loancard_line_id});
+                add_cell(row, {append: new Link(`/loancard_lines/${line.loancard_line_id}`).e});
+            });
+        });
+
         set_href('issue_user_link',       `/users/${issue.user_id}`);
         set_href('issue_user_issue_link', `/users/${issue.user_id_issue}`);
         set_href('issue_size_link',       `/sizes/${issue.size_id}`);
+        if (issue.order_id) {
+            set_href('issue_order_link',  `/orders/${issue.order_id}`);
+
+        } else {
+            set_href('issue_order_link');
+
+        };
         set_href('issue_item_link',       `/items/${issue.size.item_id}`);
 
         if (typeof set_mark_as_options === 'function') set_mark_as_options(issue.status);
