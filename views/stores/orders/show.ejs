@@ -38,6 +38,16 @@
 			<%- include(`${partials}/inputs/display`, {id: 'order_createdAt', title: 'Date'}) %>
 			<%- include(`${partials}/inputs/display`, {id: 'order_updatedAt', title: 'Last Updated'}) %>
 			<%- include(`${partials}/inputs/display`, {id: 'order_user', 	  title: 'Raised By', link: true}) %>
+            <h6>Issues for this Order</h6>
+            <table class="table table-sm table-hover">
+                <thead class="thead-dark" id="tbl_order_issues_head">
+                    <th class='w-33'>Date</th>
+                    <th class='w-33'>User</th>
+                    <th class='w-34'>Qty</th>
+                    <th><i class="fas fa-search"></i></th>
+                </thead>
+                <tbody id="tbl_order_issues"></tbody>
+            </table>
 		</div>
         <%- include(`${partials}/common/actions/tab_body`) %>
         <%- include(`${partials}/common/notes/tab_body`) %>

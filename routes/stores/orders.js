@@ -30,7 +30,11 @@ module.exports = (app, m, fn) => {
             where: req.query.where,
             include: [
                 fn.inc.stores.size(),
-                fn.inc.users.user()
+                fn.inc.users.user(),
+                {
+                    model: m.issues,
+                    include: [fn.inc.users.user({as: 'user_issue'})]
+                }
             ]
         })
         .then(order => {

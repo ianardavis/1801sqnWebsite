@@ -17,6 +17,18 @@ function getOrder() {
         set_innerText('order_updatedAt', print_date(order.updatedAt, true));
         set_innerText('order_user',      print_user(order.user));
 
+        
+        clear('tbl_order_issues')
+        .then(tbl_order_issues => {
+            order.issues.forEach(issue => {
+                let row = tbl_order_issues.insertRow(-1);
+                add_cell(row, {text: print_date(issue.createdAt)});
+                add_cell(row, {text: print_user(issue.user_issue)});
+                add_cell(row, {text: issue.qty});
+                add_cell(row, {append: new Link(`/issues/${issue.issue_id}`).e});
+            });
+        });
+
         set_href('order_user_link', `/users/${order.user_id}`);
         set_href('order_size_link', `/sizes/${order.size_id}`);
         set_href('order_item_link', `/items/${order.size.item_id}`);

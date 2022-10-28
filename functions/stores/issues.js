@@ -380,7 +380,8 @@ module.exports = function (m, fn) {
                             fn.orders.create(
                                 size.size_id,
                                 size.qty,
-                                user_id
+                                user_id,
+                                size.issues
                             )
                             .then(order => {
                                 let update_actions = [];
