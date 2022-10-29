@@ -470,13 +470,13 @@ module.exports = function (m, fn) {
                     .then(result => {
                         let action = null;
                         if (order.size.has_serials) {
-                            action = receive_serials(order, receipt.serials, user_id);
+                            action = receive_serials;
 
                         } else {
-                            action = receive_stock(  order, receipt,         user_id);
+                            action = receive_stock;
                             
                         };
-                        action
+                        action(order, receipt, user_id)
                         .then(receive_result => {
                             receive_qty_variance(order, receive_result.qty, user_id)
                             .then(qty_result => {
@@ -501,10 +501,10 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
-    function receive_serials(order, serials, user_id) {
+    function receive_serials(order, receipt, user_id) {
         return new Promise((resolve, reject) => {
             let actions = [];
-            serials.forEach(serial => {
+            receipt.serials.forEach(serial => {
                 actions.push(
                     fn.serials.receive(
                         serial.location,
@@ -516,8 +516,8 @@ module.exports = function (m, fn) {
             });
             Promise.allSettled(actions)
             .then(results => {
-                let serials = results.filter(e => e.status === 'fulfilled'),
-                    qty = serials.length;
+                let serials = results.filter(e => e.status === 'fulfilled');
+                let qty = serials.length;
                 if (qty && qty > 0) {
                     let links = [];
                     serials.forEach(serial => {
@@ -529,7 +529,11 @@ module.exports = function (m, fn) {
                         links.push({table: 'serials', id: serial.value.serial_id})
                     });
                     resolve({order: order, qty: qty, links: links});
-                } else reject(new Error('No successful receipts'));
+
+                } else {
+                    reject(new Error('No successful receipts'));
+
+                };
             })
             .catch(err => reject(err));
         });
@@ -559,6 +563,7 @@ module.exports = function (m, fn) {
                     order:  order
                 }))
                 .catch(err => reject(err));
+                
             } else if (qty < qty_original) {
                 m.orders.create({
                     size_id: order.size_id,
@@ -576,7 +581,11 @@ module.exports = function (m, fn) {
                     .catch(err => reject(err));
                 })
                 .catch(err => reject(err));
-            } else resolve({order: order});
+                
+            } else {
+                resolve({order: order});
+                
+            };
         });
     };
     

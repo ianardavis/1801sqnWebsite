@@ -529,7 +529,7 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
-    fn.issues.issue = function (issues, user_id) {
+    fn.issues.add_to_loancard = function (issues, user_id) {
         return new Promise((resolve, reject) => {
             if (!issues || issues.length === 0) {
                 resolve(false);

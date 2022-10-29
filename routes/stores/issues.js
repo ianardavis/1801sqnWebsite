@@ -117,7 +117,7 @@ module.exports = (app, m, fn) => {
 
             const to_issue = issues.filter(e => e.status === '4')
             if (to_issue.length > 0) {
-                actions.push(fn.issues.issue(to_issue, user_id));
+                actions.push(fn.issues.add_to_loancard(to_issue, user_id));
             };
 
             if (actions.length > 0) {

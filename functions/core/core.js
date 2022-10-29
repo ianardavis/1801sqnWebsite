@@ -150,7 +150,7 @@ module.exports = function (m, fn) {
                 reject(new Error('No lines submitted'));
                 
             } else {
-                const submitted = lines.filter(e => e.status !== '').length;
+                const submitted = lines.filter(e => e.status !== '' && e.status !== 'on').length;
                 if (submitted === 0) {
                     reject(new Error('No lines submitted'));
                     

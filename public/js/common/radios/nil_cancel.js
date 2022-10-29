@@ -12,6 +12,7 @@ function nil_radio(id, index){ //, func = null) {
         tip:         'Nil',
         attributes: [
             {field: 'name',    value: `lines[][${index}][status]`},
+            {field: 'value',   value: ''},
             {field: 'data-id', value: id},
             {field: 'checked', value: true}
         ],

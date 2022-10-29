@@ -102,6 +102,7 @@ module.exports = (app, m, fn) => {
             include: [
                 {model: m.issues, include: [m.sizes]},
                 fn.inc.stores.size(),
+                fn.inc.stores.nsn(),
                 fn.inc.users.user(),
                 fn.inc.stores.loancard({
                     ...(!req.allowed ? {

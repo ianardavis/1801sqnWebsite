@@ -15,11 +15,20 @@
 			<%- include(`${partials}/inputs/display`, {id: 'line_item',  	 title: 'Item', 	link: true}) %>
 			<%- include(`${partials}/inputs/display`, {id: 'line_size',  	 title: 'Size', 	link: true}) %>
 			<%- include(`${partials}/inputs/display`, {id: 'line_qty',  	 title: 'Quantity'}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'line_nsn',  	 title: 'NSN', 		link: true}) %>
 			<%- include(`${partials}/inputs/display`, {id: 'line_serial',  	 title: 'Serial #', link: true}) %>
 			<%- include(`${partials}/inputs/display`, {id: 'line_user',		 title: 'Added By', link: true}) %>
 			<%- include(`${partials}/inputs/display`, {id: 'line_status',    title: 'Status'}) %>
 			<%- include(`${partials}/inputs/display`, {id: 'line_createdAt', title: 'Created'}) %>
 			<%- include(`${partials}/inputs/display`, {id: 'line_updatedAt', title: 'Last Updated'}) %>
+			<h6>Issues for this Loancard Line</h6>
+            <table class="table table-sm table-hover">
+                <thead class="thead-dark" id="tbl_issues_head">
+                    <th class='w-100'>ID</th>
+                    <th><i class="fas fa-search"></i></th>
+                </thead>
+                <tbody id="tbl_issues"></tbody>
+            </table>
 		</div>
         <%- include(`${partials}/common/actions/tab_body`) %>
         <%- include(`${partials}/common/notes/tab_body`) %>

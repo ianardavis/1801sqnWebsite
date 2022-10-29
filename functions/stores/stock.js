@@ -152,10 +152,12 @@ module.exports = function (m, fn) {
         return new Promise((resolve, reject) => {
             fn.stocks.get(options.stock)
             .then(stock => {
-                stock.increment('qty', {qty: options.qty})
+                stock.increment('qty', {by: options.qty})
                 .then(result => {
-                    if (!result) reject(new Error('Stock not incremented'))
-                    else {
+                    if (!result) {
+                        reject(new Error('Stock not incremented'));
+
+                    } else {
                         fn.actions.create(
                             `STOCK | RECEIVED | Qty: ${options.qty}`,
                             options.user_id,
@@ -164,6 +166,7 @@ module.exports = function (m, fn) {
                             ].concat(options.action_links || [])
                         )
                         .then(result => resolve(true));
+
                     };
                 })
                 .catch(err => reject(err));

@@ -227,16 +227,21 @@ module.exports = function (m, fn) {
                     .then(nsn => {
                         if (nsn.size_id !== size.size_id) {
                             reject(new Error('NSN is not for this size'));
+
                         } else {
                             resolve(nsn.nsn_id);
+
                         };
                     })
                     .catch(err => reject(err));
+
                 } else {
                     reject(new Error('No NSN ID submitted'));
+
                 };
             } else {
                 resolve(null);
+
             };
         });
     };
@@ -250,15 +255,17 @@ module.exports = function (m, fn) {
                 check_nsn(size, line)
                 .then(nsn_id => {
                     let action = null;
-                    const args = [size.size_id, nsn_id, loancard.loancard_id, user_id, line, issue];
                     if (size.has_serials) {
-                        action = add_serial(...args);
+                        action = add_serial;
+
                     } else {
-                        action = add_stock(...args);
+                        action = add_stock;
+
                     };
-                    action
+                    action(size.size_id, nsn_id, loancard.loancard_id, user_id, line, issue)
                     .then(([loancard_line_id, links]) => {
                         if (nsn_id) links.push({table: 'nsns', id: nsn_id});
+                        
                         resolve([loancard_line_id, links]);
                     })
                     .catch(err => reject(err));
@@ -380,8 +387,10 @@ module.exports = function (m, fn) {
                                     [{table: 'loancard_lines', id: loancard_line.loancard_line_id}]
                                 )
                                 .then(action => resolve(resolve_obj));
+                                
                             } else {
                                 resolve(resolve_obj);
+                                
                             };
                         })
                         .catch(err => reject(err));
