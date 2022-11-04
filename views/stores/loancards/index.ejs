@@ -10,7 +10,7 @@
 		</div>
 	</div>
 	<%- include(`${partials}/sidebar/open`, {id: 'filter', text: 'Filter'}) %>
-		<button class="btn btn-success w-100" type="button" data-bs-toggle="modal" data-bs-target="#mdl_loancard_open">
+		<button class="btn btn-success w-100 mb-1" type="button" data-bs-toggle="modal" data-bs-target="#mdl_loancard_open">
 			View Loancard
 		</button>
 		<%- include(`${partials}/inputs/select`, {title: 'Filter By User', id: 'sel_users', spinner_id: 'users', reload_id: 'reload_users'}) %>

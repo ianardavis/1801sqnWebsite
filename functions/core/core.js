@@ -141,6 +141,9 @@ module.exports = function (m, fn) {
     fn.public_file = function (folder, file) {
         return `${process.env.ROOT}/public/res/${folder}/${file}`;
     };
+    fn.public_folder = function (folder) {
+        return `${process.env.ROOT}/public/res/${folder}`;
+    };
     fn.run_cmd = function (cmd) {
         return execSync(cmd, { encoding: 'utf-8' });
     };

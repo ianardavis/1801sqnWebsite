@@ -2,14 +2,40 @@ const fs = require("fs");
 module.exports = function (m, fn) {
 	fn.fs = {};
 	fn.fs.file_exists = function (folder, file) {
-			return new Promise((resolve, reject) => {
-				const path = fn.public_file(folder, file);
-				if (fs.existsSync(path)) {
+		return new Promise((resolve, reject) => {
+			const path = fn.public_file(folder, file);
+			if (fs.existsSync(path)) {
+				resolve(path);
+
+			} else {
+				reject(new Error('File does not exist'));
+
+			};
+		});
+	};
+	fn.fs.mkdir = function (folder) {
+		return new Promise((resolve, reject) => {
+			const path = fn.public_folder(folder);
+			fn.fs.folder_exists(folder)
+			.then(result => resolve(path))
+			.catch(err => {
+				fs.mkdir(path, {recursive: true}, result => {
 					resolve(path);
-				} else {
-					reject(new Error('File does not exist'));
-				};
+				});
 			});
+		});
+	};
+	fn.fs.folder_exists = function (folder) {
+		return new Promise((resolve, reject) => {
+			const path = fn.public_folder(folder);
+			if (fs.existsSync(path)) {
+				resolve(path);
+
+			} else {
+				reject(new Error('File does not exist'));
+
+			};
+		});
 	};
 	fn.fs.copy_file = function (src, dest) {
 		return new Promise((resolve, reject) => {
@@ -22,11 +48,14 @@ module.exports = function (m, fn) {
 						if (err) {
 							if (err.code === 'EEXIST') {
 								reject(new Error('Error copying file: This file already exists'));
+
 							} else {
 								reject(err);
+
 							};
 						} else {
 							resolve(true);
+
 						};
 					}
 				);
@@ -54,8 +83,10 @@ module.exports = function (m, fn) {
 					.then(([file, created]) => {
 						if (!created) {
 							reject(new Error('A file with this name already exists'));
+
 						} else {
 							resolve(true);
+
 						};
 					})
 					.catch(err => reject(err));
@@ -76,8 +107,10 @@ module.exports = function (m, fn) {
 						if (err) {
 							console.log(err);
 							reject(err);
+
 						} else {
 							resolve(true);
+
 						};
 					}
 				);
@@ -93,8 +126,10 @@ module.exports = function (m, fn) {
 					fs.unlink(file, function (err) {
 						if (err) {
 							reject(err);
+
 						} else {
 							resolve(true);
+
 						};
 					});
 				};
@@ -139,8 +174,10 @@ module.exports = function (m, fn) {
 					if (err) {
 						console.log(err);
 						resolve(false);
+
 					} else {
 						resolve(true);
+
 					};
 				});
 			})

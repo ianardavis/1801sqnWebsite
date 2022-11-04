@@ -103,14 +103,14 @@ module.exports = function (m, fn) {
                         let y = fn.pdfs.new_page(doc);
                         y += fn.pdfs.logos(doc, y, 'STORES LOAN CARD');
                         y += addHeader(doc, loancard, y);
-                        lines.forEach(line => {
+                        loancard.lines.forEach(line => {
                             if (y >= 708-(line.nsn ? 15 : 0)-(line.serial ? 15 : 0)) {
                                 y = fn.pdfs.end_of_page(doc, y);
                                 y += addHeader(doc, loancard, y);
                             };
                             y += addLine(doc, line, y);
                         });
-                        addDeclaration(doc, lines.length, y);
+                        addDeclaration(doc, loancard.lines.length, y);
                         fn.pdfs.page_numbers(doc, loancard.loancard_id);
                         doc.end();
                         writeStream.on('error', err => reject(err));

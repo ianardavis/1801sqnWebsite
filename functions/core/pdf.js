@@ -1,17 +1,19 @@
 const fs  = require('fs');
 const pdf = require('pdfkit');
+const bwipjs = require('bwip-js');
 const ptp = require('pdf-to-printer');
 module.exports = function (m, fn) {
     fn.pdfs = {};
     fn.pdfs.create = function (id, folder, name, author) {
         return new Promise((resolve, reject) => {
             try {
-                try {
+                fn.fs.mkdir(folder)
+                .then(result => {
                     const file = `${id}-${name}.pdf`;
                     const path = fn.public_file(folder, file);
                     let docMetadata = {};
                     let writeStream = fs.createWriteStream(path, {flags: 'w'});
-
+    
                     docMetadata.Title = `${id}-${folder}-${name}`;
                     if (author) docMetadata.Author = `${(author.rank ? author.rank.rank : "")} ${author.full_name}`;
                     docMetadata.bufferPages   = true;
@@ -20,11 +22,10 @@ module.exports = function (m, fn) {
                     doc.pipe(writeStream);
                     doc.font(`${process.env.ROOT}/public/lib/fonts/myriad-pro/d (1).woff`);
                     resolve([doc, file, writeStream]);
-                } catch (err) {
-                    console.log(err);
-                    reject(err);
-                };
+                })
+                .catch(err => reject(err));
             } catch (err) {
+                console.log(err);
                 reject(err);
             };
         });
@@ -50,12 +51,12 @@ module.exports = function (m, fn) {
         doc.fontSize(10);
         for (let i = range.start; i < range.count; i++) {
             const bar = fn.public_file('barcodes',`${file_id}_128.png`)
-            const qr = fn.public_file('barcodes',`${file_id}_qr.png`)
-            doc.switchToPage(i)//;
-                //doc
-                .text(`Page ${i + 1} of ${range.count}`, 28, 723.89)
-                .image(bar, 28,  738.89, {width: 434, height: 75})
-                .image(qr,  492, 738.89, {width: 75,  height: 75});
+            const qr  = fn.public_file('barcodes',`${file_id}_qr.png`)
+            doc.switchToPage(i);
+            doc
+            .text(`Page ${i + 1} of ${range.count}`, 28, 723.89)
+            .image(bar, 28,  738.89, {width: 434, height: 75})
+            .image(qr,  492, 738.89, {width: 75,  height: 75});
         };
     };
     fn.pdfs.end_of_page = function (doc, y) {
@@ -80,20 +81,22 @@ module.exports = function (m, fn) {
             .then(barcode => {
                 const prepend = (type === 'code128' ? '128' : 'qr');
                 const file = fn.public_file('barcodes', `${uuid}_${prepend}.png`);
-                fs.writeFile(file, barcode)
-                .then(() => resolve())
-                .catch(err => reject(err));
+                fs.writeFile(file, barcode, () => resolve());
             })
             .catch(err => reject(err));
         });
     };
     fn.pdfs.create_barcodes = function (uuid) {
         return new Promise((resolve, reject) => {
-            Promise.allSettled([
-                create_barcode(uuid, 'code128'),
-                create_barcode(uuid, 'qrcode')
-            ])
-            .then(results => resolve(true))
+            fn.fs.mkdir('barcodes')
+            .then(path => {
+                Promise.allSettled([
+                    create_barcode(uuid, 'code128'),
+                    create_barcode(uuid, 'qrcode')
+                ])
+                .then(results => resolve(true))
+                .catch(err => reject(err));
+            })
             .catch(err => reject(err));
         });
     };

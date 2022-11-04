@@ -125,8 +125,32 @@ module.exports = function (m, fn) {
 
                 } else {
                     resolve(loancard);
+                    
                 };
             })
+            .catch(err => reject(err));
+        });
+    };
+    function update_lines(lines) {
+        return new Promise((resolve, reject) => {
+            let actions = [];
+            lines.forEach(line => {
+                actions.push(new Promise((resolve, reject) => {
+                    line.update({status: 2})
+                    .then(result => {
+                        if (result) {
+                            resolve({table: 'loancard_lines', id: line.loancard_line_id});
+
+                        } else {
+                            reject(new Error('Line not updated'));
+
+                        };
+                    })
+                    .catch(err => reject(err));
+                }));
+            });
+            Promise.all(actions)
+            .then(links => resolve(links))
             .catch(err => reject(err));
         });
     };
@@ -134,40 +158,27 @@ module.exports = function (m, fn) {
         return new Promise((resolve, reject) => {
             complete_check(options.loancard_id)
             .then(loancard => {
-                let actions = [];
-                actions.push(loancard.update({
-                    status:   2,
-                    date_due: options.date_due
-                }));
-                lines.forEach(line => {
-                    actions.push(new Promise((resolve, reject) => {
-                        line.update({status: 2})
-                        .then(result => {
+                update_lines(loancard.lines)
+                .then(line_links => {
+                    loancard.update({
+                        status:   2,
+                        date_due: options.date_due
+                    })
+                    .then(result => {
+                        if (result) {
                             fn.actions.create(
                                 'LOANCARD | COMPLETED',
                                 options.user_id,
-                                [{table: 'loancard_lines', id: line.loancard_line_id}]
+                                [{table: 'loancards', id: loancard.loancard_id}].concat(line_links)
                             )
                             .then(action => resolve(true));
-                        })
-                        .catch(err => reject(err));
-                    }));
-                });
-                actions.push(m.loancard_lines.update(
-                    {status: 2},
-                    {where: {
-                        loancard_id: loancard.loancard_id,
-                        status:      {[fn.op.or]: [1, 2]}
-                    }}
-                ));
-                Promise.all(actions)
-                .then(result => {
-                    fn.actions.create(
-                        'LOANCARD | COMPLETED',
-                        options.user_id,
-                        [{table: 'loancards', id: loancard.loancard_id}]
-                    )
-                    .then(action => resolve(true));
+
+                        } else {
+                            reject(new Error('Loancard not updated'));
+
+                        };
+                    })
+                    .catch(err => reject(err));
                 })
                 .catch(err => reject(err));
             })
@@ -188,7 +199,7 @@ module.exports = function (m, fn) {
             )
             .then(loancard => {
                 if (loancard.lines.length > 0) {
-                    reject(new Error('Loancard not ready to b e closed yet'));
+                    reject(new Error('Loancard not ready to be closed yet'));
 
                 } else {
                     resolve(loancard);
