@@ -263,10 +263,10 @@ module.exports = function (m, fn) {
 
                     };
                     action(size.size_id, nsn_id, loancard.loancard_id, user_id, line, issue)
-                    .then(([loancard_line_id, links]) => {
-                        if (nsn_id) links.push({table: 'nsns', id: nsn_id});
+                    .then(result => {
+                        // if (nsn_id) links.push({table: 'nsns', id: nsn_id});
                         
-                        resolve([loancard_line_id, links]);
+                        resolve(result);
                     })
                     .catch(err => reject(err));
                 })
@@ -277,8 +277,10 @@ module.exports = function (m, fn) {
     };
     function add_serial(size_id, nsn_id, loancard_id, user_id, line, issue) {
         return new Promise((resolve, reject) => {
+            console.log(size_id, nsn_id, loancard_id, user_id, line);
             let actions = [];
             line.serials.forEach(serial => {
+                console.log(serial);
                 actions.push(new Promise((resolve, reject) => {
                     check_serial(size_id, serial.serial_id)
                     .then(serial => {
@@ -291,33 +293,45 @@ module.exports = function (m, fn) {
                             user_id:     user_id
                         })
                         .then(loancard_line => {
+                            console.log("loancard line id", loancard_line.loancard_line_id);
                             m.issue_loancard_lines.create({
                                 issue_id: issue.issue_id,
                                 loancard_line_id: loancard_line.loancard_line_id
                             })
                             .then(link_line => {
-                                const resolve_obj = [
-                                    loancard_line.loancard_line_id,
-                                    [
-                                        {table: 'loancard_lines', id: loancard_line.loancard_line_id},
-                                        {table: 'serials',        id: serial.serial_id}
-                                    ]
-                                ];
-                                serial.update({
-                                    issue_id:    issue.issue_id,
-                                    location_id: null
-                                })
-                                .then(result => {
+                                console.log("link id", link_line.issue_loancard_line_id);
+                                // const resolve_obj = [
+                                //     loancard_line.loancard_line_id,
+                                //     [
+                                //         {table: 'loancard_lines', id: loancard_line.loancard_line_id},
+                                //         {table: 'serials',        id: serial.serial_id}
+                                //     ]
+                                // ];
+                                Promise.all([
+                                    serial.update({
+                                        issue_id:    issue.issue_id,
+                                        location_id: null
+                                    }),
+                                    issue.update({
+                                        status: 4
+                                    })
+                                ])
+                                .then(([result1, result2]) => {
+                                    console.log("Results", result1, result2);
                                     fn.actions.create(
                                         'LOANCARD LINE | CREATED',
                                         user_id,
-                                        [{table: 'loancard_lines', id: loancard_line.loancard_line_id}]
+                                        [
+                                            {table: 'loancard_lines', id: loancard_line.loancard_line_id},
+                                            {table: 'serials',        id: serial.serial_id},
+                                            {table: 'issues',         id: issue.issue_id}
+                                        ]
                                     )
-                                    .then(action => resolve(resolve_obj));
+                                    .then(action => resolve(true));
                                 })
                                 .catch(err => {
                                     console.log(err);
-                                    resolve(resolve_obj)
+                                    reject(err);
                                 });
                             })
                             .catch(err => reject(err));
@@ -329,23 +343,36 @@ module.exports = function (m, fn) {
             });
             Promise.allSettled(actions)
             .then(results => {
-                let resolve_obj = [];
-                results.filter(e => e.status === 'fulfilled').forEach(r => resolve_obj.concat(r.value));
-                resolve(resolve_obj);
+                console.log(results);
+                resolve(true);
+                // let resolve_obj = [];
+                // results.filter(e => e.status === 'fulfilled').forEach(r => resolve_obj.concat(r.value));
+                // resolve(resolve_obj);
             })
             .catch(err => reject(err));
         });
     };
     function check_serial(size_id, serial_id) {
         return new Promise((resolve, reject) => {
-            if (!serial_id) reject(new Error('No Serial ID submitted'))
-            else {
+            if (!serial_id) {
+                reject(new Error('No Serial ID submitted'));
+
+            } else {
                 fn.serials.get(serial_id)
                 .then(serial => {
-                    if      ( serial.size_id !== size_id) reject(new Error('Serial # is not for this size'))
-                    else if ( serial.issue_id)            reject(new Error('This serial is already issued'))
-                    else if (!serial.location_id)         reject(new Error('This serial is not in stock'))
-                    else resolve(serial);
+                    if (serial.size_id !== size_id) {
+                        reject(new Error('Serial # is not for this size'));
+
+                    } else if (serial.issue_id) {
+                        reject(new Error('This serial is already issued'));
+
+                    } else if (!serial.location_id) {
+                        reject(new Error('This serial is not in stock'));
+
+                    } else {
+                        resolve(serial);
+
+                    };
                 })
                 .catch(err => reject(err));
             };
@@ -373,25 +400,44 @@ module.exports = function (m, fn) {
                             loancard_line_id: loancard_line.loancard_line_id
                         })
                         .then(link_line => {
-                            const resolve_obj = [
-                                loancard_line.loancard_line_id,
-                                [
-                                    {table: 'loancard_lines', id: loancard_line.loancard_line_id},
-                                    {table: 'stocks',         id: stock.stock_id}
-                                ]
-                            ];
-                            if (created) {
-                                fn.actions.create(
-                                    'LOANCARD LINE | CREATED',
-                                    user_id,
-                                    [{table: 'loancard_lines', id: loancard_line.loancard_line_id}]
-                                )
-                                .then(action => resolve(resolve_obj));
-                                
-                            } else {
-                                resolve(resolve_obj);
-                                
-                            };
+                            issue.update({status: 4})
+                            .then(result => {
+                                if (result) {
+                                    const links = [
+                                        {table: 'stocks',         id: stock.stock_id},
+                                        {table: 'issues',         id: issue.issue_id},
+                                        {table: 'loancard_lines', id: loancard_line.loancard_line_id}
+                                    ];
+                                    // const resolve_obj = [
+                                    //     loancard_line.loancard_line_id,
+                                    //     [
+                                    //         {table: 'loancard_lines', id: loancard_line.loancard_line_id},
+                                    //         {table: 'stocks',         id: stock.stock_id}
+                                    //     ]
+                                    // ];
+                                    if (created) {
+                                        fn.actions.create(
+                                            'LOANCARD LINE | CREATED',
+                                            user_id,
+                                            links
+                                        )
+                                        .then(action => resolve(true));
+                                        
+                                    } else {
+                                        fn.actions.create(
+                                            `LOANCARD LINE | INCREMENTED BY ${line.qty}`,
+                                            user_id,
+                                            links
+                                        )
+                                        .then(action => resolve(true));
+                                        
+                                    };
+                                } else {
+                                    reject(new Error('Issue not updated'));
+
+                                };
+                            })
+                            .catch(err => reject(err));
                         })
                         .catch(err => reject(err));
                     })
@@ -406,13 +452,16 @@ module.exports = function (m, fn) {
         return new Promise((resolve, reject) => {
             if (!options.stock_id) {
                 reject(new Error('No stock ID submitted'));
+
             } else {
                 fn.stocks.get({stock_id: options.stock_id})
                 .then(stock => {
                     if (stock.size_id !== size_id) {
                         reject(new Error('Stock record is not for this size'));
+
                     } else {
                         resolve(stock);
+
                     };
                 })
                 .catch(err => reject(err));
@@ -420,7 +469,6 @@ module.exports = function (m, fn) {
         });
     };
 
-    
     function return_line_check(line_id) {
         return new Promise((resolve, reject) => {
             fn.loancards.lines.get(

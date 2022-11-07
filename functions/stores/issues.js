@@ -425,21 +425,29 @@ module.exports = function (m, fn) {
     function sort_issues_by_user(lines) {
         return new Promise((resolve, reject) => {
             let users = [];
-            get_line_issues_for_issue(lines)
-            .then(issues => {
-                issues.forEach(([issue, line]) => {
-                    let index = users.findIndex(e => e.user_id === issue.user_id_issue);
-                    if (index === -1) {
-                        users.push({
-                            user_id: issue.user_id_issue,
-                            issues:  [{issue: issue, line: line}]
-                        });
-
-                    } else {
-                        users[index].issues.push({issue: issue, line: line});
-
-                    };
-                });
+            let actions = [];
+            lines.forEach(line => {
+                actions.push(new Promise((resolve, reject) => {
+                    get_issue_for_line(line)
+                    .then(issue => {
+                        let index = users.findIndex(e => e.user_id === issue.user_id_issue);
+                        if (index === -1) {
+                            users.push({
+                                user_id: issue.user_id_issue,
+                                issues:  [{issue: issue, line: line}]
+                            });
+    
+                        } else {
+                            users[index].issues.push({issue: issue, line: line});
+    
+                        };
+                        resolve(true);
+                    })
+                    .catch(err => reject(err));
+                }));
+            });
+            Promise.all(actions)
+            .then(results => {
                 if (users.length > 0) {
                     resolve(users);
 
@@ -451,37 +459,27 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
-    function get_line_issues_for_issue(lines) {
+    function get_issue_for_line(line) {
         return new Promise((resolve, reject) => {
-            let actions = [];
-            lines.forEach(line => {
-                actions.push(
-                    new Promise((resolve, reject) => {
-                        fn.issues.get({issue_id: line.issue_id})
-                        .then(issue => {
-                            if (!issue.size) {
-                                reject( new Error('Size not found'));
+            fn.issues.get({issue_id: line.issue_id})
+            .then(issue => {
+                if (!issue.size) {
+                    reject( new Error('Size not found'));
 
-                            } else if (issue.size.has_nsns && !line.nsn_id) {
-                                reject(new Error('No NSN specified'));
-                                
-                            } else if (issue.size.has_serials && (!line.serials || line.serials.length === 0)) {
-                                reject(new Error('No Serial #(s) specified'));
+                } else if (issue.size.has_nsns && !line.nsn_id) {
+                    reject(new Error('No NSN specified'));
+                    
+                } else if (issue.size.has_serials && (!line.serials || line.serials.length === 0)) {
+                    reject(new Error('No Serial #(s) specified'));
 
-                            } else if (issue.size.has_serials && line.serials.length < issue.qty) {
-                                reject(new Error('Not enough Serial #(s) specified'));
+                } else if (issue.size.has_serials && line.serials.length < issue.qty) {
+                    reject(new Error('Not enough Serial #(s) specified'));
 
-                            } else {
-                                resolve([issue, line]);
-                                
-                            };
-                        })
-                        .catch(err => reject(err));
-                    })
-                );
-            });
-            Promise.all(actions)
-            .then(issues => resolve(issues))
+                } else {
+                    resolve(issue);
+                    
+                };
+            })
             .catch(err => reject(err));
         });
     };
@@ -497,17 +495,18 @@ module.exports = function (m, fn) {
                     issue_actions.push(
                         new Promise((resolve, reject) => {
                             fn.loancards.lines.create(loancard_id, issue.issue, user_id, issue.line)
-                            .then(([loancard_line_id, links]) => {
-                                links.push({table: 'issues', id: issue.issue.issue_id});
-                                update_issue_status(
-                                    issue.issue,
-                                    4,
-                                    user_id,
-                                    `ADDED TO LOANCARD`,
-                                    links
-                                )
-                                .then(result => resolve(result))
-                                .catch(err => reject(err));
+                            .then(result => {
+                                resolve(true);
+                                // links.push({table: 'issues', id: issue.issue.issue_id});
+                                // update_issue_status(
+                                //     issue.issue,
+                                //     4,
+                                //     user_id,
+                                //     `ADDED TO LOANCARD`,
+                                //     links
+                                // )
+                                // .then(result => resolve(result))
+                                // .catch(err => reject(err));
                             })
                             .catch(err => reject(err));
                         })

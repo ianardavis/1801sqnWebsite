@@ -13,6 +13,7 @@ function issue_options() {
                     if (issue.status === 4) add_stock_select(div_details, options.index, issue.size_id);
                     remove_spinner(issue.issue_id);
                 });
+
             } else if (this.value === '4') { // Issue
                 get({
                     table: 'issue',
@@ -21,18 +22,28 @@ function issue_options() {
                 })
                 .then(function ([issue, options]) {
                     if ([2,3].includes(issue.status)) {
-                        if (issue.size.has_nsns)    add_nsn_select(   div_details, options.index, issue.size_id);
-                        if (issue.size.has_serials) add_serial_select(div_details, options.index, issue.size_id, issue.qty)
-                        else {
+                        if (issue.size.has_nsns)    {
+                            add_nsn_select(div_details, options.index, issue.size_id);
+                        };
+
+                        if (issue.size.has_serials) {
+                            add_serial_select(div_details, options.index, issue.size_id, issue.qty);
+
+                        } else {
                             add_stock_select(div_details, options.index, issue.size_id);
                             add_qty_input(   div_details, options.index, issue.qty);
+
                         };
                     } else if (issue.status === 4) {
                         add_stock_select(div_details, options.index, issue.size_id);
+
                     };
                     remove_spinner(issue.issue_id);
                 });
-            } else remove_spinner(this.dataset.id);
+
+            } else {
+                remove_spinner(this.dataset.id);
+            };
         })
         .catch(err => remove_spinner(this.dataset.id));
     };
@@ -85,7 +96,13 @@ function add_serial_select(div_details, index, size_id, qty) {
     })
     .then(function ([result, options]) {
         let serial_options = [{text: 'Select Serial #'}];
-        result.serials.forEach(e => serial_options.push({text: `Serial #: ${e.serial} | Location: ${serial.location.location}`, value: e.serial_id}));
+        result.serials.forEach(e => {
+            serial_options.push({
+                text: `Serial #: ${e.serial} | Location: ${e.location.location}`,
+                value: e.serial_id
+            });
+        });
+        
         for (let i = 0; i < qty; i++) {
             div_details.appendChild(new Select({
                 attributes: [
