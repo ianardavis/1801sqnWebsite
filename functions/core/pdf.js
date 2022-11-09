@@ -31,11 +31,11 @@ module.exports = function (m, fn) {
         });
     };
     fn.pdfs.new_page = function (doc) {
-    let pageMetaData = {};
-    pageMetaData.size    = 'A4';
-    pageMetaData.margins = 28;
-    doc.addPage(pageMetaData);
-    return 28;
+        let pageMetaData = {};
+        pageMetaData.size    = 'A4';
+        pageMetaData.margins = 28;
+        doc.addPage(pageMetaData);
+        return 28;
     };
     fn.pdfs.logos = function (doc, y, title) {
         doc
@@ -61,7 +61,7 @@ module.exports = function (m, fn) {
     };
     fn.pdfs.end_of_page = function (doc, y) {
         doc.text('END OF PAGE', 28, y, {width: 539, align: 'center'});
-        y = add_page(doc);
+        y = fn.pdfs.new_page(doc);
         return y;
     };
     function create_barcode(uuid, type) {
