@@ -78,6 +78,7 @@ module.exports = (app, m, fn) => {
         m.loancard_lines.findAndCountAll({
             where:   req.query.where,
             include: [
+                m.issues,
                 fn.inc.stores.size(),
                 fn.inc.users.user(),
                 fn.inc.stores.loancard({

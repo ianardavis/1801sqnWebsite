@@ -30,7 +30,7 @@ function return_options() {
                         function update_qty() {
                             let qty = 0;
                             const inputs = div_issues.querySelectorAll('input.issue_input');
-                            inputs.forEach(e => qty += e.value);
+                            inputs.forEach(e => qty += Number(e.value));
                             if (Number(qty) <= 0) {
                                 document.querySelector(`#rad_${line.loancard_line_id}_nil`).click();
                             } else {

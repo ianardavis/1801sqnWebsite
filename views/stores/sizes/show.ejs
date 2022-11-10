@@ -6,8 +6,8 @@
 <%- include(`${partials}/head/components/close`) %>
 <section class='container'>
 
-    <%- include(`${partials}/sidebar/button`, {id: 'actions', text: 'Actions', float: true}) %>
-    <%- include(`${partials}/sidebar/open`,   {id: 'actions', text: 'Actions'}) %>
+    <%- include(`${partials}/sidebar/button`, {id: 'menu', text: 'Menu', float: true}) %>
+    <%- include(`${partials}/sidebar/open`,   {id: 'menu', text: 'Menu'}) %>
         <%- include(`${partials}/button/modal/open`, {text: 'Edit',               id: 'size_edit',   type: 'warning', modal: 'size_edit'}) %>
         <%- include(`${partials}/button/modal/open`, {text: 'Add Detail',         id: 'detail_add',  type: 'success', modal: 'detail_add'}) %>
         <%- include(`${partials}/button/modal/open`, {text: 'New NSN',            id: 'nsn_add',     type: 'success', modal: 'nsn_add',    classes: ['has_nsns_element']}) %>

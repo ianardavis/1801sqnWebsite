@@ -15,10 +15,12 @@ function getLines() {
             let row_index = 0;
             result.lines.forEach(line => {
                 try {
+                    let qty = 0;
+                    line.issues.forEach(issue => {qty += issue.qty});
                     let row = tbl_lines.insertRow(-1);
                     add_cell(row, {text: line.size.item.description});
                     add_cell(row, {text: print_size(line.size)});
-                    add_cell(row, {text: line.qty});
+                    add_cell(row, {text: qty});
                     add_cell(row, {
                         text: line_statuses[line.status],
                         append: new Hidden_Input({

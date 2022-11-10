@@ -27,18 +27,20 @@ module.exports = function (m, fn) {
         return 55;
     };
     function addDeclaration(doc, count, y) {
-        if (y >= 640) fn.pdfs.end_of_page(doc, y);
+        if (y >= 640) y = fn.pdfs.end_of_page(doc, y);
         const close_text = `END OF LOANCARD, ${count} LINE(S) ISSUED`;
         const disclaimer = 'By signing in the box below, I confirm I have received the items listed above. I understand I am responsible for any items issued to me and that I may be liable to pay for items lost or damaged through negligence';
         doc
-            .text(close_text, 28, y,    {width: 539, align: 'center'})
-            .text(disclaimer, 28, y+20, {width: 539, align: 'center'})
-            .rect(197.64, y+50, 200, 100).stroke();
+        .text(close_text, 28, y,    {width: 539, align: 'center'})
+        .text(disclaimer, 28, y+20, {width: 539, align: 'center'})
+        .rect(197.64, y+50, 200, 100).stroke();
     };
     function addLine(doc, line, y) {
         let y_c = 30;
+        let qty = 0;
+        line.issues.forEach(issue => {qty += issue.qty});
         doc
-            .text(line.qty,                                                            320, y)
+            .text(qty,                                                                 320, y)
             .text(line.size.item.description,                                           28, y)
             .text(`${fn.print_size_text(line.size.item)}: ${fn.print_size(line.size)}`, 28, y+15);
         if (line.nsn) {
@@ -67,6 +69,7 @@ module.exports = function (m, fn) {
                     where: {status: 2},
                     required: false,
                     include: [
+                        m.issues,
                         fn.inc.stores.serial(),
                         fn.inc.stores.nsn(),
                         fn.inc.stores.size()

@@ -38,7 +38,7 @@ module.exports = (app, m, fn) => {
 
     app.post('/stocks',             fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
         fn.stocks.create(req.body.stock.size_id, req.body.location)
-        .then(([stock, created]) => res.send({success: true, message: 'Stock location added'}))
+        .then(result => res.send({success: true, message: 'Stock location added'}))
         .catch(err => fn.send_error(res, err));
     });
     app.post('/stocks/receipts',    fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
