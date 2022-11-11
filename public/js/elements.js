@@ -161,7 +161,7 @@ function Label(innerHTML, options = {}) {
 function Radio(options = {}) {
     if (!options.id) options.id = random_id();
     this.e = document.createElement('span');
-    if (options.float_start) this.e.classList.add('float-start');
+    if (options.float_start) this.e.classList.add('float-start', 'mb-1');
     if (options.float) this.e.classList.add('float-end');
 
     this.e.appendChild(new Radio_Input({
