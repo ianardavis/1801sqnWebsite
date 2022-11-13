@@ -1,7 +1,7 @@
 function approve_radio(id, index, func = null) {
     return new Radio({
         id:          `${id}_decline`,
-        float_start: true,
+        // float_start: true,
         classes:     ['radio_decline'],
         colour:      'danger',
         html:        '<i class="fas fa-times-circle"></i>',
@@ -16,7 +16,7 @@ function approve_radio(id, index, func = null) {
 function decline_radio(id, index, func = null) {
     return new Radio({
         id:          `${id}_approve`,
-        float_start: true,
+        // float_start: true,
         classes:     ['radio_approve'],
         colour:      'success',
         html:        '<i class="fas fa-times-circle"></i>',

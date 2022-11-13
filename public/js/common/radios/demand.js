@@ -1,7 +1,7 @@
 function demand_radio(id, index, func = null) {
     return new Radio({
         id:          `${id}_demand`,
-        float_start: true,
+        // float_start: true,
         classes:     ['radio_demand'],
         colour:      'warning',
         html:        '<i class="fas fa-industry"></i>',

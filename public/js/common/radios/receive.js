@@ -1,7 +1,7 @@
 function receive_radio(id, index, func = null) {
     return new Radio({
         id:          `${id}_receive`,
-        float_start: true,
+        // float_start: true,
         classes:     ['radio_receive'],
         colour:      'success',
         html:        '<i class="fas fa-receipt"></i>',

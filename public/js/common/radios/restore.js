@@ -1,7 +1,7 @@
 function restore_radio(id, index, func = null) {
     return new Radio({
         id:          `${id}_restore`,
-        float_start: true,
+        // float_start: true,
         classes:     ['radio_restore'],
         colour:      'success',
         html:        '<i class="fas fa-trash-restore-alt"></i>',

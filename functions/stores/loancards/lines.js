@@ -501,11 +501,20 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
+    function update_issues(issues, user_id) {
+        return new Promise((resolve, reject) => {
+            let actions = [];
+            issues.forEach(issue => {
+                actions.push(update_issue(issue, user_id));
+            });
+        });
+    };
     function update_issue(line, user_id) {
         return new Promise((resolve, reject) => {
             line.qty = Number(line.qty);
             if (line.qty <= 0) {
                 reject(new Error('Receive quantity is 0 or less'));
+
             } else {
                 fn.issues.get({issue_id: line.issue_id})
                 .then(issue => {
@@ -528,22 +537,34 @@ module.exports = function (m, fn) {
                                                 status:        4,
                                                 user_id:       user_id
                                             })
-                                            .then(new_issue => resolve({new_issue: new_issue}))
+                                            .then(new_issue => {
+                                                m.issue_loancard_lines.create({
+                                                    loancard_line_id: line.loancard_line_id,
+                                                    issue_id: new_issue.issue_id
+                                                })
+                                                .then(issue_loancard_line => resolve({new_issue: new_issue}))
+                                                .catch(err => reject(err));
+                                            })
                                             .catch(err => reject(err));
+
                                         } else {
                                             reject(new Error('Quantity not updated'));
+
                                         };
                                     })
                                     .catch(err => reject(err));
+
                                 } else {
                                     resolve({});
+
                                 };
                             } else {
                                 reject(new Error('Status not updated'));
+
                             };
                         })
                         .catch(err => reject(err));
-                        
+
                     };
                 })
                 .catch(err => reject(err));
@@ -555,11 +576,36 @@ module.exports = function (m, fn) {
             console.log(options);
             return_line_check(options.loancard_line_id)
             .then(line => {
+                if (options.scrap && options.scrap === '1') {
+                    fn.scraps.get({supplier_id: line.size.supplier_id})
+                    .then(scrap => {
+                        fn.scraps.lines.add(
+                            scrap.scrap_id,
+                            line.size_id,
+                            {
+                                serial_id: line.serial_id,
+                                nsn_id:    line.nsn_id
+                            }
+                        )
+                        .then(result => {
+
+                        })
+                        .catch(err => reject(err));
+                    })
+                    .catch(err => reject(err));
+
+                } else if (options.location) {
+                    
+
+                } else {
+                    reject(new Error('No scrap or location'));
+
+                };
+                
                 let actions = [];
                 options.issues.forEach(issue => {
                     actions.push(update_issue(issue, user_id));
                 });
-                
                 // return stock or serial to location
 
                 resolve(line.loancard_id);

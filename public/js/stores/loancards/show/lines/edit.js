@@ -62,6 +62,46 @@ function add_location_input(div_location, index) {
         options: [{text: 'Enter Location'}]
     }).e);
 };
+function add_div(div, text, collapse) {
+    let h5 = document.createElement('h5');
+    h5.innerText = text;
+    div.appendChild(h5);
+    collapse.appendChild(div);
+};
+function issue_p(issue, line_index, issue_index, update_qty, open = true) {
+    let p = document.createElement('p');
+    p.innerText = print_date(issue.createdAt);
+    let attributes = [
+        {field: 'value', value: issue.qty}
+    ]
+    if (open) {
+        attributes.concat([
+            {field: 'min',         value: '0'},
+            {field: 'max',         value: issue.qty},
+            {field: 'placeholder', value: 'Quantity'},
+            {field: 'name',        value: `lines[][${line_index}][issues][${issue_index}][qty]`},
+            {field: 'required',    value: true}
+        ]);
+        p.appendChild(new Hidden_Input({
+            attributes: [
+                {field: 'value',    value: issue.issue_id},
+                {field: 'name',     value: `lines[][${line_index}][issues][${issue_index}][issue_id]`},
+                {field: 'required', value: true}
+            ],
+            listener: {event: 'change', func: update_qty}
+        }).e);
+    } else {
+        attributes.concat([
+            {field: 'disabled', value: true}
+        ]);
+    };
+    p.appendChild(new Number_Input({
+        ...(open ? {classes: ['issue_input']} : {}),
+        attributes: attributes,
+        listener: {event: 'change', func: update_qty}
+    }).e);
+    return p;
+};
 function add_qty_inputs(div_details, line, index) {
     const line_id = `issues_${line.loancard_line_id}`;
     let div_issues = document.createElement('div');
@@ -69,59 +109,38 @@ function add_qty_inputs(div_details, line, index) {
         attributes: [{field: 'disabled', value: true}]
     }).e;
     div_details.appendChild(total_qty);
+
     function update_qty() {
         let qty = 0;
         const inputs = div_issues.querySelectorAll('input.issue_input');
         inputs.forEach(e => qty += Number(e.value));
         if (Number(qty) <= 0) {
             document.querySelector(`#rad_${line.loancard_line_id}_nil`).click();
+
         } else {
             total_qty.value = Number(qty);
+
         };
     };
     
-    let p = document.createElement('p');
-    p.appendChild(new Anchor(
-        'Issues',
-        {
-            data: [{field: 'bs-toggle', value: 'collapse'}],
-            attributes: [
-                {field: 'href',          value: `#${line_id}`},
-                {field: 'role',          value: 'button'},
-                {field: 'aria-expanded', value: 'false'},
-                {field: 'aria-controls', value: line_id}
-            ]
-        }
-    ).e);
-    div_issues.appendChild(p);
-    let collapse = document.createElement('div');
-    collapse.classList.add('collapse');
-    collapse.setAttribute('id', line_id);
+    div_issues.appendChild(new Collapse_A(line_id).e);
+
+    let collapse     = new Collapse(line_id).e;
+    let issued_div   = new Div().e;
+    let returned_div = new Div().e;
+
+    add_div(issued_div,   'Issued',   collapse);
+    add_div(returned_div, 'Returned', collapse);
+
     let issue_index = 0;
     line.issues.forEach(issue => {
-        let issue_p = document.createElement('p');
-        issue_p.innerText = print_date(issue.createdAt);
-        issue_p.appendChild(new Number_Input({
-            classes: ['issue_input'],
-            attributes: [
-                {field: 'min',         value: '0'},
-                {field: 'max',         value: issue.qty},
-                {field: 'value',       value: issue.qty},
-                {field: 'placeholder', value: 'Quantity'},
-                {field: 'name',        value: `lines[][${index}][issues][${issue_index}][qty]`},
-                {field: 'required',    value: true}
-            ],
-            listener: {event: 'change', func: update_qty}
-        }).e);
-        issue_p.appendChild(new Hidden_Input({
-            attributes: [
-                {field: 'value',    value: issue.issue_id},
-                {field: 'name',     value: `lines[][${index}][issues][${issue_index}][issue_id]`},
-                {field: 'required', value: true}
-            ],
-            listener: {event: 'change', func: update_qty}
-        }).e);
-        collapse.appendChild(issue_p);
+        if (issue.status === 4) {
+            issued_div.appendChild(issue_p(issue, index, issue_index, update_qty));
+
+        } else if (issue.status === 5) {
+            returned_div.appendChild(issue_p(issue, index, issue_index, update_qty, false));
+
+        };
         issue_index++;
     });
     div_issues .appendChild(collapse);

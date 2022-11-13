@@ -1,7 +1,7 @@
 function return_radio(id, index, func = null) {
     return new Radio({
         id:          `${id}_return`,
-        float_start: true,
+        // float_start: true,
         classes:     ['radio_return'],
         colour:      'secondary',
         html:        '<i class="fas fa-undo-alt"></i>',

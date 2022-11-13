@@ -348,3 +348,23 @@ function Page_Number(options = {}) {
     if (options.listener) _btn.addEventListener('click', options.listener);
     this.e.appendChild(_btn);
 };
+function Collapse(id) {
+    this.e = document.createElement('div');
+    this.e.classList.add('collapse');
+    this.e.setAttribute('id', id);
+};
+function Collapse_A(id) {
+    this.e = document.createElement('p');
+    this.e.appendChild(new Anchor(
+        'Issues',
+        {
+            data: [{field: 'bs-toggle', value: 'collapse'}],
+            attributes: [
+                {field: 'href',          value: `#${id}`},
+                {field: 'role',          value: 'button'},
+                {field: 'aria-expanded', value: 'false'},
+                {field: 'aria-controls', value: id}
+            ]
+        }
+    ).e);
+};

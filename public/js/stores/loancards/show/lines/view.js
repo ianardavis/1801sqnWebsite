@@ -16,11 +16,16 @@ function getLines() {
             result.lines.forEach(line => {
                 try {
                     let qty = 0;
-                    line.issues.forEach(issue => {qty += issue.qty});
+                    let open_qty = 0;
+                    line.issues.forEach(issue => {
+                        qty += issue.qty
+                        if (issue.status >= 1 && issue.status <= 4) open_qty += issue.qty;
+                    });
                     let row = tbl_lines.insertRow(-1);
                     add_cell(row, {text: line.size.item.description});
                     add_cell(row, {text: print_size(line.size)});
                     add_cell(row, {text: qty});
+                    add_cell(row, {text: open_qty.toString()});
                     add_cell(row, {
                         text: line_statuses[line.status],
                         append: new Hidden_Input({
@@ -31,17 +36,17 @@ function getLines() {
                         }).e
                     });
                     
-                    let radios = [];
+                    let radios = new Div({classes: ['d-flex', 'align-items-start']}).e;
                     if (line.status === 1 || line.status === 2) {
                         if (typeof nil_radio === 'function') {
-                            radios.push(nil_radio(line.loancard_line_id, row_index));
+                            radios.appendChild(nil_radio(line.loancard_line_id, row_index));
 
                             if (line.status === 1) {
                                 if (
                                     typeof cancel_options === 'function' &&
                                     typeof cancel_radio   === 'function'
                                 ) {
-                                    radios.push(cancel_radio(line.loancard_line_id, row_index, cancel_options));
+                                    radios.appendChild(cancel_radio(line.loancard_line_id, row_index, cancel_options));
                                 };
                             };
         
@@ -51,15 +56,13 @@ function getLines() {
                                     typeof return_radio   === 'function'
         
                                 ) {
-                                    radios.push(return_radio(line.loancard_line_id, row_index, return_options));
+                                    radios.appendChild(return_radio(line.loancard_line_id, row_index, return_options));
                                 };
                             };
-                            
-                            radios.push(new Div({attributes: [{field: 'id', value: `details_${line.loancard_line_id}`}]}).e);
                         };
                     };
-                    
-                    add_cell(row, {append: radios});
+                    let div_details = new Div({attributes: [{field: 'id', value: `details_${line.loancard_line_id}`}]}).e;
+                    add_cell(row, {append: [radios, div_details]});
                     add_cell(row, {append: 
                         new Modal_Button(
                             _search(),
