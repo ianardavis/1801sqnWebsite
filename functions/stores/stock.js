@@ -18,8 +18,13 @@ module.exports = function (m, fn) {
                         include: [m.locations]
                     })
                     .then(stock => {
-                        if (stock) resolve(stock)
-                        else reject(new Error('Stock not found'));
+                        if (stock) {
+                            resolve(stock);
+
+                        } else {
+                            reject(new Error('Stock not found'));
+                            
+                        };
                     })
                     .catch(err => reject(err));
 
@@ -95,8 +100,10 @@ module.exports = function (m, fn) {
                 include: [m.sizes]
             })
             .then(stock => {
-                if (stock.size.has_nsns && !details.nsn_id) reject(new Error("No valid NSN submitted"))
-                else {
+                if (stock.size.has_nsns && !details.nsn_id) {
+                    reject(new Error("No valid NSN submitted"));
+
+                } else {
                     stock.decrement('qty', {by: details.qty})
                     .then(result => {
                         fn.scraps.get({supplier_id: stock.size.supplier_id})
@@ -119,6 +126,7 @@ module.exports = function (m, fn) {
                         .catch(err => reject(err));
                     })
                     .catch(err => reject(err));
+
                 };
             })
             .catch(err => reject(err));
@@ -185,7 +193,8 @@ module.exports = function (m, fn) {
 
                     } else {
                         reject(new Error('Stock record not updated'));
-                    }
+
+                    };
                 })
                 .catch(err => reject(err));
             })

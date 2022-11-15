@@ -263,11 +263,7 @@ module.exports = function (m, fn) {
 
                     };
                     action(size.size_id, nsn_id, loancard.loancard_id, user_id, line, issue)
-                    .then(result => {
-                        // if (nsn_id) links.push({table: 'nsns', id: nsn_id});
-                        
-                        resolve(result);
-                    })
+                    .then(result => resolve(result))
                     .catch(err => reject(err));
                 })
                 .catch(err => reject(err));
@@ -403,35 +399,16 @@ module.exports = function (m, fn) {
                             issue.update({status: 4})
                             .then(result => {
                                 if (result) {
-                                    const links = [
-                                        {table: 'stocks',         id: stock.stock_id},
-                                        {table: 'issues',         id: issue.issue_id},
-                                        {table: 'loancard_lines', id: loancard_line.loancard_line_id}
-                                    ];
-                                    // const resolve_obj = [
-                                    //     loancard_line.loancard_line_id,
-                                    //     [
-                                    //         {table: 'loancard_lines', id: loancard_line.loancard_line_id},
-                                    //         {table: 'stocks',         id: stock.stock_id}
-                                    //     ]
-                                    // ];
-                                    if (created) {
-                                        fn.actions.create(
-                                            'LOANCARD LINE | CREATED',
-                                            user_id,
-                                            links
-                                        )
-                                        .then(action => resolve(true));
-                                        
-                                    } else {
-                                        fn.actions.create(
-                                            `LOANCARD LINE | INCREMENTED BY ${line.qty}`,
-                                            user_id,
-                                            links
-                                        )
-                                        .then(action => resolve(true));
-                                        
-                                    };
+                                    fn.actions.create(
+                                        `LOANCARD LINE | ${(created ? 'CREATED' : `INCREMENTED BY ${line.qty}`)}`,
+                                        user_id,
+                                        [
+                                            {table: 'stocks',         id: stock.stock_id},
+                                            {table: 'issues',         id: issue.issue_id},
+                                            {table: 'loancard_lines', id: loancard_line.loancard_line_id}
+                                        ]
+                                    )
+                                    .then(action => resolve(true));
                                 } else {
                                     reject(new Error('Issue not updated'));
 
@@ -469,234 +446,227 @@ module.exports = function (m, fn) {
         });
     };
 
-    function return_line_check(line_id) {
+    function return_line_check(line) {
         return new Promise((resolve, reject) => {
-            fn.loancards.lines.get(
-                line_id,
-                [m.issues, m.sizes]
-            )
-            .then(line => {
-                if (line.status === 0) {
-                    reject(new Error('This line has been cancelled'));
-
-                } else if (line.status === 1) {
-                    reject(new Error('This line is still pending'));
-
-                } else if (line.status === 2) {
-                    if (line.size) {
-                        resolve(line);
-
-                    } else {
-                        reject(new Error('Size not found'));
-
-                    };
-                } else if (line.status === 3) {
-                    reject(new Error('This line has already been returned'));
-
-                } else {
-                    reject(new Error('Unknown line status'));
-
-                };
-            })
-            .catch(err => reject(err));
-        });
-    };
-    function update_issues(issues, user_id) {
-        return new Promise((resolve, reject) => {
-            let actions = [];
-            issues.forEach(issue => {
-                actions.push(update_issue(issue, user_id));
-            });
-        });
-    };
-    function update_issue(line, user_id) {
-        return new Promise((resolve, reject) => {
-            line.qty = Number(line.qty);
-            if (line.qty <= 0) {
-                reject(new Error('Receive quantity is 0 or less'));
-
-            } else {
-                fn.issues.get({issue_id: line.issue_id})
-                .then(issue => {
-                    if (line.qty > issue.qty) {
-                        reject(new Error('Receive quantity is greater than the issue quantity'));
-
-                    } else {
-                        issue.update({status: 5})
-                        .then(result => {
-                            if (result) {
-                                if (line.qty < issue.qty) {
-                                    issue.update({qty: line.qty})
-                                    .then(result => {
-                                        if (result) {
-                                            m.issues.create({
-                                                user_id_issue: issue.user_id_issue,
-                                                size_id:       issue.size_id,
-                                                qty:           issue.qty - line.qty,
-                                                order_id:      issue.order_id,
-                                                status:        4,
-                                                user_id:       user_id
-                                            })
-                                            .then(new_issue => {
-                                                m.issue_loancard_lines.create({
-                                                    loancard_line_id: line.loancard_line_id,
-                                                    issue_id: new_issue.issue_id
-                                                })
-                                                .then(issue_loancard_line => resolve({new_issue: new_issue}))
-                                                .catch(err => reject(err));
-                                            })
-                                            .catch(err => reject(err));
-
-                                        } else {
-                                            reject(new Error('Quantity not updated'));
-
-                                        };
-                                    })
-                                    .catch(err => reject(err));
-
-                                } else {
-                                    resolve({});
-
-                                };
+            let total_return_qty = 0;
+            let getIssues = [];
+            //for each issue, if return qty is above 0:
+            //      Get the issue,
+            //      Ensure it is for the specified loancard line
+            //      Ensure return qty does not exceed issue qty
+            //      add return qty to returned issue record
+            line.issues.forEach(issue => {
+                issue.qty = Number(issue.qty);
+                if (issue.qty > 0) {
+                    getIssues.push(new Promise((resolve, reject) => {
+                        fn.issues.get(
+                            {issue_id: issue.issue_id},
+                            {loancard_lines: true}
+                        )
+                        .then(_issue => {
+                            if (
+                                !_issue.loancard_line ||
+                                 _issue.loancard_line.loancard_line_id !== line.loancard_line_id
+                            ) {
+                                reject(new Error('Issue not for this loancard line'));
+    
+                            } else if (issue.qty > _issue.qty) {
+                                reject(new Error('Return qty is greater than issue qty'));
+    
                             } else {
-                                reject(new Error('Status not updated'));
+                                total_return_qty += issue.qty;
+                                _issue.return_qty = issue.qty;
+                                resolve(_issue);
 
                             };
                         })
+                    }));
+                };
+            });
+            if (getIssues.length > 0) {
+                Promise.all(getIssues)
+                .then(issues => {
+                    if (total_return_qty > 0) {
+                        fn.loancards.lines.get(
+                            line.loancard_line_id,
+                            [m.sizes, m.serials]
+                        )
+                        .then(loancard_line => {
+                            if (loancard_line.status === 0) {
+                                reject(new Error('This line has already been cancelled'));
+            
+                            } else if (loancard_line.status === 1) {
+                                reject(new Error('This line is still pending'));
+            
+                            } else if (loancard_line.status === 2) {
+                                if (loancard_line.size) {
+                                    check_return_destination(line, loancard_line)
+                                    .then(destination => resolve(
+                                        [loancard_line, issues, destination, total_return_qty]
+                                    ))
+                                    .catch(err => reject(err));
+            
+                                } else {
+                                    reject(new Error('Size not found'));
+            
+                                };
+                            } else if (loancard_line.status === 3) {
+                                reject(new Error('This line has already been returned'));
+            
+                            } else {
+                                reject(new Error('Unknown line status'));
+            
+                            };
+                        })
                         .catch(err => reject(err));
+                    } else {
+                        reject(new Error('Return qty is 0'));
 
                     };
                 })
                 .catch(err => reject(err));
+
+            } else {
+                reject(new Error('No issues to return'));
+
             };
+        });
+    };
+    function check_return_destination(line, loancard_line) {
+        return new Promise((resolve, reject) => {
+            if (line.scrap && line.scrap === '1') {
+                fn.scraps.get({supplier_id: loancard_line.size.supplier_id})
+                .then(scrap => resolve({scrap: scrap}))
+                .catch(err => reject(err));
+                
+            } else if (line.location) {
+                if (loancard_line.size.has_serials) {
+                    if (loancard_line.serial) {
+                        fn.locations.get({location: line.location})
+                        .then(location => resolve({
+                            serial: {
+                                serial:      loancard_line.serial,
+                                location_id: location.location_id
+                            }
+                        }))
+                        .catch(err => reject(err));
+
+                    } else {
+                        reject(new Error('No valid serial # on loancard'));
+
+                    };
+            
+                } else {
+                    fn.stocks.get({size_id: loancard_line.size_id, location: line.location})
+                    .then(stock => resolve({stock: stock}))
+                    .catch(err => reject(err));
+
+                };
+
+            } else {
+                reject(new Error('No return destination specified'));
+
+            };
+        });
+    };
+    function return_stock(destination, qty) {
+        return new Promise((resolve, reject) => {
+            if (destination.scrap) {
+                fn.scraps.lines.add(
+                    destination.scrap.scrap_id,
+                    line.size_id,
+                    {
+                        serial_id: line.serial_id,
+                        nsn_id:    line.nsn_id,
+                        qty:       qty
+                    }
+                )
+                .then(scrap_line_id => resolve({table: 'scrap_lines', id: scrap_line_id}))
+                .catch(err => reject(err));
+
+            } else if (destination.serial) {
+                destination.serial.serial.update({
+                    issue_id: null,
+                    location_id: destination.serial.location_id
+                })
+                .then(result => resolve({table: 'serials', id: destination.serial.serial.serial_id}))
+                .catch(err => reject(err));
+
+            } else {
+                destination.stock.increment('qty', {by: qty})
+                .then(result => {
+                    if (result) {
+                        resolve({table: 'stocks', id: destination.stock.stock_id});
+
+                    } else {
+                        reject(new Error('Stock not incremented'));
+
+                    };
+                })
+                .catch(err => reject(err));
+
+            };
+        });
+    };
+    function update_issue(loancard_line, issue, user_id) {
+        return new Promise((resolve, reject) => {
+            let issue_record = {status: 5};
+            let actions = [];
+
+            if (issue.return_qty < issue.qty) {
+                const outstanding_qty = issue.qty - issue.return_qty;
+                issue_record.qty = issue.return_qty
+
+                actions.push(new Promise((resolve, reject) => {
+                    m.issues.create({
+                        user_id_issue: issue.user_id_issue,
+                        size_id:       issue.size_id,
+                        qty:           outstanding_qty,
+                        order_id:      issue.order_id,
+                        status:        4,
+                        user_id:       user_id
+                    })
+                    .then(new_issue => {
+                        loancard_line.addIssue(new_issue)
+                        .then(result => resolve(true))
+                        .catch(err => reject(err));
+                    })
+                    .catch(err => reject(err));
+                }));
+                
+            };
+            actions.push(issue.update(issue_record))
+            Promise.all(actions)
+            .then(results => resolve({table: 'issues', id: issue.issue_id}))
+            .catch(err => reject(err));
         });
     };
     fn.loancards.lines.return = function (options = {}, user_id) {
         return new Promise((resolve, reject) => {
             console.log(options);
-            return_line_check(options.loancard_line_id)
-            .then(line => {
-                if (options.scrap && options.scrap === '1') {
-                    fn.scraps.get({supplier_id: line.size.supplier_id})
-                    .then(scrap => {
-                        fn.scraps.lines.add(
-                            scrap.scrap_id,
-                            line.size_id,
-                            {
-                                serial_id: line.serial_id,
-                                nsn_id:    line.nsn_id
-                            }
+            return_line_check(options)
+            .then(([line, issues, destination, total_return_qty]) => {
+                return_stock(destination, total_return_qty)
+                .then(destination_link => {
+                    let actions = [];
+                    issues.forEach(issue => {
+                        actions.push(update_issue(line, issue, user_id));
+                    });
+                    Promise.all(actions)
+                    .then(issue_link => {
+                        fn.actions.create(
+                            'ISSUES | RETURNED',
+                            user_id,
+                            [{table: 'loancard_lines', id: line.loancard_line_id}]
+                            .concat([destination_link])
+                            .concat([issue_link])
                         )
-                        .then(result => {
-
-                        })
-                        .catch(err => reject(err));
+                        .then(result => resolve(true));
                     })
                     .catch(err => reject(err));
 
-                } else if (options.location) {
-                    
-
-                } else {
-                    reject(new Error('No scrap or location'));
-
-                };
-                
-                let actions = [];
-                options.issues.forEach(issue => {
-                    actions.push(update_issue(issue, user_id));
-                });
-                // return stock or serial to location
-
-                resolve(line.loancard_id);
-                // update_issues(line.issues)
-                // .then(([issues, links]) => {
-                //     return_to_location(
-                //         line.serial_id,
-                //         options.location,
-                //         issues,
-                //         line.size_id
-                //     )
-                //     .then(([link, qty]) => {
-                //         let update_actions = [], issue_links = [];
-                //         if ((options.qty < line.qty) && options.qty >= 1) {
-                //             update_actions.push(new Promise((resolve, reject) => {
-                //                 m.loancard_lines.create({
-                //                     loancard_id: line.loancard_id,
-                //                     size_id:     line.size_id,
-                //                     serial_id:   line.serial_id,
-                //                     nsn_id:      line.nsn_id,
-                //                     qty:         line.qty - options.qty,
-                //                     status:      2,
-                //                     user_id:     line.user_id
-                //                 })
-                //                 .then(new_line => {
-                //                     line.update({qty: options.qty})
-                //                     .then(result => {
-                //                         fn.actions.create(
-                //                             'LOANCARD LINE | CREATED | From partial return',
-                //                             user_id,
-                //                             [
-                //                                 {table: 'loancard_lines', id: line.loancard_line},
-                //                                 {table: 'loancard_lines', id: new_line.loancard_line}
-                //                             ]
-                //                         )
-                //                         .then(result => resolve(true));
-                //                     })
-                //                     .catch(err => reject(err));
-                //                 })
-                //                 .catch(err => reject(err));
-                //             }));
-                //         };
-                //         result.issue_ids.forEach(issue_id => {
-                //             update_actions.push(new Promise((resolve, reject) => {
-                //                 fn.issues.get({issue_id: issue_id})
-                //                 .then(issue => {
-                //                     if (issue.status === 0) {
-                //                         reject(new Error('Issue is already cancelled'));
-
-                //                     } else if (issue.status === 1) {
-                //                         reject(new Error('Issue is pending approval'));
-
-                //                     } else if (issue.status === 2) {
-                //                         reject(new Error('Issue is not issued'));
-
-                //                     } else if (issue.status === 3) {
-                //                         reject(new Error('Issue is ordered but not issued'));
-
-                //                     } else if (issue.status === 4) {
-                //                         issue.update({status: 5})
-                //                         .then(result => {
-                //                             issue_links.push({table: 'issues', id: issue.issue_id})
-                //                             resolve(true);
-                //                         })
-                //                         .catch(err => reject(err));
-
-                //                     } else {
-                //                         reject(new Error('Unknown issue status'));
-                //                     };
-                //                 })
-                //             }));
-                //         })
-                //         update_actions.push(line.update({status: 3}));
-                //         Promise.allSettled(update_actions)
-                //         .then(results => {
-                //             if (results.filter(e => e.status === 'rejected').length > 0) console.log(results);
-                //             fn.actions.create(
-                //                 'LOANCARD LINE | RETURNED',
-                //                 user_id,
-                //                 [
-                //                     {table: 'loancard_lines', id: line.loancard_line_id},
-                //                     {table: 'locations',      id: location.location_id}
-                //                 ].concat(issue_links).concat(result.links)
-                //             )
-                //             .then(result => resolve(line.loancard_id));
-                //         })
-                //         .catch(err => resolve(line.loancard_id));
-                //     })
-                //     .catch(err => reject(err));
-                // })
-                // .catch(err => reject(err));
+                })
+                .catch(err => reject(err));
             })
             .catch(err => reject(err));
         });

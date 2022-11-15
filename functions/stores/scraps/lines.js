@@ -69,7 +69,7 @@ module.exports = function (m, fn) {
                 })
                 .then(([line, created]) => {
                     if (created) {
-                        resolve(true);
+                        resolve(line.line_id);
 
                     } else {
                         line.increment('qty', {by: options.qty})
