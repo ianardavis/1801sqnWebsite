@@ -71,11 +71,9 @@ function add_div(div, text, collapse) {
 function issue_p(issue, line_index, issue_index, update_qty, open = true) {
     let p = document.createElement('p');
     p.innerText = print_date(issue.createdAt);
-    let attributes = [
-        {field: 'value', value: issue.qty}
-    ]
+    let attributes = [{field: 'value', value: issue.qty}];
     if (open) {
-        attributes.concat([
+        attributes = attributes.concat([
             {field: 'min',         value: '0'},
             {field: 'max',         value: issue.qty},
             {field: 'placeholder', value: 'Quantity'},
@@ -91,7 +89,7 @@ function issue_p(issue, line_index, issue_index, update_qty, open = true) {
             listener: {event: 'change', func: update_qty}
         }).e);
     } else {
-        attributes.concat([
+        attributes = attributes.concat([
             {field: 'disabled', value: true}
         ]);
     };

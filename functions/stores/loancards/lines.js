@@ -21,24 +21,33 @@ module.exports = function (m, fn) {
     function process_lines(lines, user_id) {
         return new Promise((resolve, reject) => {
             let actions = [];
-            lines.filter(e => e.status === '3').forEach(line => {
+
+            lines
+            .filter (e => e.status === '3')
+            .forEach(line => {
                 actions.push(fn.loancards.lines.return(line, user_id));
             });
-            lines.filter(e => e.status === '0').forEach(line => {
+
+            lines
+            .filter (e => e.status === '0')
+            .forEach(line => {
                 actions.push(fn.loancards.lines.cancel(line, user_id));
             });
+
             Promise.allSettled(actions)
             .then(results => {
                 let loancards = [];
-                results.filter(e => e.status === 'fulfilled').forEach(e => {
-                    if (!loancards.includes(e.value)) loancards.push(e.value)
-                });
+
+                results
+                .filter (e => e.status === 'fulfilled' && !loancards.includes(e.value))
+                .forEach(e => loancards.push(e.value));
+
                 resolve(loancards);
             })
             .catch(err => reject(err));
         });
     };
-    function check_loancard(loancard_id) {
+    function check_loancard(loancard_id, user_id) {
         return new Promise((resolve, reject) => {
             m.loancards.findOne({
                 where: {loancard_id: loancard_id},
@@ -53,6 +62,7 @@ module.exports = function (m, fn) {
                 if (!loancard.lines || loancard.lines.length === 0) {
                     if (loancard.status === 0) {
                         resolve(false);
+
                     } else if (loancard.status === 1) {
                         fn.loancards.cancel({loancard_id: loancard.loancard_id, user_id: user_id, noforce: true})
                         .then(result => resolve(result))
@@ -60,6 +70,7 @@ module.exports = function (m, fn) {
                             console.log(err);
                             reject(err);
                         });
+
                     } else if (loancard.status === 2) {
                         fn.loancards.close({loancard_id: loancard.loancard_id, user_id: user_id})
                         .then(result => resolve(result))
@@ -67,13 +78,17 @@ module.exports = function (m, fn) {
                             console.log(err);
                             reject(err);
                         });
+
                     } else if (loancard.status === 3) {
                         resolve(false);
+
                     } else {
                         reject(new Error('Unknown loancard status'));
+
                     };
                 } else {
                     resolve(false);
+
                 };
             })
             .catch(err => {
@@ -82,13 +97,57 @@ module.exports = function (m, fn) {
             });
         });
     };
+    function check_lines(loancard_id, user_id) {
+        return new Promise((resolve, reject) => {
+            m.loancard_lines.findAll({
+                where: {
+                    loancard_id: loancard_id,
+                    status: 2
+                },
+                include: [{
+                    model: m.issues,
+                    where: {status: 4},
+                }]
+            })
+            .then(lines => {
+                actions = [];
+                lines.forEach(line => {
+                    if (!line.issues || line.issues.length === 0) {
+                        line.update({statuse: 3})
+                        .then(result => {
+                            fn.actions.create(
+                                'LOANCARD LINE | CLOSED',
+                                user_id,
+                                [{table: 'loancard_lines', id: line.loancard_line_id}]
+                            )
+                            .then(result => resolve(true));
+                        })
+                        .catch(err => reject(err));
+
+                    } else {
+                        resolve(false);
+
+                    };
+                });
+            })
+            .catch(err => reject(err));
+        });
+    };
     fn.loancards.lines.process = function (lines, user_id) {
         return new Promise((resolve, reject) => {
             process_lines(lines, user_id)
             .then(loancard_ids => {
                 let loancard_checks = [];
                 loancard_ids.forEach(loancard_id => {
-                    loancard_checks.push(check_loancard(loancard_id));
+                    loancard_checks.push(new Promise((resolve, reject) => {
+                        check_lines(loancard_id, user_id)
+                        .then(result => {
+                            check_loancard(loancard_id, user_id)
+                            .then(result => resolve(true))
+                            .catch(err => reject(err));
+                        })
+                        .catch(err => reject(err));
+                    }));
                 });
                 Promise.allSettled(loancard_checks)
                 .then(results => resolve(true))
@@ -465,8 +524,8 @@ module.exports = function (m, fn) {
                         )
                         .then(_issue => {
                             if (
-                                !_issue.loancard_line ||
-                                 _issue.loancard_line.loancard_line_id !== line.loancard_line_id
+                                !_issue.loancard_lines ||
+                                 _issue.loancard_lines.filter(e => e.loancard_line_id === line.loancard_line_id).length === 0
                             ) {
                                 reject(new Error('Issue not for this loancard line'));
     
@@ -569,8 +628,9 @@ module.exports = function (m, fn) {
             };
         });
     };
-    function return_stock(destination, qty) {
+    function return_stock(line, destination, qty) {
         return new Promise((resolve, reject) => {
+            console.log(line);
             if (destination.scrap) {
                 fn.scraps.lines.add(
                     destination.scrap.scrap_id,
@@ -641,27 +701,62 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
+    function update_issues(issues, line, user_id) {
+        return new Promise((resolve, reject) => {
+            let actions = [];
+            issues.forEach(issue => {
+                actions.push(update_issue(line, issue, user_id));
+            });
+            Promise.all(actions)
+            .then(issue_links => resolve(issue_links))
+            .catch(err => reject(err));
+        });
+    };
+    // function check_line_complete(loancard_line_id, user_id) {
+    //     return new Promise((resolve, reject) => {
+    //         fn.loancards.lines.get(loancard_line_id, [m.issues])
+    //         .then(line => {
+    //             if (line.issues.filter(e => e.status === 4).length > 0) {
+    //                 resolve(false);
+
+    //             } else {
+    //                 line.update({status: 3})
+    //                 .then(result => {
+    //                     fn.actions.create(
+    //                         'LOANCARD LINE | CLOSED',
+    //                         user_id,
+    //                         [{table: 'loancard_lines', id: line.loancard_line_id}]
+    //                     )
+    //                     .then(result => resolve(true));
+    //                 })
+    //                 .catch(err => reject(err));
+
+    //             };
+    //         })
+    //         .catch(err => reject(err));
+    //     });
+    // };
     fn.loancards.lines.return = function (options = {}, user_id) {
         return new Promise((resolve, reject) => {
-            console.log(options);
             return_line_check(options)
             .then(([line, issues, destination, total_return_qty]) => {
-                return_stock(destination, total_return_qty)
+                return_stock(line, destination, total_return_qty)
                 .then(destination_link => {
-                    let actions = [];
-                    issues.forEach(issue => {
-                        actions.push(update_issue(line, issue, user_id));
-                    });
-                    Promise.all(actions)
-                    .then(issue_link => {
+                    update_issues(issues, line, user_id)
+                    .then(issue_links => {
+                        // check_line_complete(line.loancard_line_id, user_id)
+                        // .then(line_complete => {
                         fn.actions.create(
                             'ISSUES | RETURNED',
                             user_id,
-                            [{table: 'loancard_lines', id: line.loancard_line_id}]
-                            .concat([destination_link])
-                            .concat([issue_link])
+                            [
+                                {table: 'loancard_lines', id: line.loancard_line_id},
+                                destination_link
+                            ].concat(issue_links)
                         )
-                        .then(result => resolve(true));
+                        .then(result => resolve(line.loancard_id));
+                        // })
+                        // .catch(err => reject(err));
                     })
                     .catch(err => reject(err));
 

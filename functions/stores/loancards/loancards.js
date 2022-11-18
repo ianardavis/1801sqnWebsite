@@ -84,6 +84,7 @@ module.exports = function (m, fn) {
 
                     } else {
                         reject(new Error('Loancard not cancelled'));
+
                     };
                 })
                 .catch(err => reject(err));
@@ -199,7 +200,7 @@ module.exports = function (m, fn) {
             )
             .then(loancard => {
                 if (loancard.lines.length > 0) {
-                    reject(new Error('Loancard not ready to be closed yet'));
+                    reject(new Error('Loancard has open lines'));
 
                 } else {
                     resolve(loancard);
@@ -221,8 +222,10 @@ module.exports = function (m, fn) {
                             [{table: 'loancards', id: loancard.loancard_id}]
                         )
                         .then(action => resolve(true));
+
                     } else {
                         reject(new Error('Loancard not updated'));
+
                     };
                 })
                 .catch(err => reject(err));
