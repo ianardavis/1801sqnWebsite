@@ -113,7 +113,7 @@ module.exports = function (m, fn) {
                 actions = [];
                 lines.forEach(line => {
                     if (!line.issues || line.issues.length === 0) {
-                        line.update({statuse: 3})
+                        line.update({status: 3})
                         .then(result => {
                             fn.actions.create(
                                 'LOANCARD LINE | CLOSED',

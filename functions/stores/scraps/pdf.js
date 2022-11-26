@@ -48,6 +48,7 @@ module.exports = function (m, fn) {
                         if (y >= 708-(line.nsn ? 15 : 0)-(line.serial ? 15 : 0)) {
                             y = fn.pdfs.end_of_page(doc, y);
                             y += add_header(doc, y);
+                            
                         };
                         y += add_line(doc, line, y);
                     });
@@ -61,6 +62,7 @@ module.exports = function (m, fn) {
                         .then(settings => {
                             if (settings.length !== 1 || settings[0].value !== '1') {
                                 resolve(file);
+
                             } else {
                                 fn.pdfs.print('scraps', file)
                                 .then(result => resolve(file))
@@ -68,6 +70,7 @@ module.exports = function (m, fn) {
                                     console.log(err);
                                     resolve(file);
                                 });
+
                             };
                         })
                         .catch(err => {
@@ -97,9 +100,11 @@ module.exports = function (m, fn) {
             })
             .then(scrap => {
                 if (scrap.status !== 2) {
-                    reject(new Error('This scrap is not complete'))
+                    reject(new Error('This scrap is not complete'));
+
                 } else if (!scrap.lines || scrap.lines.length === 0) {
-                    reject(new Error('No open lines on this scrap'))
+                    reject(new Error('No open lines on this scrap'));
+
                 } else {
                     create_pdf(scrap, user)
                     .then(filename => {
@@ -111,6 +116,7 @@ module.exports = function (m, fn) {
                         console.log(err);
                         reject(false);
                     });
+
                 };
             })
             .catch(err => reject(err));
