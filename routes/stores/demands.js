@@ -55,7 +55,8 @@ module.exports = (app, m, fn) => {
             include: [
                 fn.inc.stores.size(),
                 fn.inc.users.user(),
-                fn.inc.stores.demand()
+                fn.inc.stores.demand(),
+                m.orders
             ],
             ...fn.pagination(req.query)
         })
@@ -68,14 +69,17 @@ module.exports = (app, m, fn) => {
             include: [
                 fn.inc.stores.size(),
                 fn.inc.users.user(),
-                fn.inc.stores.demand()
+                fn.inc.stores.demand(),
+                m.orders
             ]
         })
         .then(line => {
             if (line) {
                 res.send({success: true, result: line});
+
             } else {
                 res.send({success: false, message: 'Line not found'});
+
             };
         })
         .catch(err => fn.send_error(res, err));

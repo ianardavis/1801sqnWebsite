@@ -341,7 +341,6 @@ module.exports = function (m, fn) {
                                 supplier_id: order.size.supplier_id,
                                 sizes: [{
                                     size_id: order.size_id,
-                                    qty:     Number(order.qty),
                                     orders:  [order]
                                 }]
                             });
@@ -351,12 +350,10 @@ module.exports = function (m, fn) {
                             if (size_index === -1) {
                                 suppliers[index].sizes.push({
                                     size_id: order.size_id,
-                                    qty:     Number(order.qty),
                                     orders:  [order]
                                 });
 
                             } else {
-                                suppliers[index].sizes[size_index].qty += Number(order.qty);
                                 suppliers[index].sizes[size_index].orders.push(order);
 
                             };
@@ -393,7 +390,6 @@ module.exports = function (m, fn) {
                                         fn.demands.lines.create(
                                             size.size_id,
                                             demand_id,
-                                            size.qty,
                                             user_id,
                                             size.orders
                                         )

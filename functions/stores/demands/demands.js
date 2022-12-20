@@ -20,8 +20,10 @@ module.exports = function (m, fn) {
             .then(demand => {
                 if (demand) {
                     resolve(demand);
+                    
                 } else {
                     reject(new Error('Demand not found'));
+                    
                 };
             })
             .catch(err => reject(err));

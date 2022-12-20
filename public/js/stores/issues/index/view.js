@@ -1,4 +1,4 @@
-let issue_statuses = {0: 'Cancelled', 1: 'Requested', 2: 'Approved', 3: 'Ordered', 4: 'Issued', 5: 'Returned'};
+const statuses = {'-3': 'Cancelled (Ordered)', '-2': 'Cancelled (Approved)', '1': 'Requested', '2': 'Approved', '3': 'Ordered', '4': 'Added To Loancard', '5': 'Returned'};
 function getIssues() {
     clear('tbl_issues')
     .then(tbl_issues => {
@@ -17,7 +17,7 @@ function getIssues() {
                 add_cell(row, {text: print_size(issue.size)});
                 add_cell(row, {text: issue.qty});
                 add_cell(row, {
-                    text: issue_statuses[issue.status] || 'Unknown',
+                    text: statuses[issue.status] || 'Unknown',
                     append: new Hidden_Input({
                         attributes: [
                             {field: 'name',  value: `lines[][${row_index}][issue_id]`},
@@ -53,13 +53,13 @@ function row_radios(issue_id, status, index) {
         if (typeof approve_radio === 'function') radios.push(approve_radio(...args));
     };
     if (status === 2 || status === 3) {
-        if (typeof  cancel_radio === 'function') radios.push(cancel_radio( ...args));
+        if (typeof cancel_radio  === 'function') radios.push(cancel_radio( ...args, '-'+status));
     };
     if (status === 2) {
-        if (typeof   order_radio === 'function') radios.push(order_radio(  ...args));
+        if (typeof order_radio   === 'function') radios.push(order_radio(  ...args));
     };
-    if (status === 2 || status === 3) {
-        if (typeof   issue_radio === 'function') radios.push(issue_radio(  ...args));
+    if (status === 2 || status   === 3) {
+        if (typeof issue_radio   === 'function') radios.push(issue_radio(  ...args));
     };
     radios.push(new Div({attributes: [{field: 'id', value: `details_${issue_id}`}]}).e);
     return radios;

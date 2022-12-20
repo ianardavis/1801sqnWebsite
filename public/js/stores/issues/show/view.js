@@ -1,4 +1,4 @@
-const statuses = {0: 'Cancelled', 1: 'Requested', 2: 'Approved', 3: 'Ordered', 4: 'Added To Loancard', 5: 'Returned'};
+const statuses = {'-3': 'Cancelled (Ordered)', '-2': 'Cancelled (Approved)', '1': 'Requested', '2': 'Approved', '3': 'Ordered', '4': 'Added To Loancard', '5': 'Returned'};
 function getIssue() {
     disable_button('mark_as');
     for (let i=0; i<=5 ; i++) {
@@ -55,7 +55,7 @@ function set_status_badges(status) {
         if ([-3, -2, 1, 2, 3, 4, 5].includes(status)) {
             set_badge(1, 'success');
         } else {
-            set_badge(1, 'danger', 'Declined');
+            set_badge(1, 'danger', 'Rejected');
         };
         
         if (status === -3 || status >= 2) {

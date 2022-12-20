@@ -15,10 +15,10 @@
 		<div class="input-group mb-1">
 			<span class="input-group-text w-30">Status</span>
 			<select id="filter_order_statuses" class="form-select" multiple size="4">
-				<option value="0"		  >Cancelled</option>
-				<option value="1" selected>Placed	</option>
-				<option value="2" selected>Demanded	</option>
-				<option value="3"		  >Received	</option>
+				<option value="0"		  >Cancelled	  </option>
+				<option value="1" selected>Placed		  </option>
+				<option value="2" selected>Added to Demand</option>
+				<option value="3"		  >Received		  </option>
 			</select>
 		</div>
 		<%- include(`${partials}/filter/date`, {table: 'order', field: 'createdAt'}) %>

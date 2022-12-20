@@ -1,10 +1,10 @@
 module.exports = function (m, fn) {
     fn.sizes = {details: {}};
-    fn.sizes.get = function (size_id) {
+    fn.sizes.get = function (size_id, includes = []) {
         return new Promise((resolve, reject) => {
             m.sizes.findOne({
                 where: {size_id: size_id},
-                include: [m.items]
+                include: [m.items].concat(includes)
             })
             .then(size => {
                 if (size) {

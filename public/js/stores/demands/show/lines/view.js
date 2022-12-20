@@ -16,6 +16,12 @@ function getLines() {
             result.lines.forEach(line => {
                 try {
                     let row = tbl_lines.insertRow(-1);
+                    let qty = 0;
+                    line.orders.forEach(o => {
+                        if (o.status > 0) {
+                            qty += o.qty;
+                        };
+                    });
                     add_cell(row, {text: line.size.item.description});
                     add_cell(row, {
                         text: print_size(line.size),
@@ -26,7 +32,7 @@ function getLines() {
                             ]
                         }).e]
                     });
-                    add_cell(row, {text: line.qty});
+                    add_cell(row, {text: qty});
                     add_cell(row, {text: line_statuses[line.status] || 'Unknown'});
                     let radios = [], args = [line.demand_line_id, row_index, receive_options];
                     if (line.status === 0 || line.status === 1 || line.status === 2) {

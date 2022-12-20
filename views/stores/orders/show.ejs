@@ -22,7 +22,7 @@
 	<%- include(`${partials}/sidebar/close`) %>
     <div class="row mb-1">
         <span class="badge text-bg-secondary w-33" id="bdg_status_1">Placed</span>
-        <span class="badge text-bg-secondary w-33" id="bdg_status_2">Demanded</span>
+        <span class="badge text-bg-secondary w-33" id="bdg_status_2">Added to Demand</span>
         <span class="badge text-bg-secondary w-34" id="bdg_status_3">Received</span>
     </div>
 	<ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
@@ -47,6 +47,15 @@
                     <th><i class="fas fa-search"></i></th>
                 </thead>
                 <tbody id="tbl_order_issues"></tbody>
+            </table>
+            <h6>Demand Lines for this Order</h6>
+            <table class="table table-sm table-hover">
+                <thead class="thead-dark" id="tbl_order_demand_lines_head">
+                    <th class='w-50'>Date</th>
+                    <th class='w-50'>Status</th>
+                    <th><i class="fas fa-search"></i></th>
+                </thead>
+                <tbody id="tbl_order_demand_lines"></tbody>
             </table>
 		</div>
         <%- include(`${partials}/common/actions/tab_body`) %>

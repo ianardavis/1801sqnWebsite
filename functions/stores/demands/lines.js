@@ -7,7 +7,11 @@ module.exports = function (m, fn) {
                 user_id,
                 [{table: 'demand_lines', id: line_id}].concat(links)
             )
-            .then(action => resolve(demand.demand_id));
+            .then(action => resolve(true))
+            .catch(err => {
+                console.log(err);
+                resolve(false)
+            });
         });
     };
     fn.demands.lines.get = function (where, includes = [], allowNull = false) {
@@ -57,12 +61,16 @@ module.exports = function (m, fn) {
             .then(size => {
                 if (!size.details) {
                     reject(new Error('No demand page/cell for this size'));
+
                 } else if (!size.details.filter(e => e.name === 'Demand Page')) {
                     reject(new Error('No demand page for this size'));
+
                 } else if (!size.details.filter(e => e.name === 'Demand Cell')) {
                     reject(new Error('No demand cell for this size'));
+
                 } else {
                     resolve(size);
+
                 };
             })
             .catch(err => reject(err));
@@ -70,20 +78,23 @@ module.exports = function (m, fn) {
     };
     function check_demand(demand_id, size) {
         return new Promise((resolve, reject) => {
-            fn.demands.get({demand_id: demand_id})
+            fn.demands.get(demand_id)
             .then(demand => {
                 if (demand.status !== 1) {
                     reject(new Error('Lines can only be added to draft demands'));
+
                 } else if (size.supplier_id !== demand.supplier_id) {
                     reject(new Error('Size and demand are not for the same supplier'));
+
                 } else {
                     resolve(demand);
+
                 };
             })
             .catch(err => reject(err));
         });
     };
-    function create_line(demand_id, size_id, qty, user_id) {
+    function create_line(demand_id, size_id, orders, user_id) {
         return new Promise((resolve, reject) => {
             m.demand_lines.findOrCreate({
                 where: {
@@ -91,28 +102,25 @@ module.exports = function (m, fn) {
                     size_id:   size_id
                 },
                 defaults: {
-                    qty:     qty,
                     user_id: user_id
                 }
             })
             .then(([line, created]) => {
-                if (created) {
-                    resolve(line.demand_line_id);
-                } else {
-                    line.increment('qty', {by: qty})
-                    .then(result => {
-                        if (result) {
-                            resolve(line.demand_line_id);
-                        } else {
-                            reject(new Error('Line not incremented'));
-                        };
-                    });
-                };
+                let actions = [];
+                orders.forEach(order => {
+                    actions.push(m.order_demand_lines.create({
+                        order_id: order.order_id,
+                        demand_line_id: line.demand_line_id
+                    }));
+                });
+                Promise.all(actions)
+                .then(results => resolve([line.demand_line_id, created]))
+                .catch(err => reject(err));
             })
             .catch(err => reject(err));
         });
     };
-    fn.demands.lines.create = function (size_id, demand_id, qty, user_id, orders = []) {
+    fn.demands.lines.create = function (size_id, demand_id, user_id, orders = []) {
         return new Promise((resolve, reject) => {
             check_for_demand_details(size_id)
             .then(size => {
@@ -121,19 +129,19 @@ module.exports = function (m, fn) {
                     create_line(
                         demand.demand_id,
                         size.size_id,
-                        qty,
+                        orders,
                         user_id
                     )
-                    .then(line_id => {
+                    .then(([line_id, created]) => {
                         let links = [];
                         orders.forEach(e => links.push({table: 'orders', id: e.order_id}));
                         create_line_action(
-                            `${(created ? 'CREATED' : `INCREMENTED | By ${qty}`)}`,
+                            `${(created ? 'CREATED' : 'INCREMENTED')}`,
                             line_id,
                             user_id,
                             links
                         )
-                        .then(result => resolve(line.demand_line_id));
+                        .then(result => resolve(line_id));
                     })
                     .catch(err => reject(err));
                 })

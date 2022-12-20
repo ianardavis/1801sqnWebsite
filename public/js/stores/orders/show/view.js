@@ -1,4 +1,5 @@
-let statuses = {0: 'Cancelled', 1: 'Placed', 2: 'Demanded', 3: 'Received'};
+const statuses = {0: 'Cancelled', 1: 'Placed', 2: 'Added to Demand', 3: 'Received'};
+const demand_line_statuses = {0: 'Cancelled', 1: 'Draft', 2: 'Open', 3: 'Received'};
 function getOrder() {
     disable_button('mark_as');
     for (let i=0; i<=5 ; i++) {
@@ -17,7 +18,6 @@ function getOrder() {
         set_innerText('order_updatedAt', print_date(order.updatedAt, true));
         set_innerText('order_user',      print_user(order.user));
 
-        
         clear('tbl_order_issues')
         .then(tbl_order_issues => {
             order.issues.forEach(issue => {
@@ -26,6 +26,16 @@ function getOrder() {
                 add_cell(row, {text: print_user(issue.user_issue)});
                 add_cell(row, {text: issue.qty});
                 add_cell(row, {append: new Link(`/issues/${issue.issue_id}`).e});
+            });
+        });
+        
+        clear('tbl_order_demand_lines')
+        .then(tbl_order_demand_lines => {
+            order.demand_lines.forEach(line => {
+                let row = tbl_order_demand_lines.insertRow(-1);
+                add_cell(row, {text: print_date(line.createdAt)});
+                add_cell(row, {text: demand_line_statuses[line.status]});
+                add_cell(row, {append: new Link(`/demand_lines/${line.demand_line_id}`).e});
             });
         });
 

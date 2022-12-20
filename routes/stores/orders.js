@@ -31,6 +31,7 @@ module.exports = (app, m, fn) => {
             include: [
                 fn.inc.stores.size(),
                 fn.inc.users.user(),
+                m.demand_lines,
                 {
                     model: m.issues,
                     include: [fn.inc.users.user({as: 'user_issue'})]
