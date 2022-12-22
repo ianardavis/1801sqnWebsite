@@ -3,19 +3,26 @@ function build_query(options) {
     if (!options.action || (options.action !== 'sum' && options.action !== 'count')) {
         if (!options.order) {
             const order = document.querySelector(`#tbl_${options.table}_head [data-dir]`);
+            
             if (order && order.dataset.column && order.dataset.dir) {
                 let order_col_parsed = JSON.parse(order.dataset.column);
                 options.order = order_col_parsed.concat([order.dataset.dir]);
             };
         };
+
         if (options.order) queries.push(`order=${ JSON.stringify(options.order)}`);
+
         try {
             let limit  = document.querySelector(`.limit_${ options.table} .active`),
                 offset = document.querySelector(`.offset_${options.table} .active`);
+
             if (limit && limit.dataset.value !== 'All') queries.push(`limit=${ JSON.stringify(limit .dataset.value)}`);
+
             if (offset)                                 queries.push(`offset=${JSON.stringify(offset.dataset.value)}`);
+
         } catch (error) {
             console.log(error);
+
         }
     };
     if (options.where) queries.push(`where=${JSON.stringify(options.where)}`);

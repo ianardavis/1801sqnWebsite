@@ -16,12 +16,7 @@ function getLines() {
             result.lines.forEach(line => {
                 try {
                     let row = tbl_lines.insertRow(-1);
-                    let qty = 0;
-                    line.orders.forEach(o => {
-                        if (o.status > 0) {
-                            qty += o.qty;
-                        };
-                    });
+                    let qty = sum_order_qtys(line.orders);
                     add_cell(row, {text: line.size.item.description});
                     add_cell(row, {
                         text: print_size(line.size),
@@ -72,7 +67,7 @@ function showLine(demand_line_id) {
         set_innerText('demand_line_id', line.demand_line_id);
         set_innerText('line_item',      line.size.item.description);
         set_innerText('line_size',      print_size(line.size));
-        set_innerText('line_qty',       line.qty);
+        set_innerText('line_qty',       sum_order_qtys(line.orders));
         set_innerText('line_user',      print_user(line.user));
         set_innerText('line_createdAt', print_date(line.createdAt, true));
         set_innerText('line_updatedAt', print_date(line.updatedAt, true));
@@ -82,10 +77,24 @@ function showLine(demand_line_id) {
         set_href('line_user_link', `/users/${line.user_id}`);
     });
 };
+
+function sum_order_qtys(orders) {
+    let qty = 0;
+    orders.forEach(o => {
+        if (o.status > 0) {
+            qty += o.qty;
+        };
+    });
+    return qty;
+};
+
 window.addEventListener('load', function () {
     addListener('reload', getLines);
-    addListener('sel_status', getLines, 'change');
+    
+    addListener('sel_lines_statuses', getLines, 'input');
+
     modalOnShow('line_view', function (event) {showLine(event.relatedTarget.dataset.id)});
+    
     addFormListener(
         'lines',
         'PUT',

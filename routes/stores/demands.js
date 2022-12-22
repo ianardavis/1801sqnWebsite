@@ -51,7 +51,7 @@ module.exports = (app, m, fn) => {
     });
     app.get('/get/demand_lines',     fn.loggedIn(), fn.permissions.check('authorised_demander'), (req, res) => {
         m.demand_lines.findAndCountAll({
-            where:   req.query.where,
+            where: req.query.where,
             include: [
                 fn.inc.stores.size(),
                 fn.inc.users.user(),

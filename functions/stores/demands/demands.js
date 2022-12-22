@@ -58,15 +58,24 @@ module.exports = function (m, fn) {
         return new Promise((resolve, reject) => {
             fn.demands.get(
                 {demand_id: demand_id},
-                [{model: m.demand_lines, as: 'lines', where: {status: 1}, required: false}]
+                [{
+                    model: m.demand_lines,
+                    as: 'lines',
+                    where: {status: 1},
+                    required: false,
+                    include: [m.orders]
+                }]
             )
             .then(demand => {
                 if (demand.status !== 1) {
                     reject(new Error('This demand is not in draft'));
+
                 } else if (demand.lines.length === 0) {
                     reject(new Error('No pending lines for this demand'));
+
                 } else {
                     resolve(demand);
+
                 };
             })
             .catch(err => reject(err));

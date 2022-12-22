@@ -353,6 +353,7 @@ function add_sort_listeners(table, func) {
     addListener(`limit_${table}_20`,  limit_func);
     addListener(`limit_${table}_30`,  limit_func);
     addListener(`limit_${table}_all`, limit_func);
+    
     let tbl = document.querySelector(`#tbl_${table}_head`);
     if (tbl) {
         tbl.querySelectorAll("[data-column]").forEach(th => {

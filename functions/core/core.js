@@ -81,7 +81,7 @@ module.exports = function (m, fn) {
         };
     };
     fn.pagination = function (query) {
-        let pagination = {};
+        let pagination = {distinct: true};
         if (query.order ) pagination.order  = [query.order];
         if (query.limit ) pagination.limit  = query.limit;
         if (query.offset) pagination.offset = query.offset * query.limit || 0;

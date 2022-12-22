@@ -14,11 +14,24 @@ function getDemandLine() {
         set_innerText('line_createdAt', print_date(line.createdAt, true));
         set_innerText('line_updatedAt', print_date(line.updatedAt, true));
         set_innerText('line_status',    line_statuses[line.status]);
+
         set_href('bcr_demand',       `/demands/${line.demand_id}`);
         set_href('line_user_link',   `/users/${line.user_id}`);
         set_href('line_item_link',   `/items/${line.size.item_id}`);
         set_href('line_size_link',   `/sizes/${line.size_id}`);
         set_href('line_serial_link', (line.serial ? `/serials/${line.serial_id}`: ''));
+
+        clear('tbl_orders')
+        .then(tbl_orders => {
+            set_count('order', line.orders.length);
+            line.orders.forEach(order => {
+                let row = tbl_orders.insertRow(-1);
+                add_cell(row, table_date(order.createdAt));
+                add_cell(row, {text: order.qty});
+                add_cell(row, {append: new Link(`/orders/${order.order_id}`).e});
+            });
+        });
+
     });
 };
 window.addEventListener('load', function () {

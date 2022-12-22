@@ -7,6 +7,7 @@
 <section class='container'>
 	<ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
         <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'demand_line'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'orders',  title: 'Orders',  spinner: 'orders',  count_id: 'order'}) %>
         <%- include(`${partials}/common/actions/tab_head`) %>
         <%- include(`${partials}/common/notes/tab_head`) %>
     </ul>
@@ -19,6 +20,16 @@
 			<%- include(`${partials}/inputs/display`, {id: 'line_status',    title: 'Status'}) %>
 			<%- include(`${partials}/inputs/display`, {id: 'line_createdAt', title: 'Created'}) %>
 			<%- include(`${partials}/inputs/display`, {id: 'line_updatedAt', title: 'Last Updated'}) %>
+		</div>
+        <div class="tab-pane fade" id="orders" role="tabpanel" aria-labelledby="orders-tab">
+			<table class='table table-sm table-hover'>
+				<thead class='thead-dark' id='tbl_orders_head'>
+					<th class='w-50' data-column='["createdAt"]' data-dir='DESC'>Date  </th>
+					<th class='w-50' data-column='["qty"]'						>Qty   </th>
+					<th><i class='fas fa-search'></i></th>
+				</thead>
+				<tbody id='tbl_orders'></tbody>
+			</table>
 		</div>
         <%- include(`${partials}/common/actions/tab_body`) %>
         <%- include(`${partials}/common/notes/tab_body`) %>
