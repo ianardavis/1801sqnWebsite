@@ -108,7 +108,7 @@ module.exports = (app, m, fn) => {
             req.params.id,
             req.user
         )
-        .then(result => res.send(result))
+        .then(message => res.send({success: true, message: `Demand completed. ${message}`}))
         .catch(err => fn.send_error(res, err));
     });
     app.put('/demands/:id/close',    fn.loggedIn(), fn.permissions.check('authorised_demander'), (req, res) => {

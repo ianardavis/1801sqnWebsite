@@ -1,5 +1,5 @@
 module.exports = function (fs, m, fn) {
-    fn.demands = {lines: {}};
+    fn.demands = {lines: {}, file: {}};
     fs
     .readdirSync(__dirname)
     .filter(file => {
