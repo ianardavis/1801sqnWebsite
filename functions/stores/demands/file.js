@@ -2,12 +2,21 @@ module.exports = function (m, fn) {
     function raise_demand_check(demand_id) {
         return new Promise((resolve, reject) => {
             fn.demands.get(
-                {demand_id: demand_id},
+                demand_id,
                 [{
                     model: m.demand_lines,
                     as: 'lines',
                     where: {status: 2},
-                    include: [m.orders]
+                    include: [
+                        m.orders,
+                        {
+                            model: m.sizes,
+                            include: [
+                                m.details,
+                                m.items
+                            ]
+                        }
+                    ]
                 }]
             )
             .then(demand => {
@@ -28,10 +37,14 @@ module.exports = function (m, fn) {
 
     function create_file(demand) {
         return new Promise((resolve, reject) => {
-            get_file(demand.supplier_id)
-            .then(([file, account]) => {
+            Promise.all([
+                get_file(demand.supplier_id),
+                check_folder_exists()
+            ])
+            .then(([[file, account], exists]) => {
                 const fs = require('fs');
                 if (file.filename) {
+                    
                     const filename = `${demand.demand_id}.xlsx`;
                     const from = fn.public_file('files', file.filename);
                     const to   = fn.public_file('demands', filename);
@@ -89,6 +102,17 @@ module.exports = function (m, fn) {
                 };
             })
             .catch(err => reject(err));
+        });
+    };
+    function check_folder_exists() {
+        return new Promise((resolve, reject) => {
+            fn.fs.folder_exists('demands')
+            .then(path => resolve(true))
+            .catch(err => {
+                fn.fs.mkdir('demands')
+                .then(path => resolve(true))
+                .catch(err => reject(err));
+            });
         });
     };
     
@@ -248,25 +272,31 @@ module.exports = function (m, fn) {
         return new Promise((resolve, reject) => {
             let sizes = [];
             lines.forEach(line => {
+                const demand_page_index = line.size.details.findIndex(e => e.name === 'Demand Page');
+                const demand_cell_index = line.size.details.findIndex(e => e.name === 'Demand Cell');
+                let qty = 0;
+                line.orders.forEach(order => {
+                    if (order.status > 0) qty += order.qty;
+                });
                 if (
                     line.size.supplier_id === supplier_id &&
-                    line.size.details.findIndex(e => e.name === 'Demand Page') !== -1 &&
-                    line.size.details.findIndex(e => e.name === 'Demand Cell') !== -1
+                    demand_page_index !== -1 &&
+                    demand_cell_index !== -1
                 ) {
-                    let demand_page = line.size.details[line.size.details.findIndex(e => e.name === 'Demand Page')].value,
-                        demand_cell = line.size.details[line.size.details.findIndex(e => e.name === 'Demand Cell')].value;
+                    const demand_page = line.size.details[demand_page_index].value;
+                    const demand_cell = line.size.details[demand_cell_index].value;
                     if (demand_page && demand_cell) {
-                        let sizeIndex = sizes.findIndex(e => e.size_id === line.size_id);
-                        if (sizeIndex === -1) {
+                        const size_index = sizes.findIndex(e => e.size_id === line.size_id);
+                        if (size_index === -1) {
                             sizes.push({
                                 size_id: line.size_id,
-                                qty:     line.qty,
+                                qty:     qty,
                                 page:    demand_page,
                                 cell:    demand_cell
                             });
                             
                         } else {
-                            sizes[sizeIndex].qty += line.qty;
+                            sizes[size_index].qty += qty;
                             
                         };
                     };

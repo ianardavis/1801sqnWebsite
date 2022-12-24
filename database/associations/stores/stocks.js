@@ -23,4 +23,12 @@ module.exports = function (m) {
             targetKey:  'stock_id'
         }
     );
+    
+    m.stocks.hasMany(
+        m.demand_line_receipts,
+        {
+            foreignKey: 'stock_id',
+            targetKey:  'stock_id'
+        }
+    );
 };

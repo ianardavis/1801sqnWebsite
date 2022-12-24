@@ -2,6 +2,7 @@ module.exports = function (m, fn) {
     const line_status = {0: "Cancelled", 1: "Pending", 2: "Open", 3: "Closed"};
     function create_demand_action(action, demand_id, user_id) {
         return new Promise(resolve => {
+            console.log('creating action', demand_id);
             fn.actions.create(
                 `DEMAND | ${action}`,
                 user_id,
@@ -57,7 +58,7 @@ module.exports = function (m, fn) {
     function complete_check(demand_id) {
         return new Promise((resolve, reject) => {
             fn.demands.get(
-                {demand_id: demand_id},
+                demand_id,
                 [{
                     model: m.demand_lines,
                     as: 'lines',
@@ -94,17 +95,16 @@ module.exports = function (m, fn) {
                         demand.demand_id,
                         user.user_id
                     )
-                    .then(result => {return demand.demand_id});
+                    .then(result => {
+                        fn.demands.file.create(demand_id, user)
+                        .then(filename => resolve(`Filename: ${filename}`))
+                        .catch(err => {
+                            console.log(err);
+                            resolve(`Could not raise file: ${err.message}`);
+                        });
+                    });
                 })
                 .catch(err => reject(err));
-            })
-            .then(demand_id => {
-                fn.demands.file.create(demand_id, user)
-                .then(filename => resolve(`Filename: ${filename}`))
-                .catch(err => {
-                    console.log(err);
-                    resolve(`Could not raise file: ${err.message}`);
-                });
             })
             .catch(err => reject(err));
         });
@@ -113,7 +113,7 @@ module.exports = function (m, fn) {
     function cancel_check(demand_id) {
         return new Promise((resolve, reject) => {
             fn.demands.get(
-                {demand_id: demand_id},
+                demand_id,
                 [{model: m.demand_lines, as: 'lines', where: {status: 3}, required: false}]
             )
             .then(demand => {
@@ -177,7 +177,7 @@ module.exports = function (m, fn) {
 
     fn.demands.close    = function (demand_id, user_id) {
         return new Promise((resolve, reject) => {
-            fn.demands.get({demand_id: demand_id})
+            fn.demands.get(demand_id)
             .then(demand => {
                 if (demand.status !== 2) {
                     reject(new Error('This demand is not complete'));
@@ -209,11 +209,13 @@ module.exports = function (m, fn) {
         });
     };
     fn.demands.download = function (req, res) {
-        fn.demands.get({demand_id: req.params.id})
+        fn.demands.get(req.params.id)
         .then(demand => {
             if (demand.filename) {
                 fn.fs.download('demands', demand.filename, res);
+
             } else {
+
                 fn.demands.file.create(demand.demand_id, req.user)
                 .then(file => {
                     fn.fs.download('demands', file, res);

@@ -246,6 +246,7 @@ module.exports = function (m, fn) {
             .then(demand_line => {
                 if (!demand_line.size) {
                     reject(new Error('Size not found'));
+
                 } else {
                     receive_orders(
                         demand_line.demand_line_id,
@@ -259,10 +260,12 @@ module.exports = function (m, fn) {
                         if (demand_line.size.has_serials) {
                             order_qty       = result.remaining.length;
                             receipt.serials = result.remaining;
+                            
                         } else {
                             order_qty        = result.remaining.qty;
                             receipt.qty      = result.remaining.qty;
                             receipt.location = line.location;
+                            
                         };
                         receive_remaining(
                             order_qty,
@@ -278,8 +281,10 @@ module.exports = function (m, fn) {
                                 .then(result => {
                                     if (result) {
                                         resolve(true);
+
                                     } else {
                                         reject(new Error('Line not updated'));
+
                                     };
                                 })
                                 .catch(err => reject(err));
@@ -289,6 +294,7 @@ module.exports = function (m, fn) {
                         .catch(err => reject(err));
                     })
                     .catch(err => reject(err));
+
                 };
             })
             .catch(err => reject(err));

@@ -97,4 +97,12 @@ module.exports = function (m) {
             as: 'nsn_country'
         }
     );
+    
+    m.nsns.hasMany(
+        m.demand_line_receipts,
+        {
+            foreignKey: 'nsn_id',
+            targetKey:  'nsn_id'
+        }
+    );
 };

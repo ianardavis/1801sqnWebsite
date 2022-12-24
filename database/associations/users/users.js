@@ -48,4 +48,12 @@ module.exports = function (m) {
             targetKey:  'user_id'
         }
     );
+    
+    m.users.hasMany(
+        m.demand_line_receipts,
+        {
+            foreignKey: 'user_id',
+            targetKey:  'user_id'
+        }
+    );
 };

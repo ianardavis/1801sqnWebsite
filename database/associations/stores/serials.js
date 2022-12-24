@@ -40,4 +40,12 @@ module.exports = function (m) {
             constraints: false
         }
     );
+    
+    m.serials.hasMany(
+        m.demand_line_receipts,
+        {
+            foreignKey: 'serial_id',
+            targetKey:  'serial_id'
+        }
+    );
 };

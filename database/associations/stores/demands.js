@@ -58,4 +58,58 @@ module.exports = function (m) {
             foreignKey:'demand_line_id'
         }
     );
+    
+    m.demand_lines.hasMany(
+        m.demand_line_receipts,
+        {
+            foreignKey: 'demand_line_id',
+            targetKey:  'demand_line_id',
+            as: 'receipts'
+        }
+    );
+
+    m.demand_line_receipts.hasOne(
+        m.users,
+        {
+            foreignKey: 'user_id',
+            sourceKey: 'user_id',
+            constraints: false
+        }
+    );
+
+    m.demand_line_receipts.hasOne(
+        m.serials,
+        {
+            foreignKey: 'serial_id',
+            sourceKey: 'serial_id',
+            constraints: false
+        }
+    );
+
+    m.demand_line_receipts.hasOne(
+        m.stocks,
+        {
+            foreignKey: 'stock_id',
+            sourceKey: 'stock_id',
+            constraints: false
+        }
+    );
+
+    m.demand_line_receipts.hasOne(
+        m.nsns,
+        {
+            foreignKey: 'nsn_id',
+            sourceKey: 'nsn_id',
+            constraints: false
+        }
+    );
+
+    m.demand_line_receipts.belongsTo(
+        m.demand_lines,
+        {
+            foreignKey: 'demand_line_id',
+            sourceKey: 'demand_line_id',
+            as: 'line'
+        }
+    );
 };
