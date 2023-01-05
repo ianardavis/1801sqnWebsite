@@ -38,7 +38,7 @@ module.exports = function (m, fn) {
         return issues;
     };
 
-    function update_issue_status(issue, status, user_id, action, links = []) {
+    function update_issue_status(issue, status, user_id, action) {
         return new Promise((resolve, reject) => {
             issue.update({status: status})
             .then(result => {
@@ -46,7 +46,7 @@ module.exports = function (m, fn) {
                     fn.actions.create(
                         `ISSUE | ${action}`,
                         user_id,
-                        [{table: 'issues', id: issue.issue_id}].concat(links)
+                        [{_table: 'issues', id: issue.issue_id}]
                     )
                     .then(action => resolve(true));
 
@@ -135,7 +135,7 @@ module.exports = function (m, fn) {
                         fn.actions.create(
                             `ISSUE | ${action}`,
                             user_id,
-                            [{table: 'issues', id: issue_id}]
+                            [{_table: 'issues', id: issue_id}]
                         )
                         .then(action => resolve(issue_id));
                     })
@@ -495,19 +495,7 @@ module.exports = function (m, fn) {
                     issue_actions.push(
                         new Promise((resolve, reject) => {
                             fn.loancards.lines.create(loancard_id, issue.issue, user_id, issue.line)
-                            .then(result => {
-                                resolve(true);
-                                // links.push({table: 'issues', id: issue.issue.issue_id});
-                                // update_issue_status(
-                                //     issue.issue,
-                                //     4,
-                                //     user_id,
-                                //     `ADDED TO LOANCARD`,
-                                //     links
-                                // )
-                                // .then(result => resolve(result))
-                                // .catch(err => reject(err));
-                            })
+                            .then(result => resolve(true))
                             .catch(err => reject(err));
                         })
                     );
@@ -583,7 +571,7 @@ module.exports = function (m, fn) {
                                 fn.actions.create(
                                     `ISSUE | UPDATED | Size changed From: ${fn.print_size(original_size)} to: ${fn.print_size(size)}`,
                                     user_id,
-                                    [{table: 'issues', id: issue.issue_id}]
+                                    [{_table: 'issues', id: issue.issue_id}]
                                 )
                                 .then(result => resolve(true));
 
@@ -616,7 +604,7 @@ module.exports = function (m, fn) {
                             fn.actions.create(
                                 `ISSUE | UPDATED | Quantity changed From: ${original_qty} to: ${qty}`,
                                 user_id,
-                                [{table: 'issues', id: issue.issue_id}]
+                                [{_table: 'issues', id: issue.issue_id}]
                             )
                             .then(result => resolve(true));
 

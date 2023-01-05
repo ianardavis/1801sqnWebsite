@@ -76,7 +76,7 @@ module.exports = function (m, fn) {
                             fn.actions.create(
                                 `${table.si.toUpperCase()} | UPDATED`,
                                 user_id,
-                                [{table: table.pl, id: result[`${table.si}_id`]}]
+                                [{_table: table.pl, id: result[`${table.si}_id`]}]
                             )
                             .then(result => resolve(true));
                         } else {

@@ -1,14 +1,14 @@
 module.exports = function (m, fn) {
     const line_status = {0: "Cancelled", 1: "Pending", 2: "Open", 3: "Closed"};
+    
     function create_demand_action(action, demand_id, user_id) {
         return new Promise(resolve => {
-            console.log('creating action', demand_id);
             fn.actions.create(
                 `DEMAND | ${action}`,
                 user_id,
-                [{table: 'demands', id: demand_id}]
+                [{_table: 'demands', id: demand_id}]
             )
-            .then(action => resolve(true));
+            .then((action) => resolve(true));
         });
     };
     
@@ -18,7 +18,7 @@ module.exports = function (m, fn) {
                 where:   {demand_id: demand_id},
                 include: include
             })
-            .then(demand => {
+            .then((demand) => {
                 if (demand) {
                     resolve(demand);
                     
@@ -33,7 +33,7 @@ module.exports = function (m, fn) {
     fn.demands.create   = function (supplier_id, user_id) {
         return new Promise((resolve, reject) => {
             fn.suppliers.get(supplier_id)
-            .then(supplier => {
+            .then((supplier) => {
                 m.demands.findOrCreate({
                     where: {
                         supplier_id: supplier.supplier_id,
@@ -43,10 +43,16 @@ module.exports = function (m, fn) {
                 })
                 .then(([demand, created]) => {
                     if (created) {
-                        create_demand_action('CREATED', demand.demand_id, user_id)
+                        create_demand_action(
+                            'CREATED',
+                            demand.demand_id,
+                            user_id
+                        )
                         .then(result => resolve(demand.demand_id));
+
                     } else {
                         resolve(demand.demand_id);
+
                     };
                 })
                 .catch(err => reject(err));

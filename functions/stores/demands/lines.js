@@ -5,7 +5,7 @@ module.exports = function (m, fn) {
             fn.actions.create(
                 `DEMAND LINE | ${action}`,
                 user_id,
-                [{table: 'demand_lines', id: line_id}].concat(links)
+                [{_table: 'demand_lines', id: line_id}].concat(links)
             )
             .then(action => resolve(true))
             .catch(err => {
@@ -134,7 +134,7 @@ module.exports = function (m, fn) {
                     )
                     .then(([line_id, created]) => {
                         let links = [];
-                        orders.forEach(e => links.push({table: 'orders', id: e.order_id}));
+                        orders.forEach(e => links.push({_table: 'orders', id: e.order_id}));
                         create_line_action(
                             `${(created ? 'CREATED' : 'INCREMENTED')}`,
                             line_id,
@@ -211,7 +211,7 @@ module.exports = function (m, fn) {
                                 .then(result => {
                                     let order_links = [];
                                     //get an array of all the orders updated
-                                    results.forEach(e => order_links.push({table: 'orders', id: e.value}));
+                                    results.forEach(e => order_links.push({_table: 'orders', id: e.value}));
                                     //create the cancelled action record
                                     create_line_action(
                                         'CANCELLED',
@@ -318,7 +318,7 @@ module.exports = function (m, fn) {
                             order.order_id,
                             receipt,
                             user_id,
-                            [{table: 'demand_lines', id: demand_line_id}]
+                            [{_table: 'demand_lines', id: demand_line_id}]
                         )
                     );
                 };
@@ -339,7 +339,7 @@ module.exports = function (m, fn) {
                             order.order_id,
                             receipt,
                             user_id,
-                            [{table: 'demand_lines', id: demand_line_id}]
+                            [{_table: 'demand_lines', id: demand_line_id}]
                         )
                     );
                 };
@@ -367,7 +367,7 @@ module.exports = function (m, fn) {
                         order.order_id,
                         receipt,
                         user_id,
-                        [{table: 'demand_lines', id: demand_line_id}]
+                        [{_table: 'demand_lines', id: demand_line_id}]
                     )
                     .then(result => resolve(result.qty))
                     .catch(err => reject(err));
@@ -411,7 +411,7 @@ module.exports = function (m, fn) {
                             `UPDATED | Partial receipt | New demand line created for receipt qty | Existing demand line qty updated from ${qty_original} to ${qty_original - qty}`,
                             demand_line.demand_line_id,
                             user_id,
-                            [{table: 'demand_lines', id: new_line.demand_line_id}]
+                            [{_table: 'demand_lines', id: new_line.demand_line_id}]
                         )
                         .then(action => resolve({demand_line: new_line}));
                     })

@@ -4,19 +4,22 @@ module.exports = function (m, fn) {
         return new Promise((resolve, reject) => {
             if (!receipt.qty) {
                 reject(new Error('No quantity submitted'));
+
             } else if (!receipt.cost) {
                 reject(new Error('No cost submitted'));
+
             } else {
                 resolve(true);
+
             };
         });
     };
-    function create_action(action, receipt_id, user_id, links = []) {
+    function create_action(action, receipt_id, user_id) {
         return new Promise(resolve => {
             fn.actions.create(
                 `RECEIPTS | ${action}`,
                 user_id,
-                [{table: 'receipts', id: receipt_id}].concat(links)
+                [{_table: 'receipts', id: receipt_id}]
             )
             .then(action => resolve(true));
         });

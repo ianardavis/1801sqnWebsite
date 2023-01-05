@@ -36,7 +36,7 @@ module.exports = function (m, fn) {
                             action,
                             user_id,
                             [
-                                {table: 'orders', id: order.order_id}
+                                {_table: 'orders', id: order.order_id}
                             ].concat(links)
                         )
                         .then(action => resolve(true));
@@ -182,11 +182,11 @@ module.exports = function (m, fn) {
                     create_or_increment_order(size.size_id, qty, user_id)
                     .then(order => {
                         let links = [];
-                        issues.forEach(issue => {links.push({table: 'issues', id: issue.issue_id})});
+                        issues.forEach(issue => {links.push({_table: 'issues', id: issue.issue_id})});
                         fn.actions.create(
                             'ORDER | CREATED',
                             user_id,
-                            [{table: 'orders', id: order.order_id}].concat(links)
+                            [{_table: 'orders', id: order.order_id}].concat(links)
                         )
                         .then(action => resolve(order));
                     })
@@ -230,7 +230,7 @@ module.exports = function (m, fn) {
                     issue.update(record)
                     .then(result => {
                         if (result) {
-                            resolve({table: 'issues', id: issue.issue_id});
+                            resolve({_table: 'issues', id: issue.issue_id});
 
                         } else {
                             reject(new Error('Issue not updated'));
@@ -256,7 +256,7 @@ module.exports = function (m, fn) {
                         fn.actions.create(
                             'ORDER | CANCELLED',
                             user_id,
-                            [{table: 'orders', id: order.order_id}].concat(links)
+                            [{_table: 'orders', id: order.order_id}].concat(links)
                         )
                         .then(action => resolve(true));
                     })
@@ -292,7 +292,7 @@ module.exports = function (m, fn) {
                     fn.actions.create(
                         'ORDER | RESTORED',
                         user_id,
-                        [{table: 'orders', id: order.order_id}]
+                        [{_table: 'orders', id: order.order_id}]
                     )
                     .then(action => resolve(true));
                 })
@@ -518,11 +518,11 @@ module.exports = function (m, fn) {
                     let links = [];
                     serials.forEach(serial => {
                         if (serial.location_id) {
-                            if (links.indexOf({table: 'locations', id: serial.value.location_id}) === -1) {
-                                links.push({table: 'locations', id: serial.value.location_id});
+                            if (links.indexOf({_table: 'locations', id: serial.value.location_id}) === -1) {
+                                links.push({_table: 'locations', id: serial.value.location_id});
                             };
                         };
-                        links.push({table: 'serials', id: serial.value.serial_id})
+                        links.push({_table: 'serials', id: serial.value.serial_id})
                     });
                     resolve({order: order, qty: qty, links: links});
 
@@ -539,7 +539,7 @@ module.exports = function (m, fn) {
             fn.stocks.receive({
                 qty:          receipt.qty,
                 user_id:      user_id,
-                action_links: [{table: 'orders', id: order.order_id}],
+                action_links: [{_table: 'orders', id: order.order_id}],
                 stock: {
                     size_id: order.size_id,
                     location: receipt.location
@@ -571,7 +571,7 @@ module.exports = function (m, fn) {
                     order.decrement('qty', {by: qty})
                     .then(result => resolve({
                         action: ` | Partial receipt | New order created for receipt qty | Existing order qty updated from ${order.qty} to ${order.qty - qty}`,
-                        links: [{table: 'orders', id: new_order.order_id}],
+                        links: [{_table: 'orders', id: new_order.order_id}],
                         order: new_order
                     }))
                     .catch(err => reject(err));
@@ -620,7 +620,7 @@ module.exports = function (m, fn) {
                                 fn.actions.create(
                                     `ORDER | UPDATED | Size changed From: ${fn.print_size(original_size)} to: ${fn.print_size(size)}`,
                                     user_id,
-                                    [{table: 'orders', id: order.order_id}]
+                                    [{_table: 'orders', id: order.order_id}]
                                 )
                                 .then(result => resolve(true));
 
@@ -653,7 +653,7 @@ module.exports = function (m, fn) {
                             fn.actions.create(
                                 `ORDER | UPDATED | Quantity changed From: ${original_qty} to: ${qty}`,
                                 user_id,
-                                [{table: 'orders', id: order.order_id}]
+                                [{_table: 'orders', id: order.order_id}]
                             )
                             .then(result => resolve(true));
 

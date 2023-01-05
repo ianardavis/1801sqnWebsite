@@ -67,15 +67,20 @@ function getSizes() {
                     });
 
                     get({
-                        action:'sum',
                         table: 'demand_lines',
                         where: {
                             size_id: size.size_id,
                             status: [1, 2]
                         }
                     })
-                    .then(function([demands, options]) {
-                        set_innerText(`${size.size_id}_demands`, demands || '0');
+                    .then(function([results, options]) {
+                        let qty = 0;
+                        results.lines.forEach(demand_line => {
+                            demand_line.orders.forEach(order => {
+                                qty += order.qty;
+                            });
+                        });
+                        set_innerText(`${size.size_id}_demands`, qty);
                     });
 
                     get({
@@ -111,7 +116,6 @@ window.addEventListener('load', function () {
         '/orders',
         {onComplete: getSizes}
     );
-    // add_sort_listeners('items', getItems);
     add_sort_listeners('sizes', getSizes);
     getItems();
     getSizes();

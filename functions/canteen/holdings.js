@@ -32,7 +32,7 @@ module.exports = function (m, fn) {
 			fn.actions.create(
 				`HOLDING | ${action}`,
 				user_id,
-				[{table: 'holdings', id: holding_id}]
+				[{_table: 'holdings', id: holding_id}]
 			)
 			.then(result => resolve(true));
 		});

@@ -117,7 +117,7 @@ module.exports = function (m, fn) {
                                 fn.actions.create(
                                     `STOCK | SCRAPPED | Decreased by ${details.qty}. New qty: ${Number(stock.qty - details.qty)}`,
                                     user_id,
-                                    [{table: 'stocks', id: stock.stock_id}]
+                                    [{_table: 'stocks', id: stock.stock_id}]
                                 )
                                 .then(results => resolve(true));
                             })
@@ -147,7 +147,7 @@ module.exports = function (m, fn) {
                             )
                         )}`,
                         user_id,
-                        [{table: 'stocks', id: stock.stock_id}]
+                        [{_table: 'stocks', id: stock.stock_id}]
                     )
                     .then(results => resolve(true));
                 })
@@ -170,7 +170,7 @@ module.exports = function (m, fn) {
                             `STOCK | RECEIVED | Qty: ${options.qty}`,
                             options.user_id,
                             [
-                                {table: 'stocks', id: stock.stock_id}
+                                {_table: 'stocks', id: stock.stock_id}
                             ].concat(options.action_links || [])
                         )
                         .then(result => resolve(true));
@@ -189,7 +189,7 @@ module.exports = function (m, fn) {
                 stock.increment(stock, {by: qty})
                 .then(result => {
                     if (result) {
-                        resolve({table: 'stocks', id: stock_id});
+                        resolve({_table: 'stocks', id: stock_id});
 
                     } else {
                         reject(new Error('Stock record not updated'));
@@ -234,8 +234,8 @@ module.exports = function (m, fn) {
                                         `STOCK | TRANSFER | From: ${stock_from.location.location} to: ${location.location} | Qty: ${qty}`,
                                         user_id,
                                         [
-                                            {table: 'stocks', id: stock_from.stock_id},
-                                            {table: 'stocks', id: stock_to  .stock_id}
+                                            {_table: 'stocks', id: stock_from.stock_id},
+                                            {_table: 'stocks', id: stock_to  .stock_id}
                                         ]
                                     )
                                     .then(result => resolve(true));

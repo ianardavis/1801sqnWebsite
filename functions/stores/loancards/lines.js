@@ -118,7 +118,7 @@ module.exports = function (m, fn) {
                             fn.actions.create(
                                 'LOANCARD LINE | CLOSED',
                                 user_id,
-                                [{table: 'loancard_lines', id: line.loancard_line_id}]
+                                [{_table: 'loancard_lines', id: line.loancard_line_id}]
                             )
                             .then(result => resolve(true));
                         })
@@ -202,7 +202,7 @@ module.exports = function (m, fn) {
                             issue.update({status: 2})
                             .then(result => {
                                 if (result) {
-                                    links.push({table: 'issues', id: issue.issue_id});
+                                    links.push({_table: 'issues', id: issue.issue_id});
                                     resolve(issue);
 
                                 } else {
@@ -262,7 +262,7 @@ module.exports = function (m, fn) {
                                 'LOANCARD LINE | CANCELLED',
                                 user_id,
                                 [
-                                    {table: 'loancard_lines', id: line.loancard_line_id},
+                                    {_table: 'loancard_lines', id: line.loancard_line_id},
                                     link
                                 ].concat(links)
                             )
@@ -355,13 +355,6 @@ module.exports = function (m, fn) {
                             })
                             .then(link_line => {
                                 console.log("link id", link_line.issue_loancard_line_id);
-                                // const resolve_obj = [
-                                //     loancard_line.loancard_line_id,
-                                //     [
-                                //         {table: 'loancard_lines', id: loancard_line.loancard_line_id},
-                                //         {table: 'serials',        id: serial.serial_id}
-                                //     ]
-                                // ];
                                 Promise.all([
                                     serial.update({
                                         issue_id:    issue.issue_id,
@@ -377,9 +370,9 @@ module.exports = function (m, fn) {
                                         'LOANCARD LINE | CREATED',
                                         user_id,
                                         [
-                                            {table: 'loancard_lines', id: loancard_line.loancard_line_id},
-                                            {table: 'serials',        id: serial.serial_id},
-                                            {table: 'issues',         id: issue.issue_id}
+                                            {_table: 'loancard_lines', id: loancard_line.loancard_line_id},
+                                            {_table: 'serials',        id: serial.serial_id},
+                                            {_table: 'issues',         id: issue.issue_id}
                                         ]
                                     )
                                     .then(action => resolve(true));
@@ -462,9 +455,9 @@ module.exports = function (m, fn) {
                                         `LOANCARD LINE | ${(created ? 'CREATED' : `INCREMENTED BY ${line.qty}`)}`,
                                         user_id,
                                         [
-                                            {table: 'stocks',         id: stock.stock_id},
-                                            {table: 'issues',         id: issue.issue_id},
-                                            {table: 'loancard_lines', id: loancard_line.loancard_line_id}
+                                            {_table: 'stocks',         id: stock.stock_id},
+                                            {_table: 'issues',         id: issue.issue_id},
+                                            {_table: 'loancard_lines', id: loancard_line.loancard_line_id}
                                         ]
                                     )
                                     .then(action => resolve(true));
@@ -641,7 +634,7 @@ module.exports = function (m, fn) {
                         qty:       qty
                     }
                 )
-                .then(scrap_line_id => resolve({table: 'scrap_lines', id: scrap_line_id}))
+                .then(scrap_line_id => resolve({_table: 'scrap_lines', id: scrap_line_id}))
                 .catch(err => reject(err));
 
             } else if (destination.serial) {
@@ -649,14 +642,14 @@ module.exports = function (m, fn) {
                     issue_id: null,
                     location_id: destination.serial.location_id
                 })
-                .then(result => resolve({table: 'serials', id: destination.serial.serial.serial_id}))
+                .then(result => resolve({_table: 'serials', id: destination.serial.serial.serial_id}))
                 .catch(err => reject(err));
 
             } else {
                 destination.stock.increment('qty', {by: qty})
                 .then(result => {
                     if (result) {
-                        resolve({table: 'stocks', id: destination.stock.stock_id});
+                        resolve({_table: 'stocks', id: destination.stock.stock_id});
 
                     } else {
                         reject(new Error('Stock not incremented'));
@@ -697,7 +690,7 @@ module.exports = function (m, fn) {
             };
             actions.push(issue.update(issue_record))
             Promise.all(actions)
-            .then(results => resolve({table: 'issues', id: issue.issue_id}))
+            .then(results => resolve({_table: 'issues', id: issue.issue_id}))
             .catch(err => reject(err));
         });
     };
@@ -712,30 +705,6 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
-    // function check_line_complete(loancard_line_id, user_id) {
-    //     return new Promise((resolve, reject) => {
-    //         fn.loancards.lines.get(loancard_line_id, [m.issues])
-    //         .then(line => {
-    //             if (line.issues.filter(e => e.status === 4).length > 0) {
-    //                 resolve(false);
-
-    //             } else {
-    //                 line.update({status: 3})
-    //                 .then(result => {
-    //                     fn.actions.create(
-    //                         'LOANCARD LINE | CLOSED',
-    //                         user_id,
-    //                         [{table: 'loancard_lines', id: line.loancard_line_id}]
-    //                     )
-    //                     .then(result => resolve(true));
-    //                 })
-    //                 .catch(err => reject(err));
-
-    //             };
-    //         })
-    //         .catch(err => reject(err));
-    //     });
-    // };
     fn.loancards.lines.return = function (options = {}, user_id) {
         return new Promise((resolve, reject) => {
             return_line_check(options)
@@ -750,7 +719,7 @@ module.exports = function (m, fn) {
                             'ISSUES | RETURNED',
                             user_id,
                             [
-                                {table: 'loancard_lines', id: line.loancard_line_id},
+                                {_table: 'loancard_lines', id: line.loancard_line_id},
                                 destination_link
                             ].concat(issue_links)
                         )

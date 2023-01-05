@@ -150,7 +150,7 @@ module.exports = function (m, fn) {
 								fn.actions.create(
 									`${options.table_s} | FILE DELETED`,
 									options.user_id,
-									[{table: options.table, id: options.id}]
+									[{_table: options.table, id: options.id}]
 								)
 								.then(result => resolve(true));
 							})

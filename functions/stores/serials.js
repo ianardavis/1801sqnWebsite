@@ -30,7 +30,7 @@ module.exports = function (m, fn) {
                         fn.actions.create(
                             `EDITED | Serial changed from ${original_serial} to ${new_serial}`,
                             user_id,
-                            [{table: 'serials', id: serial.serial_id}]
+                            [{_table: 'serials', id: serial.serial_id}]
                         )
                         .then(result => resolve(true));
                     } else {
@@ -57,7 +57,7 @@ module.exports = function (m, fn) {
                                     fn.actions.create(
                                         `SERIAL | LOCATION | transferred from ${original_location} to ${new_location.location}`,
                                         user_id,
-                                        [{table: 'serials', id: serial.serial_id}]
+                                        [{_table: 'serials', id: serial.serial_id}]
                                     )
                                     .then(result => resolve(true));
                                 } else {
@@ -113,7 +113,7 @@ module.exports = function (m, fn) {
                                     fn.actions.create(
                                         'SERIAL | SCRAPPED',
                                         user_id,
-                                        [{table: 'serials', id: serial.serial_id}]
+                                        [{_table: 'serials', id: serial.serial_id}]
                                     )
                                     .then(results => resolve(true));
                                 })
@@ -150,7 +150,7 @@ module.exports = function (m, fn) {
                                 fn.actions.create(
                                     'CREATED',
                                     user_id,
-                                    [{table: 'serials', id: serial.serial_id}]
+                                    [{_table: 'serials', id: serial.serial_id}]
                                 )
                                 .then(result => resolve(serial));
                             } else {
@@ -185,7 +185,7 @@ module.exports = function (m, fn) {
                             location_id: location.location_id,
                             issue_id:    null
                         })
-                        .then(result => resolve({table: 'serials', id: serial.serial_id}))
+                        .then(result => resolve({_table: 'serials', id: serial.serial_id}))
                         .catch(err => reject(err));
                     })
                     .catch(err => reject(err));
@@ -228,7 +228,7 @@ module.exports = function (m, fn) {
                         fn.actions.create(
                             `SERIAL | LOCATION | Set to ${location.location}${action_append}`,
                             user_id,
-                            [{table: 'serials', id: serial.serial_id}]
+                            [{_table: 'serials', id: serial.serial_id}]
                         )
                         .then(result => resolve(true));
                     } else {
