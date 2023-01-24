@@ -43,10 +43,13 @@ module.exports = function (m, fn) {
 		return new Promise((resolve, reject) => {
 			if (!holding) {
 				reject(new Error('No holding details'));
+
 			} else if (!holding.description) {
 				reject(new Error('No description submitted'));
+
 			} else {
 				resolve(true);
+
 			};
 		});
 	};
@@ -59,8 +62,10 @@ module.exports = function (m, fn) {
 			.then(([holding, created]) => {
 				if (created) {
 					resolve([holding.holding_id, holding.cash]);
+					
 				} else {
 					reject(new Error('This holding already exists'));
+					
 				};
 			})
 			.catch(err => reject(err));

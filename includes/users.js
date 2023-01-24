@@ -4,7 +4,7 @@ module.exports = (m, fn) => {
         return {
             model:      m.users,
             include:    [fn.inc.users.rank()],
-            attributes: options.attributes || {exclude: ['password', 'salt', 'reset']},
+            attributes: options.attributes || ['user_id', 'full_name'],//{exclude: ['password', 'salt', 'reset']},
             as:         options.as || 'user'
         };
     };
