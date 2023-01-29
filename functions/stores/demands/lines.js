@@ -53,7 +53,7 @@ module.exports = function (m, fn) {
     function check_for_demand_details(size_id) {
         return new Promise((resolve, reject) => {
             fn.sizes.get(
-                size_id,
+                {size_id: size_id},
                 [fn.inc.stores.details({
                     where: {name: {[fn.op.or]:['Demand Page', 'Demand Cell']}}
                 })]

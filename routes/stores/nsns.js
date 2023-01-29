@@ -58,7 +58,7 @@ module.exports = (app, m, fn) => {
 
     app.post('/nsns',             fn.loggedIn(), fn.permissions.check('stores_stock_admin'),   (req, res) => {
         Promise.all([
-            fn.sizes.get(req.body.nsn.size_id),
+            fn.sizes.get({size_id: req.body.nsn.size_id}),
             fn.nsns.groups   .get(req.body.nsn.nsn_group_id),
             fn.nsns.classes  .get(req.body.nsn.nsn_class_id),
             fn.nsns.countries.get(req.body.nsn.nsn_country_id)
@@ -84,12 +84,15 @@ module.exports = (app, m, fn) => {
                         .catch(err => {
                             console.log(err);
                             res.send({success: true, message: `NSN added. Error setting to default: ${err.message}`});
-                        })
+                        });
+
                     } else {
                         res.send({success: true,  message: 'NSN added'});
-                    }
+
+                    };
                 } else {
                     fn.send_error(res, 'NSN already exists');
+
                 };
             })
             .catch(err => fn.send_error(res, err));
@@ -118,39 +121,30 @@ module.exports = (app, m, fn) => {
     });
     
     app.delete('/nsns/:id',       fn.loggedIn(), fn.permissions.check('stores_stock_admin'),   (req, res) => {
-        fn.nsns.get(req.params.id)
-        .then(nsn => {
-            m.action_links.findOne({
-                where: {
-                    _table: 'nsns',
-                    id: nsn.nsn_id
-                }
-            })
-            .then(action => {
-                if (action) fn.send_error(res, 'NSN has actions and cannot be deleted')
-                else {
-                    m.loancard_lines.findOne({
-                        where: {nsn_id: nsn.nsn_id}
-                    })
-                    .then(line => {
-                        if (line) fn.send_error(res, 'NSN has loancards and cannot be deleted')
-                        else {
-                            nsn.destroy()
-                            .then(result => {
-                                m.sizes.update(
-                                    {nsn_id: null},
-                                    {where: {nsn_id: req.params.id}}
-                                )
-                                .then(result => res.redirect(`/sizes/${nsn.size_id}`))
-                                .catch(err => fn.send_error(res, err));
-                            })
-                            .catch(err => fn.send_error(res, err));
-                        };
-                    })
+        Promise.all([
+            fn.nsns.get(req.params.id),
+            m.action_links.findOne({where: {_table: 'nsns', id: nsn.nsn_id}}),
+            m.loancard_lines.findOne({where: {nsn_id: nsn.nsn_id}})
+        ])
+        .then(([nsn, action, line]) => {
+            if (action) {
+                fn.send_error(res, 'NSN has actions and cannot be deleted');
+
+            } else if (line) {
+                fn.send_error(res, 'NSN has loancards and cannot be deleted');
+
+            } else {
+                nsn.destroy()
+                .then(result => {
+                    m.sizes.update(
+                        {nsn_id: null},
+                        {where: {nsn_id: req.params.id}}
+                    )
+                    .then(result => res.redirect(`/sizes/${nsn.size_id}`))
                     .catch(err => fn.send_error(res, err));
-                };
-            })
-            .catch(err => fn.send_error(res, err));
+                })
+                .catch(err => fn.send_error(res, err));
+            };
         })
         .catch(err => fn.send_error(res, err));
     });

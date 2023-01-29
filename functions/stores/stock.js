@@ -29,7 +29,7 @@ module.exports = function (m, fn) {
                     .catch(err => reject(err));
 
                 } else if (options.size_id) {
-                    fn.sizes.get(options.size_id)
+                    fn.sizes.get({size_id: options.size_id})
                     .then(size => {
                         if (options.location_id) {
                             m.stocks.findOrCreate({
@@ -75,7 +75,7 @@ module.exports = function (m, fn) {
     };
     fn.stocks.create = function (size_id, location) {
         return new Promise((resolve, reject) => {
-            fn.sizes.get(size_id)
+            fn.sizes.get({size_id: size_id})
             .then(size => {
                 m.locations.findOrCreate({where: {location: location}})
                 .then(([location, created]) => {

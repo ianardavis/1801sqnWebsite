@@ -37,10 +37,25 @@ module.exports = function (m, fn) {
             .then(result => {
                 if (result) {
                     resolve(result);
+
                 } else {
                     reject(new Error(`${table.si} not found`));
+
                 };
             });
+        });
+    };
+    function getAll(table, query) {
+        return new Promise((resolve, reject) => {
+            m[table].findAndCountAll({
+                include: [{
+                    model: m.suppliers,
+                    where: query.where
+                }],
+                ...fn.pagination(query)
+            })
+            .then(results => resolve(results))
+            .catch(err => reject(err));
         });
     };
     function create(supplier_id, record, type, table) {
@@ -79,21 +94,25 @@ module.exports = function (m, fn) {
                                 [{_table: table.pl, id: result[`${table.si}_id`]}]
                             )
                             .then(result => resolve(true));
+
                         } else {
-                            reject(new Error(`${table.si} not updated`))
+                            reject(new Error(`${table.si} not updated`));
+
                         };
                     })
                     .catch(err => reject(err));
+
                 } else {
                     reject(new Error(`No ${table.si} for this record`));
+
                 };
             })
             .catch(err => reject(err));
         });
     };
-    function _delete(id, table) {
+    function _delete(where, table) {
         return new Promise((resolve, reject) => {
-            fn.suppliers[table.pl].get(id)
+            fn.suppliers[table.pl].get(where)
             .then(link => {
                 let actions = [link.destroy()];
                 if (link[table.si]) actions.push(link[table.si].destroy());
@@ -108,6 +127,9 @@ module.exports = function (m, fn) {
     fn.suppliers.contacts.get    = function (where) {
         return get(where, {pl: 'contacts', si: 'contact'});
     };
+    fn.suppliers.contacts.getAll = function (query) {
+        return getAll('contacts', query);
+    };
     fn.suppliers.contacts.create = function (supplier_id, contact, type) {
         return create(supplier_id, contact, type, {pl: 'contacts', si: 'contact'});
     };
@@ -115,11 +137,14 @@ module.exports = function (m, fn) {
         return edit(contact_id, new_contact, user_id, {pl: 'contacts', si: 'contact'});
     };
     fn.suppliers.contacts.delete = function (supplier_contact_id) {
-        return _delete(supplier_contact_id, {pl: 'contacts', si: 'contact'});
+        return _delete({supplier_contact_id: supplier_contact_id}, {pl: 'contacts', si: 'contact'});
     };
 
     fn.suppliers.addresses.get    = function (where) {
         return get(where, {pl: 'addresses', si: 'address'});
+    };
+    fn.suppliers.addresses.getAll = function (query) {
+        return getAll('addresses', query);
     };
     fn.suppliers.addresses.create = function (supplier_id, address, type) {
         return create(supplier_id, address, type, {pl: 'addresses', si: 'address'});
@@ -128,6 +153,6 @@ module.exports = function (m, fn) {
         return edit(address_id, new_address, user_id, {pl: 'addresses', si: 'address'});
     };
     fn.suppliers.addresses.delete = function (supplier_address_id) {
-        return _delete(supplier_address_id, {pl: 'addresses', si: 'address'});
+        return _delete({supplier_address_id: supplier_address_id}, {pl: 'addresses', si: 'address'});
     };
 };

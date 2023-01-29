@@ -308,7 +308,7 @@ module.exports = function (m, fn) {
         return new Promise((resolve, reject) => {
             Promise.all([
                 fn.loancards.get(loancard_id),
-                fn.sizes.get(issue.size_id)
+                fn.sizes.get({size_id: issue.size_id})
             ])
             .then(([loancard, size]) => {
                 check_nsn(size, line)

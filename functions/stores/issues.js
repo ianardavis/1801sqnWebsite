@@ -120,7 +120,7 @@ module.exports = function (m, fn) {
         return new Promise((resolve, reject) => {
             Promise.all([
                 fn.users.get(user_id_issue),
-                fn.sizes.get(line.size_id)
+                fn.sizes.get({size_id: line.size_id})
             ])
             .then(([user, size]) => {
                 if (size.issueable) {
@@ -558,7 +558,7 @@ module.exports = function (m, fn) {
         return new Promise((resolve, reject) => {
             change_check(issue_id)
             .then(issue => {
-                fn.sizes.get(size_id)
+                fn.sizes.get({size_id: size_id})
                 .then(size => {
                     if (size.item_id !== issue.size.item_id) {
                         reject(new Error('New size is for a different item'));

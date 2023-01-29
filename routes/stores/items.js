@@ -1,5 +1,4 @@
 module.exports = (app, m, fn) => {
-    let op = require('sequelize').Op;
     app.get('/items',                  fn.loggedIn(), fn.permissions.get('access_stores'),        (req, res) => res.render('stores/items/index'));
     app.get('/items/:id',              fn.loggedIn(), fn.permissions.get('access_stores'),        (req, res) => res.render('stores/items/show'));
     
@@ -14,14 +13,8 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/items',              fn.loggedIn(), fn.permissions.check('access_stores'),      (req, res) => {
-        let where = req.query.where || {};
-        if (req.query.like) where.description = {[op.substring]: req.query.like.description || ''};
-        m.items.findAndCountAll({
-            where:   where,
-            include: [fn.inc.stores.gender()],
-            ...fn.pagination(req.query)
-        })
-        .then(results => fn.send_res('items', res, results, req.query))
+        fn.items.getAll(req.query)
+        .then(items => fn.send_res('items', res, items, req.query))
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/item',               fn.loggedIn(), fn.permissions.check('access_stores'),      (req, res) => {
@@ -48,16 +41,7 @@ module.exports = (app, m, fn) => {
     app.post('/item_categories',       fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
         let actions = [];
         req.body.category.category_id.filter(e => e !== '').forEach(category_id => {
-            actions.push(new Promise((resolve, reject) => {
-                m.item_categories.findOrCreate({
-                    where: {
-                        item_id:     req.body.category.item_id,
-                        category_id: category_id
-                    }
-                })
-                .then(([category, created]) => resolve(true))
-                .catch(err => reject(err));
-            }));
+            actions.push(fn.items.categories.create(req.body.category.item_id, category_id));
         });
         Promise.allSettled(actions)
         .then(results => res.send({success: true, message: 'Categories added'}))
@@ -71,39 +55,13 @@ module.exports = (app, m, fn) => {
     });
     
     app.delete('/items/:id',           fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
-        m.sizes.findOne({where: {item_id: req.params.id}})
-        .then(sizes => {
-            if (sizes) {
-                fn.send_error(res, 'Cannot delete item while it has sizes assigned');
-
-            } else {
-                m.items.destroy({where: {item_id: req.params.id}})
-                .then(result => {
-                    if (!result) {
-                        fn.send_error(res, 'Item not deleted');
-
-                    } else {
-                        res.send({success: true, message: 'Item deleted'});
-
-                    };
-                })
-                .catch(err => fn.send_error(res, err));
-
-            };
-        })
+        fn.items.delete(req.params.id)
+        .then(sizes => res.send({success: true, message: 'Item deleted'}))
         .catch(err => fn.send_error(res, err));
     });
     app.delete('/item_categories/:id', fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
-        m.item_categories.destroy({where: {item_category_id: req.params.id}})
-        .then(result => {
-            if (!result) {
-                fn.send_error(res, 'Category not deleted');
-
-            } else {
-                res.send({success: true, message: 'Category deleted'});
-
-            };
-        })
+        fn.items.categories.delete(req.params.id)
+        .then(result => res.send({success: true, message: 'Category deleted'}))
         .catch(err => fn.send_error(res, err));
     });
 };

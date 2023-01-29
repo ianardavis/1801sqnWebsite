@@ -1,12 +1,6 @@
 module.exports = (app, m, fn) => {
     app.get('/get/addresses',    fn.loggedIn(), fn.permissions.check('access_stores'),  (req, res) => {
-        m.addresses.findAndCountAll({
-            include: [{
-                model: m.suppliers,
-                where: req.query.where
-            }],
-            ...fn.pagination(req.query)
-        })
+        fn.suppliers.addresses.getAll(req.query)
         .then(results => fn.send_res('addresses', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });

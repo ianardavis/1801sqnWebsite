@@ -134,7 +134,7 @@ module.exports = function (m, fn) {
     fn.serials.create = function (serial, size_id, user_id) {
         return new Promise((resolve, reject) => {
             if (serial && size_id) {
-                fn.sizes.get(size_id)
+                fn.sizes.get({size_id: size_id})
                 .then(size => {
                     if (!size.has_serials) {
                         reject(new Error('This size does not have serials'));

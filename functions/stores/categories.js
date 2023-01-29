@@ -1,22 +1,38 @@
 module.exports = function (m, fn) {
     fn.categories = {};
-    fn.categories.get = function (category_id) {
+    fn.categories.get = function (where) {
         return new Promise((resolve, reject) => {
-            m.categories.findOne({where: {category_id: category_id}})
+            m.categories.findOne({
+                where: where,
+                include: [fn.inc.stores.categories({as: 'parent'})]
+            })
             .then(category => {
                 if (category) {
                     resolve(category);
+
                 } else {
                     reject(new Error('Category not found'));
+
                 };
             })
+            .catch(err => reject(err));
+        });
+    };
+    fn.categories.getAll = function (query) {
+        return new Promise((resolve, reject) => {
+            m.categories.findAndCountAll({
+                where:   query.where || {},
+                include: [fn.inc.stores.categories({as: 'parent'})],
+                ...fn.pagination(query)
+            })
+            .then(results => resolve(results))
             .catch(err => reject(err));
         });
     };
     fn.categories.edit = function (category_id, details) {
         return new Promise((resolve, reject) => {
             if (details.parent_category_id === '') details.parent_category_id = null;
-            fn.categories.get(category_id)
+            fn.categories.get({category_id: category_id})
             .then(category => {
                 category.update(details)
                 .then(result => resolve(result))
@@ -35,7 +51,7 @@ module.exports = function (m, fn) {
     };
     fn.categories.delete = function (category_id) {
         return new Promise((resolve, reject) => {
-            fn.categories.get(category_id)
+            fn.categories.get({category_id: category_id})
             .then(category => {
                 m.item_categories.destroy(
                     {where: {category_id: category.category_id}}
@@ -45,8 +61,10 @@ module.exports = function (m, fn) {
                     .then(result => {
                         if (result) {
                             resolve(true);
+
                         } else {
                             reject(new Error('Category not deleted'));
+
                         };
                     })
                     .catch(err => reject(err));

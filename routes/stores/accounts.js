@@ -5,12 +5,8 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/accounts',    fn.loggedIn(), fn.permissions.check('access_stores'),  (req, res) => {
-        m.accounts.findAndCountAll({
-            where:   req.query.where,
-            include: [fn.inc.users.user()],
-            ...fn.pagination(req.query)
-        })
-        .then(results => fn.send_res('accounts', res, results, req.query))
+        fn.accounts.getAll(req.query)
+        .then(accounts => fn.send_res('accounts', res, accounts, req.query))
         .catch(err => fn.send_error(res, err));
     });
 
@@ -21,10 +17,7 @@ module.exports = (app, m, fn) => {
     });
     
     app.post('/accounts',       fn.loggedIn(), fn.permissions.check('supplier_admin'), (req, res) => {
-        m.accounts.create({
-            ...req.body.account,
-            ...{user_id: req.user.user_id}
-        })
+        fn.accounts.create(req.body.account)
         .then(account => res.send({success: true, message: 'Account created'}))
         .catch(err => fn.send_error(res, err));
     });

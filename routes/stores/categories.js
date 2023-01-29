@@ -4,11 +4,7 @@ module.exports = (app, m, fn) => {
         if (req.query.where.category_id_parent === "") { 
             req.query.where.category_id_parent = {[op.is]: null};
         };
-        m.categories.findAndCountAll({
-            where:   req.query.where || {},
-            include: [fn.inc.stores.categories({as: 'parent'})],
-            ...fn.pagination(req.query)
-        })
+        fn.categories.getAll(req.query)
         .then(results => fn.send_res('categories', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });
@@ -16,17 +12,8 @@ module.exports = (app, m, fn) => {
         for (let [key, value] of Object.entries(req.query)) {
             if (value === '') req.query[key] = null;
         };
-        m.categories.findOne({
-            where: req.query.where,
-            include: [fn.inc.stores.categories({as: 'parent'})]
-        })
-        .then(category => {
-            if (category) {
-                res.send({success: true, result: category});
-            } else {
-                res.send({success: false, message: 'Category not found'});
-            };
-        })
+        fn.categories.get(req.query.where)
+        .then(category => res.send({success: true, result: category}))
         .catch(err => fn.send_error(res, err));
     });
 

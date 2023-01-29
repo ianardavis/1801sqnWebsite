@@ -1,80 +1,37 @@
 module.exports = (app, m, fn) => {
-    app.get('/sizes/select', fn.loggedIn(), fn.permissions.get('access_stores'),   (req, res) => res.render('stores/sizes/select'));
-    app.get('/sizes/:id',    fn.loggedIn(), fn.permissions.get('access_stores'),   (req, res) => res.render('stores/sizes/show'));
+    app.get('/sizes/select', fn.loggedIn(), fn.permissions.get('access_stores'),        (req, res) => res.render('stores/sizes/select'));
+    app.get('/sizes/:id',    fn.loggedIn(), fn.permissions.get('access_stores'),        (req, res) => res.render('stores/sizes/show'));
 
-    app.get('/count/sizes',  fn.loggedIn(), fn.permissions.check('access_stores'), (req, res) => {
+    app.get('/count/sizes',  fn.loggedIn(), fn.permissions.check('access_stores'),      (req, res) => {
         m.sizes.count({where: req.query.where})
         .then(count => res.send({success: true, result: count}))
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/sizes',    fn.loggedIn(), fn.permissions.check('access_stores'), (req, res) => {
-        m.sizes.findAndCountAll({
-            where: req.query.where,
-            include: [
-                fn.inc.stores.item(),
-                fn.inc.stores.supplier()
-            ],
-            ...fn.pagination(req.query)
-        })
-        .then(results => fn.send_res('sizes', res, results, req.query))
+    app.get('/get/size',     fn.loggedIn(), fn.permissions.check('access_stores'),      (req, res) => {
+        fn.sizes.get(req.query.where)
+        .then(size => res.send({success: true, result: size}))
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/size',     fn.loggedIn(), fn.permissions.check('access_stores'), (req, res) => {
-        m.sizes.findOne({
-            where: req.query.where,
-            include: [
-                fn.inc.stores.item(),
-                fn.inc.stores.supplier()
-            ]
-        })
-        .then(size => {
-            if (size) res.send({success: true, result: size})
-            else res.send({success: false, message: 'Size not found'});
-        })
+    app.get('/get/sizes',    fn.loggedIn(), fn.permissions.check('access_stores'),      (req, res) => {
+        fn.sizes.getAll(req.query)
+        .then(sizes => fn.send_res('sizes', res, sizes, req.query))
         .catch(err => fn.send_error(res, err));
     });
 
-    app.post('/sizes',       fn.loggedIn(), fn.permissions.check('stores_stock_admin'),   (req, res) => {
-        if (req.body.size.supplier_id === '') req.body.size.supplier_id = null;
-        m.sizes.findOrCreate({
-            where: {
-                item_id: req.body.size.item_id,
-                size1:   req.body.size.size1,
-                size2:   req.body.size.size2,
-                size3:   req.body.size.size3
-            },
-            defaults: req.body.size
-        })
-        .then(([size, created]) => res.send({success: true, message: (created ? 'Size added' : 'Size already exists')}))
+    app.post('/sizes',       fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
+        fn.sizes.create(req.body.size)
+        .then(size => res.send({success: true, message: 'Size added'}))
         .catch(err => fn.send_error(res, err));
     });
-    app.put('/sizes/:id',    fn.loggedIn(), fn.permissions.check('stores_stock_admin'),   (req, res) => {
+    app.put('/sizes/:id',    fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
         fn.sizes.edit(req.params.id, req.body.size)
         .then(result => res.send({success: true, message: 'Size saved'}))
         .catch(err => fn.send_error(res, err));
     });
 
-    app.delete('/sizes/:id', fn.loggedIn(), fn.permissions.check('stores_stock_admin'),   (req, res) => {
-        fn.sizes.get(req.params.id)
-        .then(size => {
-            m.stocks.findOne({where: {size_id: req.params.id}})
-            .then(stock => {
-                if (stock) fn.send_error(res, 'Cannot delete a size whilst it has stock')
-                else {
-                    m.nsns.findOne({where: {size_id: req.params.id}})
-                    .then(nsn => {
-                        if (nsn) fn.send_error(res, 'Cannot delete a size whilst it has NSNs assigned')
-                        else {
-                            size.destroy()
-                            .then(result => res.send({success: true, message: 'Size deleted'}))
-                            .catch(err => fn.send_error(res, err));
-                        };
-                    })
-                    .catch(err => fn.send_error(res, err));
-                };
-            })
-            .catch(err => fn.send_error(res, err));
-        })
+    app.delete('/sizes/:id', fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
+        fn.sizes.delete(req.params.id)
+        .then(result => res.send({success: true, message: 'Size deleted'}))
         .catch(err => fn.send_error(res, err));
     });
 };

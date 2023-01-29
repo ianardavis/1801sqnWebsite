@@ -1,10 +1,13 @@
 module.exports = function (m, fn) {
     fn.sizes = {details: {}};
-    fn.sizes.get = function (size_id, includes = []) {
+    fn.sizes.get = function (where, includes = []) {
         return new Promise((resolve, reject) => {
             m.sizes.findOne({
-                where: {size_id: size_id},
-                include: [m.items].concat(includes)
+                where: where,
+                include: [
+                    fn.inc.stores.item(),
+                    fn.inc.stores.supplier()
+                ].concat(includes)
             })
             .then(size => {
                 if (size) {
@@ -18,9 +21,49 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
+    fn.sizes.getAll = function (query) {
+        return new Promise((resolve, reject) => {
+            m.sizes.findAndCountAll({
+                where: query.where,
+                include: [
+                    fn.inc.stores.item(),
+                    fn.inc.stores.supplier()
+                ],
+                ...fn.pagination(query)
+            })
+            .then(sizes => resolve(sizes))
+            .catch(err => reject(err));
+        });
+    };
+
+    fn.sizes.create = function (size) {
+        return new Promise((resolve, reject) => {
+            if (size.supplier_id === '') size.supplier_id = null;
+            m.sizes.findOrCreate({
+                where: {
+                    item_id: size.item_id,
+                    size1:   size.size1,
+                    size2:   size.size2,
+                    size3:   size.size3
+                },
+                defaults: size
+            })
+            .then(([size, created]) => {
+                if (created) {
+                    resolve(size);
+
+                } else {
+                    reject(new Error('This size already exists'));7
+
+                };
+            })
+            .catch(err => reject(err));
+        });
+    };
+
     fn.sizes.edit = function (size_id, details) {
         return new Promise((resolve, reject) => {
-            fn.sizes.get(size_id)
+            fn.sizes.get({size_id: size_id})
             .then(size => {
                 size.update(details)
                 .then(result => resolve(result))
@@ -29,6 +72,35 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
+
+    fn.sizes.delete = function (size_id) {
+        return new Promise((resolve, reject) => {
+            const where = {size_id: size_id}
+            fn.sizes.get(where)
+            .then(size => {
+                Promise.all([
+                    m.stocks.findOne({where: where}),
+                    m.nsns  .findOne({where: where})
+                ])
+                .then(([stocks, nsns]) => {
+                    if (stocks) {
+                        reject(new Error('Cannot delete a size whilst it has stock'));
+    
+                    } else if (nsns) {
+                        reject(new Error('Cannot delete a size whilst it has NSNs'));
+
+                    } else {
+                        size.destroy()
+                        .then(result => resolve(true))
+                        .catch(err => reject(err));
+                    };
+                })
+                .catch(err => reject(err));
+            })
+            .catch(err => reject(err));
+        });
+    };
+
     fn.sizes.details.get = function (where) {
         return new Promise((resolve, reject) => {
             m.details.findOne({where: where})
@@ -44,6 +116,47 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
+    fn.sizes.details.getAll = function (query) {
+        return new Promise((resolve, reject) => {
+            m.details.findAndCountAll({
+                where: query.where,
+                ...fn.pagination(query)
+            })
+            .then(details => resolve(details))
+            .catch(err =>    reject(err));
+        });
+    };
+
+    fn.sizes.details.create = function (detail) {
+        return new Promise((resolve, reject) => {
+            if (!detail.name) {
+                reject(new Error('Name not submitted'));
+    
+            } else if (!detail.name) {
+                reject(new Error('Value not submitted'));
+    
+            } else {
+                m.details.findOrCreate({
+                    where: {
+                        size_id: detail.size_id,
+                        name:    detail.name
+                    },
+                    defaults: {value: detail.value}
+                })
+                .then(([new_detail, created]) => {
+                    if (!created) {
+                        reject(new Error('Detail already exists'));
+    
+                    } else {
+                        resolve(new_detail);
+
+                    };
+                })
+                .catch(err => reject(err))
+            };
+        });
+    };
+
     fn.sizes.details.edit = function (detail_id, details) {
         return new Promise((resolve, reject) => {
             fn.sizes.details.get(detail_id)
@@ -106,6 +219,22 @@ module.exports = function (m, fn) {
                     .catch(err => reject(err));
                 } else resolve(false);
             });
+        });
+    };
+
+    fn.sizes.details.delete = function (detail_id) {
+        return new Promise((resolve, reject) => {
+            m.details.destroy({where: {detail_id: detail_id}})
+            .then(result => {
+                if (!result) {
+                    reject(new Error('Detail not deleted'));
+    
+                } else {
+                    resolve(true);
+    
+                };
+            })
+            .catch(err => reject(err));
         });
     };
 };

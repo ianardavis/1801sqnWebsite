@@ -6,8 +6,10 @@ module.exports = function (m, fn) {
             .then(location => {
                 if (location) {
                     resolve(location);
+
                 } else {
                     reject(new Error('Location not found'));
+
                 };
             })
             .catch(err => reject(err));
@@ -20,11 +22,18 @@ module.exports = function (m, fn) {
                     where: {location: location}
                 })
                 .then(([location, created]) => {
-                    if (created) resolve({location_id: location.location_id})
-                    else reject(new Error('Location already exists'));
+                    if (created) {
+                        resolve({location_id: location.location_id});
+
+                    }else {
+                        reject(new Error('Location already exists'));
+                    };
                 })
                 .catch(err => reject(err));
-            } else reject(new Error('No location specified'));
+            } else {
+                reject(new Error('No location specified'));
+                
+            };
         });
     };
     fn.locations.get = function (options = {}) {

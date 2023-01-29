@@ -3,8 +3,13 @@ module.exports = (app, m, fn) => {
     app.get('/get/location',  fn.loggedIn(),                                      (req, res) => {
         m.locations.findOne({where: req.query.where})
         .then(location => {
-            if (location) res.send({success: true, result: location})
-            else res.send({success: false, message: 'Location not found'});
+            if (location) {
+                res.send({success: true, result: location});
+
+            } else {
+                res.send({success: false, message: 'Location not found'});
+            
+            };
         })
         .catch(err => fn.send_error(res, err));
     });
@@ -20,18 +25,23 @@ module.exports = (app, m, fn) => {
     app.put('/locations/:id', fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
         m.locations.findOne({where: {location_id: req.params.id}})
         .then(location => {
-            if (!location) fn.send_error(res, 'Location not found')
-            else {
+            if (!location) {
+                fn.send_error(res, 'Location not found');
+
+            } else {
                 m.locations.findOne({where: {location: req.body.location}})
                 .then(new_location => {
-                    if (new_location && location.location_id !== new_location.location_id) fn.send_error(res, 'Location already exists') ///merge???
-                    else {
+                    if (new_location && location.location_id !== new_location.location_id) {
+                        fn.send_error(res, 'Location already exists'); ///merge???
+
+                    } else {
                         location.update({location: req.body.location})
                         .then(result => res.send({success: true, message: 'Location saved'}))
                         .catch(err => fn.send_error(res, err));
                     };
                 })
                 .catch(err => fn.send_error(res, err));
+
             };
         })
         .catch(err => fn.send_error(res, err));
