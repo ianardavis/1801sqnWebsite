@@ -48,7 +48,7 @@ module.exports = function (m, fn) {
                 fn.serials.get(serial_id)
                 .then(serial => {
                     let original_location = serial.location.location;
-                    fn.locations.get({location: location})
+                    fn.locations.findOrCreate({location: location})
                     .then(new_location => {
                         if (new_location.location_id !== serial.location_id) {
                             serial.update({location_id: new_location.location_id})
@@ -202,7 +202,7 @@ module.exports = function (m, fn) {
                 .then(serial => {
                     fn.serials.set_location(
                         serial, 
-                        {location: location}, 
+                        location, 
                         user_id, 
                         'on receipt'
                     )
@@ -220,7 +220,7 @@ module.exports = function (m, fn) {
     };
     fn.serials.set_location = function (serial, location, user_id, action_append = '') {
         return new Promise((resolve, reject) => {
-            fn.locations.get(location)
+            fn.locations.findOrCreate(location)
             .then(location => {
                 serial.update({location_id: location.location_id})
                 .then(result => {
@@ -231,8 +231,10 @@ module.exports = function (m, fn) {
                             [{_table: 'serials', id: serial.serial_id}]
                         )
                         .then(result => resolve(true));
+
                     } else {
                         reject(new Error('Serial location not updated'));
+
                     };
                 })
                 .catch(err => reject(err));
@@ -248,24 +250,30 @@ module.exports = function (m, fn) {
                 .then(action => {
                     if (action) {
                         reject(new Error('Cannot delete a serial with actions'));
+                        
                     } else {
                         m.loancard_lines.findOne({where: {serial_id: serial.serial_id}})
                         .then(line => {
                             if (line) {
                                 reject(new Error('Cannot delete a serial with loancards'));
+                                
                             } else {
                                 serial.destroy()
                                 .then(result => {
                                     if (result) {
                                         resolve(true);
+                                        
                                     } else {
                                         reject(new Error('Serial not deleted'));
+                                        
                                     };
                                 })
                                 .catch(err => reject(err));
+                                
                             };
                         })
                         .catch(err => reject(err));
+                        
                     };
                 })
                 .catch(err => reject(err));

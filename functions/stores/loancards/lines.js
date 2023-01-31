@@ -594,7 +594,7 @@ module.exports = function (m, fn) {
             } else if (line.location) {
                 if (loancard_line.size.has_serials) {
                     if (loancard_line.serial) {
-                        fn.locations.get({location: line.location})
+                        fn.locations.findOrCreate({location: line.location})
                         .then(location => resolve({
                             serial: {
                                 serial:      loancard_line.serial,

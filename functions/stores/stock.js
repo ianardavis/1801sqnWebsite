@@ -43,7 +43,7 @@ module.exports = function (m, fn) {
                             .catch(err => reject(err));
                             
                         } else if (options.location) {
-                            fn.locations.get({location: options.location})
+                            fn.locations.findOrCreate({location: options.location})
                             .then(location => {
                                 m.stocks.findOrCreate({
                                     where: {

@@ -56,9 +56,9 @@ module.exports = (app, m, fn) => {
         )
         .then(serial => {
             if (req.body.location) {
-                fn.locations.set_location(
+                fn.serials.set_location(
                     serial,
-                    {location: req.body.location},
+                    req.body.location,
                     req.user.user_id,
                     'on creation'
                 )
