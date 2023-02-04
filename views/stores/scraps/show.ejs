@@ -51,10 +51,10 @@
 				<table class='table table-sm table-hover'>
 					<thead class='thead-dark' id="tbl_scrap_lines_head">
 						<th class='w-20' data-column='["size","item","description"]' data-dir="ASC">Item</th>
-						<th class='w-20' data-column='["size","size1"]'	>Size</th>
+						<th class='w-20' data-column='["size","size1"]'							   >Size</th>
 						<th class='w-25'>Serial/NSN</th>
-						<th class='w-10' data-column='["qty"]'			>Qty</th>
-						<th class='w-15' data-column='["status"]'		>Status</th>
+						<th class='w-10' data-column='["qty"]'									   >Qty</th>
+						<th class='w-15' data-column='["status"]'								   >Status</th>
 						<th class='w-10'>Actions</th>
 						<th><i class='fas fa-search'></i></th>
 					</thead>
@@ -73,15 +73,13 @@
 	</div>
 </section>
 <%- include(`${partials}/foot/app`) %>
-<script src="/js/common/radios/nil_cancel.js"></script>
 <script>show_tab('<%= tab %>')</script>
 <%- include(`${partials}/common/notes/scripts`) %>
 <%- include(`${partials}/common/actions/scripts`) %>
-
-<script src="/js/stores/scraps/show/view.js"></script>
-<script async>getScrap()</script>
-
-<script src="/js/stores/scraps/show/lines/view.js"></script>
+<script src="/js/common/radios/nil_cancel.js"></script>
+<script src="/js/common/add_location_input.js"></script>
 <script src="/js/utils/list/stocks.js"></script>
 <script src="/js/utils/list/serials.js"></script>
+<script src="/js/stores/scraps/show/view.js"></script>
+<script src="/js/stores/scraps/show/lines/view.js"></script>
 <%- include(`${partials}/foot/components/htmlClose`) %>

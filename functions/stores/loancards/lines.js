@@ -282,7 +282,7 @@ module.exports = function (m, fn) {
         return new Promise((resolve, reject) => {
             if (size.has_nsns) {
                 if (options.nsn_id) {
-                    fn.nsns.get(options.nsn_id)
+                    fn.nsns.get({nsn_id: options.nsn_id})
                     .then(nsn => {
                         if (nsn.size_id !== size.size_id) {
                             reject(new Error('NSN is not for this size'));
@@ -406,7 +406,7 @@ module.exports = function (m, fn) {
                 reject(new Error('No Serial ID submitted'));
 
             } else {
-                fn.serials.get(serial_id)
+                fn.serials.get({serial_id: serial_id})
                 .then(serial => {
                     if (serial.size_id !== size_id) {
                         reject(new Error('Serial # is not for this size'));
@@ -587,7 +587,7 @@ module.exports = function (m, fn) {
     function check_return_destination(line, loancard_line) {
         return new Promise((resolve, reject) => {
             if (line.scrap && line.scrap === '1') {
-                fn.scraps.get({supplier_id: loancard_line.size.supplier_id})
+                fn.scraps.getOrCreate(loancard_line.size.supplier_id)
                 .then(scrap => resolve({scrap: scrap}))
                 .catch(err => reject(err));
                 
@@ -625,7 +625,7 @@ module.exports = function (m, fn) {
         return new Promise((resolve, reject) => {
             console.log(line);
             if (destination.scrap) {
-                fn.scraps.lines.add(
+                fn.scraps.lines.create(
                     destination.scrap.scrap_id,
                     line.size_id,
                     {

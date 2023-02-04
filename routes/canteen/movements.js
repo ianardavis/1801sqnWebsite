@@ -31,7 +31,7 @@ module.exports = (app, m, fn) => {
     app.get('/get/movements_holding', fn.loggedIn(), fn.permissions.check('cash_admin'), (req, res) => {
         m.movements.findAndCountAll({
             where: {
-                [op.or]: [
+                [fn.op.or]: [
                     {holding_id_to:   req.query.where.holding_id},
                     {holding_id_from: req.query.where.holding_id}
                 ]

@@ -1,15 +1,7 @@
 module.exports = (app, m, fn) => {
     app.get('/serials/:id',          fn.loggedIn(), fn.permissions.get(  'access_stores'),      (req, res) => res.render('stores/serials/show'));
     app.get('/get/serials',          fn.loggedIn(), fn.permissions.check('access_stores'),      (req, res) => {
-        m.serials.findAndCountAll({
-            where:   req.query.where,
-            include: [
-                fn.inc.stores.location(),
-                fn.inc.stores.issue(),
-                fn.inc.stores.size()
-            ],
-            ...fn.pagination(req.query)
-        })
+        fn.serials.getAll(req.query)
         .then(results => fn.send_res('serials', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });
@@ -17,34 +9,13 @@ module.exports = (app, m, fn) => {
         if (!req.query.where) req.query.where = {};
         req.query.where.location_id = {[fn.op.not]: null};
         req.query.where.issue_id    = null;
-        m.serials.findAndCountAll({
-            where:   req.query.where,
-            include: [
-                fn.inc.stores.location(),
-                fn.inc.stores.issue(),
-                fn.inc.stores.size()
-            ],
-            ...fn.pagination(req.query)
-        })
+        fn.serials.getAll(req.query)
         .then(results => fn.send_res('serials', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/serial',           fn.loggedIn(), fn.permissions.check('access_stores'),      (req, res) => {
-        m.serials.findOne({
-            where: req.query.where,
-            include: [
-                fn.inc.stores.location(),
-                fn.inc.stores.issue(),
-                fn.inc.stores.size()
-            ]
-        })
-        .then(serial => {
-            if (serial) {
-                res.send({success: true, result: serial});
-            } else {
-                fn.send_error(res, err);
-            };
-        })
+        fn.serials.get(req.query.where)
+        .then(serial => res.send({success: true, result: serial}))
         .catch(err => fn.send_error(res, err));
     });
 
@@ -63,12 +34,11 @@ module.exports = (app, m, fn) => {
                     'on creation'
                 )
                 .then(result => res.send({success: true, message: 'Serial created, location set'}))
-                .catch(err => {
-                    console.log(err);
-                    res.send({success: true, message: 'Serial created, location not set'});
-                })
+                .catch(err => res.send({success: true, message: 'Serial created, location not set'}));
+
             } else {
-                res.send({success: true, message: 'Serial created'});
+                res.send({success: true, message: 'Serial created. No location specified'});
+
             };
         })
         .catch(err => fn.send_error(res, err));

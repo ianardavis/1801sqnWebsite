@@ -61,8 +61,7 @@ function getLines() {
                             };
                         };
                     };
-                    let div_details = new Div({attributes: [{field: 'id', value: `details_${line.loancard_line_id}`}]}).e;
-                    add_cell(row, {append: [radios, div_details]});
+                    add_cell(row, {append: [radios, div_details(line.loancard_line_id, row_index)]});
                     add_cell(row, {append: 
                         new Modal_Button(
                             _search(),

@@ -162,10 +162,12 @@ module.exports = (m, fn) => {
             include: [fn.inc.stores.supplier()]
         };
     };
-    fn.inc.stores.scrap_lines = () => {
+    fn.inc.stores.scrap_lines = (where = null, required = false) => {
         return {
             model: m.scrap_lines,
-            as:    'lines'
+            as:    'lines',
+            where: where,
+            required: required
         };
     };
     fn.inc.stores.address = () => {

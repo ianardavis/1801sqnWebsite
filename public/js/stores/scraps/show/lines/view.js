@@ -11,52 +11,76 @@ function getLines() {
             set_count('line', result.count);
             let row_index = 0;
             result.lines.forEach(line => {
-                try {
-                    let row = tbl_lines.insertRow(-1);
-                    add_cell(row, {text: line.size.item.description});
-                    add_cell(row, {text: print_size(line.size)});
-                    add_cell(row, {text: print_nsn(line.nsn)});
-                    add_cell(row, {text: line.qty});
-                    add_cell(row, {
-                        text: line_statuses[line.status],
-                        append: new Hidden_Input({
-                            attributes: [
-                                {field: 'name',  value: `lines[][${row_index}][line_id]`},
-                                {field: 'value', value: line.line_id}
-                            ]
-                        }).e
-                    });
-                    let radios = [];
-                    let args = [line.line_id, row_index];
-                    if (line.status === 1) {
-                        if (typeof nil_radio    === 'function') radios.push(nil_radio(   ...args));
-                        if (typeof cancel_radio === 'function') radios.push(cancel_radio(...args));
-                    };
-                    radios.push(new Div({attributes: [{field: 'id', value: `${line.line_id}_details`}]}).e);
-                    add_cell(row, {append: radios});
-                    add_cell(row, {append: 
-                        new Modal_Button(
-                            _search(),
-                            'line_view',
-                            [{
-                                field: 'id',
-                                value: line.line_id
-                            }]
-                        ).e
-                    });
-                } catch (error) {
-                    console.log(`Error loading line ${line.line_id}:`)
-                    console.log(error);
-                };
+                let row = tbl_lines.insertRow(-1);
+                add_cell(row, {text: line.size.item.description});
+                add_cell(row, {text: print_size(line.size)});
+                add_cell(row, {text: print_nsn( line.nsn)});
+                add_cell(row, {text: line.qty});
+                add_cell(row, {
+                    text: line_statuses[line.status],
+                    append: new Hidden_Input({
+                        attributes: [
+                            {field: 'name',  value: `lines[][${row_index}][line_id]`},
+                            {field: 'value', value: line.line_id}
+                        ]
+                    }).e
+                });
+                add_action_radios(row, line, row_index);
+                add_cell(row, {append: 
+                    new Modal_Button(
+                        _search(),
+                        'line_view',
+                        [{
+                            field: 'id',
+                            value: line.line_id
+                        }]
+                    ).e
+                });
                 row_index++
             });
-            return true;
-        })
-        .then(result => {
-            if (typeof enable_radios === 'function') enable_radios(tbl_lines);
         });
     });
 };
+
+function add_action_radios(row, line, row_index) {
+    let radios = [];
+    let args = [line.line_id, row_index];
+    if (line.status === 1) {
+        radios.push(   nil_radio(...args));
+        radios.push(cancel_radio(...args, cancel_options));
+    };
+    radios.push(div_details(line.line_id, row_index));
+    add_cell(row, {append: radios});
+};
+
+function cancel_options() {
+    if (this.dataset.id) {
+        clear(`details_${this.dataset.id}`)
+        .then(div_details => {
+            get({
+                table: 'scrap_line',
+                where: {line_id: this.dataset.id},
+                id: this.dataset.id,
+                index: this.dataset.index
+            })
+            .then(function ([line, options]) {
+                div_details.appendChild(new Number_Input({
+                    attributes: [
+                        {field: 'min',      value: '1'},
+                        {field: 'max',      value: line.qty},
+                        {field: 'value',    value: line.qty},
+                        {field: 'required', value: true},
+                        {field: 'name',     value: `lines[][${options.index}][qty]`},
+                        {field: 'placeholder', value: 'Quantity'}
+                    ]
+                }).e);
+                add_location_input(div_details, options.index);
+                add_location_list(div_details, (line.size.has_serials), line.size_id, options.index);
+            });
+        });
+    };
+};
+
 function viewLine(line_id) {
     get({
         table: 'scrap_line',
@@ -76,6 +100,17 @@ function viewLine(line_id) {
     });
 };
 window.addEventListener('load', function () {
+    addFormListener(
+        'actions',
+        'PUT',
+        '/scrap_lines',
+        {
+            onComplete: [
+                getLines,
+                getScrap
+            ]
+        }
+    );
     addListener('reload', getLines);
     addListener('filter_scrap_line_statuses', getLines, 'input');
     addListener('filter_scrap_line_size_1',   getLines, 'input');

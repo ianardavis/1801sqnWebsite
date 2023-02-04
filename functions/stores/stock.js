@@ -104,11 +104,11 @@ module.exports = function (m, fn) {
                     reject(new Error("No valid NSN submitted"));
 
                 } else {
-                    stock.decrement('qty', {by: details.qty})
+                    fn.stocks.decrement(stock, details.qty)
                     .then(result => {
-                        fn.scraps.get({supplier_id: stock.size.supplier_id})
+                        fn.scraps.getOrCreate(stock.size.supplier_id)
                         .then(scrap => {
-                            fn.scraps.lines.add(
+                            fn.scraps.lines.create(
                                 scrap.scrap_id,
                                 stock.size_id,
                                 details
@@ -156,27 +156,76 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
+    fn.stocks.increment = function (stock, qty, action = null) {//{text: '', links: [], user_id: user_id}) {
+        return new Promise((resolve, reject) => {
+            stock.increment('qty', {by: qty})
+            .then(result => {
+                if (result) {
+                    if (action) {
+                        fn.actions.create(
+                            action.text,
+                            action.user_id,
+                            [
+                                {_table: 'stocks', id: stock.stock_id}
+                            ].concat(action.links || [])
+                        )
+                        .then(result => resolve(true));
+
+                    } else {
+                        resolve(true);
+
+                    };
+
+                } else {
+                    reject(new Error('Stock not incremented'));
+
+                };
+            })
+            .catch(err => reject(err));
+        });
+    };
+    fn.stocks.decrement = function (stock, qty, action = null) {
+        return new Promise((resolve, reject) => {
+            stock.decrement('qty', {by: qty})
+            .then(result => {
+                if (result) {
+                    if (action) {
+                        fn.actions.create(
+                            action.text,
+                            action.user_id,
+                            [
+                                {_table: 'stocks', id: stock.stock_id}
+                            ].concat(action.links || [])
+                        )
+                        .then(result => resolve(true));
+
+                    } else {
+                        resolve(true);
+
+                    };
+
+                } else {
+                    reject(new Error('Stock not decremented'));
+
+                };
+            })
+            .catch(err => reject(err));
+        });
+    };
     fn.stocks.receive = function (options = {}) {
         return new Promise((resolve, reject) => {
             fn.stocks.get(options.stock)
             .then(stock => {
-                stock.increment('qty', {by: options.qty})
-                .then(result => {
-                    if (!result) {
-                        reject(new Error('Stock not incremented'));
-
-                    } else {
-                        fn.actions.create(
-                            `STOCK | RECEIVED | Qty: ${options.qty}`,
-                            options.user_id,
-                            [
-                                {_table: 'stocks', id: stock.stock_id}
-                            ].concat(options.action_links || [])
-                        )
-                        .then(result => resolve(true));
-
-                    };
-                })
+                fn.stocks.increment(
+                    stock,
+                    options.qty, 
+                    {
+                        text:    `STOCK | RECEIVED | Qty: ${options.qty}`,
+                        links:   options.action_links || [],
+                        user_id: options.user_id
+                    }
+                )
+                .then(result => resolve(true))
                 .catch(err => reject(err));
             })
             .catch(err => reject(err));
@@ -186,16 +235,8 @@ module.exports = function (m, fn) {
         return new Promise((resolve, reject) => {
             fn.stocks.get({stock_id: stock_id})
             .then(stock => {
-                stock.increment(stock, {by: qty})
-                .then(result => {
-                    if (result) {
-                        resolve({_table: 'stocks', id: stock_id});
-
-                    } else {
-                        reject(new Error('Stock record not updated'));
-
-                    };
-                })
+                fn.stocks.increment(stock, qty)
+                .then(result => resolve({_table: 'stocks', id: stock_id}))
                 .catch(err => reject(err));
             })
             .catch(err => reject(err));
@@ -226,10 +267,10 @@ module.exports = function (m, fn) {
                             })
                             .then(([stock_to, created]) => {
                                 Promise.all([
-                                    stock_from.decrement('qty', {by: qty}),
-                                    stock_to  .increment('qty', {by: qty})
+                                    fn.stocks.decrement(stock_from, qty),
+                                    fn.stocks.increment(stock_to,   qty)
                                 ])
-                                .then(result => {
+                                .then(([decrement_result, increment_result]) => {
                                     fn.actions.create(
                                         `STOCK | TRANSFER | From: ${stock_from.location.location} to: ${location.location} | Qty: ${qty}`,
                                         user_id,

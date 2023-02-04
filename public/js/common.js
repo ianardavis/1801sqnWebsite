@@ -74,14 +74,14 @@ function add_cell(row, options = {}) {
     if      (options.text) cell.innerText = options.text || '';
     else if (options.html) cell.innerHTML = options.html || '';
 
-    if      (options.append) {
+    if (options.append) {
         if (Array.isArray(options.append)) options.append.forEach(e => cell.appendChild(e))
         else cell.appendChild(options.append);
     };
 
-    if (options.id)       cell.setAttribute('id', options.id);
-    if (options.classes)  options.classes.forEach(e => cell.classList.add(e));
-    if (options.data)     options.data.forEach(e => cell.setAttribute(`data-${e.field}`, e.value));
+    if (options.id)      cell.setAttribute('id', options.id);
+    if (options.classes) options.classes.forEach(e => cell.classList.add(e));
+    if (options.data)    options.data.forEach(e => cell.setAttribute(`data-${e.field}`, e.value));
     return cell;
 };
 function show(id) {
@@ -366,6 +366,14 @@ function add_sort_listeners(table, func) {
             if (i) i.classList.add(`fa-arrow-${(selected.dataset.dir === 'ASC' ? 'up' : 'down')}`);
         };
     };
+};
+function div_details(id, index) {
+    return new Div({
+        attributes: [
+            {field: 'id', value: `details_${id}`}
+        ],
+        data: [{field: 'index', value: index}]
+    }).e;
 };
 let path = window.location.pathname.toString().split('/');
 window.addEventListener('load', function() {

@@ -118,8 +118,8 @@ function setActionButton() {
         table: 'demand',
         where: {demand_id: path[2]}
     })
-    .then(function([demand, options]) {
-        if ([1,2].includes(demand.status)) enable_button('action')
+    .then(function([result, options]) {
+        if ([1,2].includes(result.status)) enable_button('action')
         else                               disable_button('action');
     });
 };

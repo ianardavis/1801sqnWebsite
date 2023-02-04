@@ -1,27 +1,46 @@
 module.exports = function (m, fn) {
     fn.serials = {};
-    fn.serials.get = function(serial_id) {
+    fn.serials.get = function(where) {
         return new Promise((resolve, reject) => {
             m.serials.findOne({
-                where: {serial_id: serial_id},
+                where: where,
                 include: [
-                    m.sizes,
-                    m.locations
+                    fn.inc.stores.location(),
+                    fn.inc.stores.issue(),
+                    fn.inc.stores.size()
                 ]
             })
             .then(serial => {
                 if (serial) {
                     resolve(serial);
+
                 } else {
                     reject(new Error('Serial not found'));
+
                 };
             })
             .catch(err => reject(err));
         });
     };
+    fn.serials.getAll = function (query) {
+        return new Promise((resolve, reject) => {
+            m.serials.findAndCountAll({
+                where:   query.where,
+                include: [
+                    fn.inc.stores.location(),
+                    fn.inc.stores.issue(),
+                    fn.inc.stores.size()
+                ],
+                ...fn.pagination(query)
+            })
+            .then(results => resolve(results))
+            .catch(err => reject(err));
+        });
+    };
+
     fn.serials.edit = function (serial_id, new_serial, user_id) {
         return new Promise((resolve, reject) => {
-            fn.serials.get(serial_id)
+            fn.serials.get({serial_id: serial_id})
             .then(serial => {
                 let original_serial = serial.serial;
                 serial.update({serial: new_serial})
@@ -45,7 +64,7 @@ module.exports = function (m, fn) {
     fn.serials.transfer = function (serial_id, location, user_id) {
         return new Promise((resolve, reject) => {
             if (location) {
-                fn.serials.get(serial_id)
+                fn.serials.get({serial_id: serial_id})
                 .then(serial => {
                     let original_location = serial.location.location;
                     fn.locations.findOrCreate({location: location})
@@ -96,15 +115,15 @@ module.exports = function (m, fn) {
     fn.serials.scrap = function (serial_id, details, user_id) {
         return new Promise((resolve, reject) => {
             if (details) {
-                fn.serials.get(serial_id)
+                fn.serials.get({serial_id: serial_id})
                 .then(serial => {
                     scrap_check(serial, details)
                     .then(result => {
                         serial.update({location_id: null})
                         .then(result => {
-                            fn.scraps.get({supplier_id: serial.size.supplier_id})
+                            fn.scraps.getOrCreate(serial.size.supplier_id)
                             .then(scrap => {
-                                fn.scraps.lines.add(
+                                fn.scraps.lines.create(
                                     scrap.scrap_id,
                                     serial.size_id,
                                     details
@@ -138,6 +157,7 @@ module.exports = function (m, fn) {
                 .then(size => {
                     if (!size.has_serials) {
                         reject(new Error('This size does not have serials'));
+
                     } else {
                         m.serials.findOrCreate({
                             where: {
@@ -153,22 +173,26 @@ module.exports = function (m, fn) {
                                     [{_table: 'serials', id: serial.serial_id}]
                                 )
                                 .then(result => resolve(serial));
+
                             } else {
                                 reject(new Error('Serial already exists'));
+
                             };
                         })
                         .catch(err => reject(err));
                     };
                 })
                 .catch(err => reject(err));
+
             } else {
                 reject(new Error('Not all required fields have been submitted'));
+                
             };
         });
     };
     fn.serials.return = function (serial_id, location) {
         return new Promise((resolve, reject) => {
-            fn.serials.get(serial_id)
+            fn.serials.get({serial_id: serial_id})
             .then(serial => {
                 if (!serial.issue_id) {
                     reject(new Error('Serial # not issued'));
@@ -242,41 +266,35 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
+
     fn.serials.delete = function (serial_id) {
         return new Promise((resolve, reject) => {
-            fn.serials.get(serial_id)
-            .then(serial => {
-                m.actions.findOne({where: {serial_id: serial.serial_id}})
-                .then(action => {
-                    if (action) {
-                        reject(new Error('Cannot delete a serial with actions'));
-                        
-                    } else {
-                        m.loancard_lines.findOne({where: {serial_id: serial.serial_id}})
-                        .then(line => {
-                            if (line) {
-                                reject(new Error('Cannot delete a serial with loancards'));
-                                
-                            } else {
-                                serial.destroy()
-                                .then(result => {
-                                    if (result) {
-                                        resolve(true);
-                                        
-                                    } else {
-                                        reject(new Error('Serial not deleted'));
-                                        
-                                    };
-                                })
-                                .catch(err => reject(err));
-                                
-                            };
-                        })
-                        .catch(err => reject(err));
-                        
-                    };
-                })
-                .catch(err => reject(err));
+            Promise.all([
+                fn.serials.get({serial_id: serial_id}),
+                m.actions.findOne({where: {serial_id: serial.serial_id}}),
+                m.loancard_lines.findOne({where: {serial_id: serial.serial_id}})
+            ])
+            .then(([serial, action, line]) => {
+                if (action) {
+                    reject(new Error('Cannot delete a serial with actions'));
+                    
+                } else if (line) {
+                    reject(new Error('Cannot delete a serial with loancards'));
+                            
+                } else {   
+                    serial.destroy()
+                    .then(result => {
+                        if (result) {
+                            resolve(true);
+                            
+                        } else {
+                            reject(new Error('Serial not deleted'));
+                            
+                        };
+                    })
+                    .catch(err => reject(err));
+                    
+                };
             })
             .catch(err => reject(err));
         });

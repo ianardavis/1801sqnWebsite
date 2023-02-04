@@ -1,28 +1,74 @@
 module.exports = function (m, fn) {
-    fn.scraps.get = function (options = {}) {
+    fn.scraps.get = function (where, line_where = null) {
         return new Promise((resolve, reject) => {
-            if (options.scrap_id) {
-                m.scraps.findByPk(options.scrap_id)
-                .then(scrap => {
-                    if (scrap) {
-                        resolve(scrap)
-                    } else {
-                        reject(new Error('Scrap not found'));
-                    };
-                })
+            m.scraps.findOne({
+                where: where,
+                include: [
+                    fn.inc.stores.scrap_lines(line_where, false),
+                    fn.inc.stores.supplier()
+                ]
+            })
+            .then(scrap => {
+                if (scrap) {
+                    resolve(scrap);
+
+                } else {
+                    reject(new Error('Scrap not found'));
+
+                };
+            })
+            .catch(err => reject(err));
+        });
+    };
+    function check_supplier(supplier_id) {
+        return new Promise((resolve, reject) => {
+            if (supplier_id) {
+                fn.suppliers.get({supplier_id: supplier_id})
+                .then(supplier => resolve(supplier))
                 .catch(err => reject(err));
+
             } else {
+                resolve(null);
+
+            };
+        });
+    };
+    fn.scraps.getOrCreate = function (supplier_id) {
+        return new Promise((resolve, reject) => {
+            check_supplier(supplier_id)
+            .then(supplier_id_checked => {
                 m.scraps.findOrCreate({
                     where: {
-                        supplier_id: options.supplier_id || null,
+                        supplier_id: supplier_id_checked,
                         status: 1
                     }
                 })
                 .then(([scrap, created]) => resolve(scrap))
                 .catch(err => reject(err));
-            };
+            })
+            .catch(err => reject(err));
         });
     };
+    fn.scraps.getAll = function (query) {
+        return new Promise((resolve, reject) => {
+            m.scraps.findAndCountAll({
+                where: query.where,
+                include: [
+                    {
+                        model: m.scrap_lines,
+                        as:    'lines',
+                        where: {status: {[fn.op.ne]: 0}},
+                        required: false
+                    },
+                    fn.inc.stores.supplier()
+                ],
+                ...fn.pagination(query)
+            })
+            .then(results => resolve(results))
+            .catch(err => reject(err));
+        });
+    };
+
     fn.scraps.edit = function (scrap_id, details) {
         fn.scraps.get({scrap_id: scrap_id})
         .then(scrap => {
@@ -31,6 +77,73 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         })
         .catch(err => reject(err));
+    };
+
+    fn.scraps.cancel_check = function (scrap_id) {
+        return new Promise((resolve, reject) => {
+            fn.scraps.get(
+                {scrap_id: scrap_id},
+                {
+                    status: {[fn.op.or]: [1]},
+                    qty:    {[fn.op.gt]: 0}
+                }
+            )
+            .then(scrap => {
+                if (scrap.status === 0) {
+                    reject(new Error('Scrap has already been cancelled'));
+
+                } else if (scrap.status === 1) {
+                    if (!scrap.lines || scrap.lines.length === 0) {
+                        resolve(scrap);
+
+                    } else {
+                        reject(new Error('Scrap has open lines'));
+
+                    };
+                } else if (scrap.status === 2) {
+                    reject(new Error('Scrap has already been closed'));
+
+                } else {
+                    reject(new Error('Unknown scrap status'));
+                
+                };
+            })
+            .catch(err => {
+                console.log(err);
+                reject(err);
+            });
+        });
+    };
+    fn.scraps.cancel = function (scrap_id, user_id) {
+        return new Promise((resolve, reject) => {
+            fn.scraps.cancel_check(scrap_id)
+            .then(scrap => {
+                m.scrap_lines.update(
+                    {status: 0},
+                    {where: {status: {[fn.op.or]: [1]}}
+                })
+                .then(results => {
+                    scrap.update({status: 0})
+                    .then(result => {
+                        if (result) {
+                            fn.actions.create(
+                                'SCRAP | CANCELLED',
+                                user_id,
+                                [{_table: 'scraps', id: scrap.scrap_id}]
+                            )
+                            .then(result => resolve(result));
+
+                        } else {
+                            reject(new Error('Scrap not cancelled'));
+
+                        };
+                    })
+                    .catch(err => reject(err));
+                })
+                .catch(err => reject(err));
+            })
+            .catch(err => reject(err));
+        });
     };
 
     function complete_check(scrap) {
@@ -89,6 +202,45 @@ module.exports = function (m, fn) {
                     })
                     .catch(err => reject(err));
                 })
+                .catch(err => reject(err));
+            })
+            .catch(err => reject(err));
+        });
+    };
+
+    function getScrapFilename(scrap_id) {
+        return new Promise((resolve, reject) => {
+            fn.scraps.get({scrap_id: scrap_id})
+            .then(scrap => {
+                if (scrap.filename) {
+                    resolve(scrap.filename);
+
+                } else {
+                    fn.scraps.pdf.create(scrap.scrap_id)
+                    .then(filename => resolve(filename))
+                    .catch(err => reject(err));
+
+                };
+            })
+            .catch(err => reject(err));
+        });
+    };
+    fn.scraps.download = function (scrap_id, res) {
+        return new Promise((resolve, reject) => {
+            getScrapFilename(scrap_id)
+            .then(filename => {
+                fn.fs.download('scraps', filename, res)
+                .catch(err => reject(err));
+            })
+            .catch(err => reject(err));
+        });
+    };
+    fn.scraps.print = function (scrap_id) {
+        return new Promise((resolve, reject) => {
+            getScrapFilename(scrap_id)
+            .then(filename => {
+                fn.pdfs.print('scraps', filename)
+                .then(result => resolve(true))
                 .catch(err => reject(err));
             })
             .catch(err => reject(err));

@@ -4,7 +4,7 @@ function nil_radio(id, index){
         if (div_details) div_details.innerHTML = '';
     };
     return new Radio({
-        id:      `${id}_nil`,
+        id:      `nil_${id}`,
         classes: ['radio_nil'],
         colour:  'primary',
         html:    '<i class="fas fa-question"></i>',
@@ -20,7 +20,7 @@ function nil_radio(id, index){
 };
 function cancel_radio(id, index, func = null, value = '0') {
     return new Radio({
-        id:      `${id}_cancel`,
+        id:      `cancel_${id}`,
         classes: ['radio_cancel'],
         colour:  'danger',
         html:    '<i class="fas fa-trash-alt"></i>',

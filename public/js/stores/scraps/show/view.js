@@ -14,7 +14,7 @@ function getScrap() {
         set_innerText('scrap_createdAt', print_date(scrap.createdAt, true));
         set_innerText('scrap_updatedAt', print_date(scrap.updatedAt, true));
         set_innerText('scrap_status',    statuses[scrap.status]);
-        set_innerText('scrap_filename',  scrap.filename || '')
+        set_innerText('scrap_filename',  scrap.filename || '');
         set_href('scrap_supplier_link', `/suppliers/${scrap.supplier_id}`);
         if (scrap.status == 1) {
             enable_button('scrap_complete');
@@ -56,7 +56,7 @@ window.addEventListener('load', function () {
         {
             onComplete: [
                 getScrap,
-                function () {if (typeof getLines === 'function') getLines()}
+                getLines
             ]
         }
     );
@@ -67,7 +67,7 @@ window.addEventListener('load', function () {
         {
             onComplete: [
                 getScrap,
-                function () {if (typeof getLines === 'function') getLines()}
+                getLines
             ]
         }
     );
@@ -77,4 +77,5 @@ window.addEventListener('load', function () {
         `/scraps/${path[2]}/file`,
         {onComplete: [getScrap]}
     );
+    getScrap();
 });

@@ -14,7 +14,7 @@ function return_options() {
                     }).e;
                     add_scrap_switch(div_details, options.index, div_location);
                     div_details.appendChild(div_location);
-                    get_locations(div_details, (line.serial_id), line.size_id, options.index);
+                    add_location_list(div_details, (line.serial_id), line.size_id, options.index);
                     if (!line.serial_id) add_qty_inputs(div_details, line, options.index);
                 };
             });
@@ -35,8 +35,10 @@ function add_scrap_switch(div_details, index, div_location) {
         listener: {event: 'input', func: function (e) {
             if (e.target.checked) {
                 div_location.innerHTML = '';
+
             } else {
                 add_location_input(div_location, index);
+
             };
         }}
     }).e);
@@ -49,18 +51,6 @@ function add_scrap_switch(div_details, index, div_location) {
     ).e);
     div_details.appendChild(div_switch);
     add_location_input(div_location, index);
-};
-function add_location_input(div_location, index) {
-    div_location.appendChild(new Text_Input({
-        classes: ['mb-1'],
-        attributes: [
-            {field: 'name',        value: `lines[][${index}][location]`},
-            {field: 'required',    value: true},
-            {field: 'placeholder', value: 'Location'},
-            {field: 'list',        value: `locations_${index}`}
-        ],
-        options: [{text: 'Enter Location'}]
-    }).e);
 };
 function add_div(div, text, collapse) {
     let h5 = document.createElement('h5');
@@ -166,7 +156,7 @@ function cancel_options() {
                         ],
                         options: [{text: 'Enter Location'}]
                     }).e);
-                    get_locations(div_details, (line.serial_id), line.size_id, options.index);
+                    add_location_list(div_details, (line.serial_id), line.size_id, options.index);
 
                     if (!line.serial_id) {
                         div_details.appendChild(new Number_Input({
@@ -183,25 +173,6 @@ function cancel_options() {
                 };
             });
         };
-    });
-};
-function get_locations(div_details, has_serial, size_id, index) {
-    const search_table = (has_serial ? 'serials' : 'stocks')
-    get({
-        table: search_table,
-        where: {size_id: size_id}
-    })
-    .then(function ([result, options]) {
-        let locations_list = document.createElement('datalist');
-        let locs = [];
-        locations_list.setAttribute('id', `locations_${index}`);
-        result[search_table].forEach(e => {
-            if (!locs.includes(e.location.location)) {
-                locs.push(e.location.location);
-                locations_list.appendChild(new Option({value: e.location.location}).e)
-            };
-            div_details.appendChild(locations_list);
-        });
     });
 };
 window.addEventListener( "load", function () {
