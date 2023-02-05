@@ -1,8 +1,21 @@
+const path = window.location.pathname.toString().split('/');
 function removeID(id) {
     if (typeof id === 'string') {
         let e = document.querySelector(`#${id}`);
         if (e) e.remove();
     } else id.remove();
+};
+function get_element(id) {
+    return new Promise((resolve, reject) => {
+        const e = document.querySelector(`#${id}`);
+        if (e) {
+            resolve(e);
+
+        } else {
+            reject(new Error('Element not found'));
+
+        };
+    });
 };
 function yesno(boolean) {
     if (boolean) return 'Yes'
@@ -139,7 +152,7 @@ function clear(id) {
             e.innerHTML = '';
             resolve(e);
         } else {
-            console.log(`Element not found: ${id}`);
+            console.error(`Element not found: ${id}`);
             reject(new Error('Element not found'));
         };
     })
@@ -209,26 +222,25 @@ function get_stock(size_id) {
         })
         .then(([stock, options]) => resolve(stock))
         .catch(err => {
-            console.log('Error getting stock:');
-            console.log(err);
+            console.error('Error getting stock:', err);
             resolve('?');
         });
     });
 };
-function checked_statuses() {
-    let selected = null,
-        statuses = document.querySelectorAll(".status:checked") || [];
-    if (statuses && statuses.length > 0) {
-        selected = []
-        statuses.forEach(e => selected.push(e.value));
-    };
-    return selected
-};
-function selected_user(id = 'sel_users') {
-    let sel_users = document.querySelector(`#${id}`);
-    if (sel_users && sel_users.value !== '') return sel_users.value;
-    else return null
-};
+// function checked_statuses() {
+//     let selected = null,
+//         statuses = document.querySelectorAll(".status:checked") || [];
+//     if (statuses && statuses.length > 0) {
+//         selected = []
+//         statuses.forEach(e => selected.push(e.value));
+//     };
+//     return selected
+// };
+// function selected_user(id = 'sel_users') {
+//     let sel_users = document.querySelector(`#${id}`);
+//     if (sel_users && sel_users.value !== '') return sel_users.value;
+//     else return null
+// };
 function add_page_links(count, limit, offset, table, func) {
     clear(`page_buttons_${table}`)
     .then(page_buttons => {
@@ -314,7 +326,7 @@ function getSelectedOptions(id) {
         return Array.from(e.selectedOptions).map(({ value }) => value)
     } else return [];
 };
-function sort(tr, table, func) {
+function sort(tr, func) {
     if (!tr.dataset.dir) {
         (tr.parentNode.querySelectorAll("[data-dir]")).forEach(e => {
             delete e.dataset.dir;
@@ -358,7 +370,7 @@ function add_sort_listeners(table, func) {
     if (tbl) {
         tbl.querySelectorAll("[data-column]").forEach(th => {
             th.insertAdjacentHTML('afterbegin', '<i class="fas"></i>');
-            th.addEventListener('click', function () {sort(this, table, func)});
+            th.addEventListener('click', function () {sort(this, func)});
         });
         let selected = tbl.parentElement.querySelector("[data-dir]");
         if (selected) {
@@ -375,7 +387,6 @@ function div_details(id, index) {
         data: [{field: 'index', value: index}]
     }).e;
 };
-let path = window.location.pathname.toString().split('/');
 window.addEventListener('load', function() {
     document.title = `${toProperCase(path[1])} | 1801 (Alnwick) Sqn ATC`;
 });

@@ -60,7 +60,6 @@ function cancel_options() {
             get({
                 table: 'scrap_line',
                 where: {line_id: this.dataset.id},
-                id: this.dataset.id,
                 index: this.dataset.index
             })
             .then(function ([line, options]) {

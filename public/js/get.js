@@ -21,7 +21,7 @@ function build_query(options) {
             if (offset)                                 queries.push(`offset=${JSON.stringify(offset.dataset.value)}`);
 
         } catch (error) {
-            console.log(error);
+            console.error(error);
 
         }
     };
@@ -31,16 +31,8 @@ function build_query(options) {
     if (options.gt   ) queries.push(`gt=${   JSON.stringify(options.gt)}`);
     return queries;
 };
-function XHR_ErrorListener(XHR, spinner) {
-    XHR.addEventListener("error", function (event) {
-        hide_spinner(spinner);
-        console.log(`************ Error with request ************`);
-        console.log(event);
-        console.log('********************************************');
-    });
-};
 function eventParse(event) {
-    try {
+    return new Promise((resolve, reject) => {
         if (!event) {
             reject(new Error('No event'));
 
@@ -54,27 +46,47 @@ function eventParse(event) {
             reject(new Error('No valid response'));
 
         } else {
-            return JSON.parse(event.target.responseText);
+            try {
+                resolve(JSON.parse(event.target.responseText));
+
+            } catch (err) {
+                reject(err);
         
+            };
+            
         };
-    } catch (err) {
-        return {};
+    });
+};
+function print_error(message, error) {
+    console.log(`************ message ************`);
+    console.log(error);
+    console.log('********************************************');
+    alert_toast(message);
+};
+function get_stream(streamAction) {
+    return function (event) {
+        try {
+            streamAction(event.target.responseText);
+        } catch (error) {
+            print_error(`Error with stream request`, response.message || error);
+            reject(error);
+            
+        };
     };
 };
 function get(options) {
     return new Promise((resolve, reject) => {
         show_spinner(options.spinner || options.table || '');
         const XHR = new XMLHttpRequest();
-        XHR_ErrorListener(XHR, options.spinner || options.table || '');
-        
-        XHR.addEventListener("load", function (event) {
-            hide_spinner(options.spinner || options.table || '');
-            try {
-                if (options.streamAction) {
-                    options.streamAction(event.target.responseText);
+        XHR.addEventListener("error", function () {reject()});
 
-                } else {
-                    let response = eventParse(event);
+        if (options.streamAction) {
+            XHR.addEventListener("load", get_stream(options.streamAction));
+
+        } else {
+            XHR.addEventListener("load", function (event) {
+                eventParse(event)
+                .then(response => {
                     if (response.success) {
                         if (options.func) {
                             add_page_links(
@@ -88,26 +100,22 @@ function get(options) {
                         resolve([response.result, options]);
 
                     } else {
-                        console.log(`********* Error getting ${options.table} *********`);
-                        console.log(response.message || response);
-                        console.log('*******************************************');
+                        print_error(`Error getting ${options.table}`, response.message || response);
                         reject(new Error(response.message));
 
                     };
-                };
-            } catch (error) {
-                console.log(`********* Error getting ${options.table} *********`);
-                console.log(error);
-                console.log('*******************************************');
-                reject(error);
-                
-            };
-        });
-        XHR.addEventListener("error", function () {reject()});
+                })
+                .catch(err => reject(err));
+            });
+
+        };
         
-        XHR.open('GET', `/${options.action || 'get'}/${options.location || options.table}?${build_query(options).join('&')}`);
-        
-        XHR.send();
+        send_XHR(
+            XHR,
+            'GET',
+            `/${options.action || 'get'}/${options.location || options.table}`,
+            {params: build_query(options).join('&')}
+        );
     });
 };
 function addFormListener(form_id, method, location, options = {reload: false}) {
@@ -117,58 +125,67 @@ function addFormListener(form_id, method, location, options = {reload: false}) {
             form.addEventListener("submit", function (event) {
                 event.preventDefault();
                 if (options.spinner) show_spinner(options.spinner);
+
                 if (
                     method.toUpperCase() === 'GET' ||
                     options.noConfirm    === true  ||
                     confirm('Are you sure?')
                 ) sendData(form, method, location, options);
             });
-        } else console.log(`${form_id} not found`);
+            
+        } else {
+            console.log(`${form_id} not found`);
+
+        };
     } catch (error) {
-        console.log(`Error on form: ${form_id}: `, error)
+        console.log(`Error on form: ${form_id}: `, error);
+
     };
 };
 function sendData(form, method, _location, options = {reload: false}) {
-    const XHR = new XMLHttpRequest(),
-          FD  = new FormData(form);
-    XHR_ErrorListener(XHR, options.spinner || options.table || '');
-    
-    XHR.addEventListener("load", function (event) {
-        try {
-            let response = eventParse(event);
+    const XHR = new XMLHttpRequest();
+    const FD  = new FormData(form);
+    XHR.addEventListener("loadend", function () {hide_spinner(options.spinner || options.table || '')});
+    XHR.addEventListener("load",    function (event) {
+        eventParse(event)
+        .then(response => {
             if (response.success) {
                 if (!options.noConfirmAlert) alert_toast(response.message);
+                
                 if ( options.onComplete) {
                     if (Array.isArray(options.onComplete)) {
                         options.onComplete.forEach(func => {
-                            try {
-                                if (typeof func === 'function') func(response)
-                            } catch (error) {
-                                console.log(error);
-                            };
-                        })
+                            if (typeof func === 'function') func(response);
+                        });
+
                     } else {
-                        try {
-                            if (typeof options.onComplete === 'function') options.onComplete(response);
-                        } catch (error) {
-                            console.log(error);
-                        };
+                        if (typeof options.onComplete === 'function') options.onComplete(response);
+
                     };
                 };
-                if      (options.reload)   window.location.reload();
-                else if (options.redirect) window.location.assign(options.redirect);
+                if (options.reload) {
+                    window.location.reload();
+
+                } else if (options.redirect) {
+                    window.location.assign(options.redirect);
+
+                };
             } else {
                 console.log(response);
                 alert_toast(response.message || 'Ooooopsie');
+
             };
-        } catch (error) {
-            console.log(error)
-        };
+        })
+        .catch(err => print_error('Error parsing response', err));
     });
     
-    XHR.addEventListener("error", function () {alert_toast('Ooooopsie Daisie')});
-    
-    XHR.open(method, _location);
-    
-    XHR.send(FD);
+    send_XHR(XHR, method, _location, {data: FD});
+};
+function send_XHR(XHR, method, path, options = {}) {
+    XHR.addEventListener("error", function (event) {
+        print_error('Error with request', event);
+        alert_toast('Error with request');
+    });
+    XHR.open(method, `${path}?${options.params || ''}`);
+    XHR.send(options.data || null);
 };

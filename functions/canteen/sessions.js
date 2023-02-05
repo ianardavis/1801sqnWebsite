@@ -8,13 +8,36 @@ module.exports = function (m, fn) {
             .then(session => {
                 if (session) {
                     resolve(session);
+
                 } else {
                     reject(new Error('Session not found'));
+
                 };
             })
             .catch(err => reject(err));
         });
     };
+    fn.sessions.getCurrent = function () {
+        return new Promise((resolve, reject) => {
+            m.sessions.findAll({
+                where: {datetime_end: null}
+            })
+            .then(sessions => {
+                if (!sessions || sessions.length === 0) {
+                    reject(new Error('No open session'));
+
+                } else if (sessions.length > 1) {
+                    reject(new Error('Multiple sessions open'));
+
+                } else {
+                    resolve(session);
+
+                };
+            })
+            .catch(err => reject(err));
+        });
+    };
+    
     fn.sessions.countCash = function (obj) {
         let cash = 0.0;
         for (let [key, denomination] of Object.entries(obj)) {

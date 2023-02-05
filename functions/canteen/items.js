@@ -8,11 +8,36 @@ module.exports = function (m, fn) {
             .then(item => {
                 if (item) {
                     resolve(item);
+
                 } else {
                     reject(new Error('Item not found'));
+
                 };
             })
             .catch(err => reject(err));
+        });
+    };
+    fn.canteen_items.getByEAN = function (ean) {
+        return new Promise((resolve, reject) => {
+            m.eans.findOne({
+                where: {ean: ean},
+                include: [fn.inc.canteen.item()]
+            })
+            .then(_ean => {
+                if (_ean) {
+                    if (_ean.item) {
+                        resolve(_ean.item);
+
+                    } else {
+                        reject(new Error('No item for this EAN'));
+
+                    };
+
+                } else {
+                    reject(new Error('EAN not found'));
+                }
+            })
+            .catch(err => reject(err))
         });
     };
     fn.canteen_items.edit = function (item_id, details) {

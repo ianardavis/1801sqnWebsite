@@ -1,32 +1,7 @@
-function numberEvents() {
-    document.querySelectorAll('.number').forEach(e => e.addEventListener('click', function (event) {numberBtn(event.target.dataset.number)}))
-    window.addEventListener('keydown', function (e) {
-        e.preventDefault();
-        if      (['0','1','2','3','4','5','6','7','8','9'].includes(e.key)) numberBtn(e.key)
-        else if (e.key === 'Backspace')                                     backspace();
-    });
-};
 function isShown(id) {
     let e = document.querySelector(`#${id}`);
     if (e && !e.classList.contains('hidden')) return true
     else return false;
-};
-function numberBtn(num) {
-    if (modalIsShown('sale_complete') && !isShown('btn_close_complete_sale')) {
-        let tendered = document.querySelector('#tendered'),
-            amt      = Number(String(tendered.value).replace('.', '').replace('£', ''));
-        if (amt === 0) amt = String(num);
-        else           amt += String(num);
-        set_tendered(amt);
-    };
-};
-function backspace() {
-    if (modalIsShown('sale_complete') && !isShown('btn_close_complete_sale')) {
-        let tendered = document.querySelector('#tendered'),
-            amt = Number(String(tendered.value).replace('.', ''));
-            amt = String(amt);
-        set_tendered(amt.substring(0, amt.length - 1))
-    };
 };
 function set_tendered(amt) {
     amt = String(amt).padStart(3, '0');
@@ -97,123 +72,17 @@ function getSaleLines() {
         });
     };
 };
-function setPage() {
-    get({
-        table: 'settings',
-        where: {name: 'default_pos_page'}
-    })
-    .then(function ([settings, options]) {
-        if (!settings || settings.length === 0) show_tab('all_items')
-        else show_tab(`page_${settings[0].value}`);
-    })
-    .catch(err => show_tab('all_items'));
-}
-function addSaleLine() {
-    console.log(this, this.dataset);
+function addSaleLine(ean) {
+    console.log(ean)
     sendData(
         this,
         'POST',
-        "/sale_lines",
+        `/sale_lines/ean/${ean}`,
         {
             onComplete: getSaleLines,
             noConfirm: true
         }
     );
-};
-function getPages() {
-    get({table: 'pos_pages'})
-    .then(function ([pages, options]) {
-        document.querySelectorAll('.pos_header').forEach(e => e.remove());
-        document.querySelectorAll('.pos_page')  .forEach(e => e.remove());
-        let tab_headers = document.querySelector('#tab_headers'),
-            tab_pages   = document.querySelector('#tab_pages');
-        pages.forEach(page => {
-            let tab_page = new Tab_Body(`page_${page.pos_page_id}`).e;
-            for (let r = 0; r <= 3; r++) {
-                let row = document.createElement('div');
-                row.classList.add('row', 'h-150-px');
-                for (let c = 0; c <= 3; c++) {
-                    let div = document.createElement('div');
-                    div.setAttribute('id', `div_${page.pos_page_id}_${r}${c}`);
-                    div.classList.add('col-3', 'mb-2', 'item_btn')
-                    div.appendChild(
-                        new Form({
-                            classes: ['h-100', 'form_view', 'hidden'],
-                            append: [
-                                new Hidden_Input({
-                                    attributes:[
-                                        {field: 'name', value: 'line[item_id]'},
-                                        {field: 'id',   value: `item_id_${page.pos_page_id}_${r}${c}`}
-                                    ]
-                                }).e,
-                                new Hidden_Input({
-                                    attributes: [{field: 'name', value: 'line[sale_id]'}],
-                                    classes:    ['sale_id']
-                                }).e,
-                                new Button({
-                                    colour:     'light',
-                                    text:       ' ',
-                                    classes:    ['w-100', 'h-100', 'btn', 'btn-primary', 'form_btn'],
-                                    attributes: [{field: 'id', value: `btn_${page.pos_page_id}_${r}${c}`}],
-                                    noType:     true,
-                                    append: [
-                                        new Span({
-                                            attributes: [{field: 'id', value: `span_${page.pos_page_id}_${r}${c}`}]
-                                        }).e,
-                                        new Span({
-                                            float: true,
-                                            classes: ['edit_dd'],
-                                            attributes: [{field: 'id', value: `dd_${page.pos_page_id}_${r}${c}`}],
-                                            data: [
-                                                {field: 'page',     value: page.pos_page_id},
-                                                {field: 'position', value: `${r}${c}`}
-                                            ]
-                                        }).e
-                                    ]
-                                }).e
-                            ],
-                            attributes: [{field: 'id', value: `form_${page.pos_page_id}_${r}${c}`}],
-                            submit: function (event) {
-                                event.preventDefault();
-                                addSaleLine.call(this);
-                            }
-                        }).e
-                    );
-                    row.appendChild(div);
-                };
-                tab_page.appendChild(row);
-            };
-            tab_headers.appendChild(new Tab_Header(`page_${page.pos_page_id}`, page.title).e);
-            tab_pages  .appendChild(tab_page);
-        });
-        return true;
-    })
-    .then(result => {
-        get({table: 'pos_layouts'})
-        .then(function ([layouts, options]) {
-            layouts.forEach(layout => {
-                set_value(`item_id_${layout.page_id}_${layout.button}`, layout.item_id);
-                set_data(`div_${layout.page_id}_${layout.button}`, 'id', layout.item_id);
-                let btn_form  = document.querySelector(`#btn_${layout.page_id}_${layout.button}`),
-                    span_form = document.querySelector(`#span_${layout.page_id}_${layout.button}`),
-                    form = document.querySelector(`#form_${layout.page_id}_${layout.button}`);
-                if (btn_form && span_form) {
-                    if (layout.colour) btn_form.style.backgroundColor = `${layout.colour}`;
-                    span_form.innerHTML = `${layout.item.name}<br>£${Number(layout.item.price).toFixed(2)}`;
-                    form.classList.remove('hidden');
-                };
-            });
-            return true;
-        })
-        .catch(err => {
-            console.log(err);
-            return false;
-        });
-    })
-    .then(result => {
-        getSale();
-        setPage();
-    });
 };
 function reset_sale_complete() {
     let change = document.querySelector('#change');
@@ -231,9 +100,9 @@ function getSession() {
         set_href('btn_session', `/sessions/${results.sessions[0].session_id}`);
     });
 };
+
 window.addEventListener('load', function () {
     addListener('reload', getSale);
-    numberEvents();
     modalOnShow('sale_complete', reset_sale_complete);
     addFormListener(
         'sale_complete',
@@ -252,4 +121,6 @@ window.addEventListener('load', function () {
             ]
         }
     );
+    getSession();
+    StartScanning(addSaleLine);
 });

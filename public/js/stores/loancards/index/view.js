@@ -45,38 +45,14 @@ function getUsers() {
 function gotoLoancard(loancard_id) {
     window.location.assign(`/loancards/${loancard_id}`);
 };
-function StopScanning() {
-    html5QrCode.stop().then(ignore => {})
-    .catch(err => console.log(err));
-}
-function StartScanning() {
-    Html5Qrcode.getCameras().then(devices => {
-        if (devices && devices.length) {
-            const config = {
-                fps: 10,
-                qrbox: { width: 250, height: 250 },
-                formatsToSupport: [
-                    Html5QrcodeSupportedFormats.CODE_128,
-                    Html5QrcodeSupportedFormats.EAN_8,
-                    Html5QrcodeSupportedFormats.EAN_13
-                ]
-            };
-            html5QrCode.start(
-                { facingMode: "environment" },
-                config,
-                (decodedText, decodedResult) => gotoLoancard(decodedText),
-                err => console.log(err)
-            );
-        }
-    }).catch(err => console.log(err));
-};
+
 function GoToEnter(input) {
     if(event.key === 'Enter') gotoLoancard(input.value);
 };
 window.addEventListener('load', function () {
     addListener('reload', getLoancards);
     addListener('goto_loancard_id', );
-    modalOnShow('loancard_open', StartScanning);
+    modalOnShow('loancard_open', function () {StartScanning(gotoLoancard)});
     modalOnHide('loancard_open', StopScanning);
     getUsers();
     addListener('reload_users', getUsers);

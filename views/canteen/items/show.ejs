@@ -13,6 +13,7 @@
                 <%- include(`${partials}/menu/button`, {id: 'item_edit',    text: 'Edit',           modal: 'item_edit'}) %>
                 <%- include(`${partials}/menu/button`, {id: 'writeoff_add', text: 'Writeoff Stock', modal: 'writeoff_add'}) %>
                 <%- include(`${partials}/menu/button`, {id: 'receipt_add',  text: 'Receive Stock',  modal: 'receipt_add'}) %>
+                <%- include(`${partials}/menu/button`, {id: 'ean_add',      text: 'Add EAN',        modal: 'ean_add'}) %>
 				<%- include(`${partials}/menu/button`, {id: 'delete',	    text: 'Delete',         btn_form: {permission: 'canteen_stock_admin'}}) %>
             </div>
         </li>
@@ -29,6 +30,16 @@
             <%- include(`${partials}/inputs/display`, {id: 'item_cost',    title: 'Cost'}) %>
             <%- include(`${partials}/inputs/display`, {id: 'item_qty',     title: 'Stock'}) %>
             <%- include(`${partials}/inputs/display`, {id: 'item_current', title: 'Current Item'}) %>
+            <table class="table table-sm table-hover mt-1">
+                <thead class="thead-dark" id="tbl_eans_head">
+                    <th class='w-60' data-column='["ean"]' data-dir="DESC">EAN</th>
+                    <th class='w-40' data-column='["createdAt"]'>Added</th>
+                    <th><i class='fas fa-trash-alt'></i></th>
+                    <th><i class='fas fa-print'></i></th>
+                </thead>
+                <tbody id="tbl_eans"></tbody>
+            </table>
+            <%- include(`${partials}/limit`, {table: 'nsns'}) %>
         </div>
         <% if (permissions.canteen_stock_admin) { %>
             <div class="tab-pane fade" id="receipts"  role="tabpanel" aria-labelledby="receipts-tab">
@@ -132,11 +143,31 @@
                     </form>
                 </div>
             </div>
+            <div id='mdl_ean_add' class="modal fade" tabindex="-1" role="dialog">
+                <div class="modal-dialog modal-lg" role="document">
+                    <form class="modal-content" id="form_ean_add">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Add EAN</h5>
+                        </div>
+                        <div class="modal-body">
+                            <input type="hidden" class='item_id' name='ean[item_id]'>
+                            <%- include(`${partials}/inputs/text`, {id: 'inp_ean_add', title: 'EAN', name: 'ean[ean]', required: true}) %>
+                            <div id="reader" width="600px" height="600px"></div>
+                        </div>
+                        <div class="modal-footer">
+                            <input type="submit" class="btn btn-success w-100" value='Save EAN'>
+                        </div>
+                    </form>
+                </div>
+            </div>
         <% } %>
     </div>
 </section>
 <%- include(`${partials}/foot/app`) %>
 <script>show_tab('<%= tab %>');</script>
+<script src="/lib/js/html5-qrcode.min.js" type="text/javascript"></script>
+<script src='/js/common/barcode_scanning.js'></script>
+<script src='/js/canteen/items/show/eans/add.js'></script>
 <%- include(`${partials}/common/notes/scripts`) %>
 <script src='/js/canteen/items/show/view.js'></script>
 <script async>getItem()</script>

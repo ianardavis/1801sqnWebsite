@@ -12,8 +12,10 @@ module.exports = function (m, fn) {
             .then(sale => {
                 if (sale) {
                     resolve(sale);
+
                 }else {
                     reject(new Error('Sale not found'));
+
                 };
             })
             .catch(err => reject(err));
@@ -234,96 +236,105 @@ module.exports = function (m, fn) {
             .then(sale => {
                 if (!sale.session) {
                     reject(new Error('Session not found'));
+
                 } else if (sale.session.status !== 1) {
                     reject(new Error('Session for this sale is not open'));
+
                 } else {
                     resolve(sale);
+
                 };
             })
             .catch(err => reject(err));
         });
     };
-    function check_sale_line(sale_line_id) {
+    fn.sales.lines.create = function (ean, sale_id) {
         return new Promise((resolve, reject) => {
-            fn.sales.lines.get(sale_line_id)
-            .then(line => {
-                if (!line.sale) {
-                    reject(new Error('Sale not found'))
-                } else if (!line.sale.session) {
-                    reject(new Error('Session not found'))
-                } else if ( line.sale.session.status !== 1) {
-                    reject(new Error('Session for this sale is not open'))
-                } else {
-                    resolve(line);
-                };
-            })
-            .catch(err => reject(err));
-        });
-    };
-    fn.sales.lines.create = function (line) {
-        return new Promise((resolve, reject) => {
-            if (!line.item_id) reject(new Error('No Item'))
-            else {
-                check_sale(line.sale_id)
-                .then(sale => {
-                    fn.canteen_items.get(line.item_id)
-                    .then(item => {
-                        m.sale_lines.findOrCreate({
-                            where: {
-                                sale_id: sale.sale_id,
-                                item_id: item.item_id
-                            },
-                            defaults: {
-                                qty:   line.qty || 1,
-                                price: item.price
-                            }
-                        })
-                        .then(([sale_line, created]) => {
-                            if (created) {
-                                resolve(true);
-                            } else {
-                                sale_line.increment('qty', {by: line.qty || 1})
-                                .then(result => resolve(true))
-                                .catch(err => reject(err));
-                            };
-                        })
+            Promise.all([
+                check_sale(sale_id),
+                fn.canteen_items.getByEAN(ean)
+            ])
+            .then(([sale, item]) => {
+                m.sale_lines.findOrCreate({
+                    where: {
+                        sale_id: sale.sale_id,
+                        item_id: item.item_id
+                    },
+                    defaults: {
+                        qty:   1,
+                        price: item.price
+                    }
+                })
+                .then(([sale_line, created]) => {
+                    if (created) {
+                        resolve(true);
+
+                    } else {
+                        sale_line.increment('qty', {by: 1})
+                        .then(result => resolve(true))
                         .catch(err => reject(err));
-                    })
-                    .catch(err => reject(err));
+
+                    };
                 })
                 .catch(err => reject(err));
+            })
+            .catch(err => reject(err));
+        });
+    };
+
+    function check_sale_line(_line) {
+        return new Promise((resolve, reject) => {
+            fn.sales.lines.get(_line.sale_line_id)
+            .then(line => {
+                if (!line.sale) {
+                    reject(new Error('Sale not found'));
+
+                } else if (!line.sale.session) {
+                    reject(new Error('Session not found'));
+
+                } else if ( line.sale.session.status !== 1) {
+                    reject(new Error('Session for this sale is not open'));
+
+                } else {
+                    resolve([line, _line.qty]);
+
+                };
+            })
+            .catch(err => reject(err));
+        });
+    };
+    function increase_qty([line, qty]) {
+        return new Promise((resolve, reject) => {
+            line.increment('qty', {by: qty})
+            .then(updated_line => resolve(updated_line))
+            .catch(err => reject(err));
+        });
+    };
+    function delete_if_qty_zero (line) {
+        return new Promise((resolve, reject) => {
+            if (line.qty <= 0) {
+                line.destroy()
+                .then(result => { 
+                    if (result) {
+                        resolve(true);
+
+                    } else {
+                        reject(new Error('Line not updated'));
+
+                    };
+                })
+            } else {
+                resolve(true);
+
             };
         });
     };
-    fn.sales.lines.edit = function (_line) {
+    fn.sales.lines.edit = function (line) {
         return new Promise((resolve, reject) => {
-            check_sale_line(_line.sale_line_id)
-            .then(line => {
-                line.increment('qty', {by: _line.qty})
-                .then(result => {
-                    line.reload()
-                    .then(result => {
-                        if (result) {
-                            if (line.qty <= 0) {
-                                line.destroy()
-                                .then(result => { 
-                                    if (result) {
-                                        resolve(true);
-                                    } else {
-                                        reject(new Error('Line not updated'));
-                                    };
-                                })
-                            } else {
-                                resolve(true);
-                            };
-                        } else {
-                            reject(new Error('Line not updated'));
-                        };
-                    })
-                    .catch(err => reject(err))
-                })
-                .catch(err => reject(err));
-            })
+            check_sale_line(line)
+            .then(increase_qty)
+            .then(delete_if_qty_zero)
+            .then(resolve(true))
             .catch(err => reject(err));
         });
     };
