@@ -59,10 +59,10 @@ module.exports = function (m, fn) {
         return y_c;
     };
 
-    function create_pdf_check(loancard_id) {
+    function check_loancard(loancard_id) {
         return new Promise((resolve, reject) => {
             fn.loancards.get(
-                loancard_id,
+                {loancard_id: loancard_id},
                 [{
                     model: m.loancard_lines,
                     as: 'lines',
@@ -90,62 +90,87 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
-    fn.loancards.pdf.create = function (loancard_id) {
+    function create_pdf(loancard) {
         return new Promise((resolve, reject) => {
-            create_pdf_check(loancard_id)
-            .then(loancard => {
-                fn.pdfs.create_barcodes(loancard.loancard_id)
-                .then(result => {
-                    fn.pdfs.create(
-                        loancard.loancard_id,
-                        'loancards',
-                        loancard.user_loancard.surname,
-                        loancard.user
-                    )
-                    .then(([doc, file, writeStream]) => {
-                        let y = fn.pdfs.new_page(doc);
-                        y += fn.pdfs.logos(doc, y, 'STORES LOAN CARD');
-                        y += addHeader(doc, loancard, y);
-                        loancard.lines.forEach(line => {
-                            if (y >= 708-(line.nsn ? 15 : 0)-(line.serial ? 15 : 0)) {
-                                y = fn.pdfs.end_of_page(doc, y);
-                                y += addHeader(doc, loancard, y);
-                            };
-                            y += addLine(doc, line, y);
-                        });
-                        addDeclaration(doc, loancard.lines.length, y);
-                        fn.pdfs.page_numbers(doc, loancard.loancard_id);
-                        doc.end();
-                        writeStream.on('error', err => reject(err));
-                        writeStream.on('finish', function () {
-                            loancard.update({filename: file})
-                            .then(result => {
-                                fn.settings.get('Print loancard')
-                                .then(settings => {
-                                    if (settings.length !== 1 ||settings[0].value !== '1') {
-                                        resolve(file);
-
-                                    } else {
-                                        fn.pdfs.print('loancards', file)
-                                        .then(result => resolve(file))
-                                        .catch(err => {
-                                            console.log(err);
-                                            resolve(file);
-                                        });
-                                    };
-                                })
-                                .catch(err => {
-                                    console.log(err);
-                                    resolve(file)
-                                });
-                            })
-                            .catch(err => reject(err));
-                        });
-                    })
-                    .catch(err => reject(err));
+            fn.pdfs.create_barcodes(loancard.loancard_id)
+            .then(result => {
+                fn.pdfs.create(
+                    loancard.loancard_id,
+                    'loancards',
+                    loancard.user_loancard.surname,
+                    loancard.user
+                )
+                .then(([doc, filename, writeStream]) => {
+                    let y = fn.pdfs.new_page(doc);
+                    y += fn.pdfs.logos(doc, y, 'STORES LOAN CARD');
+                    y += addHeader(doc, loancard, y);
+                    resolve([loancard, doc, filename, writeStream, y]);
                 })
                 .catch(err => reject(err));
             })
+            .catch(err => reject(err));
+        });
+    };
+    function add_lines([loancard, doc, filename, writeStream, y]) {
+        return new Promise(resolve => {
+            loancard.lines.forEach(line => {
+                if (y >= 708-(line.nsn ? 15 : 0)-(line.serial ? 15 : 0)) {
+                    y = fn.pdfs.end_of_page(doc, y);
+                    y += addHeader(doc, loancard, y);
+                };
+                y += addLine(doc, line, y);
+            });
+            resolve([loancard, doc, filename, writeStream, y])
+        });
+    };
+    function finalise_loancard([loancard, doc, filename, writeStream, y]) {
+        addDeclaration(doc, loancard.lines.length, y);
+        fn.pdfs.page_numbers(doc, loancard.loancard_id);
+        doc.end();
+        
+        writeStream.on('error', err => reject(err));
+        writeStream.on('finish', function () {
+            resolve([loancard, filename]);
+        });
+    };
+    function update_loancard([loancard, filename]) {
+        return new Promise((resolve, reject) => {
+            loancard.update({filename: filename})
+            .then(result => resolve(filename))
+            .catch(err => reject(err));
+        });
+    };
+    function print_loancard(filename) {
+        return new Promise((resolve, reject) => {
+            fn.settings.get('Print loancard')
+            .then(settings => {
+                if (settings.length !== 1 ||settings[0].value !== '1') {
+                    resolve(filename);
+
+                } else {
+                    fn.pdfs.print('loancards', filename)
+                    .then(result => resolve(filename))
+                    .catch(err => {
+                        console.log(err);
+                        resolve(filename);
+                    });
+                };
+            })
+            .catch(err => {
+                console.log(err);
+                resolve(filename)
+            });
+        });
+    };
+    fn.loancards.pdf.create = function (loancard_id) {
+        return new Promise((resolve, reject) => {
+            check_loancard(loancard_id)
+            .then(create_pdf)
+            .then(add_lines)
+            .then(finalise_loancard)
+            .then(update_loancard)
+            .then(print_loancard)
+            .then(filename => resolve(filename))
             .catch(err => reject(err));
         })
     };

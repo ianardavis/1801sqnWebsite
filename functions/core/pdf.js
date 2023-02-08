@@ -9,11 +9,12 @@ module.exports = function (m, fn) {
             try {
                 fn.fs.mkdir(folder)
                 .then(result => {
-                    const file = `${id}-${name}.pdf`;
-                    const path = fn.public_file(folder, file);
+                    const filename = `${id}-${name}.pdf`;
+                    const path = fn.public_file(folder, filename);
                     let docMetadata = {};
                     let writeStream = fs.createWriteStream(path, {flags: 'w'});
-    
+                    // writeStream.on('error', err => reject(err));
+                    
                     docMetadata.Title = `${id}-${folder}-${name}`;
                     if (author) docMetadata.Author = `${(author.rank ? author.rank.rank : "")} ${author.full_name}`;
                     docMetadata.bufferPages   = true;
@@ -21,7 +22,7 @@ module.exports = function (m, fn) {
                     const doc = new pdf(docMetadata);
                     doc.pipe(writeStream);
                     doc.font(`${process.env.ROOT}/public/lib/fonts/myriad-pro/d (1).woff`);
-                    resolve([doc, file, writeStream]);
+                    resolve([doc, filename, writeStream]);
                 })
                 .catch(err => reject(err));
             } catch (err) {
@@ -64,14 +65,14 @@ module.exports = function (m, fn) {
         y = fn.pdfs.new_page(doc);
         return y;
     };
-    function create_barcode(uuid, type) {
+    function create_barcode(text, type) {
         return new Promise((resolve, reject) => {
             const height = (type === 'code128' ? 15 : 30)
             bwipjs.toBuffer({
                 bcid:        type,  // Barcode type
-                text:        uuid,  // Text to encode
+                text:        text,  // Text to encode
                 scale:       3,     // 3x scaling factor
-                height:      height,// height, in mm
+                height:      height,// height in mm
                 includetext: false, // Show human-readable text
                 backgroundcolor: 'FFFFFF',
                 barcolor: '000000',
@@ -80,21 +81,21 @@ module.exports = function (m, fn) {
             })
             .then(barcode => {
                 const prepend = (type === 'code128' ? '128' : 'qr');
-                const file = fn.public_file('barcodes', `${uuid}_${prepend}.png`);
-                fs.writeFile(file, barcode, () => resolve());
+                const file = fn.public_file('barcodes', `${text}_${prepend}.png`);
+                fs.writeFile(file, barcode, () => resolve(file));
             })
             .catch(err => reject(err));
         });
     };
-    fn.pdfs.create_barcodes = function (uuid) {
+    fn.pdfs.create_barcodes = function (text) {
         return new Promise((resolve, reject) => {
             fn.fs.mkdir('barcodes')
             .then(path => {
                 Promise.allSettled([
-                    create_barcode(uuid, 'code128'),
-                    create_barcode(uuid, 'qrcode')
+                    create_barcode(text, 'code128'),
+                    create_barcode(text, 'qrcode')
                 ])
-                .then(results => resolve(true))
+                .then(([file_128, file_qr]) => resolve([file_128, file_qr]))
                 .catch(err => reject(err));
             })
             .catch(err => reject(err));

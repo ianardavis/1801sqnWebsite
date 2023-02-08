@@ -31,6 +31,53 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
+    function issues_allowed(issuer, user_id_issue, user_id) {
+        return new Promise(resolve => {
+            if (issuer) {
+                if (user_id_issue && user_id_issue !== '') {
+                    resolve({where: {user_id: user_id_issue}});
+
+                } else {
+                    resolve({});
+
+                };
+
+            } else {
+                resolve({where: {user_id: user_id}});
+
+            };
+        });
+    };
+    fn.issues.getAll = function (allowed, query, user_id) {
+        return new Promise((resolve, reject) => {
+            if (!query.where) query.where = {};
+
+            issues_allowed(allowed, query.where.user_id_issue, user_id)
+            .then(user_filter => {
+                if (!query.offset || isNaN(query.offset)) query.offset = 0;
+
+                if (isNaN(query.limit)) delete query.limit;
+
+                const include = [
+                        fn.inc.stores.size_filter(query),
+                        {
+                            model:   m.users,
+                            as:      'user_issue',
+                            include: [m.ranks],
+                            ...user_filter
+                        }
+                    ];
+
+                m.issues.findAndCountAll({
+                    where: fn.build_query(query),
+                    include: include,
+                    ...fn.pagination(query)
+                })
+                .then(results => resolve(results))
+                .catch(err => reject(err));
+            });
+        });
+    };
     function fulfilled(results) {
         const fulfilled = results.filter(e => e.status === 'fulfilled');
         let issues = [];
@@ -93,6 +140,57 @@ module.exports = function (m, fn) {
                 )
                 .then(result => resolve(`Issue marked as ${status_text}`))
                 .catch(err => reject(err));
+            })
+            .catch(err => reject(err));
+        });
+    };
+
+    fn.issues.update = function (lines, user_id) {
+        return new Promise((resolve, reject) => {
+            fn.check_for_valid_lines_to_update(lines)
+            .then(([issues, submitted]) => {
+                let actions = [];
+                
+                issues.filter(e => e.status === '-1').forEach(issue => {
+                    actions.push(fn.issues.decline(issue.issue_id, user_id));
+                });
+    
+                issues.filter(e => e.status ===  '2').forEach(issue => {
+                    actions.push(fn.issues.approve(issue.issue_id, user_id));
+                });
+    
+                const to_order = issues.filter(e => e.status === '3');
+                if (to_order.length > 0) {
+                    actions.push(fn.issues.order(to_order, user_id));
+                };
+    
+                issues.filter(e => e.status ===  '-3' || e.status ===  '-2').forEach(issue => {
+                    actions.push(fn.issues.cancel(issue.issue_id, issue.status, user_id));
+                });
+    
+                issues.filter(e => e.status === '0').forEach(issue => {
+                    actions.push(fn.issues.restore(issue.issue_id, user_id));
+                });
+    
+                const to_issue = issues.filter(e => e.status === '4')
+                if (to_issue.length > 0) {
+                    actions.push(fn.issues.add_to_loancard(to_issue, user_id));
+                };
+    
+                if (actions.length > 0) {
+                    Promise.allSettled(actions)
+                    .then(results => {
+                        results.filter(e => e.status === 'rejected').forEach(fail => console.log(fail));
+                        const resolved = results.filter(e => e.status ==='fulfilled').length;
+                        const message = `${resolved} of ${submitted} tasks completed`;
+                        resolve(message)
+                    })
+                    .catch(err => reject(err));
+    
+                } else {
+                    reject(new Error('No actions to perform'));
+    
+                };
             })
             .catch(err => reject(err));
         });

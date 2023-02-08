@@ -1,8 +1,9 @@
 module.exports = function (m, fn) {
-    function raise_demand_check(demand_id) {
+    const excel = require('exceljs');
+    function create_check(demand_id) {
         return new Promise((resolve, reject) => {
             fn.demands.get(
-                demand_id,
+                {demand_id: demand_id},
                 [{
                     model: m.demand_lines,
                     as: 'lines',
@@ -38,13 +39,12 @@ module.exports = function (m, fn) {
     function create_file(demand) {
         return new Promise((resolve, reject) => {
             Promise.all([
-                get_file(demand.supplier_id),
+                get_demand_template(demand.supplier_id),
                 check_folder_exists()
             ])
             .then(([[file, account], exists]) => {
                 const fs = require('fs');
                 if (file.filename) {
-                    
                     const filename = `${demand.demand_id}.xlsx`;
                     const from = fn.public_file('files', file.filename);
                     const to   = fn.public_file('demands', filename);
@@ -61,6 +61,7 @@ module.exports = function (m, fn) {
                             };
                         }
                     );
+
                 } else {
                     reject(new Error('No demand file specified'));
 
@@ -69,7 +70,7 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
-    function get_file(supplier_id) {
+    function get_demand_template(supplier_id) {
         return new Promise((resolve, reject) => {
             fn.suppliers.get(
                 supplier_id,
@@ -116,19 +117,30 @@ module.exports = function (m, fn) {
         });
     };
     
+    function file_detail(details, name) {
+        const detail = details.filter(d => d.name.toLowerCase() === name);
+        if (detail) {
+            return detail[0].value;
+
+        } else {
+            return '';
+
+        };
+    };
     function write_cover_sheet(file, account, filename, raised_by_user, demand_id) {
         return new Promise((resolve, reject) => {
-            get_users(demand_id)
-            .then(users => {
-                const cover_sheet = file.details.filter(d => d.name.toLowerCase() === 'cover sheet')[0].value;
+            Promise.all([
+                fn.demands.get_users(demand_id),
+                get_cells(file)
+            ])
+            .then(([users, cells]) => {
+                const cover_sheet = file_detail(file.details, 'cover sheet');
                 if (cover_sheet) {
                     const path    = fn.public_file('demands', filename);
-                    const excel   = require('exceljs');
                     let workbook  = new excel.Workbook();
                     workbook.xlsx.readFile(path)
                     .then(() => {
                         try {
-                            const cells = get_cells(file);
                             let worksheet = workbook.getWorksheet(cover_sheet);
                             function set_cell(cell, value) {
                                 worksheet.getCell(cell).value = value;
@@ -154,10 +166,13 @@ module.exports = function (m, fn) {
                                     if (user) {
                                         set_cell(cells.rank_column + r, user.rank);
                                         set_cell(cells.name_column + r, user.name);
+
                                     } else {
                                         break;
+
                                     };
                                 };
+
                             };
                             workbook.xlsx.writeFile(path)
                             .then(() => resolve(true))
@@ -169,69 +184,35 @@ module.exports = function (m, fn) {
                     .catch(err => reject(err));
                 } else {
                     reject(new Error('No cover sheet specified'));
+
                 };
             })
             .catch(err => reject(err));
         });
     };
-    function get_users(demand_id) {
-        return new Promise((resolve, reject) => {
-            m.issues.findAll({
-                include: [
-                    fn.inc.users.user({as: 'user_issue'}),
-                    {
-                        model: m.orders,
-                        where: {status: 2},
-                        required: true,
-                        include: [{
-                            model: m.demand_lines,
-                            where: {status: 2},
-                            required: true,
-                            include: [{
-                                model: m.demands,
-                                where: {demand_id: demand_id},
-                                required: true
-                            }]
-                        }]
-                    }
-                ] 
-            })
-            .then(issues => {
-                let users = [];
-                issues.forEach(issue => {
-                    if (users.findIndex(e => e.user_id === issue.user_issue.user_id) === -1) {
-                        users.push({
-                            user_id: issue.user_issue.user_id,
-                            name:    issue.user_issue.full_name,
-                            rank:    issue.user_issue.rank.rank
-                        });
-                    };
-                });
-                resolve(users);
-            })
-            .catch(err => reject(err));
-        });
-    };
     function get_cells(file) {
-        let cells = {};
-        [
-            'code',
-            'name',
-            'rank',
-            'holder',
-            'squadron',
-            'date',
-            'rank column',
-            'name column',
-            'user start',
-            'user end'
-        ].forEach(e => {
-            const detail = file.details.filter(d => d.name.toLowerCase() === e)
-            if (detail.length === 1) {
-                cells[e.replace(' ', '_')] = detail[0].value
-            };
+        return new Promise(resolve => {
+            let cells = {};
+            [
+                'code',
+                'name',
+                'rank',
+                'holder',
+                'squadron',
+                'date',
+                'rank column',
+                'name column',
+                'user start',
+                'user end'
+            ].forEach(e => {
+                const detail = file_detail(file.details, e);
+                if (detail) {
+                    cells[e.replace(' ', '_')] = detail[0].value
+                    
+                };
+            });
+            resolve(cells);
         });
-        return cells;
     };
     function counter() {
         let count = 0;
@@ -312,9 +293,9 @@ module.exports = function (m, fn) {
         });
     };
 
-    fn.demands.file.create = function (demand_id, user) {
+    fn.demands.file.create = function ([demand_id, user]) {
         return new Promise((resolve, reject) => {
-            raise_demand_check(demand_id)
+            create_check(demand_id)
             .then(demand => {
                 if (demand.filename && demand.filename !== '') {
                     resolve(demand.filename);
@@ -322,15 +303,14 @@ module.exports = function (m, fn) {
                 } else {
                     create_file(demand)
                     .then(([file, filename, account]) => {
-                        write_cover_sheet(file, account, filename, user, demand.demand_id)
-                        .then(result => {
+                        Promise.all([
+                            write_cover_sheet(file, account, filename, user, demand.demand_id),
                             write_items(filename, demand.lines, demand.supplier_id)
-                            .then(fails => {
-                                demand.update({filename: filename})
-                                .then(result => resolve(filename))
-                                .catch(err => resolve(filename));
-                            })
-                            .catch(err => reject(err));
+                        ])
+                        .then(result => {
+                            demand.update({filename: filename})
+                            .then(result => resolve(filename))
+                            .catch(err => resolve(filename));
                         })
                         .catch(err => reject(err));
                     })

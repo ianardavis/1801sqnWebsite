@@ -23,8 +23,10 @@ module.exports = function (m, fn) {
             .then(line => {
                 if (line || allowNull) {
                     resolve(line);
+
                 } else {
                     reject(new Error('Line not found'));
+
                 };
             })
             .catch(err => reject(err));
@@ -78,7 +80,7 @@ module.exports = function (m, fn) {
     };
     function check_demand(demand_id, size) {
         return new Promise((resolve, reject) => {
-            fn.demands.get(demand_id)
+            fn.demands.get({demand_id: demand_id})
             .then(demand => {
                 if (demand.status !== 1) {
                     reject(new Error('Lines can only be added to draft demands'));
@@ -169,6 +171,36 @@ module.exports = function (m, fn) {
                 Promise.all(actions)
                 .then(result => resolve(true))
                 .catch(err => reject(err));
+            };
+        });
+    };
+
+    fn.demands.lines.update = function (lines, user_id) {
+        return new Promise((resolve, reject) => {
+            if (!lines || lines.length === 0) {
+                fn.send_error(res, 'No lines submitted');
+    
+            } else {
+                let actions = [];
+                lines.filter(e => e.status === '0').forEach(line => {
+                    actions.push(
+                        fn.demands.lines.cancel(line.demand_line_id, user_id)
+                    );
+                });
+                // lines.filter(e => e.status === '-1').forEach(line => {
+                //     actions.push(
+                //         fn.demands.lines.restore(line.demand_line_id, user_id)
+                //     );
+                // });
+                lines.filter(e => e.status === '3').forEach(line => {
+                    actions.push(
+                        fn.demands.lines.receive(line, user_id)
+                    );
+                });
+                Promise.all(actions)
+                .then(results => resolve(true))
+                .catch(err => reject(err));
+                
             };
         });
     };

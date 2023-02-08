@@ -21,31 +21,21 @@ module.exports = (app, m, fn) => {
     });
     
     app.get('/get/demand',           fn.loggedIn(), fn.permissions.check('authorised_demander'), (req, res) => {
-        m.demands.findOne({
-            where: req.query.where,
-            include: [
+        fn.demands.get(
+            req.query.where,
+            [
                 fn.inc.users.user(),
                 fn.inc.stores.supplier()
             ]
-        })
-        .then(demand => {
-            if (demand) {
-                res.send({success: true, result: demand})
-            } else {
-                res.send({success: false, message: 'Demand not found'});
-            };
-        })
+        )
+        .then(demand => res.send({success: true, result: demand}))
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/demands',          fn.loggedIn(), fn.permissions.check('authorised_demander'), (req, res) => {
-        m.demands.findAndCountAll({
-            where:   fn.build_query(req.query),
-            include: [
-                fn.inc.users.user(),
-                fn.inc.stores.supplier()
-            ],
-            ...fn.pagination(req.query)
-        })
+        fn.demands.getAll(
+            fn.build_query(req.query),
+            fn.pagination(req.query)
+        )
         .then(results => fn.send_res('demands', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });
@@ -64,24 +54,14 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/demand_line',      fn.loggedIn(), fn.permissions.check('authorised_demander'), (req, res) => {
-        m.demand_lines.findOne({
-            where: req.query.where,
-            include: [
-                fn.inc.stores.size(),
+        fn.demands.lines.get(
+            req.query.where,
+            [
                 fn.inc.users.user(),
-                fn.inc.stores.demand(),
                 m.orders
             ]
-        })
-        .then(line => {
-            if (line) {
-                res.send({success: true, result: line});
-
-            } else {
-                res.send({success: false, message: 'Line not found'});
-
-            };
-        })
+        )
+        .then(line => res.send({success: true, result: line}))
         .catch(err => fn.send_error(res, err));
     });
 
@@ -120,29 +100,9 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.put('/demand_lines',         fn.loggedIn(), fn.permissions.check('authorised_demander'), (req, res) => {
-        if (!req.body.lines || req.body.lines.length === 0) {
-            fn.send_error(res, 'No lines submitted');
-        } else {
-            let actions = [];
-            req.body.lines.filter(e => e.status === '0').forEach(line => {
-                actions.push(
-                    fn.demands.lines.cancel(line.demand_line_id, req.user.user_id)
-                );
-            });
-            // req.body.lines.filter(e => e.status === '-1').forEach(line => {
-            //     actions.push(
-            //         fn.demands.lines.restore(line.demand_line_id, req.user.user_id)
-            //     );
-            // });
-            req.body.lines.filter(e => e.status === '3').forEach(line => {
-                actions.push(
-                    fn.demands.lines.receive(line, req.user.user_id)
-                );
-            });
-            Promise.all(actions)
-            .then(results => res.send({success: true, message: 'Lines actioned'}))
-            .catch(err => fn.send_error(res, err));
-        };
+        fn.demands.lines.update(req.body.lines, req.user.user_id)
+        .then(results => res.send({success: true, message: 'Lines actioned'}))
+        .catch(err => fn.send_error(res, err));
     });
     
     app.delete('/demands/:id',       fn.loggedIn(), fn.permissions.check('authorised_demander'), (req, res) => {

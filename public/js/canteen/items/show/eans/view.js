@@ -1,4 +1,3 @@
-// import {clear, get, add_cell, table_date, addListener, add_sort_listeners} from "common";
 function getEANs() {
     clear('tbl_eans')
     .then(tbl_eans => {

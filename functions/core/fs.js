@@ -172,8 +172,7 @@ module.exports = function (m, fn) {
 			.then(path => {
 				res.download(path, file, err => {
 					if (err) {
-						console.log(err);
-						resolve(false);
+						reject(err);
 
 					} else {
 						resolve(true);

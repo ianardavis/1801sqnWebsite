@@ -71,13 +71,13 @@ module.exports = function (m, fn) {
         });
         return text.join('/');
     };
-    fn.print_nsn = function (nsn) {
+    fn.print_nsn = function (nsn, separator = '-') {
         if (nsn) {
             const nsn_group = String(nsn.nsn_group.code).padStart(2, '0');
             const nsn_class = String(nsn.nsn_class.code).padStart(2, '0');
             const nsn_country = String(nsn.nsn_country.code).padStart(2, '0');
             const nsn_number = nsn.item_number;
-            return `${nsn_group}${nsn_class}-${nsn_country}-${nsn_number}`
+            return `${nsn_group}${nsn_class}${separator}${nsn_country}${separator}${nsn_number}`
         };
     };
     fn.pagination = function (query) {

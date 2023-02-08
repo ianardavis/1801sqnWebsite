@@ -5,14 +5,9 @@ module.exports = (app, m, fn) => {
         let where = req.query.where || {};
         if (req.query.gt) where[req.query.gt.column] = {[op.gt]: req.query.gt.value};
         if (req.query.lt) where[req.query.lt.column] = {[op.lt]: req.query.lt.value};
-        m.stocks.findAndCountAll({
-            where:   where,
-            include: [
-                fn.inc.stores.size(),
-                fn.inc.stores.location()
-            ],
-            ...fn.pagination(req.query)
-        })
+        fn.stocks.getAll(
+            where,
+            fn.pagination(req.query))
         .then(results => fn.send_res('stocks', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });
@@ -30,8 +25,13 @@ module.exports = (app, m, fn) => {
             ]
         })
         .then(stock => {
-            if (stock) res.send({success: true, result: stock})
-            else res.send({success: false, message: 'Stock not found'});
+            if (stock) {
+                res.send({success: true, result: stock});
+
+            }else {
+                res.send({success: false, message: 'Stock not found'});
+            
+            };
         })
         .catch(err => fn.send_error(res, err));
     });
@@ -67,7 +67,7 @@ module.exports = (app, m, fn) => {
         };
     });
     app.put('/stocks/:id',          fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
-        fn.stocks.get({stock_id: req.params.id})
+        fn.stocks.getByID(req.params.id)
         .then(stock => {
             m.locations.findOrCreate({where: {location: req.body.location}})
             .then(([location, created]) => {
@@ -104,7 +104,7 @@ module.exports = (app, m, fn) => {
     app.put('/stocks/:id/:type',    fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {fn.send_error(res, 'Invalid type')});
     
     app.delete('/stocks/:id',       fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
-        fn.stocks.get({stock_id: req.params.id})
+        fn.stocks.getByID(req.params.id)
         .then(stock => {
             if (stock.qty > 0) fn.send_error(res, 'Cannot delete whilst stock is not 0')
             else {

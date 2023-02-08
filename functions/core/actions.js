@@ -1,6 +1,6 @@
 module.exports = function (m, fn) {
     fn.actions = {};
-    fn.actions.create = function (action, user_id, links) {
+    fn.actions.create = function (action, user_id, links, return_result = null) {
         return new Promise((resolve) => {
             m.actions.create({
                 action:  action,
@@ -12,10 +12,25 @@ module.exports = function (m, fn) {
                     as: 'links'
                 }]
             })
-            .then(action => resolve(true))
+            .then(action => {
+                if (return_result) {
+                    resolve(return_result);
+
+                } else {
+                    resolve(true);
+
+                };
+                
+            })
             .catch(err => {
                 console.log(err);
-                resolve(false);
+                if (return_result) {
+                    resolve(return_result);
+
+                } else {
+                    resolve(true);
+
+                };
             });
         });
     };

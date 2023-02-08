@@ -30,13 +30,16 @@ module.exports = (passport, m) => {
                     if (!user) {
                         req.flash('danger', 'Invalid username or password!');
                         done(null, false, {message: 'Invalid username or password!'});
+                        
                     } else if (scryptSync(password, user.salt, 128).toString('hex') !== user.password) {
                         req.flash('danger', 'Invalid username or password!');
                         done(null, false, {message: 'Invalid username or password!'});
+                        
                     } else {
                         return user.update({last_login: Date.now()})
                         .then(result => done(null, user.user_id))
                         .catch(err => done(null, false, {message: `Error setting last login: ${err.message}`}));
+                        
                     };
                 })
                 .catch(err => {

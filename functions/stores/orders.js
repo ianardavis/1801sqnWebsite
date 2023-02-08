@@ -1,17 +1,17 @@
 const statuses = {0: 'cancelled', 1: 'placed', 2: 'demanded', 3: 'received'};
 module.exports = function (m, fn) {
     fn.orders = {};
-    fn.orders.get = function (order_id) {
+    fn.orders.get = function (where, include = []) {
         return new Promise((resolve, reject) => {
             m.orders.findOne({
-                where: {order_id: order_id},
+                where: where,
                 include: [
                     fn.inc.stores.size({supplier: true}),
                     {
                         model: m.issues,
                         include: [fn.inc.users.user({as: 'user_issue'})]
                     }
-                ]
+                ].concat(include)
             })
             .then(order => {
                 if (order) {
@@ -22,6 +22,20 @@ module.exports = function (m, fn) {
 
                 };
             })
+            .catch(err => reject(err));
+        });
+    };
+    fn.orders.getAll = function (where, pagination) {
+        return new Promise((resolve, reject) => {
+            m.orders.findAndCountAll({
+                where: where,
+                include: [
+                    fn.inc.stores.size(),
+                    fn.inc.users.user()
+                ],
+                ...pagination
+            })
+            .then(results => resolve(results))
             .catch(err => reject(err));
         });
     };
@@ -58,7 +72,7 @@ module.exports = function (m, fn) {
     function mark_check(order_id, status) {
         return new Promise((resolve, reject) => {
             if (status in statuses) {
-                fn.orders.get(order_id)
+                fn.orders.get({order_id: order_id})
                 .then(order => {
                     if (order.status === Number(status)) {
                         reject(new Error('Status has not changed'));
@@ -198,9 +212,49 @@ module.exports = function (m, fn) {
         });
     };
 
+    fn.orders.update = function (lines, user_id) {
+        return new Promise((resolve, reject) => {
+            fn.check_for_valid_lines_to_update(lines)
+            .then(([orders, submitted]) => {
+                let actions = [];
+                orders.filter(e => e.status === '-3').forEach(order => {
+                    actions.push(fn.orders.restore(order.order_id, user_id));
+                })
+
+                orders.filter(e => e.status === '0').forEach(order => {
+                    actions.push(fn.orders.cancel( order.order_id, user_id));
+                });
+    
+                orders.filter(e => e.status === '3').forEach(order => {
+                    actions.push(fn.orders.receive(order.order_id, order, user_id));
+                });
+    
+                const to_demand = orders.filter(e => e.status === '2');
+                if (to_demand.length > 0) {
+                    actions.push(fn.orders.demand(to_demand, user_id));
+                };
+    
+                if (actions.length > 0) {
+                    Promise.allSettled(actions)
+                    .then(results => {
+                        const resolved = results.filter(e => e.status ==='fulfilled').length;
+                        const message = `${resolved} of ${submitted} tasks completed`;
+                        resolve(message)
+                    })
+                    .catch(err => reject(err));
+    
+                } else {
+                    reject(new Error('No actions to perform'));
+    
+                };
+            })
+            .catch(err => reject(err));
+        });
+    };
+
     function cancel_check(order_id) {
         return new Promise((resolve, reject) => {
-            fn.orders.get(order_id)
+            fn.orders.get({order_id: order_id})
             .then(order => {
                 if (order.status === 0) {
                     reject(new Error('Order has already been cancelled'));
@@ -270,7 +324,7 @@ module.exports = function (m, fn) {
 
     function restore_check(order_id) {
         return new Promise((resolve, reject) => {
-            fn.orders.get(order_id)
+            fn.orders.get({order_id: order_id})
             .then(order => {
                 if (order.status !== 0) {
                     reject(new Error('Order is not cancelled'));
@@ -307,7 +361,7 @@ module.exports = function (m, fn) {
             let get_orders = [];
             orders.forEach(order => {
                 get_orders.push(new Promise((resolve, reject) => {
-                    fn.orders.get(order.order_id)
+                    fn.orders.get({order_id: order.order_id})
                     .then(order => {
                         if (order.status !== 1) {
                             reject(new Error('Only placed orders can be demanded'));
@@ -422,7 +476,7 @@ module.exports = function (m, fn) {
 
     function receive_check(order_id) {
         return new Promise((resolve, reject) => {
-            fn.orders.get(order_id)
+            fn.orders.get({order_id: order_id})
             .then(order => {
                 if (!order.size) {
                     reject(new Error('Could not find size'));
@@ -587,7 +641,7 @@ module.exports = function (m, fn) {
     
     function change_check(order_id) {
         return new Promise((resolve, reject) => {
-            fn.orders.get(order_id)
+            fn.orders.get({order_id: order_id})
             .then(order => {
                 if (!order.size) {
                     reject(new Error('Error getting order size'));

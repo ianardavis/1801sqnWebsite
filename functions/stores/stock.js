@@ -73,6 +73,38 @@ module.exports = function (m, fn) {
             };
         });
     };
+    fn.stocks.getAll = function (where, pagination) {
+        return new Promise((resolve, reject) => {
+            m.stocks.findAndCountAll({
+                where: where,
+                include: [
+                    fn.inc.stores.size(),
+                    fn.inc.stores.location()
+                ],
+                ...pagination
+            })
+            .then(results => resolve(results))
+            .catch(err => reject(err));
+        });
+    };
+    fn.stocks.getByID = function (stock_id) {
+        return new Promise((resolve, reject) => {
+            m.stocks.findOne({
+                where: {stock_id: stock_id},
+                include: [m.locations]
+            })
+            .then(stock => {
+                if (stock) {
+                    resolve(stock);
+
+                } else {
+                    reject(new Error('Stock not found'));
+                    
+                };
+            })
+            .catch(err => reject(err));
+        });
+    };
     fn.stocks.create = function (size_id, location) {
         return new Promise((resolve, reject) => {
             fn.sizes.get({size_id: size_id})
@@ -134,7 +166,7 @@ module.exports = function (m, fn) {
     };
     fn.stocks.count = function (stock_id, qty, user_id) {
         return new Promise((resolve, reject) => {
-            fn.stocks.get({stock_id: stock_id})
+            fn.stocks.getByID(stock_id)
             .then(stock => {
                 let variance = qty - stock.qty;
                 stock.update({qty: qty})
@@ -233,7 +265,7 @@ module.exports = function (m, fn) {
     };
     fn.stocks.return = function (stock_id, qty) {
         return new Promise((resolve, reject) => {
-            fn.stocks.get({stock_id: stock_id})
+            fn.stocks.getByID(stock_id)
             .then(stock => {
                 fn.stocks.increment(stock, qty)
                 .then(result => resolve({_table: 'stocks', id: stock_id}))
@@ -244,7 +276,7 @@ module.exports = function (m, fn) {
     };
     fn.stocks.transfer = function (stock_id_from, location_to, qty, user_id) {
         return new Promise((resolve, reject) => {
-            fn.stocks.get({stock_id: stock_id_from})
+            fn.stocks.getByID(stock_id_from)
             .then(stock_from => {
                 if (qty > stock_from.qty) {
                     reject(new Error('Transfer quantity is greater than stock quantity'));

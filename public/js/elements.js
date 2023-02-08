@@ -5,8 +5,16 @@ function _move(att = '') {return `<i class="fas fa-align-justify"${att}></i>`}
 function _delete()       {return '<i class="fas fa-trash-alt"></i>'}
 function random_id()     {return Math.floor(Math.random()*10000)};
 
+class LI {
+    constructor(options = {}) {
+        this = document.createElement('li');
+        if (options.classes) {
+            options.classes.forEach(e => this.classList.add(e));
+        };
+    };
+};
 function List_Item(text, caret) {
-    this.e = new LI({classes: ['list-group-item', 'text-start', 'p-4']}).e;
+    this.e = new LI({classes: ['list-group-item', 'text-start', 'p-4']});
     this.e.appendChild(
         new Checkbox({
             id: text,
@@ -26,10 +34,6 @@ function List_Item(text, caret) {
         classes: ['nested', 'list-group'],
         attributes: [{field: 'id', value: `ul_${text}`}]
     }).e);
-};
-function LI(options = {}) {
-    this.e = document.createElement('li');
-    if (options.classes) options.classes.forEach(e => this.e.classList.add(e));
 };
 function Category_LI(options = {}) {
     this.e = document.createElement('li');
@@ -339,7 +343,7 @@ function Notification (options = {}) {
     this.e.appendChild(body);
 };
 function Page_Number(options = {}) {
-    this.e = new LI({classes: ['page-item']}).e;
+    this.e = new LI({classes: ['page-item']});
     if (options.selected) this.e.classList.add('active');
     let _btn = document.createElement('button');
     _btn.classList.add('page-link');

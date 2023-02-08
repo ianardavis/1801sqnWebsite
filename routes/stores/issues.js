@@ -14,71 +14,15 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
 
-    function issues_allowed(issuer, user_id_issue, user_id) {
-        return new Promise(resolve => {
-            if (issuer) {
-                if (user_id_issue && user_id_issue !== '') {
-                    resolve({where: {user_id: user_id_issue}});
-
-                } else {
-                    resolve({});
-
-                };
-
-            } else {
-                resolve({where: {user_id: user_id}});
-
-            };
-        });
-    };
     app.get('/get/issues',      fn.loggedIn(), fn.permissions.check('issuer',        true), (req, res) => {
-        try {
-            let query = req.query;
-            if (!query.where) query.where = {};
-
-            issues_allowed(req.allowed, query.where.user_id_issue, req.user.user_id)
-            .then(user_filter => {
-                if (!query.offset || isNaN(query.offset)) query.offset = 0;
-
-                if (isNaN(query.limit)) delete query.limit;
-
-                let where   = fn.build_query(req.query);
-                const include = [
-                        fn.inc.stores.size_filter(req.query),
-                        {
-                            model:   m.users,
-                            as:      'user_issue',
-                            include: [m.ranks],
-                            ...user_filter
-                        }
-                    ];
-
-                m.issues.findAndCountAll({
-                    where: where,
-                    include: include,
-                    ...fn.pagination(query)
-                })
-                .then(results => fn.send_res('issues', res, results, query))
-                .catch(err => fn.send_error(res, err));
-            });
-        } catch (err) {
-            fn.send_error(res, err);
-        };
+        fn.issues.getAll(req.allowed, req.query, req.user.user_id)
+        .then(results => fn.send_res('issues', res, results, query))
+        .catch(err => fn.send_error(res, err));
     });
     app.get('/get/issue',       fn.loggedIn(), fn.permissions.check('issuer',        true), (req, res) => {
+        if (!req.allowed) req.query.where["user_id_issue"] = req.user.user_id;
         fn.issues.get(req.query.where, {order: true, loancard_lines: true})
-        .then(issue => {
-            if (
-                req.allowed ||
-                issue.user_id_issue === req.user.user_id
-            ) {
-                res.send({success: true, result: issue});
-
-            } else {
-                fn.send_error(res, 'Permission denied');
-
-            };
-        })
+        .then(issue => res.send({success: true, result: issue}))
         .catch(err => fn.send_error(res, err));
     });
 
@@ -89,52 +33,8 @@ module.exports = (app, m, fn) => {
     });
 
     app.put('/issues',          fn.loggedIn(), fn.permissions.check('issuer'),              (req, res) => {
-        fn.check_for_valid_lines_to_update(req.body.lines)
-        .then(([issues, submitted]) => {
-            let actions = [];
-            const user_id = req.user.user_id;
-            
-            issues.filter(e => e.status === '-1').forEach(issue => {
-                actions.push(fn.issues.decline(issue.issue_id, user_id));
-            });
-
-            issues.filter(e => e.status ===  '2').forEach(issue => {
-                actions.push(fn.issues.approve(issue.issue_id, user_id));
-            });
-
-            const to_order = issues.filter(e => e.status === '3');
-            if (to_order.length > 0) {
-                actions.push(fn.issues.order(to_order, user_id));
-            };
-
-            issues.filter(e => e.status ===  '-3' || e.status ===  '-2').forEach(issue => {
-                actions.push(fn.issues.cancel(issue.issue_id, issue.status, user_id));
-            });
-
-            issues.filter(e => e.status === '0').forEach(issue => {
-                actions.push(fn.issues.restore(issue.issue_id, user_id));
-            });
-
-            const to_issue = issues.filter(e => e.status === '4')
-            if (to_issue.length > 0) {
-                actions.push(fn.issues.add_to_loancard(to_issue, user_id));
-            };
-
-            if (actions.length > 0) {
-                Promise.allSettled(actions)
-                .then(results => {
-                    results.filter(e => e.status === 'rejected').forEach(fail => console.log(fail));
-                    const resolved = results.filter(e => e.status ==='fulfilled').length;
-                    const message = `${resolved} of ${submitted} tasks completed`;
-                    res.send({success: true, message: message})
-                })
-                .catch(err => fn.send_error(res, err));
-
-            } else {
-                res.send({success: true, message: 'No actions to perform'});
-
-            };
-        })
+        fn.issues.update(req.body.lines, req.user.user_id)
+        .then(message => res.send({success: true, message: message}))
         .catch(err => fn.send_error(res, err));
     });
 

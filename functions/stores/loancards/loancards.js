@@ -1,8 +1,8 @@
 module.exports = function (m, fn) {
-    fn.loancards.get = function (loancard_id, includes = []) {
+    fn.loancards.get = function (where, includes = []) {
         return new Promise((resolve, reject) => {
             m.loancards.findOne({
-                where: {loancard_id: loancard_id},
+                where: where,
                 include: [
                     fn.inc.users.user(),
                     fn.inc.users.user({as: 'user_loancard'})
@@ -20,9 +20,29 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
+    fn.loancards.getAll = function (query) {
+        return new Promise((resolve, reject) => {
+            m.loancards.findAndCountAll({
+                where: query.where,
+                include: [
+                    {
+                        model: m.loancard_lines,
+                        as:    'lines',
+                        where: {status: {[fn.op.ne]: 0}},
+                        required: false
+                    },
+                    fn.inc.users.user(),
+                    fn.inc.users.user({as: 'user_loancard'})
+                ],
+                ...fn.pagination(query)
+            })
+            .then(results => resolve(results))
+            .catch(err => reject(err));
+        });
+    };
     fn.loancards.edit = function (loancard_id, details) {
         return new Promise((resolve, reject) => {
-            fn.loancards.get(loancard_id)
+            fn.loancards.get({loancard_id: loancard_id})
             .then(loancard => {
                 loancard.update(details)
                 .then(result => resolve(result))
@@ -35,7 +55,7 @@ module.exports = function (m, fn) {
     function cancel_loancard_check(loancard_id) {
         return new Promise((resolve, reject) => {
             fn.loancards.get(
-                loancard_id,
+                {loancard_id: loancard_id},
                 [{
                     model: m.loancard_lines,
                     as: 'lines',
@@ -109,7 +129,7 @@ module.exports = function (m, fn) {
     function complete_check(loancard_id) {
         return new Promise((resolve, reject) => {
             fn.loancards.get(
-                loancard_id,
+                {loancard_id: loancard_id},
                 [{
                     model: m.loancard_lines,
                     as: 'lines',
@@ -172,7 +192,7 @@ module.exports = function (m, fn) {
                                 options.user_id,
                                 [{_table: 'loancards', id: loancard.loancard_id}].concat(line_links)
                             )
-                            .then(action => resolve(true));
+                            .then(action => resolve(loancard.loancard_id));
 
                         } else {
                             reject(new Error('Loancard not updated'));
@@ -187,10 +207,46 @@ module.exports = function (m, fn) {
         });
     };
 
+    function getLoancardFilename(loancard_id) {
+        return new Promise((resolve, reject) => {
+            fn.loancards.get({loancard_id: loancard_id})
+            .then(loancard => {
+                if (!loancard.filename) {
+                    fn.loancards.pdf.create(loancard.loancard_id)
+                    .then(filename => resolve(filename))
+                    .catch(err => reject(err));
+                } else resolve(loancard.filename);
+            })
+            .catch(err => reject(err));
+        });
+    };
+    fn.loancards.download = function (loancard_id, res) {
+        return new Promise((resolve, reject) => {
+            getLoancardFilename(loancard_id)
+            .then(filename => {
+                fn.fs.download('loancards', filename, res)
+                .catch(err => reject(err));
+            })
+            .catch(err => reject(err));
+        });
+    };
+    
+    fn.loancards.print = function (loancard_id) {
+        return new Promise((resolve, reject) => {
+            getLoancardFilename(loancard_id)
+            .then(filename => {
+                fn.pdfs.print('loancards', filename)
+                .then(result => resolve(true))
+                .catch(err => reject(err));
+            })
+            .catch(err => reject(err));
+        });
+    };
+
     function close_check(loancard_id) {
         return new Promise((resolve, reject) => {
             fn.loancards.get(
-                loancard_id,
+                {loancard_id: loancard_id},
                 [{
                     model: m.loancard_lines,
                     as: 'lines',

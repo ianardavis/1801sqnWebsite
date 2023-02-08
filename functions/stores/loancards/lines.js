@@ -3,7 +3,7 @@ module.exports = function (m, fn) {
         return new Promise((resolve, reject) => {
             m.loancard_lines.findOne({
                 where: {loancard_line_id: loancard_line_id},
-                include: [m.loancards].concat(includes)
+                include: includes
             })
             .then(line => {
                 if (line) {
@@ -14,6 +14,28 @@ module.exports = function (m, fn) {
 
                 };
             })
+            .catch(err => reject(err));
+        });
+    };
+    fn.loancards.lines.getAll = function (where, options) {
+        return new Promise((resolve, reject) => {
+            m.loancard_lines.findAndCountAll({
+                where: where,
+                include: [
+                    m.issues,
+                    fn.inc.stores.size(),
+                    fn.inc.users.user(),
+                    fn.inc.stores.loancard({
+                        ...options.loancard_where || {},
+                        include: [
+                            fn.inc.users.user(),
+                            fn.inc.users.user({as: 'user_loancard'})
+                        ]
+                    })
+                ],
+                ...options.pagination || {}
+            })
+            .then(results => resolve(results))
             .catch(err => reject(err));
         });
     };
@@ -161,7 +183,7 @@ module.exports = function (m, fn) {
         return new Promise((resolve, reject) => {
             fn.loancards.lines.get(
                 line_id,
-                [m.issues, m.sizes]
+                [m.issues, m.sizes, m.loancards]
             )
             .then(line => {
                 if (line.status === 0) {
@@ -307,7 +329,7 @@ module.exports = function (m, fn) {
     fn.loancards.lines.create = function(loancard_id, issue, user_id, line) {
         return new Promise((resolve, reject) => {
             Promise.all([
-                fn.loancards.get(loancard_id),
+                fn.loancards.get({loancard_id: loancard_id}),
                 fn.sizes.get({size_id: issue.size_id})
             ])
             .then(([loancard, size]) => {
@@ -483,7 +505,7 @@ module.exports = function (m, fn) {
                 reject(new Error('No stock ID submitted'));
 
             } else {
-                fn.stocks.get({stock_id: options.stock_id})
+                fn.stocks.getByID(options.stock_id)
                 .then(stock => {
                     if (stock.size_id !== size_id) {
                         reject(new Error('Stock record is not for this size'));
@@ -498,7 +520,7 @@ module.exports = function (m, fn) {
         });
     };
 
-    function return_line_check(line) {
+    function return_line_check(line, user_id) {
         return new Promise((resolve, reject) => {
             let total_return_qty = 0;
             let getIssues = [];
@@ -541,7 +563,7 @@ module.exports = function (m, fn) {
                     if (total_return_qty > 0) {
                         fn.loancards.lines.get(
                             line.loancard_line_id,
-                            [m.sizes, m.serials]
+                            [m.sizes, m.serials, m.loancards]
                         )
                         .then(loancard_line => {
                             if (loancard_line.status === 0) {
@@ -554,7 +576,7 @@ module.exports = function (m, fn) {
                                 if (loancard_line.size) {
                                     check_return_destination(line, loancard_line)
                                     .then(destination => resolve(
-                                        [loancard_line, issues, destination, total_return_qty]
+                                        [loancard_line, issues, destination, total_return_qty, user_id]
                                     ))
                                     .catch(err => reject(err));
             
@@ -621,7 +643,7 @@ module.exports = function (m, fn) {
             };
         });
     };
-    function return_stock(line, destination, qty) {
+    function return_stock(line, issues, destination, qty, user_id) {
         return new Promise((resolve, reject) => {
             console.log(line);
             if (destination.scrap) {
@@ -634,7 +656,7 @@ module.exports = function (m, fn) {
                         qty:       qty
                     }
                 )
-                .then(scrap_line_id => resolve({_table: 'scrap_lines', id: scrap_line_id}))
+                .then(scrap_line_id => resolve({_table: 'scrap_lines', id: scrap_line_id}, issues, line, user_id))
                 .catch(err => reject(err));
 
             } else if (destination.serial) {
@@ -642,14 +664,14 @@ module.exports = function (m, fn) {
                     issue_id: null,
                     location_id: destination.serial.location_id
                 })
-                .then(result => resolve({_table: 'serials', id: destination.serial.serial.serial_id}))
+                .then(result => resolve({_table: 'serials', id: destination.serial.serial.serial_id}, issues, line, user_id))
                 .catch(err => reject(err));
 
             } else {
                 destination.stock.increment('qty', {by: qty})
                 .then(result => {
                     if (result) {
-                        resolve({_table: 'stocks', id: destination.stock.stock_id});
+                        resolve({_table: 'stocks', id: destination.stock.stock_id}, issues, line, user_id);
 
                     } else {
                         reject(new Error('Stock not incremented'));
@@ -694,44 +716,34 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
-    function update_issues(issues, line, user_id) {
+    function update_issues(destination_link, issues, line, user_id) {
         return new Promise((resolve, reject) => {
             let actions = [];
             issues.forEach(issue => {
                 actions.push(update_issue(line, issue, user_id));
             });
             Promise.all(actions)
-            .then(issue_links => resolve(issue_links))
+            .then(issue_links => {
+                resolve(
+                    'ISSUES | RETURNED',
+                    user_id,
+                    [
+                        {_table: 'loancard_lines', id: line.loancard_line_id},
+                        destination_link
+                    ].concat(issue_links),
+                    line.loancard_id
+                );
+            })
             .catch(err => reject(err));
         });
     };
     fn.loancards.lines.return = function (options = {}, user_id) {
         return new Promise((resolve, reject) => {
-            return_line_check(options)
-            .then(([line, issues, destination, total_return_qty]) => {
-                return_stock(line, destination, total_return_qty)
-                .then(destination_link => {
-                    update_issues(issues, line, user_id)
-                    .then(issue_links => {
-                        // check_line_complete(line.loancard_line_id, user_id)
-                        // .then(line_complete => {
-                        fn.actions.create(
-                            'ISSUES | RETURNED',
-                            user_id,
-                            [
-                                {_table: 'loancard_lines', id: line.loancard_line_id},
-                                destination_link
-                            ].concat(issue_links)
-                        )
-                        .then(result => resolve(line.loancard_id));
-                        // })
-                        // .catch(err => reject(err));
-                    })
-                    .catch(err => reject(err));
-
-                })
-                .catch(err => reject(err));
-            })
+            return_line_check(options, user_id)
+            .then(return_stock)
+            .then(update_issues)
+            .then(fn.actions.create)
+            .then(loancard_id => resolve(loancard_id))
             .catch(err => reject(err));
         });
     };

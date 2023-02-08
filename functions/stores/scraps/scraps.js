@@ -148,23 +148,6 @@ module.exports = function (m, fn) {
 
     function complete_check(scrap) {
         return new Promise((resolve, reject) => {
-            if (scrap.status === 0) {
-                reject(new Error('The scrap has been cancelled'));
-            } else if (scrap.status === 2) {
-                reject(new Error('This scrap has already been completed'));
-            } else if (scrap.status === 1) {
-                if (scrap.lines.length === 0) {
-                    reject(new Error('There are no open lines for this scrap'));
-                } else {
-                    resolve(true);
-                };
-            } else {
-                reject (new Error('Unknown status'));
-            };
-        });
-    };
-    fn.scraps.complete = function (scrap_id, user) {
-        return new Promise((resolve, reject) => {
             m.scraps.findOne({
                 where: {scrap_id: scrap_id},
                 include: [
@@ -177,28 +160,52 @@ module.exports = function (m, fn) {
                 ]
             })
             .then(scrap => {
-                complete_check(scrap)
+                if (scrap.status === 0) {
+                    reject(new Error('The scrap has been cancelled'));
+
+                } else if (scrap.status === 2) {
+                    reject(new Error('This scrap has already been completed'));
+
+                } else if (scrap.status === 1) {
+                    if (scrap.lines.length === 0) {
+                        reject(new Error('There are no open lines for this scrap'));
+
+                    } else {
+                        resolve(true);
+
+                    };
+                } else {
+                    reject (new Error('Unknown status'));
+
+                };
+            })
+            .catch(err => reject(err));
+        });
+    };
+    fn.scraps.complete = function (scrap_id, user) {
+        return new Promise((resolve, reject) => {
+            complete_check(scrap_id)
+            .then(scrap => {
+                let actions = [];
+                scrap.lines.forEach((line) => {
+                    actions.push(line.update({status: 2}));
+                });
+                Promise.all(actions)
                 .then(result => {
-                    let actions = [];
-                    scrap.lines.forEach((line) => {
-                        actions.push(line.update({status: 2}));
-                    });
-                    Promise.all(actions)
+                    scrap.update({status: 2})
                     .then(result => {
-                        scrap.update({status: 2})
-                        .then(result => {
-                            if (result) {
-                                fn.scraps.pdf.create(scrap.scrap_id, user)
-                                .then(result => resolve(true))
-                                .catch(err => {
-                                    console.log(err);
-                                    resolve(false);
-                                });
-                            } else {
-                                reject(new Error('Scrap not updated'));
-                            };
-                        })
-                        .catch(err => reject(err));
+                        if (result) {
+                            fn.scraps.pdf.create(scrap.scrap_id, user)
+                            .then(result => resolve(true))
+                            .catch(err => {
+                                console.log(err);
+                                resolve(false);
+                            });
+
+                        } else {
+                            reject(new Error('Scrap not updated'));
+
+                        };
                     })
                     .catch(err => reject(err));
                 })
@@ -208,11 +215,14 @@ module.exports = function (m, fn) {
         });
     };
 
-    function getScrapFilename(scrap_id) {
+    function get_scrap_filename(scrap_id) {
         return new Promise((resolve, reject) => {
             fn.scraps.get({scrap_id: scrap_id})
             .then(scrap => {
-                if (scrap.filename) {
+                if (scrap.status !== 2) {
+                    reject(new Error('Scrp is not complete'));
+
+                } else if (scrap.filename) {
                     resolve(scrap.filename);
 
                 } else {
@@ -227,9 +237,10 @@ module.exports = function (m, fn) {
     };
     fn.scraps.download = function (scrap_id, res) {
         return new Promise((resolve, reject) => {
-            getScrapFilename(scrap_id)
+            get_scrap_filename(scrap_id)
             .then(filename => {
                 fn.fs.download('scraps', filename, res)
+                .then(result => resolve(true))
                 .catch(err => reject(err));
             })
             .catch(err => reject(err));
@@ -237,7 +248,7 @@ module.exports = function (m, fn) {
     };
     fn.scraps.print = function (scrap_id) {
         return new Promise((resolve, reject) => {
-            getScrapFilename(scrap_id)
+            get_scrap_filename(scrap_id)
             .then(filename => {
                 fn.pdfs.print('scraps', filename)
                 .then(result => resolve(true))
