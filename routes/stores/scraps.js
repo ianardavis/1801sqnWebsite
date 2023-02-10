@@ -29,12 +29,12 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/scrap_line',      fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
-        fn.scrap.lines.get(req.query.where)
+        fn.scraps.lines.get(req.query.where)
         .then(line => res.send({success: true, result: line}))
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/scrap_lines',     fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
-        fn.scrap.lines.getAll(req.query)
+        fn.scraps.lines.getAll(req.query)
         .then(results => fn.send_res('lines', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });

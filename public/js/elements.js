@@ -7,14 +7,14 @@ function random_id()     {return Math.floor(Math.random()*10000)};
 
 class LI {
     constructor(options = {}) {
-        this = document.createElement('li');
+        this.e = document.createElement('li');
         if (options.classes) {
-            options.classes.forEach(e => this.classList.add(e));
+            options.classes.forEach(e => this.e.classList.add(e));
         };
     };
 };
 function List_Item(text, caret) {
-    this.e = new LI({classes: ['list-group-item', 'text-start', 'p-4']});
+    this.e = new LI({classes: ['list-group-item', 'text-start', 'p-4']}).e;
     this.e.appendChild(
         new Checkbox({
             id: text,
@@ -343,7 +343,7 @@ function Notification (options = {}) {
     this.e.appendChild(body);
 };
 function Page_Number(options = {}) {
-    this.e = new LI({classes: ['page-item']});
+    this.e = new LI({classes: ['page-item']}).e;
     if (options.selected) this.e.classList.add('active');
     let _btn = document.createElement('button');
     _btn.classList.add('page-link');

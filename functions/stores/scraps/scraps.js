@@ -146,7 +146,7 @@ module.exports = function (m, fn) {
         });
     };
 
-    function complete_check(scrap) {
+    function complete_check(scrap_id) {
         return new Promise((resolve, reject) => {
             m.scraps.findOne({
                 where: {scrap_id: scrap_id},
@@ -171,7 +171,7 @@ module.exports = function (m, fn) {
                         reject(new Error('There are no open lines for this scrap'));
 
                     } else {
-                        resolve(true);
+                        resolve(scrap);
 
                     };
                 } else {

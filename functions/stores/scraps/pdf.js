@@ -1,4 +1,8 @@
 module.exports = function (m, fn) {
+    const x_0 = 28;
+    const x_1 = 140;
+    const x_2 = 170;
+    const x_3 = 567;
     function check_scrap(scrap_id, user) {
         return new Promise((resolve, reject) => {
             m.scraps.findOne({
@@ -8,7 +12,11 @@ module.exports = function (m, fn) {
                         model: m.scrap_lines,
                         as: 'lines',
                         where: {status: 2},
-                        required: false
+                        required: false,
+                        include: [
+                            fn.inc.stores.nsn(),
+                            fn.inc.stores.size()
+                        ]
                     }
                 ]
             })
@@ -35,7 +43,7 @@ module.exports = function (m, fn) {
                 .then(([doc, file, writeStream]) => {
                     let y = fn.pdfs.new_page(doc);
                     y += add_header(doc, y, true);
-                    resolve([scrap, doc, file, writeStream, y]);
+                    resolve([scrap, doc, file, writeStream, y-13]);
                 })
                 .catch(err => reject(err));
             })
@@ -46,54 +54,67 @@ module.exports = function (m, fn) {
         if (logos) {
             y += fn.pdfs.logos(doc, y, 'SCRAPPED STOCK');
         };
-        doc
-            .fontSize(10)
-            .text('Item', 161, y)
-            .text('Qty',  230, y)
-            .text('NSN',  320, y);
+        doc.fontSize(10);
+        centre_text(doc, 'Item', x_0, x_1, y);
+        centre_text(doc, 'Qty',  x_1, x_2, y);
+        centre_text(doc, 'NSN',  x_2, x_3, y);
             //Horizontal Lines
-        draw_line(doc, [28, y],    [567, y]);
-        draw_line(doc, [28, y+15], [567, y+15]);
+        draw_line(doc, [x_0, y],    [x_3, y]);
+        draw_line(doc, [x_0, y+15], [x_3, y+15]);
             //Vertical Lines
-        draw_line(doc, [200, y],    [200, y+15]);
-        draw_line(doc, [280, y],    [280, y+15]);
-        return 15;
+        draw_line(doc, [x_1, y],    [x_1, y+15]);
+        draw_line(doc, [x_2, y],    [x_2, y+15]);
+        return y;
     };
     function add_line(doc, line, y) {
         let y_c = 30;
-        doc
-            .text(line.qty,                                                            230, y)
-            .text(line.size.item.description,                                           28, y)
-            .text(`${fn.print_size_text(line.size.item)}: ${fn.print_size(line.size)}`, 28, y+15);
+        centre_text(doc, line.qty, x_1, x_2, y+30);
+        doc .text(line.size.item.description,                                           x_0, y)
+            .text(`${fn.print_size_text(line.size.item)}: ${fn.print_size(line.size)}`, x_0, y+15);
         if (line.nsn) {
-            doc.text(`NSN: ${fn.print_nsn(line.nsn)}`,  28, y+y_c);
+            doc.text(`NSN: ${fn.print_nsn(line.nsn)}`,  x_0, y+y_c);
             y_c += 15;
         };
         if (line.serial) {
-            doc.text(`Serial #: ${line.serial.serial}`, 28, y+y_c);
+            doc.text(`Serial #: ${line.serial.serial}`, x_0, y+y_c);
             y_c += 15;
         };
-        draw_line(doc, [28,  y+y_c], [567, y+y_c]);
-        draw_line(doc, [315, y],     [315, y+y_c]);
-        draw_line(doc, [345, y],     [345, y+y_c]);
-        draw_line(doc, [445, y],     [445, y+y_c]);
-        return y_c;
+        // Line below
+        draw_line(doc, [x_0, y+60], [x_3, y+60]);
+        // Verticals
+        draw_line(doc, [x_1, y],     [x_1, y+60]);
+        draw_line(doc, [x_2, y],     [x_2, y+60]);
+        return 60;
     };
     function draw_line(doc, from, to) {
         doc.moveTo(...from).lineTo(...to).stroke()
     };
+    function centre_text(doc, text, column_start, column_end, y) {
+        const string_length = doc.widthOfString(text);
+        const x = (((column_end-column_start)-string_length)/2)+column_start;
+        doc.text(text, x, y);
+    };
     function add_barcode(doc, nsn, location) {
         return new Promise((resolve, reject) => {
-            fn.pdfs.create_barcodes(fn.print_nsn(nsn, ''))
+            fn.pdfs.create_barcodes(
+                fn.print_nsn(nsn, ''),
+                {
+                    includetext: true,
+                    width: x_3-x_2-20,
+                    height: 30,
+                    textsize: 15
+                }
+            )
             .then(([file_128, file_qr]) => {
-                doc.image(file_128,  ...location, {width: 300,  height: 75});
+                doc.image(file_128, ...location, {width: x_3-x_2-20,  height: 50});
                 resolve(true);
             })
             .catch(err => reject(err));
         });
     };
+
     function add_lines([scrap, doc, file, writeStream, y]) {
-        return new Promise(resolve => {
+        return new Promise((resolve, reject) => {
             let print_nsn_barcodes = []; 
             scrap.lines.forEach(line => {
                 if (y >= 708-(line.nsn ? 15 : 0)-(line.serial ? 15 : 0)) {
@@ -101,12 +122,12 @@ module.exports = function (m, fn) {
                     y += add_header(doc, y);
                     
                 };
-                y += add_line(doc, line, y);
                 if (line.nsn) {
                     print_nsn_barcodes.push(
-                        add_barcode(doc, line.nsn, [290, y])
+                        add_barcode(doc, line.nsn, [x_2+10, y+5])
                     );
                 };
+                y += add_line(doc, line, y);
             });
             Promise.all(print_nsn_barcodes)
             .then(result => resolve([doc, scrap, writeStream, file]))
@@ -124,7 +145,7 @@ module.exports = function (m, fn) {
             doc.end(); 
         });
     };
-    function update_scrap(scrap, filename) {
+    function update_scrap([scrap, filename]) {
         return new Promise((resolve, reject) => {
             scrap.update({filename: filename})
             .then(result => resolve(filename))

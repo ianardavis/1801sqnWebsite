@@ -65,19 +65,17 @@ module.exports = function (m, fn) {
         y = fn.pdfs.new_page(doc);
         return y;
     };
-    function create_barcode(text, type) {
+    function create_barcode(text, type, options) {
         return new Promise((resolve, reject) => {
-            const height = (type === 'code128' ? 15 : 30)
             bwipjs.toBuffer({
-                bcid:        type,  // Barcode type
-                text:        text,  // Text to encode
-                scale:       3,     // 3x scaling factor
-                height:      height,// height in mm
-                includetext: false, // Show human-readable text
+                bcid:        type, // Barcode type
+                text:        text, // Text to encode
+                scale:       3,    // 3x scaling factor
                 backgroundcolor: 'FFFFFF',
-                barcolor: '000000',
-                borderleft: '5',
-                borderright: '5'
+                barcolor:        '000000',
+                borderleft: 5,
+                borderright: 5,
+                ...options
             })
             .then(barcode => {
                 const prepend = (type === 'code128' ? '128' : 'qr');
@@ -87,15 +85,15 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
-    fn.pdfs.create_barcodes = function (text) {
+    fn.pdfs.create_barcodes = function (text, options = {}) {
         return new Promise((resolve, reject) => {
             fn.fs.mkdir('barcodes')
             .then(path => {
                 Promise.allSettled([
-                    create_barcode(text, 'code128'),
-                    create_barcode(text, 'qrcode')
+                    create_barcode(text, 'code128', {height: 15, includetext: false, ...options}),
+                    create_barcode(text, 'qrcode',  {height: 30, includetext: false, ...options})
                 ])
-                .then(([file_128, file_qr]) => resolve([file_128, file_qr]))
+                .then(([file_128, file_qr]) => resolve([file_128.value, file_qr.value]))
                 .catch(err => reject(err));
             })
             .catch(err => reject(err));

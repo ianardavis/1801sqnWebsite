@@ -33,6 +33,7 @@ module.exports = (m, fn) => {
         let includes = [fn.inc.stores.item()];
         if (options.details)  includes.push(fn.inc.stores.details());
         if (options.supplier) includes.push(fn.inc.stores.supplier());
+        if (options.nsn)      includes.push(fn.inc.stores.nsn());
         return {
             model:   m.sizes,
             include: includes,
