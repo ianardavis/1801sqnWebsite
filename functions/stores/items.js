@@ -70,7 +70,7 @@ module.exports = function (m, fn) {
         });
     };
 
-    fn.items.getForSupplier = function (where) {
+    fn.items.getForSupplier = function (where, pagination) {
         return new Promise((resolve, reject) => {
             m.items.findAndCountAll({
                 distinct: true,
@@ -79,7 +79,7 @@ module.exports = function (m, fn) {
                     where: where,
                     attributes: ['size_id']
                 }],
-                ...fn.pagination(req.query)
+                ...pagination
             })
             .then(items => resolve(items))
             .catch(err => reject(err));

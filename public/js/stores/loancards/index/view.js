@@ -1,5 +1,4 @@
 let loancard_statuses   = {"0": "Cancelled", "1": "Draft", "2": "Complete", "3":"Closed"};
-const html5QrCode = new Html5Qrcode("reader");
 function getLoancards() {
     clear('tbl_loancards')
     .then(tbl_loancards => {

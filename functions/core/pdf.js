@@ -65,37 +65,35 @@ module.exports = function (m, fn) {
         y = fn.pdfs.new_page(doc);
         return y;
     };
-    function create_barcode(text, type, options) {
+    fn.pdfs.create_barcode = function(text, type, options) {
         return new Promise((resolve, reject) => {
-            bwipjs.toBuffer({
-                bcid:        type, // Barcode type
-                text:        text, // Text to encode
-                scale:       3,    // 3x scaling factor
-                backgroundcolor: 'FFFFFF',
-                barcolor:        '000000',
-                borderleft: 5,
-                borderright: 5,
-                ...options
-            })
-            .then(barcode => {
-                const prepend = (type === 'code128' ? '128' : 'qr');
-                const file = fn.public_file('barcodes', `${text}_${prepend}.png`);
-                fs.writeFile(file, barcode, () => resolve(file));
+            fn.fs.mkdir('barcodes')
+            .then(path => {
+                bwipjs.toBuffer({
+                    bcid:        type, // Barcode type
+                    text:        text, // Text to encode
+                    borderleft:  5,
+                    borderright: 5,
+                    backgroundcolor: 'FFFFFF',
+                    barcolor:        '000000',
+                    ...options
+                })
+                .then(barcode => {
+                    const file = fn.public_file('barcodes', `${text}_${type}.png`);
+                    fs.writeFile(file, barcode, () => resolve(file));
+                })
+                .catch(err => reject(err));
             })
             .catch(err => reject(err));
         });
     };
     fn.pdfs.create_barcodes = function (text, options = {}) {
         return new Promise((resolve, reject) => {
-            fn.fs.mkdir('barcodes')
-            .then(path => {
-                Promise.allSettled([
-                    create_barcode(text, 'code128', {height: 15, includetext: false, ...options}),
-                    create_barcode(text, 'qrcode',  {height: 30, includetext: false, ...options})
-                ])
-                .then(([file_128, file_qr]) => resolve([file_128.value, file_qr.value]))
-                .catch(err => reject(err));
-            })
+            Promise.allSettled([
+                fn.pdfs.create_barcode(text, 'code128', {scale: 3, height: 15, includetext: false, ...options}),
+                fn.pdfs.create_barcode(text, 'qrcode',  {scale: 3, height: 30, includetext: false, ...options})
+            ])
+            .then(([file_128, file_qr]) => resolve([file_128.value, file_qr.value]))
             .catch(err => reject(err));
         });
     };

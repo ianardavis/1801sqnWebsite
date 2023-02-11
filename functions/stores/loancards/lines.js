@@ -1,8 +1,8 @@
 module.exports = function (m, fn) {
-    fn.loancards.lines.get = function (loancard_line_id, includes = []) {
+    fn.loancards.lines.get = function (where, includes = []) {
         return new Promise((resolve, reject) => {
             m.loancard_lines.findOne({
-                where: {loancard_line_id: loancard_line_id},
+                where: where,
                 include: includes
             })
             .then(line => {
@@ -182,7 +182,7 @@ module.exports = function (m, fn) {
     function cancel_line_check(line_id) {
         return new Promise((resolve, reject) => {
             fn.loancards.lines.get(
-                line_id,
+                {loancard_line_id: line_id},
                 [m.issues, m.sizes, m.loancards]
             )
             .then(line => {
@@ -562,7 +562,7 @@ module.exports = function (m, fn) {
                 .then(issues => {
                     if (total_return_qty > 0) {
                         fn.loancards.lines.get(
-                            line.loancard_line_id,
+                            {loancard_line_id: line.loancard_line_id},
                             [m.sizes, m.serials, m.loancards]
                         )
                         .then(loancard_line => {

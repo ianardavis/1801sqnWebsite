@@ -78,6 +78,7 @@ function get(options) {
     return new Promise((resolve, reject) => {
         show_spinner(options.spinner || options.table || '');
         const XHR = new XMLHttpRequest();
+        XHR.addEventListener("loadend", (event) => {hide_spinner(options.spinner || options.table || '')});
         XHR.addEventListener("error", function () {reject()});
 
         if (options.streamAction) {
@@ -145,7 +146,7 @@ function addFormListener(form_id, method, location, options = {reload: false}) {
 function sendData(form, method, _location, options = {reload: false}) {
     const XHR = new XMLHttpRequest();
     const FD  = new FormData(form);
-    XHR.addEventListener("loadend", function () {hide_spinner(options.spinner || options.table || '')});
+    XHR.addEventListener("loadend", (event) => {hide_spinner(options.spinner || options.table || '')});
     XHR.addEventListener("load",    function (event) {
         eventParse(event)
         .then(response => {

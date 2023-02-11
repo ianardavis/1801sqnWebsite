@@ -68,7 +68,7 @@ module.exports = function (m, fn) {
     };
     function add_line(doc, line, y) {
         let y_c = 30;
-        centre_text(doc, line.qty, x_1, x_2, y+30);
+        centre_text(doc, line.qty, x_1, x_2, y+15);
         doc .text(line.size.item.description,                                           x_0, y)
             .text(`${fn.print_size_text(line.size.item)}: ${fn.print_size(line.size)}`, x_0, y+15);
         if (line.nsn) {
@@ -82,31 +82,32 @@ module.exports = function (m, fn) {
         // Line below
         draw_line(doc, [x_0, y+60], [x_3, y+60]);
         // Verticals
-        draw_line(doc, [x_1, y],     [x_1, y+60]);
-        draw_line(doc, [x_2, y],     [x_2, y+60]);
+        draw_line(doc, [x_1, y],    [x_1, y+60]);
+        draw_line(doc, [x_2, y],    [x_2, y+60]);
         return 60;
     };
     function draw_line(doc, from, to) {
         doc.moveTo(...from).lineTo(...to).stroke()
     };
     function centre_text(doc, text, column_start, column_end, y) {
+        if (typeof text !== 'string') text = text.toString();
         const string_length = doc.widthOfString(text);
         const x = (((column_end-column_start)-string_length)/2)+column_start;
         doc.text(text, x, y);
     };
     function add_barcode(doc, nsn, location) {
         return new Promise((resolve, reject) => {
-            fn.pdfs.create_barcodes(
+            fn.pdfs.create_barcode(
                 fn.print_nsn(nsn, ''),
+                'code128',
                 {
                     includetext: true,
-                    width: x_3-x_2-20,
-                    height: 30,
+                    height: 50/2.835,
                     textsize: 15
                 }
             )
-            .then(([file_128, file_qr]) => {
-                doc.image(file_128, ...location, {width: x_3-x_2-20,  height: 50});
+            .then(file => {
+                doc.image(file, ...location, {fit: [x_3-x_2-20, 50], align: 'center'});
                 resolve(true);
             })
             .catch(err => reject(err));

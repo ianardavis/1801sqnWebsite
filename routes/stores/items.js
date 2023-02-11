@@ -3,7 +3,10 @@ module.exports = (app, m, fn) => {
     app.get('/items/:id',              fn.loggedIn(), fn.permissions.get('access_stores'),        (req, res) => res.render('stores/items/show'));
     
     app.get('/get/items/supplier',     fn.loggedIn(), fn.permissions.check('access_stores'),      (req, res) => {
-        fn.items.getForSupplier(req.query.where)
+        fn.items.getForSupplier(
+            req.query.where,
+            fn.pagination(req.query)
+        )
         .then(items => fn.send_res('items', res, items, req.query))
         .catch(err => fn.send_error(res, err));
     });
