@@ -21,8 +21,13 @@ module.exports = (app, m, fn) => {
             include: [fn.inc.stores.account()]
         })
         .then(supplier => {
-            if (supplier) res.send({success: true,  result: supplier})
-            else res.send({success: false, message: 'Supplier not found'});
+            if (supplier) {
+                res.send({success: true,  result: supplier});
+
+            } else {
+                res.send({success: false, message: 'Supplier not found'});
+
+            };
         })
         .catch(err => fn.send_error(res, err));
     });
@@ -51,16 +56,27 @@ module.exports = (app, m, fn) => {
             .then(result => {
                 m.settings.findOne({where: {name: 'default_supplier'}})
                 .then(setting => {
-                    if (!setting)           res.send({success: true, message: 'Supplier deleted'})
-                    else {
+                    if (!setting) {
+                        res.send({success: true, message: 'Supplier deleted'});
+
+                    } else {
                         if (Number(setting.value) === Number(req.params.id)) {
                             setting.destroy()
                             .then(result => {
-                                if (result) res.send({success: true, message: 'Default supplier deleted, settings updated'})
-                                else        res.send({success: true, message: 'Default supplier deleted, settings NOT updated'});
+                                if (result) {
+                                    res.send({success: true, message: 'Default supplier deleted, settings updated'});
+
+                                } else {
+                                    res.send({success: true, message: 'Default supplier deleted, settings NOT updated'});
+                                
+                                };
                             })
-                            .catch(err =>   res.send({success: true, message: `Error deleting setting: ${err.message}`}));
-                        } else              res.send({success: true, message: 'Supplier deleted'});
+                            .catch(err => res.send({success: true, message: `Error deleting setting: ${err.message}`}));
+
+                        } else {
+                            res.send({success: true, message: 'Supplier deleted'});
+                        
+                        };
                     };
                 })
                 .catch(err => res.send({success: true, message: `Error getting settings: ${err.message}`}));

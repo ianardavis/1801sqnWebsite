@@ -1,14 +1,24 @@
 module.exports = (app, m, fn) => {
     let user_attributes = ['user_id', 'full_name', 'surname', 'first_name', 'service_number'];
     app.get('/users',             fn.loggedIn(), fn.permissions.get('access_users',   true), (req, res) => {
-        if (req.allowed) res.render('users/index')
-        else             res.redirect(`/users/${req.user.user_id}`);
+        if (req.allowed) {
+            res.render('users/index');
+
+        } else {
+            res.redirect(`/users/${req.user.user_id}`);
+        
+        };
     });
     app.get('/users/select',      fn.loggedIn(),                                             (req, res) => res.render('users/select'));
     app.get('/password/:id',      fn.loggedIn(),                                             (req, res) => res.render('users/password'));
     app.get('/users/:id',         fn.loggedIn(), fn.permissions.get('access_users',   true), (req, res) => {
-        if (req.allowed || req.params.id == req.user.user_id) res.render('users/show')
-        else                                                  res.redirect(`/users/${req.user.user_id}`);
+        if (req.allowed || req.params.id == req.user.user_id) {
+            res.render('users/show');
+
+        } else {
+            res.redirect(`/users/${req.user.user_id}`);
+        
+        };
     });
 
     app.get('/get/user',          fn.loggedIn(), fn.permissions.check('access_users', true), (req, res) => {
@@ -19,8 +29,13 @@ module.exports = (app, m, fn) => {
         })
         .then(user => {
             if (user.user_id === req.user.user_id || req.allowed) {
-                if (!user) fn.send_error(res, 'User not found')
-                else res.send({success: true, result: user});
+                if (!user) {
+                    fn.send_error(res, 'User not found');
+
+                } else {
+                    res.send({success: true, result: user});
+
+                };
             };
         })
         .catch(err => fn.send_error(res, err));
@@ -62,9 +77,13 @@ module.exports = (app, m, fn) => {
     });
     
     app.put('/password/:id',      fn.loggedIn(), fn.permissions.check('user_admin',   true), (req, res) => {
-        if      (!req.allowed && String(req.user.user_id) !== String(req.params.id)) fn.send_error(res, 'Permission denied')
-        else if (!req.body.password)                                                 fn.send_error(res, 'No password submitted')
-        else {
+        if (!req.allowed && String(req.user.user_id) !== String(req.params.id)) {
+            fn.send_error(res, 'Permission denied');
+
+        } else if (!req.body.password) {
+            fn.send_error(res, 'No password submitted');
+
+        } else {
             fn.users.password.edit(req.params.id, req.body.password)
             .then(result => res.send({success: true, message: 'Password changed'}))
             .catch(err => fn.send_error(res, err));

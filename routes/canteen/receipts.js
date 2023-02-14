@@ -23,8 +23,13 @@ module.exports = (app, m, fn) => {
             ]
         })
         .then(receipt => {
-            if (receipt) res.send({success: true, result: receipt})
-            else res.send({success: false, message: 'Receipt not found'});
+            if (receipt) {
+                res.send({success: true, result: receipt});
+
+            }else {
+                res.send({success: false, message: 'Receipt not found'});
+
+            };
         })
         .catch(err => fn.send_error(res, err))
     });
@@ -46,7 +51,11 @@ module.exports = (app, m, fn) => {
                 if (results.filter(e => e.status === 'rejected').length > 0) {
                     console.log(results)
                     res.send({success: true, message: 'Some receipts failed'});
-                } else res.send({success: true, message: 'Items received'});
+
+                } else {
+                    res.send({success: true, message: 'Items received'});
+                
+                };
             })
             .catch(err => fn.send_error(res, err));
         };

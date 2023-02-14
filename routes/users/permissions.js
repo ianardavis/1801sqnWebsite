@@ -28,8 +28,13 @@ module.exports = (app, m, fn) => {
         return new Promise((resolve, reject) => {
             fn.allowed(user_id, 'edit_own_permissions', true)
             .then(edit_own => {
-                if (!allowed && !edit_own) reject(new Error('Permission denied'))
-                else resolve(true)
+                if (!allowed && !edit_own) {
+                    reject(new Error('Permission denied'));
+
+                } else {
+                    resolve(true);
+                
+                };
             })
             .catch(err => reject(err));
         });

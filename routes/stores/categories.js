@@ -1,8 +1,7 @@
 module.exports = (app, m, fn) => {
-    let op = require('sequelize').Op;
     app.get('/get/categories',    fn.loggedIn(), fn.permissions.check('access_stores'),        (req, res) => {
         if (req.query.where.category_id_parent === "") { 
-            req.query.where.category_id_parent = {[op.is]: null};
+            req.query.where.category_id_parent = {[fn.op.is]: null};
         };
         fn.categories.getAll(req.query)
         .then(results => fn.send_res('categories', res, results, req.query))

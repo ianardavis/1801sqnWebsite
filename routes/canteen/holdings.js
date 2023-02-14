@@ -14,8 +14,13 @@ module.exports = (app, m, fn) => {
     app.get('/get/holding',         fn.loggedIn(), fn.permissions.check('cash_admin'), (req, res) => {
         m.holdings.findOne({where: req.query.where})
         .then(holding => {
-            if (holding) res.send({success: true, result: holding})
-            else res.send({success: false, message: 'Holding not found'});
+            if (holding) {
+                res.send({success: true, result: holding});
+
+            } else {
+                res.send({success: false, message: 'Holding not found'});
+            
+            };
         })
         .catch(err => fn.send_error(res, err));
     });

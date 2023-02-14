@@ -23,18 +23,26 @@ module.exports = (app, m, fn) => {
             ]
         })
         .then(writeoff => {
-            if (writeoff) res.send({success: true, result: writeoff})
-            else res.send({success: false, message: 'Writeoff not found'});
+            if (writeoff) {
+                res.send({success: true, result: writeoff});
+
+            } else {
+                res.send({success: false, message: 'Writeoff not found'});
+            
+            };
         })
         .catch(err => fn.send_error(res, err))
     });
 
     app.post('/writeoffs',    fn.loggedIn(), fn.permissions.check('canteen_stock_admin'), (req, res) => {
-        if (!req.body.writeoff) fn.send_error(res, 'No body')
-        else {
+        if (!req.body.writeoff) {
+            fn.send_error(res, 'No body');
+
+        } else {
             fn.writeoffs.create(req.body.writeoff, req.user.user_id)
             .then(result => res.send({success: true, message: 'Stock written off'}))
             .catch(err => fn.send_error(res, err));
+            
         };
     });
 };

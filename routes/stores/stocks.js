@@ -52,8 +52,10 @@ module.exports = (app, m, fn) => {
     });
 
     app.put('/stocks/counts',       fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
-        if (!req.body.counts) fn.send_error(res, 'No details')
-        else {
+        if (!req.body.counts) {
+            fn.send_error(res, 'No details');
+
+        } else {
             let actions = [];
             req.body.counts.filter(a => a.qty).forEach(count => {
                 actions.push(fn.stocks.count(count.stock_id, count.qty, req.user.user_id))
@@ -64,6 +66,7 @@ module.exports = (app, m, fn) => {
                 res.send({success: true, message: 'Counts saved', result: req.body.location_id});
             })
             .catch(err => fn.send_error(res, err));
+
         };
     });
     app.put('/stocks/:id',          fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
@@ -86,19 +89,25 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.put('/stocks/:id/scrap',    fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
-        if (!req.body.scrap) fn.send_error(res, 'No details')
-        else {
+        if (!req.body.scrap) {
+            fn.send_error(res, 'No details');
+
+        } else {
             fn.stocks.scrap(req.params.id, req.body.scrap, req.user.user_id)
             .then(result => res.send({success: true, message: 'Stock scrapped'}))
             .catch(err => fn.send_error(res, err));
+
         };
     });
     app.put('/stocks/:id/count',    fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
-        if (!req.body.count) fn.send_error(res, 'No details')
-        else {
+        if (!req.body.count) {
+            fn.send_error(res, 'No details');
+
+        } else {
             fn.stocks.count(req.params.id, req.body.count.qty, req.user.user_id)
             .then(result => res.send({success: true, message: 'Stock counted'}))
             .catch(err => fn.send_error(res, err));
+
         };
     });
     app.put('/stocks/:id/:type',    fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {fn.send_error(res, 'Invalid type')});
@@ -106,28 +115,42 @@ module.exports = (app, m, fn) => {
     app.delete('/stocks/:id',       fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
         fn.stocks.getByID(req.params.id)
         .then(stock => {
-            if (stock.qty > 0) fn.send_error(res, 'Cannot delete whilst stock is not 0')
-            else {
+            if (stock.qty > 0) {
+                fn.send_error(res, 'Cannot delete whilst stock is not 0');
+
+            } else {
                 m.actions.findOne({where: {stock_id: stock.stock_id}})
                 .then(action => {
-                    if (action) fn.send_error(res, 'Cannot delete a stock record which has actions')
-                    else {
+                    if (action) {
+                        fn.send_error(res, 'Cannot delete a stock record which has actions');
+
+                    } else {
                         m.adjustments.findOne({where: {stock_id: stock.stock_id}})
                         .then(adjustment => {
-                            if (adjustment) fn.send_error(res, 'Cannot delete a stock record which has adjustments')
-                            else {
+                            if (adjustment) {
+                                fn.send_error(res, 'Cannot delete a stock record which has adjustments');
+
+                            } else {
                                 stock.destroy()
                                 .then(result => {
-                                    if (result) res.send({success: true, message: 'Stock deleted'})
-                                    else fn.send_error(res, 'Stock NOT deleted');
+                                    if (result) {
+                                        res.send({success: true, message: 'Stock deleted'});
+
+                                    } else {
+                                        fn.send_error(res, 'Stock NOT deleted');
+                                    
+                                    };
                                 })
                                 .catch(err => fn.send_error(res, err));
+                                
                             };
                         })
                         .catch(err => fn.send_error(res, err));
+                        
                     };
                 })
                 .catch(err => fn.send_error(res, err));
+                
             };
         })
         .catch(err => fn.send_error(res, err));

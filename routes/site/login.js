@@ -4,11 +4,15 @@ module.exports = (app, m, fn) => {
         if (req.isAuthenticated()) {
             req.flash('info', 'You are already logged in');
             res.redirect(req.query.redirect || '/stores');
-        } else res.render('site/login', {redirect: req.query.redirect});
+
+        } else {
+            res.render('site/login', {redirect: req.query.redirect});
+        
+        };
     });
     app.get('/logout', fn.loggedIn(), (req, res) => {
         req.logout(function(err) {
-            if (err) { return next(err); }
+            if (err) return next(err);
             res.redirect('/');
         });
     });

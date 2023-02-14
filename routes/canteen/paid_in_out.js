@@ -33,11 +33,14 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.post('/paid_in_outs',       fn.loggedIn(), fn.permissions.check('pay_in_out'), (req, res) => {
-        if (!req.body.paid_in_out) fn.send_error(res, 'No details')
-        else {
+        if (!req.body.paid_in_out) {
+            fn.send_error(res, 'No details');
+
+        } else {
             fn.paid_in_out.create(req.body.paid_in_out, req.user.user_id)
             .then(result => res.send({success: true, message: 'Paid In/Out Added'}))
             .catch(err => fn.send_error(res, err));
+            
         };
     });
     app.delete('/paid_in_outs/:id', fn.loggedIn(), fn.permissions.check('pay_in_out'), (req, res) => {

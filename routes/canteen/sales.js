@@ -19,16 +19,23 @@ module.exports = (app, m, fn) => {
             include: [fn.inc.users.user()]
         })
         .then(sale => {
-            if (sale) res.send({success: true, result: sale})
-            else res.send({success: false, message: 'Sale not found'});
+            if (sale) {
+                res.send({success: true, result: sale});
+
+            } else {
+                res.send({success: false, message: 'Sale not found'});
+            
+            };
         })
         .catch(err => fn.send_error(res, err))
     });
     app.get('/get/sale_current',     fn.loggedIn(), fn.permissions.check('pos_user'), (req, res) => {
         m.sessions.findAll({where: {status: 1}})
         .then(sessions => {
-            if (sessions.length !== 1) fn.send_error(res, `${sessions.length} session(s) open`)
-            else {
+            if (sessions.length !== 1) {
+                fn.send_error(res, `${sessions.length} session(s) open`);
+
+            } else {
                 m.sales.findOrCreate({
                     where: {
                         session_id: sessions[0].session_id,
@@ -38,6 +45,7 @@ module.exports = (app, m, fn) => {
                 })
                 .then(([sale, created]) => res.send({success: true, result: sale.sale_id}))
                 .catch(err => fn.send_error(res, err));
+
             };
         })
         .catch(err => fn.send_error(res, err));
@@ -59,11 +67,14 @@ module.exports = (app, m, fn) => {
     });
     
     app.put('/sale_lines',           fn.loggedIn(), fn.permissions.check('pos_user'), (req, res) => {
-        if (!req.body.line) fn.send_error(res, 'No line specified')
-        else {
+        if (!req.body.line) {
+            fn.send_error(res, 'No line specified');
+
+        } else {
             fn.sales.lines.edit(req.body.line)
             .then(result => res.send({success: true, message: 'Line updated'}))
             .catch(err => fn.send_error(res, err));
+            
         };
     });
     app.put('/sales',                fn.loggedIn(), fn.permissions.check('pos_user'), (req, res) => {

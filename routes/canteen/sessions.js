@@ -23,8 +23,13 @@ module.exports = (app, m, fn) => {
             ]
         })
         .then(session => {
-            if (session) res.send({success: true, result: session})
-            else res.send({success: false, message: 'Session not found'})
+            if (session) {
+                res.send({success: true, result: session});
+
+            } else {
+                res.send({success: false, message: 'Session not found'});
+            
+            };
         })
         .catch(err => fn.send_error(res, err));
     });

@@ -17,8 +17,13 @@ module.exports = (app, m, fn) => {
             include: [fn.inc.users.user()]
         })
         .then(gallery => {
-            if (gallery) res.send({success: true, result: gallery})
-            else res.send({success: false, message: 'Gallery not found'});
+            if (gallery) {
+                res.send({success: true, result: gallery});
+            
+            } else {
+                res.send({success: false, message: 'Gallery not found'});
+            
+            };
         })
         .catch(err => fn.send_error(res, err));
     });
@@ -38,15 +43,22 @@ module.exports = (app, m, fn) => {
             include: [fn.inc.users.user()]
         })
         .then(image => {
-            if (image) res.send({success: true,  result: image})
-            else res.send({success: false, message: 'Image not found'});
+            if (image) {
+                res.send({success: true,  result: image});
+
+            } else {
+                res.send({success: false, message: 'Image not found'});
+            
+            };
         })
         .catch(err => fn.send_error(res, err));
     });
 
     app.post('/galleries',        fn.loggedIn(), fn.permissions.check('gallery_admin'), (req, res) => {
-        if (!req.body.gallery.name) fn.send_error(res, 'No name')
-        else {
+        if (!req.body.gallery.name) {
+            fn.send_error(res, 'No name');
+
+        } else {
             m.galleries.create({
                 name: req.body.gallery.name,
                 user_id: req.user.user_id
@@ -59,7 +71,11 @@ module.exports = (app, m, fn) => {
         let actions = [];
         if (Array.isArray(req.files.images)) {
             req.files.images.forEach(e => actions.push(fn.galleries.images.upload(e, req.body.image, req.user.user_id)));
-        } else actions.push(fn.galleries.images.upload(req.files.images, req.body.image, req.user.user_id));
+
+        } else {
+            actions.push(fn.galleries.images.upload(req.files.images, req.body.image, req.user.user_id));
+        
+        };
         Promise.allSettled(actions)
         .then(results => res.send({success: true, message: 'Image(s) uploaded'}))
         .catch(err => fn.send_error(res, err));
@@ -84,8 +100,11 @@ module.exports = (app, m, fn) => {
                 Promise.allSettled(actions)
                 .then(results => res.send({success: true, message: 'Image deleted'}))
                 .catch(err => fn.send_error(res, err));
-            }
-            else res.send({success: false, message: 'Image not found'});
+                
+            } else {
+                res.send({success: false, message: 'Image not found'});
+            
+            };
         })
         .catch(err => fn.send_error(res, err));
     });

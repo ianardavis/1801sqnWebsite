@@ -17,8 +17,13 @@ module.exports = (app, m, fn) => {
             include: [fn.inc.users.user()]
         })
         .then(action => {
-            if (action) res.send({success: true, result: action})
-            else res.send({success: false, message: 'Action not found'});
+            if (action) {
+                res.send({success: true, result: action});
+
+            } else {
+                res.send({success: false, message: 'Action not found'});
+            
+            };
         })
         .catch(err => fn.send_error(res, err));
     });
@@ -35,8 +40,13 @@ module.exports = (app, m, fn) => {
             where: req.query.where
         })
         .then(link => {
-            if (link) res.send({success: true, result: link})
-            else res.send({success: false, message: 'Link not found'});
+            if (link) {
+                res.send({success: true, result: link});
+
+            } else {
+                res.send({success: false, message: 'Link not found'});
+            
+            };
         })
         .catch(err => fn.send_error(res, err));
     });

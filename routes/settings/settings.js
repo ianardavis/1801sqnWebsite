@@ -17,8 +17,10 @@ module.exports = (app, m, fn) => {
         .then(setting => {
             if (setting) {
                 res.send({success: true, result: setting});
+
             } else {
                 res.send({success: false, message: 'Setting not found'});
+
             };
         })
         .catch(err => fn.send_error(res, err));
@@ -41,8 +43,10 @@ module.exports = (app, m, fn) => {
                     console.log(err);
                     res.end();
                 });
+
             } else {
                 fn.send_error(res, 'Multiple log locations');
+
             };
         })
         .catch(err => fn.send_error(res, err));
@@ -101,14 +105,17 @@ module.exports = (app, m, fn) => {
                 .then(result => {
                     if (!result) {
                         fn.send_error(res, 'Setting not deleted');
+
                     } else {
                         res.send({success: true,  message: 'Setting deleted'});
+
                     };
                 })
                 .catch(err => fn.send_error(res, err));
-            }
-            else {
+
+            } else {
                 res.send({success: false, message: 'Setting not found'});
+
             };
         })
         .catch(err => fn.send_error(res, err));

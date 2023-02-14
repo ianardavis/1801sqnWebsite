@@ -23,6 +23,12 @@ module.exports = (m, fn) => {
             as:    'order'
         };
     };
+    fn.inc.stores.orders = () => {
+        return {
+            model: m.orders,
+            as:    'orders'
+        };
+    };
     fn.inc.stores.item = () => {
         return {
             model: m.items,

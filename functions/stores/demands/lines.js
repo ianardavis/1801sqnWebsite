@@ -14,6 +14,8 @@ module.exports = function (m, fn) {
             });
         });
     };
+    fn.demands.lines.count = function (where) { return m.demand_lines.count({where: where})};
+    fn.demands.lines.sum = function (where) { return m.demand_lines.sum('qty', {where: where})};
     fn.demands.lines.get = function (where, includes = []) {
         return new Promise((resolve, reject) => {
             m.demand_lines.findOne({
@@ -32,6 +34,22 @@ module.exports = function (m, fn) {
 
                 };
             })
+            .catch(err => reject(err));
+        });
+    };
+    fn.demands.lines.getCountAll = function (where, pagination) {
+        return new Promise((resolve, reject) => {
+            m.demand_lines.findAndCountAll({
+                where: where,
+                include: [
+                    fn.inc.stores.size(),
+                    fn.inc.users.user(),
+                    fn.inc.stores.demand(),
+                    fn.inc.stores.orders()
+                ],
+                ...pagination
+            })
+            .then(results => resolve(results))
             .catch(err => reject(err));
         });
     };

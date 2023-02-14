@@ -13,8 +13,13 @@ module.exports = (app, m, fn) => {
     app.get('/get/canteen_item',     fn.loggedIn(), fn.permissions.check('access_canteen'),      (req, res) => {
         m.canteen_items.findOne({where: req.query.where})
         .then(item => {
-            if (item) res.send({success: true, result: item})
-            else res.send({success: false, message: 'Item not found'});
+            if (item) {
+                res.send({success: true, result: item});
+
+            } else {
+                res.send({success: false, message: 'Item not found'});
+            
+            };
         })
         .catch(err => fn.send_error(res, err));
     });
@@ -26,11 +31,14 @@ module.exports = (app, m, fn) => {
     });
     
     app.post('/canteen_items',       fn.loggedIn(), fn.permissions.check('canteen_stock_admin'), (req, res) => {
-        if (!req.body.item) fn.send_error(res, 'No item')
-        else {
+        if (!req.body.item) {
+            fn.send_error(res, 'No item');
+
+        } else {
             fn.canteen_items.create(req.body.item)
             .then(item => res.send({success: true, message: 'Item added'}))
             .catch(err => fn.send_error(res, err));
+            
         };
     });
 
