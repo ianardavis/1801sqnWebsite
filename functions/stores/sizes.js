@@ -35,6 +35,7 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
+    fn.sizes.count = function (where) {return m.sizes.count({where: where})};
 
     fn.sizes.create = function (size) {
         return new Promise((resolve, reject) => {

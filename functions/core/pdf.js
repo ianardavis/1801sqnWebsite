@@ -102,17 +102,12 @@ module.exports = function (m, fn) {
             fn.fs.file_exists(folder, file)
             .then(path => {
                 fn.settings.get('printer')
-                .then(printers => {
-                    if (printers.length > 1) {
-                        reject(new Error('Multiple printers found'));
-                    } else {
-                        const options = ['-o sides=two-sided-long-edge'];
-                        const printer = printers[0].value;
-                        ptp
-                        .print(path, {printer: printer, unix: options})
-                        .then(result => resolve(true))
-                        .catch(err => reject(err));
-                    };
+                .then(printer => {
+                    const options = ['-o sides=two-sided-long-edge'];
+                    ptp
+                    .print(path, {printer: printer.value, unix: options})
+                    .then(result => resolve(true))
+                    .catch(err => reject(err));
                 })
                 .catch(err => reject(err));
             })

@@ -76,7 +76,7 @@ module.exports = function (m, fn) {
     
     fn.demands.create = function (supplier_id, user_id) {
         return new Promise((resolve, reject) => {
-            fn.suppliers.get(supplier_id)
+            fn.suppliers.get({supplier_id: supplier_id})
             .then(supplier => {
                 m.demands.findOrCreate({
                     where: {

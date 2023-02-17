@@ -1,5 +1,5 @@
 const fs = require('fs');
-module.exports = (app, m, fn) => {
+module.exports = (app, fn) => {
     app.get('/files/:id',           fn.loggedIn(), fn.permissions.get('supplier_admin'),    (req, res) => res.render('stores/files/show'));
     app.get('/get/fs_files',        fn.loggedIn(), fn.permissions.check('access_settings'), (req, res) => {
         fs.readdir(

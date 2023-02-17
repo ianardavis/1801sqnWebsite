@@ -1,4 +1,4 @@
-module.exports = (app, m, fn) => {
+module.exports = (app, fn) => {
     app.get('/serials/:id',          fn.loggedIn(), fn.permissions.get(  'access_stores'),      (req, res) => res.render('stores/serials/show'));
     app.get('/get/serials',          fn.loggedIn(), fn.permissions.check('access_stores'),      (req, res) => {
         fn.serials.getAll(req.query)

@@ -89,12 +89,19 @@ module.exports = (m, fn) => {
     };
     fn.inc.stores.demand = () => {
         return {
-            model:   m.demands,
+            model: m.demands,
             include: [
                 fn.inc.users.user(),
                 fn.inc.stores.supplier()
             ],
-            as:      'demand',
+            as: 'demand',
+        };
+    };
+    fn.inc.stores.demand_lines = () => {
+        return {
+            model: m.demand_lines,
+            include: [fn.inc.stores.size()],
+            as: 'lines',
         };
     };
     fn.inc.stores.issue = () => {
@@ -105,6 +112,17 @@ module.exports = (m, fn) => {
             model:   m.issues,
             include: include,
             as:      'issue'
+        };
+    };
+    fn.inc.stores.issues = () => {
+        let include = [];
+        include.push(fn.inc.users.user({as: 'user_issue'}));
+        include.push(fn.inc.users.user());
+        include.push(fn.inc.stores.size());
+        return {
+            model:   m.issues,
+            include: include,
+            as:      'issues'
         };
     };
     fn.inc.stores.location = () => {

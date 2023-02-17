@@ -254,7 +254,7 @@ module.exports = function (m, fn) {
         } else {
             return new Promise((resolve, reject) => {
                 const qty = issues.reduce((prev, curr) => prev.qty + curr.qty, 0);
-                fn.stocks.get({size_id: size_id, location: location})
+                fn.stocks.find({size_id: size_id, location: location})
                 .then(stock => {
                     fn.stocks.return(stock.stock_id, qty)
                     .then(link => resolve([link, qty]))
@@ -631,7 +631,7 @@ module.exports = function (m, fn) {
                     };
             
                 } else {
-                    fn.stocks.get({size_id: loancard_line.size_id, location: line.location})
+                    fn.stocks.find({size_id: loancard_line.size_id, location: line.location})
                     .then(stock => resolve({stock: stock}))
                     .catch(err => reject(err));
 

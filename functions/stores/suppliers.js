@@ -1,27 +1,92 @@
 module.exports = function (m, fn) {
     fn.suppliers = {contacts: {}, addresses: {}};
 
-    fn.suppliers.get = function (supplier_id, includes = []) {
+    fn.suppliers.get = function (where, includes = []) {
         return new Promise((resolve, reject) => {
             m.suppliers.findOne({
-                where: {supplier_id: supplier_id},
+                where: where,
                 include: [
                     fn.inc.stores.account()
                 ].concat(includes)
             })
             .then(supplier => {
-                if (supplier) resolve(supplier)
-                else reject(new Error('Supplier not found'));
+                if (supplier) {
+                    resolve(supplier);
+
+                } else {
+                    reject(new Error('Supplier not found'));
+                
+                };
             })
+            .catch(err => reject(err));
+        });
+    };
+    fn.suppliers.getAll = function (where, pagination) {
+        return new Promise((resolve, reject) => {
+            m.suppliers.findAndCountAll({
+                where: where,
+                ...pagination
+            })
+            .then(results => resolve(results))
             .catch(err => reject(err));
         });
     };
     fn.suppliers.edit = function (supplier_id, details) {
         return new Promise((resolve, reject) => {
-            fn.suppliers.get(supplier_id)
+            fn.suppliers.get({supplier_id: supplier_id})
             .then(supplier => {
                 supplier.update(details)
                 .then(result => resolve(result))
+                .catch(err => reject(err));
+            })
+            .catch(err => reject(err));
+        });
+    };
+
+    fn.suppliers.create = function (supplier) {
+        return new Promise((resolve, reject) => {
+            supplier = fn.nullify(supplier);
+            m.suppliers.create(supplier)
+            .then(supplier => resolve(true))
+            .catch(err => reject(err));
+        });
+    };
+
+    fn.suppliers.delete = function (supplier_id) {
+        return new Promise((resolve, reject) => {
+            fn.suppliers.get({supplier_id: supplier_id})
+            .then(supplier => {
+                supplier.destroy()
+                .then(result => {
+                    fn.settings.get('default_supplier')
+                    .then(setting => {
+                        if (setting.value == supplier.supplier_id) {
+                            setting.destroy()
+                            .then(result => {
+                                if (result) {
+                                    resolve(true);
+
+                                } else {
+                                    console.log(`fn.suppliers.delete: Setting not deleted`);
+                                    resolve(false);
+                                
+                                };
+                            })
+                            .catch(err => {
+                                console.log(err);
+                                resolve(false);
+                            });
+
+                        } else {
+                            resolve(true);
+                        
+                        };
+                    })
+                    .catch(err => {
+                        console.log(err);
+                        resolve(false)
+                    });
+                })
                 .catch(err => reject(err));
             })
             .catch(err => reject(err));
@@ -60,7 +125,7 @@ module.exports = function (m, fn) {
     };
     function create(supplier_id, record, type, table) {
         return new Promise((resolve, reject) => {
-            fn.suppliers.get(supplier_id)
+            fn.suppliers.get({supplier_id: supplier_id})
             .then(supplier => {
                 m[table.pl].findOrCreate({
                     where:    record,

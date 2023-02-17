@@ -73,7 +73,7 @@ module.exports = function (m, fn) {
     function get_demand_template(supplier_id) {
         return new Promise((resolve, reject) => {
             fn.suppliers.get(
-                supplier_id,
+                {supplier_id: supplier_id},
                 [
                     fn.inc.stores.files({
                         where: {description: 'Demand'},

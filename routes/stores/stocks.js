@@ -1,10 +1,9 @@
-module.exports = (app, m, fn) => {
-    let op = require('sequelize').Op;
-    app.get('/stocks/:id',          fn.loggedIn(), fn.permissions.get('access_stores'),        (req, res) => res.render('stores/stocks/show'));
+module.exports = (app, fn) => {
+    app.get('/stocks/:id',          fn.loggedIn(), fn.permissions.get(  'access_stores'),      (req, res) => res.render('stores/stocks/show'));
     app.get('/get/stocks',          fn.loggedIn(), fn.permissions.check('access_stores'),      (req, res) => {
         let where = req.query.where || {};
-        if (req.query.gt) where[req.query.gt.column] = {[op.gt]: req.query.gt.value};
-        if (req.query.lt) where[req.query.lt.column] = {[op.lt]: req.query.lt.value};
+        if (req.query.gt) where[req.query.gt.column] = {[fn.op.gt]: req.query.gt.value};
+        if (req.query.lt) where[req.query.lt.column] = {[fn.op.lt]: req.query.lt.value};
         fn.stocks.getAll(
             where,
             fn.pagination(req.query))
@@ -12,27 +11,13 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/sum/stocks',          fn.loggedIn(), fn.permissions.check('access_stores'),      (req, res) => {
-        m.stocks.sum('qty', {where: req.query.where})
+        fn.stocks.sum(req.query.where)
         .then(sum => res.send({success: true, result: sum}))
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/stock',           fn.loggedIn(), fn.permissions.check('access_stores'),      (req, res) => {
-        m.stocks.findOne({
-            where: req.query.where,
-            include: [
-                fn.inc.stores.size(),
-                fn.inc.stores.location()
-            ]
-        })
-        .then(stock => {
-            if (stock) {
-                res.send({success: true, result: stock});
-
-            }else {
-                res.send({success: false, message: 'Stock not found'});
-            
-            };
-        })
+        fn.stocks.get(req.query.where)
+        .then(stock => res.send({success: true, result: stock}))
         .catch(err => fn.send_error(res, err));
     });
 
@@ -72,8 +57,8 @@ module.exports = (app, m, fn) => {
     app.put('/stocks/:id',          fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
         fn.stocks.getByID(req.params.id)
         .then(stock => {
-            m.locations.findOrCreate({where: {location: req.body.location}})
-            .then(([location, created]) => {
+            fn.locations.findOrCreate(req.body.location)
+            .then(location => {
                 stock.update({location_id: location.location_id})
                 .then(result => res.send({success: result, message: `Stock ${(result ? '' : 'not ')}saved`}))
                 .catch(err => fn.send_error(res, err));
@@ -113,40 +98,30 @@ module.exports = (app, m, fn) => {
     app.put('/stocks/:id/:type',    fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {fn.send_error(res, 'Invalid type')});
     
     app.delete('/stocks/:id',       fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
-        fn.stocks.getByID(req.params.id)
-        .then(stock => {
+        Promise.all([
+            fn.stocks.getByID(req.params.id),
+            fn.actions.get({_table: 'stocks', id: stock.stock_id}),
+            fn.adjustments.get({stock_id: stock.stock_id})
+        ])
+        .then(([stock, action, adjustment]) => {
             if (stock.qty > 0) {
                 fn.send_error(res, 'Cannot delete whilst stock is not 0');
 
+            } else if (action) {
+                fn.send_error(res, 'Cannot delete a stock record which has actions');
+
+            } else if (adjustment) {
+                fn.send_error(res, 'Cannot delete a stock record which has adjustments');
+
             } else {
-                m.actions.findOne({where: {stock_id: stock.stock_id}})
-                .then(action => {
-                    if (action) {
-                        fn.send_error(res, 'Cannot delete a stock record which has actions');
+                stock.destroy()
+                .then(result => {
+                    if (result) {
+                        res.send({success: true, message: 'Stock deleted'});
 
                     } else {
-                        m.adjustments.findOne({where: {stock_id: stock.stock_id}})
-                        .then(adjustment => {
-                            if (adjustment) {
-                                fn.send_error(res, 'Cannot delete a stock record which has adjustments');
-
-                            } else {
-                                stock.destroy()
-                                .then(result => {
-                                    if (result) {
-                                        res.send({success: true, message: 'Stock deleted'});
-
-                                    } else {
-                                        fn.send_error(res, 'Stock NOT deleted');
-                                    
-                                    };
-                                })
-                                .catch(err => fn.send_error(res, err));
-                                
-                            };
-                        })
-                        .catch(err => fn.send_error(res, err));
-                        
+                        fn.send_error(res, 'Stock not deleted');
+                    
                     };
                 })
                 .catch(err => fn.send_error(res, err));

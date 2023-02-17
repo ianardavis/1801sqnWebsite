@@ -159,7 +159,7 @@ module.exports = function (m, fn) {
             if (line.qty >= qty) {
                 line.decrement('qty', {by: qty})
                 .then(result => {
-                    fn.stocks.get({size_id: line.size_id, location: location})
+                    fn.stocks.find({size_id: line.size_id, location: location})
                     .then(stock => {
                         fn.stocks.increment(
                             stock,

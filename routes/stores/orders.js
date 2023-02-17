@@ -1,14 +1,14 @@
-module.exports = (app, m, fn) => {
+module.exports = (app, fn) => {
     app.get('/orders',          fn.loggedIn(), fn.permissions.get('stores_stock_admin'),   (req, res) => res.render('stores/orders/index'));
     app.get('/orders/:id',      fn.loggedIn(), fn.permissions.get('stores_stock_admin'),   (req, res) => res.render('stores/orders/show'));
     
     app.get('/count/orders',    fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
-        m.orders.count({where: req.query.where})
+        fn.orders.count(req.query.where)
         .then(count => res.send({success: true, result: count}))
         .catch(err => fn.send_error(res, err));
     });
     app.get('/sum/orders',      fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
-        m.orders.sum('qty', {where: req.query.where})
+        fn.orders.sum(req.query.where)
         .then(sum => res.send({success: true, result: sum}))
         .catch(err => fn.send_error(res, err));
     });
@@ -26,7 +26,7 @@ module.exports = (app, m, fn) => {
             req.query.where,
             [
                 fn.inc.users.user(),
-                m.demand_lines,
+                fn.inc.stores.demand_lines(),
             ]
         )
         .then(order => res.send({success: true, result: order}))

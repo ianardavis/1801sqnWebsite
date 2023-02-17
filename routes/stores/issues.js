@@ -1,15 +1,15 @@
-module.exports = (app, m, fn) => {
+module.exports = (app, fn) => {
     app.get('/issues',          fn.loggedIn(), fn.permissions.get(  'access_stores'),       (req, res) => res.render('stores/issues/index'));
     app.get('/issues/:id',      fn.loggedIn(), fn.permissions.get(  'access_stores', true), (req, res) => res.render('stores/issues/show'));
 
     app.get('/count/issues',    fn.loggedIn(), fn.permissions.check('issuer',        true), (req, res) => {
         if (!req.allowed) req.query.where.user_id_issue = req.user.user_id;
-        m.issues.count({where: req.query.where})
+        fn.issues.count(req.query.where)
         .then(count => res.send({success: true, result: count}))
         .catch(err => fn.send_error(res, err));
     });
     app.get('/sum/issues',      fn.loggedIn(), fn.permissions.check('issuer'),              (req, res) => {
-        m.issues.sum('qty', {where: req.query.where})
+        fn.issues.sum(req.query.where)
         .then(sum => res.send({success: true, result: sum}))
         .catch(err => fn.send_error(res, err));
     });

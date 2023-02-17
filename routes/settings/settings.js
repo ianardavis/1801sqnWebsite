@@ -34,20 +34,14 @@ module.exports = (app, m, fn) => {
     });
     app.get('/get/logs',        fn.loggedIn(), fn.permissions.check('access_settings'), (req, res) => {
         fn.settings.get(`log ${req.query.where.type || ''}`)
-        .then(settings => {
-            if (settings.length === 1) {
-                let readStream = fs.createReadStream(settings[0].value);
-                readStream.on('open',  ()  => {readStream.pipe(res)});
-                readStream.on('close', ()  => {res.end()});
-                readStream.on('error', err => {
-                    console.log(err);
-                    res.end();
-                });
-
-            } else {
-                fn.send_error(res, 'Multiple log locations');
-
-            };
+        .then(setting => {
+            let readStream = fs.createReadStream(setting.value);
+            readStream.on('open',  ()  => {readStream.pipe(res)});
+            readStream.on('close', ()  => {res.end()});
+            readStream.on('error', err => {
+                console.log(err);
+                res.end();
+            });
         })
         .catch(err => fn.send_error(res, err));
     });

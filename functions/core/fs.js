@@ -65,7 +65,7 @@ module.exports = function (m, fn) {
 	};
 	fn.fs.upload_file = function (options = {}) {
 		return new Promise((resolve, reject) => {
-			fn.suppliers.get(options.supplier_id)
+			fn.suppliers.get({supplier_id: options.supplier_id})
 			.then(supplier => {
 				fn.fs.copy_file(
 					options.file,

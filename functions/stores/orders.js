@@ -39,6 +39,8 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
+    fn.orders.count = function (where) {return m.orders.count({where: where})};
+    fn.orders.sum = function (where) {return m.orders.sum('qty', {where: where})};
     
     function update_order_status(order, status, user_id, action, links = []) {
         return new Promise((resolve, reject) => {

@@ -1,4 +1,4 @@
-module.exports = (app, m, fn) => {
+module.exports = (app, fn) => {
     app.get('/nsns/:id',          fn.loggedIn(), fn.permissions.get('access_stores'),        (req, res) => res.render('stores/nsns/show'));
     app.get('/get/nsns',          fn.loggedIn(), fn.permissions.check('access_stores'),      (req, res) => {
         fn.nsns.getAll(req.query)

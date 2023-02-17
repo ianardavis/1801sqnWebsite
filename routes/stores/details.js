@@ -1,4 +1,4 @@
-module.exports = (app, m, fn) => {
+module.exports = (app, fn) => {
     app.get('/get/detail',     fn.loggedIn(), fn.permissions.check('access_stores'), (req, res) => {
         fn.sizes.details.get(req.query.where)
         .then(detail => res.send({success: true, result: detail}))

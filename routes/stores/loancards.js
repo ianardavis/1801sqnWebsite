@@ -1,4 +1,4 @@
-module.exports = (app, m, fn) => {
+module.exports = (app, fn) => {
     app.get('/loancards',              fn.loggedIn(), fn.permissions.get('access_stores'),         (req, res) => res.render('stores/loancards/index'));
     app.get('/loancards/:id',          fn.loggedIn(), fn.permissions.get('access_stores'),         (req, res) => res.render('stores/loancards/show'));
     app.get('/loancard_lines/:id',     fn.loggedIn(), fn.permissions.get('access_stores'),         (req, res) => res.render('stores/loancard_lines/show'));
@@ -14,7 +14,7 @@ module.exports = (app, m, fn) => {
 
     app.get('/count/loancards',        fn.loggedIn(), fn.permissions.check('issuer', true),        (req, res) => {
         if (!req.allowed) req.query.where.user_id_loancard = req.user.user_id;
-        m.loancards.count({where: req.query.where})
+        fn.loancards.count(req.query.where)
         .then(count => res.send({success: true, result: count}))
         .catch(err => fn.send_error(res, err));
     });
@@ -52,7 +52,7 @@ module.exports = (app, m, fn) => {
         fn.loancards.lines.get(
             req.query.where,
             [
-                {model: m.issues, include: [m.sizes]},
+                fn.inc.stores.issues(),
                 fn.inc.stores.size(),
                 fn.inc.stores.nsn(),
                 fn.inc.users.user(),

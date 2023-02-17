@@ -1,6 +1,6 @@
 module.exports = function (m, fn) {
     fn.stocks = {};
-    fn.stocks.get = function (options = {}) {
+    fn.stocks.find = function (options = {}) {
         return new Promise((resolve, reject) => {
             if (
                 options.stock_id ||
@@ -73,6 +73,28 @@ module.exports = function (m, fn) {
             };
         });
     };
+    fn.stocks.get = function (where) {
+        return new Promise((resolve, reject) => {
+            m.stocks.findOne({
+                where: where,
+                include: [
+                    fn.inc.stores.size(),
+                    fn.inc.stores.location()
+                ]
+            })
+            .then(stock => {
+                if (stock) {
+                    resolve(stock);
+    
+                } else {
+                    reject(new Error('Stock not found'));
+                
+                };
+            })
+            .catch(err => reject(err));
+        });
+    };
+
     fn.stocks.getAll = function (where, pagination) {
         return new Promise((resolve, reject) => {
             m.stocks.findAndCountAll({
@@ -87,6 +109,8 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
+    fn.stocks.sum = function (where) {return m.stocks.sum('qty', {where: where})};
+
     fn.stocks.getByID = function (stock_id) {
         return new Promise((resolve, reject) => {
             m.stocks.findOne({
@@ -246,7 +270,7 @@ module.exports = function (m, fn) {
     };
     fn.stocks.receive = function (options = {}) {
         return new Promise((resolve, reject) => {
-            fn.stocks.get(options.stock)
+            fn.stocks.find(options.stock)
             .then(stock => {
                 fn.stocks.increment(
                     stock,

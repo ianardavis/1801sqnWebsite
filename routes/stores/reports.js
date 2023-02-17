@@ -1,4 +1,4 @@
-module.exports = (app, m, fn) => {
+module.exports = (app, fn) => {
     app.get('/reports',   fn.loggedIn(), fn.permissions.get('access_stores'),      (req, res) => res.render('stores/reports/index'));
     app.get('/reports/1', fn.loggedIn(), fn.permissions.get('stores_stock_admin'), (req, res) => res.render('stores/reports/show/1'));
     app.get('/reports/2', fn.loggedIn(), fn.permissions.get('issuer'),             (req, res) => res.render('stores/reports/show/2'));

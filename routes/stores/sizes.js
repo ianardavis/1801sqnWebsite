@@ -1,9 +1,9 @@
-module.exports = (app, m, fn) => {
+module.exports = (app, fn) => {
     app.get('/sizes/select', fn.loggedIn(), fn.permissions.get('access_stores'),        (req, res) => res.render('stores/sizes/select'));
     app.get('/sizes/:id',    fn.loggedIn(), fn.permissions.get('access_stores'),        (req, res) => res.render('stores/sizes/show'));
 
     app.get('/count/sizes',  fn.loggedIn(), fn.permissions.check('access_stores'),      (req, res) => {
-        m.sizes.count({where: req.query.where})
+        fn.sizes.count(req.query.where)
         .then(count => res.send({success: true, result: count}))
         .catch(err => fn.send_error(res, err));
     });

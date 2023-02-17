@@ -1,4 +1,4 @@
-module.exports = (app, m, fn) => {
+module.exports = (app, fn) => {
     app.get('/scraps',              fn.loggedIn(), fn.permissions.get(  'stores_stock_admin'), (req, res) => res.render('stores/scraps/index'));
     app.get('/scraps/:id',          fn.loggedIn(), fn.permissions.get(  'stores_stock_admin'), (req, res) => res.render('stores/scraps/show'));
     app.get('/scrap_lines/:id',     fn.loggedIn(), fn.permissions.get(  'stores_stock_admin'), (req, res) => res.render('stores/scrap_lines/show'));
@@ -14,7 +14,7 @@ module.exports = (app, m, fn) => {
     });
 
     app.get('/count/scraps',        fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
-        m.scraps.count({where: req.query.where})
+        fn.scraps.count(req.query.where)
         .then(count => res.send({success: true, result: count}))
         .catch(err => fn.send_error(res, err));
     });

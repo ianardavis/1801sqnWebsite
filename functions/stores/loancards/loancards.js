@@ -51,6 +51,7 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
+    fn.loancards.count = function (where) {m.loancards.count({where: where})};
     
     function cancel_loancard_check(loancard_id) {
         return new Promise((resolve, reject) => {
@@ -88,7 +89,7 @@ module.exports = function (m, fn) {
             .then(err => reject(err));
         });
     };
-    fn.loancards.cancel    = function (options = {}) {
+    fn.loancards.cancel = function (options = {}) {
         return new Promise((resolve, reject) => {
             cancel_loancard_check(options.loancard_id)
             .then(loancard => {
@@ -112,7 +113,7 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
-    fn.loancards.create    = function (options = {}) {
+    fn.loancards.create = function (options = {}) {
         return new Promise((resolve, reject) => {
             m.loancards.findOrCreate({
                 where: {
@@ -175,7 +176,7 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
-    fn.loancards.complete  = function (options = {}) {
+    fn.loancards.complete = function (options = {}) {
         return new Promise((resolve, reject) => {
             complete_check(options.loancard_id)
             .then(loancard => {
@@ -215,7 +216,11 @@ module.exports = function (m, fn) {
                     fn.loancards.pdf.create(loancard.loancard_id)
                     .then(filename => resolve(filename))
                     .catch(err => reject(err));
-                } else resolve(loancard.filename);
+
+                } else {
+                    resolve(loancard.filename);
+                
+                };
             })
             .catch(err => reject(err));
         });
@@ -260,12 +265,13 @@ module.exports = function (m, fn) {
 
                 } else {
                     resolve(loancard);
+                    
                 };
             })
             .catch(err => reject(err));
         });
     };
-    fn.loancards.close     = function (options = {}) {
+    fn.loancards.close = function (options = {}) {
         return new Promise((resolve, reject) => {
             close_check(options.loancard_id)
             .then(loancard => {

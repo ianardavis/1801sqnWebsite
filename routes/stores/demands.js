@@ -1,4 +1,4 @@
-module.exports = (app, m, fn) => {
+module.exports = (app, fn) => {
     app.get('/demands',              fn.loggedIn(), fn.permissions.get(  'authorised_demander'), (req, res) => res.render('stores/demands/index'));
     app.get('/demands/:id',          fn.loggedIn(), fn.permissions.get(  'authorised_demander'), (req, res) => res.render('stores/demands/show'));
     app.get('/demands/:id/download', fn.loggedIn(), fn.permissions.check('authorised_demander'), (req, res) => fn.demands.download(req, res));

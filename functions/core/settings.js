@@ -4,8 +4,16 @@ module.exports = function (m, fn) {
         return new Promise((resolve, reject) => {
             m.settings.findAll({where: {name: name}})
             .then(settings => {
-                if (!settings || settings.length === 0) reject(new Error('Setting not found'));
-                else resolve(settings);
+                if (!settings || settings.length === 0) {
+                    reject(new Error('Setting not found'));
+
+                } else if (settings.length > 1) {
+                    reject(new Error('Multiple settings found'));
+
+                } else {
+                    resolve(settings[0]);
+                
+                };
             })
             .catch(err => reject(err));
         });
@@ -18,7 +26,11 @@ module.exports = function (m, fn) {
                     setting.update(details)
                     .then(result => resolve(result))
                     .catch(err => reject(err));
-                } else reject(new Error('Setting not found'));
+
+                } else {
+                    reject(new Error('Setting not found'));
+                
+                };
             })
             .catch(err => reject(err));
         });
@@ -30,11 +42,14 @@ module.exports = function (m, fn) {
                 defaults: {value: value}
             })
             .then(([setting, created]) => {
-                if (created) resolve(true)
-                else {
+                if (created) {
+                    resolve(true);
+
+                } else {
                     setting.update({value: value})
                     .then(result => resolve(true))
                     .catch(err => reject(err));
+
                 };
             })
             .catch(err => reject(err));

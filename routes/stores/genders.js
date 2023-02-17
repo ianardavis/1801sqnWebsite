@@ -1,4 +1,4 @@
-module.exports = (app, m, fn) => {
+module.exports = (app, fn) => {
     app.get('/get/genders',    fn.loggedIn(),                                             (req, res) => {
         fn.genders.getAll(req.query)
         .then(results => fn.send_res('genders', res, results, req.query))

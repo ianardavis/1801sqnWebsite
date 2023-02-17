@@ -68,6 +68,7 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
+    fn.scraps.count = function (where) {return m.scraps.count({where: where})};
 
     fn.scraps.edit = function (scrap_id, details) {
         fn.scraps.get({scrap_id: scrap_id})

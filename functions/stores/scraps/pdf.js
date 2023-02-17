@@ -156,17 +156,17 @@ module.exports = function (m, fn) {
     function print_pdf(filename) {
         return new Promise(resolve => {
             fn.settings.get('Print scrap')
-            .then(settings => {
-                if (settings.length !== 1 || settings[0].value !== '1') {
-                    resolve(filename);
-
-                } else {
+            .then(setting => {
+                if (setting.value === '1') {
                     fn.pdfs.print('scraps', file)
                     .then(result => resolve(filename))
                     .catch(err => {
                         console.log(err);
                         resolve(filename);
                     });
+
+                } else {
+                    resolve(filename);
 
                 };
             })

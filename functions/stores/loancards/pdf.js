@@ -85,6 +85,7 @@ module.exports = function (m, fn) {
 
                 } else {
                     resolve(loancard);
+
                 };
             })
             .catch(err => reject(err));
@@ -141,19 +142,20 @@ module.exports = function (m, fn) {
         });
     };
     function print_loancard(filename) {
-        return new Promise((resolve, reject) => {
+        return new Promise(resolve => {
             fn.settings.get('Print loancard')
-            .then(settings => {
-                if (settings.length !== 1 ||settings[0].value !== '1') {
-                    resolve(filename);
-
-                } else {
+            .then(setting => {
+                if (setting.value === '1') {
                     fn.pdfs.print('loancards', filename)
                     .then(result => resolve(filename))
                     .catch(err => {
                         console.log(err);
                         resolve(filename);
                     });
+
+                } else {
+                    resolve(filename);
+                    
                 };
             })
             .catch(err => {

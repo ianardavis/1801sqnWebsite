@@ -31,6 +31,9 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
+    fn.issues.count = function (where) {return m.issues.count({where: where})};
+    fn.issues.sum = function (where) {return m.issues.sum('qty', {where: where})};
+
     function issues_allowed(issuer, user_id_issue, user_id) {
         return new Promise(resolve => {
             if (issuer) {

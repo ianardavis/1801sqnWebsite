@@ -1,4 +1,4 @@
-module.exports = (app, m, fn) => {
+module.exports = (app, fn) => {
     app.get('/get/addresses',    fn.loggedIn(), fn.permissions.check('access_stores'),  (req, res) => {
         fn.suppliers.addresses.getAll(req.query)
         .then(results => fn.send_res('addresses', res, results, req.query))
