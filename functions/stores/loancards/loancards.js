@@ -51,7 +51,7 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
-    fn.loancards.count = function (where) {m.loancards.count({where: where})};
+    fn.loancards.count = function (where) { return m.loancards.count({where: where}) };
     
     function cancel_loancard_check(loancard_id) {
         return new Promise((resolve, reject) => {

@@ -5,7 +5,7 @@ module.exports = (app, fn) => {
     app.get('/demand_lines/:id',     fn.loggedIn(), fn.permissions.get(  'authorised_demander'), (req, res) => res.render('stores/demand_lines/show'));
     
     app.get('/count/demands',        fn.loggedIn(), fn.permissions.check('authorised_demander'), (req, res) => {
-        fn.demands.count({where: req.query.where})
+        fn.demands.count(req.query.where)
         .then(count => res.send({success: true, result: count}))
         .catch(err => fn.send_error(res, err));
     });

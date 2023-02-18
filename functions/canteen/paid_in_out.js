@@ -71,7 +71,7 @@ module.exports = function (m, fn) {
         return new Promise((resolve, reject) => {
             Promise.all([
                 fn.holdings.get(holding_id),
-                fn.users.get(user_id)
+                fn.users.get({user_id: user_id})
             ])
             .then(results => resolve(results[0]))
             .catch(err => reject(err));

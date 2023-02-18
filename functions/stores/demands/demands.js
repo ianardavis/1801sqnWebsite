@@ -1,7 +1,7 @@
 module.exports = function (m, fn) {
     const line_status = {0: "Cancelled", 1: "Pending", 2: "Open", 3: "Closed"};
     
-    fn.demands.count = function (where) { return m.demands.count({where: where})};
+    fn.demands.count = function (where) { return m.demands.count({where: where}) };
     
     fn.demands.get = function (where, include = []) {
         return new Promise((resolve, reject) => {

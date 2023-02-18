@@ -1,5 +1,4 @@
-module.exports = (app, m, fn) => {
-    let user_attributes = ['user_id', 'full_name', 'surname', 'first_name', 'service_number'];
+module.exports = (app, fn) => {
     app.get('/users',             fn.loggedIn(), fn.permissions.get('access_users',   true), (req, res) => {
         if (req.allowed) {
             res.render('users/index');
@@ -22,50 +21,46 @@ module.exports = (app, m, fn) => {
     });
 
     app.get('/get/user',          fn.loggedIn(), fn.permissions.check('access_users', true), (req, res) => {
-        m.users.findOne({
-            where:      req.query.where,
-            include:    [fn.inc.users.rank(), fn.inc.users.status()],
-            attributes: ['user_id', 'full_name', 'service_number', 'first_name', 'surname', 'status_id', 'rank_id', 'login_id', 'reset', 'last_login']
-        })
+        fn.users.get(
+            req.query.where,
+            ['user_id', 'full_name', 'service_number', 'first_name', 'surname', 'status_id', 'rank_id', 'login_id', 'reset', 'last_login']
+        )
         .then(user => {
-            if (user.user_id === req.user.user_id || req.allowed) {
-                if (!user) {
-                    fn.send_error(res, 'User not found');
+            if (req.allowed || user.user_id === req.user.user_id) {
+                res.send({success: true, result: user});
 
-                } else {
-                    res.send({success: true, result: user});
+            } else {
+                fn.send_error(res, 'Permission denied');
 
-                };
             };
         })
-        .catch(err => fn.send_error(res, err));
+        .catch(err => {
+            if (req.allowed || user.user_id === req.user.user_id) {
+                fn.send_error(res, err);
+
+            } else {
+                fn.send_error(res, 'Permission denied');
+
+            };
+        });
     });
     app.get('/get/users',         fn.loggedIn(), fn.permissions.check('access_users', true), (req, res) => {
-        if (!req.allowed) req.query.user_id = req.user.user_id;
-        m.users.findAndCountAll({
-            where:      req.query.where,
-            include:    [fn.inc.users.rank(), fn.inc.users.status()],
-            attributes: user_attributes,
-            ...fn.pagination(req.query)
-        })
+        if (!req.allowed) req.query.where.user_id = req.user.user_id;
+        fn.users.getAll(
+            req.query.where,
+            fn.pagination(req.query)
+        )
         .then(results => fn.send_res('users', res, results, req.query))
-        .catch(err =>  fn.send_error(res, err));
+        .catch(err => fn.send_error(res, err));
     });
     app.get('/get/users/current', fn.loggedIn(), fn.permissions.check('access_users', true), (req, res) => {
         let where = req.query.where;
         if (!req.allowed) user_id = req.user.user_id;
-        m.users.findAndCountAll({
-            where: where,
-            include: [
-                m.ranks,
-                {
-                    model: m.statuses,
-                    where: {current: true}
-                }
-            ],
-            attributes: user_attributes,
-            ...fn.pagination(req.query)
-        })
+        fn.users.getAll(
+            where,
+            fn.pagination(req.query),
+            fn.inc.users.status({current: true})
+        )
         .then(results => fn.send_res('users', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });
@@ -91,16 +86,13 @@ module.exports = (app, m, fn) => {
     });
     app.put('/users/:id',         fn.loggedIn(), fn.permissions.check('user_admin'),         (req, res) => {
         fn.users.edit(req.params.id, req.body.user)
-        .then(result => res.send({success: result,  message: `User ${(result ? '' : 'not ')}saved`}))
+        .then(result => res.send({success: true, message: 'User saved'}))
         .catch(err => fn.send_error(res, err));
     });
     
     app.delete('/users/:id',      fn.loggedIn(), fn.permissions.check('user_admin'),         (req, res) => {
-        if (req.user.user_id == req.params.id) fn.send_error(res, 'You can not delete your own account')
-        else {
-            fn.users.delete(req.params.id)
-            .then(result => res.send({success: true, message: 'User deleted'}))
-            .catch(err => fn.send_error(res, err));
-        };
+        fn.users.delete(req.params.id, req.user.user_id)
+        .then(result => res.send({success: true, message: 'User deleted'}))
+        .catch(err => fn.send_error(res, err));
     });
 };

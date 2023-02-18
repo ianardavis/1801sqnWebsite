@@ -53,12 +53,10 @@ window.addEventListener('load', function () {
     addListener('goto_loancard_id', );
     modalOnShow('loancard_open', function () {StartScanning(gotoLoancard)});
     modalOnHide('loancard_open', StopScanning);
+    
     getUsers();
     addListener('reload_users', getUsers);
-    addListener('status_0',     getLoancards, 'change');
-    addListener('status_1',     getLoancards, 'change');
-    addListener('status_2',     getLoancards, 'change');
-    addListener('status_3',     getLoancards, 'change');
+    addListener('sel_loancard_statuses', getLoancards, 'input');
     addListener('sel_users',    getLoancards, 'change');
     addListener('createdAt_from', function (){filter()}, 'change');
     addListener('createdAt_to',   function (){filter()}, 'change');

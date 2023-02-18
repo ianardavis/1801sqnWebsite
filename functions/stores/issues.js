@@ -220,7 +220,7 @@ module.exports = function (m, fn) {
     function issue_line_to_user (user_id_issue, line, user_id, status) {
         return new Promise((resolve, reject) => {
             Promise.all([
-                fn.users.get(user_id_issue),
+                fn.users.get({user_id: user_id_issue}),
                 fn.sizes.get({size_id: line.size_id})
             ])
             .then(([user, size]) => {

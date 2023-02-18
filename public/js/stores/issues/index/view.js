@@ -26,7 +26,7 @@ function getIssues() {
                     }).e
                 });
 
-                let radios = row_radios(issue.issue_id, issue.status, row_index);
+                let radios = row_radios(issue, issue.status, row_index);
 
                 add_cell(row, {
                     id: `row_${issue.issue_id}`,
@@ -39,9 +39,9 @@ function getIssues() {
         });
     });
 };
-function row_radios(issue_id, status, index) {
+function row_radios(issue, status, index) {
     let radios = [];
-    const args = [issue_id, index, issue_options];
+    const args = [issue.issue_id, index, issue_options];
     if ([0, 1, 2, 3].includes(status)) {
         if (typeof     nil_radio === 'function') radios.push(nil_radio(    ...args));
     };
@@ -55,13 +55,13 @@ function row_radios(issue_id, status, index) {
     if (status === 2 || status === 3) {
         if (typeof cancel_radio  === 'function') radios.push(cancel_radio( ...args, '-'+status));
     };
-    if (status === 2) {
+    if (issue.size.orderable && status === 2) {
         if (typeof order_radio   === 'function') radios.push(order_radio(  ...args));
     };
-    if (status === 2 || status   === 3) {
+    if (issue.size.issueable && status === 2 || status   === 3) {
         if (typeof issue_radio   === 'function') radios.push(issue_radio(  ...args));
     };
-    radios.push(new Div({attributes: [{field: 'id', value: `details_${issue_id}`}]}).e);
+    radios.push(new Div({attributes: [{field: 'id', value: `details_${issue.issue_id}`}]}).e);
     return radios;
 };
 function getUsers() {

@@ -1,4 +1,4 @@
-module.exports = (app, m, fn) => {
+module.exports = (app, fn) => {
     let permission_tree = [
         {permission: 'access_settings'},
         {permission: 'access_users',   children: [
@@ -24,72 +24,21 @@ module.exports = (app, m, fn) => {
             {permission: 'gallery_admin'}
         ]},
     ];
-    function permissions_allowed(user_id, allowed) {
-        return new Promise((resolve, reject) => {
-            fn.allowed(user_id, 'edit_own_permissions', true)
-            .then(edit_own => {
-                if (!allowed && !edit_own) {
-                    reject(new Error('Permission denied'));
-
-                } else {
-                    resolve(true);
-                
-                };
-            })
-            .catch(err => reject(err));
-        });
-    };
     app.get('/get/permissions', fn.loggedIn(), fn.permissions.check('user_admin', true), (req, res) => {
-        permissions_allowed(req.user.user_id, req.allowed)
-        .then(allowed => {
-            m.permissions.findAndCountAll({
-                where: req.query.where,
-                ...fn.pagination(req.query)
-            })
-            .then(results => fn.send_res('permissions', res, results, req.query, [{name: 'tree', obj: permission_tree}])
-            )
-            .catch(err => fn.send_error(res, err));
+        fn.users.permissions.getAll(
+            req.user.user_id,
+            req.allowed,
+            req.query.where,
+            fn.pagination(req.query)
+        )
+        .then(results => {
+            fn.send_res('permissions', res, results, req.query, [{name: 'tree', obj: permission_tree}]);
         })
         .catch(err => fn.send_error(res, err));
     });
     app.put('/permissions/:id', fn.loggedIn(), fn.permissions.check('user_admin', true), (req, res) => {
-        permissions_allowed(req.user.user_id, req.allowed)
-        .then(allowed => {
-            m.users.findOne({where: {user_id: req.params.id}})
-            .then(user => {
-                if (user) {
-                    m.permissions.findAll({
-                        where:      {user_id: user.user_id},
-                        attributes: ['permission_id', 'permission']
-                    })
-                    .then(permissions => {
-                        let actions = [];
-                        permissions.forEach(permission => {
-                            if (!req.body.permissions.includes(permission.permission)) {
-                                actions.push(
-                                    m.permissions.destroy({where: {permission_id: permission.permission_id}})
-                                );
-                            };
-                        });
-                        req.body.permissions.forEach(permission => {
-                            actions.push(
-                                m.permissions.findOrCreate({
-                                    where: {
-                                        user_id:    user.user_id,
-                                        permission: permission
-                                    }
-                                })
-                            );
-                        });
-                        Promise.allSettled(actions)
-                        .then(results => res.send({success: true, message: 'Permissions edited'}))
-                        .catch(err => fn.send_error(res, err));
-                    })
-                    .catch(err => fn.send_error(res, err));
-                } else res.send({success: false, message: 'User not found'});
-            })
-            .catch(err => fn.send_error(res, err));
-        })
+        fn.users.permissions.update(req.user.user_id, req.params.id, req.allowed, req.body.permissions)
+        .then(results => res.send({success: true, message: 'Permissions edited'}))
         .catch(err => fn.send_error(res, err));
     });
 };

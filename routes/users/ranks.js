@@ -1,9 +1,9 @@
-module.exports = (app, m, fn) => {
+module.exports = (app, fn) => {
     app.get('/get/ranks', fn.loggedIn(), (req, res) => {
-        m.ranks.findAndCountAll({
-            where: req.query.where,
-            ...fn.pagination(req.query)
-        })
+        fn.users.ranks.getAll(
+            req.query.where,
+            fn.pagination(req.query)
+        )
         .then(results => fn.send_res('ranks', res, results, req.query))
         .catch(err =>  fn.send_error(res, err));
     });

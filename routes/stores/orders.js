@@ -26,7 +26,7 @@ module.exports = (app, fn) => {
             req.query.where,
             [
                 fn.inc.users.user(),
-                fn.inc.stores.demand_lines(),
+                fn.inc.stores.demand_lines('demand_lines'),
             ]
         )
         .then(order => res.send({success: true, result: order}))

@@ -4,7 +4,7 @@ module.exports = (m, fn) => {
         return {
             model:      m.users,
             include:    [fn.inc.users.rank()],
-            attributes: options.attributes || ['user_id', 'full_name'],//{exclude: ['password', 'salt', 'reset']},
+            attributes: options.attributes || ['user_id', 'full_name'],
             as:         options.as || 'user'
         };
     };
@@ -15,9 +15,10 @@ module.exports = (m, fn) => {
             as:         'rank'
         };
     };
-    fn.inc.users.status = () => {
+    fn.inc.users.status = (where = null) => {
         return {
             model:      m.statuses,
+            where:      where,
             attributes: ['status'],
             as:         'status'
         };

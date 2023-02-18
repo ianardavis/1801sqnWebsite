@@ -97,11 +97,11 @@ module.exports = (m, fn) => {
             as: 'demand',
         };
     };
-    fn.inc.stores.demand_lines = () => {
+    fn.inc.stores.demand_lines = (as = 'lines') => {
         return {
             model: m.demand_lines,
             include: [fn.inc.stores.size()],
-            as: 'lines',
+            as: as,
         };
     };
     fn.inc.stores.issue = () => {

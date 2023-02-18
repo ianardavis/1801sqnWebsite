@@ -152,7 +152,7 @@
                         <div class="modal-body">
                             <input type="hidden" class='item_id' name='ean[item_id]'>
                             <%- include(`${partials}/inputs/text`, {id: 'inp_ean_add', title: 'EAN', name: 'ean[ean]', required: true}) %>
-                            <div id="reader" width="600px" height="600px"></div>
+                            <div id="scannerWindow" width="600px" height="600px"></div>
                         </div>
                         <div class="modal-footer">
                             <input type="submit" class="btn btn-success w-100" value='Save EAN'>
