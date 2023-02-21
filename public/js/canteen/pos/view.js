@@ -72,8 +72,8 @@ function getSaleLines() {
         });
     };
 };
-function addSaleLine(ean) {
-    console.log(ean)
+function addSaleLine(ean, result) {
+    console.log(ean, result);
     sendData(
         this,
         'POST',

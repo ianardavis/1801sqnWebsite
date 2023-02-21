@@ -9,9 +9,7 @@
 	<button id='btn_finish' class='btn btn-lg btn-success w-100 mb-2' data-bs-toggle="modal" data-bs-target="#mdl_sale_complete">Finish</button>
     <div class='row'>
 		<div class="col-12 col-lg-7 col-xl-8">
-            <ul class="nav nav-tabs" id="tab_headers" role="tablist">
-                <div id="scannerWindow" height="600px" width="600px"></div>
-            </ul>
+            <div id="scannerWindow" height="600px" width="600px"></div>
         </div>
         <div class="col-12 col-lg-5 col-xl-4">
             <%- include(`${partials}/inputs/display`, {title: 'Total (£)', id: 'total', classes: ['total']}) %>

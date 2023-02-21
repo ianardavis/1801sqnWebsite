@@ -41,7 +41,8 @@ function filter(tbl_loancards) {
 function getUsers() {
     listUsers({blank: {text: 'All'}})  
 };
-function gotoLoancard(loancard_id) {
+function gotoLoancard(loancard_id, result) {
+    console.log(loancard_id, result);
     window.location.assign(`/loancards/${loancard_id}`);
 };
 
