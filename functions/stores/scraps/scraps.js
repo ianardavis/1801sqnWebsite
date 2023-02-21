@@ -39,7 +39,7 @@ module.exports = function (m, fn) {
             .then(supplier_id_checked => {
                 m.scraps.findOrCreate({
                     where: {
-                        supplier_id: supplier_id_checked,
+                        supplier_id: supplier_id_checked.supplier_id,
                         status: 1
                     }
                 })

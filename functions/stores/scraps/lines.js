@@ -1,5 +1,5 @@
 module.exports = function (m, fn) {
-    fn.scraps.lines.getAll = function (query) {
+    fn.scraps.lines.getAll = function (query, pagination) {
         return new Promise((resolve, reject) => {
             let where = fn.build_query(query);
             m.scrap_lines.findAndCountAll({
@@ -10,7 +10,7 @@ module.exports = function (m, fn) {
                     fn.inc.stores.serial(),
                     fn.inc.stores.scrap()
                 ],
-                ...fn.pagination(query)
+                ...pagination
             })
             .then(results => resolve(results))
             .catch(err => reject(err));

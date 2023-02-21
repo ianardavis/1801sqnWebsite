@@ -9,7 +9,7 @@ module.exports = (app, fn) => {
         }
         fn.suppliers.getAll(
             where,
-            ...fn.pagination(req.query)
+            fn.pagination(req.query)
         )
         .then(results => fn.send_res('suppliers', res, results, req.query))
         .catch(err => fn.send_error(res, err));

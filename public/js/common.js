@@ -388,5 +388,9 @@ function div_details(id, index) {
     }).e;
 };
 window.addEventListener('load', function() {
-    document.title = `${toProperCase(path[1])} | 1801 (Alnwick) Sqn ATC`;
+
+    let headers = [];
+    if (path[1]) headers.push(toProperCase(path[1]));
+    headers.push('1801 (Alnwick) Sqn ATC');
+    document.title = headers.join(" | ");
 });
