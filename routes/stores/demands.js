@@ -10,12 +10,12 @@ module.exports = (app, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/count/demand_lines',   fn.loggedIn(), fn.permissions.check('authorised_demander'), (req, res) => {
-        fn.demands.lines.count({where: req.query.where})
+        fn.demands.lines.count(req.query.where)
         .then(count => res.send({success: true, result: count}))
         .catch(err => fn.send_error(res, err));
     });
     app.get('/sum/demand_lines',     fn.loggedIn(), fn.permissions.check('authorised_demander'), (req, res) => {
-        fn.demands.lines.sum('qty', {where: req.query.where})
+        fn.demands.lines.sum('qty', req.query.where)
         .then(sum => res.send({success: true, result: sum}))
         .catch(err => fn.send_error(res, err));
     });
