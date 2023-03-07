@@ -6,7 +6,7 @@ module.exports = (app, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/locations', fn.loggedIn(),                                             (req, res) => {
-        fn.locations.getAll(req.query)
+        fn.locations.getAll(req.query.where, fn.pagination(req.query))
         .then(locations => fn.send_res('locations', res, locations, req.query))
         .catch(err => fn.send_error(res, err));
     });

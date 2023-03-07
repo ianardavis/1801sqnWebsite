@@ -1,36 +1,15 @@
-module.exports = (app, m, fn) => {
+module.exports = (app, fn) => {
     app.get('/sessions',     fn.loggedIn(), fn.permissions.get('pos_user'),         (req, res) => res.render('canteen/sessions/index'));
     app.get('/sessions/:id', fn.loggedIn(), fn.permissions.get('pos_user'),         (req, res) => res.render('canteen/sessions/show'));
 
     app.get('/get/sessions', fn.loggedIn(), fn.permissions.check('pos_user'),       (req, res) => {
-        m.sessions.findAndCountAll({
-            where: req.query.where,
-            include: [
-                fn.inc.users.user({as: 'user_open'}),
-                fn.inc.users.user({as: 'user_close'}),
-            ],
-            ...fn.pagination(req.query)
-        })
+        fn.sessions.getAll(req.query.where, fn.pagination(req.query))
         .then(results => fn.send_res('sessions', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/session',  fn.loggedIn(), fn.permissions.check('pos_user'),       (req, res) => {
-        m.sessions.findOne({
-            where: req.query.where,
-            include: [
-                fn.inc.users.user({as: 'user_open'}),
-                fn.inc.users.user({as: 'user_close'}),
-            ]
-        })
-        .then(session => {
-            if (session) {
-                res.send({success: true, result: session});
-
-            } else {
-                res.send({success: false, message: 'Session not found'});
-            
-            };
-        })
+        fn.sessions.get(req.query.where)
+        .then(session => res.send({success: true, result: session}))
         .catch(err => fn.send_error(res, err));
     });
 

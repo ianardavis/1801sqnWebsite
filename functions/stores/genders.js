@@ -15,11 +15,11 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
-    fn.genders.getAll = function (query) {
+    fn.genders.getAll = function (where, pagination) {
         return new Promise((resolve, reject) => {
             m.genders.findAndCountAll({
-                where: query.where,
-                ...fn.pagination(query)
+                where: where,
+                ...pagination
             })
             .then(results => resolve(results))
             .catch(err => reject(err));

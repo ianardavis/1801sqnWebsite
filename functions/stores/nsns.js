@@ -22,17 +22,17 @@ module.exports = function (m, fn) {
             .catch(err => fn.send_error(res, err));
         });
     };
-    fn.nsns.getAll = function (query) {
+    fn.nsns.getAll = function (where, pagination) {
         return new Promise((resolve, reject) => {
             m.nsns.findAndCountAll({
-                where: query.where,
+                where: where,
                 include: [
                     fn.inc.stores.nsn_group(),
                     fn.inc.stores.nsn_class(),
                     fn.inc.stores.nsn_country(),
                     fn.inc.stores.size()
                 ],
-                ...fn.pagination(query)
+                ...pagination
             })
             .then(results => resolve(results))
             .catch(err => reject(err));
@@ -160,11 +160,11 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
-    fn.nsns.groups.getAll = function (query) {
+    fn.nsns.groups.getAll = function (where, pagination) {
         return new Promise((resolve, reject) => {
             m.nsn_groups.findAndCountAll({
-                where: query.where,
-                ...fn.pagination(query)
+                where: where,
+                ...pagination
             })
             .then(results => resolve(results))
             .catch(err => reject(err));
@@ -185,12 +185,12 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
-    fn.nsns.classes.getAll = function (query) {
+    fn.nsns.classes.getAll = function (where, pagination) {
         return new Promise((resolve, reject) => {
             if (query.nsn_group_id === '') query.nsn_group_id = null;
             m.nsn_classes.findAndCountAll({
-                where: query.where,
-                ...fn.pagination(query)
+                where: where,
+                ...pagination
             })
             .then(results => resolve(results))
             .catch(err => reject(err));
@@ -211,11 +211,11 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
-    fn.nsns.countries.getAll = function (query) {
+    fn.nsns.countries.getAll = function (where, pagination) {
         return new Promise((resolve, reject) => {
             m.nsn_countries.findAndCountAll({
-                where: query.where,
-                ...fn.pagination(query)
+                where: where,
+                ...pagination
             })
             .then(results => resolve(results))
             .catch(err => reject(err));

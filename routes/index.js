@@ -9,7 +9,7 @@ module.exports = function (app, m) {
     fs
     .readdirSync(__dirname)
     .filter(e => e.indexOf('.') === -1)
-    .forEach(folder => require(`./${folder}`)(fs, app, m, fn));
+    .forEach(folder => require(`./${folder}`)(fs, app, fn));
 
     app.get('/get/*',   fn.loggedIn(), (req, res) => fn.send_error(res, 'Invalid request'));
     app.get('/count/*', fn.loggedIn(), (req, res) => fn.send_error(res, 'Invalid request'));

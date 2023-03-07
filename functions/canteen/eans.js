@@ -34,11 +34,11 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
-    fn.eans.getAll = function (query) {
+    fn.eans.getAll = function (where, pagination) {
         return new Promise((resolve, reject) => {
             m.eans.findAndCountAll({
-                where: query.where,
-                ...fn.pagination(query)
+                where: where,
+                ...pagination
             })
             .then(results => resolve(results))
             .catch(err => reject(err));
@@ -54,7 +54,7 @@ module.exports = function (m, fn) {
                 reject(new Error('No EAN specified'));
 
             } else {
-                fn.canteen_items.get(item_id)
+                fn.canteen_items.get({item_id: item_id})
                 .then(item => {
                     // m.eans.create({
                     //     ean: ean, 

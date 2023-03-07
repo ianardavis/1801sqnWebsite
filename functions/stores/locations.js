@@ -31,11 +31,11 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
-    fn.locations.getAll = function (query) {
+    fn.locations.getAll = function (where, pagination) {
         return new Promise((resolve, reject) => {
             m.locations.findAndCountAll({
-                where: query.where,
-                ...fn.pagination(query)
+                where: where,
+                ...pagination
             })
             .then(results => resolve(results))
             .catch(err => reject(err));

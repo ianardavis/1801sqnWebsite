@@ -3,7 +3,7 @@ module.exports = (app, fn) => {
         if (req.query.where.category_id_parent === "") { 
             req.query.where.category_id_parent = {[fn.op.is]: null};
         };
-        fn.categories.getAll(req.query)
+        fn.categories.getAll(req.query.where, fn.pagination(req.query))
         .then(results => fn.send_res('categories', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });

@@ -143,7 +143,7 @@ module.exports = function (m, fn) {
     };
     function print_loancard(filename) {
         return new Promise(resolve => {
-            fn.settings.get('Print loancard')
+            fn.settings.get({name: 'Print loancard'})
             .then(setting => {
                 if (setting.value === '1') {
                     fn.pdfs.print('loancards', filename)

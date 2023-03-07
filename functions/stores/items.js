@@ -52,7 +52,7 @@ module.exports = function (m, fn) {
         });
     };
 
-    fn.items.getUniform = function (query) {
+    fn.items.getUniform = function (pagination) {
         return new Promise((resolve, reject) => {
             m.items.findAndCountAll({
                 include: [{
@@ -63,7 +63,7 @@ module.exports = function (m, fn) {
                         where: {category: 'Uniform'}
                     }]
                 }],
-                ...fn.pagination(query)
+                ...pagination
             })
             .then(items => resolve(items))
             .catch(err => reject(err));
@@ -142,12 +142,12 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
-    fn.items.categories.getAll = function (query) {
+    fn.items.categories.getAll = function (where, pagination) {
         return new Promise((resolve, reject) => {
             m.item_categories.findAndCountAll({
-                where:   query.where,
+                where:   where,
                 include: [fn.inc.stores.category()],
-                ...fn.pagination(query)
+                ...pagination
             })
             .then(categories => resolve(categories))
             .catch(err => reject(err));

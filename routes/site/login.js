@@ -1,5 +1,5 @@
 const passport = require('passport');
-module.exports = (app, m, fn) => {
+module.exports = (app, fn) => {
     app.get('/login',                 (req, res) => {
         if (req.isAuthenticated()) {
             req.flash('info', 'You are already logged in');

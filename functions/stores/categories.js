@@ -18,12 +18,12 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
-    fn.categories.getAll = function (query) {
+    fn.categories.getAll = function (where, pagination) {
         return new Promise((resolve, reject) => {
             m.categories.findAndCountAll({
-                where:   query.where || {},
+                where:   where || {},
                 include: [fn.inc.stores.categories({as: 'parent'})],
-                ...fn.pagination(query)
+                ...pagination
             })
             .then(results => resolve(results))
             .catch(err => reject(err));

@@ -49,10 +49,10 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
-    fn.scraps.getAll = function (query) {
+    fn.scraps.getAll = function (where, pagination) {
         return new Promise((resolve, reject) => {
             m.scraps.findAndCountAll({
-                where: query.where,
+                where: where,
                 include: [
                     {
                         model: m.scrap_lines,
@@ -62,7 +62,7 @@ module.exports = function (m, fn) {
                     },
                     fn.inc.stores.supplier()
                 ],
-                ...fn.pagination(query)
+                ...pagination
             })
             .then(results => resolve(results))
             .catch(err => reject(err));

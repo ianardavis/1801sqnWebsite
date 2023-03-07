@@ -1,9 +1,13 @@
 module.exports = function (m, fn) {
     fn.sessions = {};
-    fn.sessions.get = function (session_id) {
+    fn.sessions.get = function (where) {
         return new Promise((resolve, reject) => {
             m.sessions.findOne({
-                where: {session_id: session_id}
+                where: where,
+                include: [
+                    fn.inc.users.user({as: 'user_open'}),
+                    fn.inc.users.user({as: 'user_close'}),
+                ]
             })
             .then(session => {
                 if (session) {
@@ -17,10 +21,27 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
+    fn.sessions.getAll = function (where, pagination) {
+        return new Promise((resolve, reject) => {
+            m.sessions.findAndCountAll({
+                where: where,
+                include: [
+                    fn.inc.users.user({as: 'user_open'}),
+                    fn.inc.users.user({as: 'user_close'}),
+                ],
+                ...pagination
+            })
+            .then(results => resolve(results))
+            .catch(err => reject(err));
+        });
+    };
     fn.sessions.getCurrent = function () {
         return new Promise((resolve, reject) => {
             m.sessions.findAll({
-                where: {datetime_end: null}
+                where: {
+                    status: 1,
+                    datetime_end: null
+                }
             })
             .then(sessions => {
                 if (!sessions || sessions.length === 0) {
@@ -63,6 +84,7 @@ module.exports = function (m, fn) {
                         
                     } else {
                         reject('Session already open');
+
                     };
                 })
                 .catch(err => reject(err));
@@ -86,10 +108,11 @@ module.exports = function (m, fn) {
     };
     fn.sessions.close = function (session_id, balance, user_id) {
         return new Promise((resolve, reject) => {
-            fn.sessions.get(session_id)
+            fn.sessions.get({session_id: session_id})
             .then(session => {
                 if (session.status !== 1) {
                     reject(new Error('This session is not open'));
+
                 } else {
                     m.sales.findAll({
                         where: {
@@ -153,6 +176,7 @@ module.exports = function (m, fn) {
                         .catch(err => reject(err));
                     })
                     .catch(err => reject(err));
+
                 };
             })
             .catch(err => reject(err));

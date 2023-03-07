@@ -20,10 +20,10 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
-    fn.loancards.getAll = function (query) {
+    fn.loancards.getAll = function (where, pagination) {
         return new Promise((resolve, reject) => {
             m.loancards.findAndCountAll({
-                where: query.where,
+                where: where,
                 include: [
                     {
                         model: m.loancard_lines,
@@ -34,7 +34,7 @@ module.exports = function (m, fn) {
                     fn.inc.users.user(),
                     fn.inc.users.user({as: 'user_loancard'})
                 ],
-                ...fn.pagination(query)
+                ...pagination
             })
             .then(results => resolve(results))
             .catch(err => reject(err));

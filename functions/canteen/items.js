@@ -1,9 +1,9 @@
 module.exports = function (m, fn) {
     fn.canteen_items = {};
-    fn.canteen_items.get = function (item_id) {
+    fn.canteen_items.get = function (where) {
         return new Promise((resolve, reject) => {
             m.canteen_items.findOne({
-                where: {item_id: item_id}
+                where: where
             })
             .then(item => {
                 if (item) {
@@ -14,6 +14,16 @@ module.exports = function (m, fn) {
 
                 };
             })
+            .catch(err => reject(err));
+        });
+    };
+    fn.canteen_items.getAll = function (where, pagination) {
+        return new Promise((resolve, reject) => {
+            m.canteen_items.findAndCountAll({
+                where: where,
+                ...pagination
+            })
+            .then(results => resolve(results))
             .catch(err => reject(err));
         });
     };
@@ -42,10 +52,18 @@ module.exports = function (m, fn) {
     };
     fn.canteen_items.edit = function (item_id, details) {
         return new Promise((resolve, reject) => {
-            fn.canteen_items.get(item_id)
+            fn.canteen_items.get({item_id: item_id})
             .then(item => {
                 item.update(details)
-                .then(result => resolve(result))
+                .then(result => {
+                    if (result) {
+                        resolve(result);
+
+                    } else {
+                        reject(new Error('Item not updated'));
+
+                    };
+                })
                 .catch(err => reject(err));
             })
             .catch(err => reject(err));
@@ -53,9 +71,15 @@ module.exports = function (m, fn) {
     };
     fn.canteen_items.create = function (item) {
         return new Promise((resolve, reject) => {
-            m.canteen_items.create(item)
-            .then(item => resolve(true))
-            .catch(err => reject(err));
+            if (item) {
+                m.canteen_items.create(item)
+                .then(item => resolve(true))
+                .catch(err => reject(err));
+
+            } else {
+                reject(new Error('No item'));
+
+            };
         });
     };
 
@@ -89,7 +113,7 @@ module.exports = function (m, fn) {
     };
     fn.canteen_items.delete = function (item_id) {
         return new Promise((resolve, reject) => {
-            fn.canteen_items.get(item_id)
+            fn.canteen_items.get({item_id: item_id})
             .then(item => {
                 check_for_linked_data(item.item_id)
                 .then(results => {

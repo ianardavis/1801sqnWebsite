@@ -155,7 +155,7 @@ module.exports = function (m, fn) {
     };
     function print_pdf(filename) {
         return new Promise(resolve => {
-            fn.settings.get('Print scrap')
+            fn.settings.get({name: 'Print scrap'})
             .then(setting => {
                 if (setting.value === '1') {
                     fn.pdfs.print('scraps', file)

@@ -101,7 +101,7 @@ module.exports = function (m, fn) {
         return new Promise((resolve, reject) => {
             fn.fs.file_exists(folder, file)
             .then(path => {
-                fn.settings.get('printer')
+                fn.settings.get({name: 'printer'})
                 .then(printer => {
                     const options = ['-o sides=two-sided-long-edge'];
                     ptp

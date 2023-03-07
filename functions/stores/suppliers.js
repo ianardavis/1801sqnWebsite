@@ -52,43 +52,56 @@ module.exports = function (m, fn) {
         });
     };
 
-    fn.suppliers.delete = function (supplier_id) {
+    function delete_supplier(supplier_id) {
         return new Promise((resolve, reject) => {
             fn.suppliers.get({supplier_id: supplier_id})
             .then(supplier => {
                 supplier.destroy()
                 .then(result => {
-                    fn.settings.get('default_supplier')
-                    .then(setting => {
-                        if (setting.value == supplier.supplier_id) {
-                            setting.destroy()
-                            .then(result => {
-                                if (result) {
-                                    resolve(true);
+                    if (result) {
+                        resolve(supplier.supplier_id);
 
-                                } else {
-                                    console.log(`fn.suppliers.delete: Setting not deleted`);
-                                    resolve(false);
-                                
-                                };
-                            })
-                            .catch(err => {
-                                console.log(err);
-                                resolve(false);
-                            });
+                    } else {
+                        reject(new Error('Supplier not deleted'));
 
-                        } else {
-                            resolve(true);
-                        
-                        };
-                    })
-                    .catch(err => {
-                        console.log(err);
-                        resolve(false)
-                    });
+                    };
                 })
                 .catch(err => reject(err));
             })
+            .catch(err => reject(err));
+        });
+    };
+    function delete_default_supplier(supplier_id) {
+        return new Promise(resolve => {
+            fn.settings.get({
+                name: 'default_supplier',
+                value: supplier_id
+            })
+            .then(setting => {
+                setting.destroy()
+                .then(result => {
+                    if (result) {
+                        resolve(true);
+
+                    } else {
+                        console.log(`fn.suppliers.delete: Setting not deleted`);
+                        resolve(false);
+                    
+                    };
+                })
+                .catch(err => {
+                    console.log(err);
+                    resolve(false);
+                });
+            })
+            .catch(err => resolve(false));
+        });
+    };
+    fn.suppliers.delete = function (supplier_id) {
+        return new Promise((resolve, reject) => {
+            delete_supplier(supplier_id)
+            .then(delete_default_supplier)
+            .then(setting_deleted => resolve(setting_deleted))
             .catch(err => reject(err));
         });
     };
@@ -110,14 +123,14 @@ module.exports = function (m, fn) {
             });
         });
     };
-    function getAll(table, query) {
+    function getAll(table, where, pagination) {
         return new Promise((resolve, reject) => {
             m[table].findAndCountAll({
                 include: [{
                     model: m.suppliers,
-                    where: query.where
+                    where: where
                 }],
-                ...fn.pagination(query)
+                ...pagination
             })
             .then(results => resolve(results))
             .catch(err => reject(err));
@@ -193,7 +206,7 @@ module.exports = function (m, fn) {
         return get(where, {pl: 'contacts', si: 'contact'});
     };
     fn.suppliers.contacts.getAll = function (query) {
-        return getAll('contacts', query);
+        return getAll('contacts', query.where, fn.pagination(req.query));
     };
     fn.suppliers.contacts.create = function (supplier_id, contact, type) {
         return create(supplier_id, contact, type, {pl: 'contacts', si: 'contact'});
@@ -209,7 +222,7 @@ module.exports = function (m, fn) {
         return get(where, {pl: 'addresses', si: 'address'});
     };
     fn.suppliers.addresses.getAll = function (query) {
-        return getAll('addresses', query);
+        return getAll('addresses', query.where, fn.pagination(req.query));
     };
     fn.suppliers.addresses.create = function (supplier_id, address, type) {
         return create(supplier_id, address, type, {pl: 'addresses', si: 'address'});

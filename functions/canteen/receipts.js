@@ -1,5 +1,41 @@
 module.exports = function (m, fn) {
     fn.receipts = {};
+    fn.receipts.get = function (where) {
+        return new Promise((resolve, reject) => {
+            m.receipts.findOne({
+                where: where,
+                include: [
+                    fn.inc.users.user(),
+                    fn.inc.canteen.item()
+                ]
+            })
+            .then(receipt => {
+                if (receipt) {
+                    resolve(receipt);
+    
+                } else {
+                    reject(new Error('Receipt not found'));
+    
+                };
+            })
+            .catch(err => reject(err));
+        });
+    };
+    fn.receipts.getAll = function (where, pagination) {
+        return new Promise((resolve, reject) => {
+            m.receipts.findAndCountAll({
+                where: where,
+                include: [
+                    fn.inc.users.user(),
+                    fn.inc.canteen.item()
+                ],
+                ...pagination
+            })
+            .then(results => resolve(results))
+            .catch(err => reject(err));
+        });
+    };
+    
     function create_check(receipt) {
         return new Promise((resolve, reject) => {
             if (!receipt.qty) {
@@ -9,7 +45,7 @@ module.exports = function (m, fn) {
                 reject(new Error('No cost submitted'));
 
             } else {
-                resolve(true);
+                resolve(receipt);
 
             };
         });
@@ -24,7 +60,7 @@ module.exports = function (m, fn) {
             .then(action => resolve(true));
         });
     };
-    function create_receipt(item, receipt, user_id) {
+    function create_receipt_entry(item, receipt, user_id) {
         return new Promise((resolve, reject) => {
             m.receipts.create({
                 item_id: item.item_id,
@@ -103,16 +139,16 @@ module.exports = function (m, fn) {
             } resolve(true);
         });
     };
-    fn.receipts.create = function (receipt, user_id) {
+    function create_receipt(receipt, user_id) {
         return new Promise((resolve, reject) => {
             create_check(receipt)
-            .then(result => {
-                fn.canteen_items.get(receipt.item_id)
+            .then(receipt => {
+                fn.canteen_items.get({item_id: receipt.item_id})
                 .then(item => {
                     check_item_qty(item, user_id)
                     .then(result => {
                         let qty_original = (item.qty < 0 ? 0 : item.qty);
-                        create_receipt(item, receipt, user_id)
+                        create_receipt_entry(item, receipt, user_id)
                         .then(receipt => {
                             check_item_cost(qty_original, item, receipt)
                             .then(result => resolve(true));
@@ -124,6 +160,37 @@ module.exports = function (m, fn) {
                 .catch(err => reject(err));
             })
             .catch(err => reject(err));
+        });
+    };
+    fn.receipts.create = function (receipts, user_id) {
+        return new Promise((resolve, reject) => {
+            if (receipts) {
+                let actions = [];
+                receipts.forEach(receipt => {
+                    actions.push(
+                        create_receipt(
+                            receipt,
+                            user_id
+                        )
+                    );
+                });
+                Promise.allSettled(actions)
+                .then(results => {
+                    const failed_qty = results.filter(e => e.status === 'rejected').length;
+                    if (failed_qty > 0) {
+                        reject(new Error(`${failed_qty} lines failed`));
+    
+                    } else {
+                        resolve(true);
+                    
+                    };
+                })
+                .catch(err => reject(err));
+    
+            } else {
+                reject(new Error('No items submitted'));
+                
+            };
         });
     };
 };

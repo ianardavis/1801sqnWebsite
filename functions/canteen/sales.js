@@ -1,12 +1,13 @@
 module.exports = function (m, fn) {
     fn.sales = {lines: {}, payments: {}};
-    fn.sales.get = function (sale_id) {
+    fn.sales.get = function (where) {
         return new Promise((resolve, reject) => {
             m.sales.findOne({
-                where: {sale_id: sale_id},
+                where: where,
                 include: [
                     fn.inc.canteen.session(),
-                    fn.inc.canteen.sale_lines()
+                    fn.inc.canteen.sale_lines(),
+                    fn.inc.users.user()
                 ]
             })
             .then(sale => {
@@ -21,6 +22,38 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
+    fn.sales.getAll = function (where, pagination) {
+        return new Promise((resolve, reject) => {
+            m.sales.findAndCountAll({
+                where: where,
+                include: [
+                    fn.inc.canteen.sale_lines({item: true}),
+                    fn.inc.users.user()
+                ],
+                ...pagination
+            })
+            .then(results => resolve(results))
+            .catch(err => reject(err));
+        });
+    };
+    fn.sales.getCurrent = function (user_id) {
+        return new Promise((resolve, reject) => {
+            fn.sessions.getCurrent()
+            .then(session => {
+                m.sales.findOrCreate({
+                    where: {
+                        session_id: session.session_id,
+                        user_id:    user_id,
+                        status:     1
+                    }
+                })
+                .then(([sale, created]) => resolve(sale.sale_id))
+                .catch(err => reject(err));
+            })
+            .catch(err => reject(err));
+        });
+    };
+
     fn.sales.lines.get = function (line_id) {
         return new Promise((resolve, reject) => {
             m.sale_lines.findOne({
@@ -37,6 +70,18 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
+    fn.sales.lines.getAll = function (where, pagination) {
+        return new Promise((resolve, reject) => {
+            m.sale_lines.findAndCountAll({
+                where:   where,
+                include: [fn.inc.canteen.item()],
+                ...pagination
+            })
+            .then(results => resolve(results))
+            .catch(err => reject(err));
+        });
+    };
+
     function debit_account(sale_id, account, amount, user_id) {
         return new Promise((resolve, reject) => {
             account.decrement('credit', {by: amount})
@@ -195,7 +240,7 @@ module.exports = function (m, fn) {
     };
     function subtract_sold_qty_from_stock(item_id, qty) {
         return new Promise((resolve, reject) => {
-            fn.canteen_items.get(item_id)
+            fn.canteen_items.get({item_id: item_id})
             .then(item => {
                 item.decrement('qty', {by: qty})
                 .then(result => resolve(true))
@@ -206,12 +251,14 @@ module.exports = function (m, fn) {
     }
     fn.sales.complete = function (sale_id, _sale, user_id) {
         return new Promise((resolve, reject) => {
-            fn.sales.get(sale_id)
+            fn.sales.get({sale_id: sale_id})
             .then(sale => {
                 if (sale.status === 0) {
                     reject(new Error('Sale has been cancelled'));
+
                 } else if (sale.status === 2) {
                     reject(new Error('Sale has already been completed'));
+
                 } else if (sale.status === 1) {
                     process_payments(sale.sale_id, _sale, user_id)
                     .then(change => {
@@ -222,8 +269,10 @@ module.exports = function (m, fn) {
                         .catch(err => reject(err));
                     })
                     .catch(err => reject(err));
+
                 } else {
                     reject(new Error('Unknown sale status'));
+
                 };
             })
             .catch(err => reject(err));
@@ -232,7 +281,7 @@ module.exports = function (m, fn) {
 
     function check_sale(sale_id) {
         return new Promise((resolve, reject) => {
-            fn.sales.get(sale_id)
+            fn.sales.get({sale_id: sale_id})
             .then(sale => {
                 if (!sale.session) {
                     reject(new Error('Session not found'));
@@ -331,11 +380,17 @@ module.exports = function (m, fn) {
     };
     fn.sales.lines.edit = function (line) {
         return new Promise((resolve, reject) => {
-            check_sale_line(line)
-            .then(increase_qty)
-            .then(delete_if_qty_zero)
-            .then(resolve(true))
-            .catch(err => reject(err));
+            if (line) {
+                check_sale_line(line)
+                .then(increase_qty)
+                .then(delete_if_qty_zero)
+                .then(resolve(true))
+                .catch(err => reject(err));
+
+            } else {
+                reject(new Error('No line'));
+
+            };
         });
     };
 
@@ -345,14 +400,18 @@ module.exports = function (m, fn) {
             .then(payment => {
                 if (payment.status === 0) {
                     reject(new Error('Payment has been cancelled'));
+
                 } else if (payment.status === 2) {
                     reject(new Error('Payment has already been confirmed'));
+
                 } else if (payment.status === 1) {
                     payment.destroy()
                     .then(result => resolve(true))
                     .catch(err => reject(err));
+
                 } else {
                     reject(new Error('Unknown payment status'));
+
                 };
             })
             .catch(err => reject(err));

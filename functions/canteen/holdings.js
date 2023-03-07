@@ -1,6 +1,5 @@
 module.exports = function (m, fn) {
 	fn.holdings = {};
-	// GENERAL FUNCTIONS
 	fn.holdings.get = function (holding_id) {
 		return new Promise((resolve, reject) => {
 			m.holdings.findOne({
@@ -9,10 +8,22 @@ module.exports = function (m, fn) {
 			.then(holding => {
 				if (holding) {
 					resolve(holding);
+
 				} else {
 					reject(new Error('Holding not found'));
+					
 				};
 			})
+			.catch(err => reject(err));
+		});
+	};
+	fn.holdings.getAll = function (where, pagination) {
+		return new Promise((resolve, reject) => {
+			m.holdings.findAndCountAll({
+				where: where,
+				...pagination
+			})
+			.then(results => resolve(results))
 			.catch(err => reject(err));
 		});
 	};

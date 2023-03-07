@@ -29,7 +29,7 @@ module.exports = (app, fn) => {
     });
     app.get('/get/loancards',          fn.loggedIn(), fn.permissions.check('access_stores', true), (req, res) => {
         if (!req.allowed) req.query.user_id_loancard = req.user.user_id;
-        fn.loancards.getAll(req.query)
+        fn.loancards.getAll(req.query.where, fn.pagination(req.query))
         .then(results => fn.send_res('loancards', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });

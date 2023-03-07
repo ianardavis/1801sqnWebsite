@@ -22,16 +22,16 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
-    fn.serials.getAll = function (query) {
+    fn.serials.getAll = function (where, pagination) {
         return new Promise((resolve, reject) => {
             m.serials.findAndCountAll({
-                where:   query.where,
+                where:   where,
                 include: [
                     fn.inc.stores.location(),
                     fn.inc.stores.issue(),
                     fn.inc.stores.size()
                 ],
-                ...fn.pagination(query)
+                ...pagination
             })
             .then(results => resolve(results))
             .catch(err => reject(err));

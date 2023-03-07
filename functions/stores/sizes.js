@@ -21,15 +21,15 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
-    fn.sizes.getAll = function (query) {
+    fn.sizes.getAll = function (where, pagination) {
         return new Promise((resolve, reject) => {
             m.sizes.findAndCountAll({
-                where: query.where,
+                where: where,
                 include: [
                     fn.inc.stores.item(),
                     fn.inc.stores.supplier()
                 ],
-                ...fn.pagination(query)
+                ...pagination
             })
             .then(sizes => resolve(sizes))
             .catch(err => reject(err));
@@ -117,11 +117,11 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
-    fn.sizes.details.getAll = function (query) {
+    fn.sizes.details.getAll = function (where, pagination) {
         return new Promise((resolve, reject) => {
             m.details.findAndCountAll({
-                where: query.where,
-                ...fn.pagination(query)
+                where: where,
+                ...pagination
             })
             .then(details => resolve(details))
             .catch(err =>    reject(err));

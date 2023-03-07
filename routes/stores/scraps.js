@@ -24,7 +24,7 @@ module.exports = (app, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/scraps',          fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
-        fn.scraps.getAll(req.query)
+        fn.scraps.getAll(req.query.where, fn.pagination(req.query))
         .then(results => fn.send_res('scraps', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });

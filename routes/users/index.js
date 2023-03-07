@@ -1,4 +1,4 @@
-module.exports = (fs, app, m, fn) => {
+module.exports = (fs, app, fn) => {
     fs
     .readdirSync(__dirname)
     .filter(e => e !== "index.js")

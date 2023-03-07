@@ -13,7 +13,7 @@ module.exports = (app, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/sizes',    fn.loggedIn(), fn.permissions.check('access_stores'),      (req, res) => {
-        fn.sizes.getAll(req.query)
+        fn.sizes.getAll(req.query.where, fn.pagination(req.query))
         .then(sizes => fn.send_res('sizes', res, sizes, req.query))
         .catch(err => fn.send_error(res, err));
     });

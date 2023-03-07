@@ -11,7 +11,7 @@ module.exports = (app, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/items/uniform',      fn.loggedIn(), fn.permissions.check('access_stores'),      (req, res) => {
-        fn.items.getUniform(req.query)
+        fn.items.getUniform(fn.pagination(req.query))
         .then(items => fn.send_res('items', res, items, req.query))
         .catch(err => fn.send_error(res, err));
     });
@@ -26,7 +26,7 @@ module.exports = (app, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/item_categories',    fn.loggedIn(), fn.permissions.check('access_stores'),      (req, res) => {
-        fn.items.categories.getAll(req.query)
+        fn.items.categories.getAll(req.query.where, fn.pagination(req.query))
         .then(categories => fn.send_res('categories', res, categories, req.query))
         .catch(err => fn.send_error(res, err));
     });
