@@ -48,7 +48,7 @@ function get_sizes() {
     });
 };
 window.addEventListener('load', function () {
-    addListener('reload', get_items);
+    add_listener('reload', get_items);
     add_sort_listeners('items', get_items);
     add_sort_listeners('sizes', get_sizes);
     get_items();

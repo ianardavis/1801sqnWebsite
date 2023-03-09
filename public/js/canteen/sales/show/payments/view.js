@@ -23,5 +23,5 @@ function getPayments() {
     });
 };
 window.addEventListener('load', function () {
-    addListener('reload', getPayments);
+    add_listener('reload', getPayments);
 });

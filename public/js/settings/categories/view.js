@@ -49,6 +49,6 @@ function viewCategory(category_id) {
     });
 };
 window.addEventListener('load', function () {
-    addListener('reload', getCategories);
+    add_listener('reload', getCategories);
     modalOnShow('category_view', function (event) {viewCategory(event.relatedTarget.dataset.id)});
 });

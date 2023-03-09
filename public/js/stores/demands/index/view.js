@@ -56,15 +56,15 @@ function getSuppliers() {
     .catch(err =>   getDemands())
 };
 window.addEventListener('load', function () {
-    addListener('reload', getDemands);
+    add_listener('reload', getDemands);
     getSuppliers();
-    addListener('reload_suppliers', getSuppliers);
-    addListener('filter_demands_supplier',       getDemands, 'input');
-    addListener('status_demands_0',              getDemands, 'input');
-    addListener('status_demands_1',              getDemands, 'input');
-    addListener('status_demands_2',              getDemands, 'input');
-    addListener('status_demands_3',              getDemands, 'input');
-    addListener('filter_demands_createdAt_from', getDemands, 'input');
-    addListener('filter_demands_createdAt_to',   getDemands, 'input');
+    add_listener('reload_suppliers', getSuppliers);
+    add_listener('filter_demands_supplier',       getDemands, 'input');
+    add_listener('status_demands_0',              getDemands, 'input');
+    add_listener('status_demands_1',              getDemands, 'input');
+    add_listener('status_demands_2',              getDemands, 'input');
+    add_listener('status_demands_3',              getDemands, 'input');
+    add_listener('filter_demands_createdAt_from', getDemands, 'input');
+    add_listener('filter_demands_createdAt_to',   getDemands, 'input');
     add_sort_listeners('demands', getDemands);
 });

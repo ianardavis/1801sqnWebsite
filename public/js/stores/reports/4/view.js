@@ -51,8 +51,8 @@ function getStocks(location_id) {
     });
 };
 window.addEventListener('load', function () {
-    addListener('reload', getLocations);
-    addListener('sel_location', function (e) {getStocks(e.target.value)}, 'input');
+    add_listener('reload', getLocations);
+    add_listener('sel_location', function (e) {getStocks(e.target.value)}, 'input');
     addFormListener(
         'stocks',
         'PUT',

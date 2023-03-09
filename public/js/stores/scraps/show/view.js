@@ -38,7 +38,7 @@ function getScrap() {
     });
 };
 window.addEventListener('load', function () {
-    addListener('reload', getScrap);
+    add_listener('reload', getScrap);
     enable_button('scrap_complete');
     enable_button('scrap_file_download');
     enable_button('scrap_file_print');

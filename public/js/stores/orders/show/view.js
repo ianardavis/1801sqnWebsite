@@ -67,6 +67,6 @@ function set_status_badges(status) {
     };
 };
 window.addEventListener('load', function () {
-    addListener('reload', getOrder);
+    add_listener('reload', getOrder);
     getOrder();
 });

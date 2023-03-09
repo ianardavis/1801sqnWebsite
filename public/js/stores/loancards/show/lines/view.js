@@ -102,8 +102,8 @@ function viewLine(loancard_line_id) {
     });
 };
 window.addEventListener('load', function () {
-    addListener('reload', getLines);
-    addListener('sel_status', getLines, 'change');
+    add_listener('reload', getLines);
+    add_listener('sel_status', getLines, 'change');
     modalOnShow('line_view', function (event) {viewLine(event.relatedTarget.dataset.id)});
     getLines();
 });

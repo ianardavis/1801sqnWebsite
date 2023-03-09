@@ -73,8 +73,8 @@ function addInput(size_id, _cell, index) {
     };
 };
 window.addEventListener('load', function () {
-    addListener('reload', getItems);
-    addListener('sel_items', getSizes, 'input');
+    add_listener('reload', getItems);
+    add_listener('sel_items', getSizes, 'input');
     addFormListener(
         'sizes',
         'PUT',

@@ -22,7 +22,7 @@ function getPaidInOuts() {
     });
 };
 window.addEventListener('load', function () {
-    addListener('reload', getPaidInOuts);
+    add_listener('reload', getPaidInOuts);
     add_sort_listeners('paid_in_outs', getPaidInOuts);
     getPaidInOuts();
 });

@@ -37,11 +37,11 @@ function getRanks() {
     });
 };
 window.addEventListener("load", function () {
-    addListener('reload',          getUsers);
-    addListener('sel_statuses',    getUsers, 'change');
-    addListener('sel_ranks',       getUsers, 'change');
-    addListener('reload_statuses', getStatuses);
-    addListener('reload_ranks',    getRanks);
+    add_listener('reload',          getUsers);
+    add_listener('sel_statuses',    getUsers, 'change');
+    add_listener('sel_ranks',       getUsers, 'change');
+    add_listener('reload_statuses', getStatuses);
+    add_listener('reload_ranks',    getRanks);
 	Promise.allSettled([
 		getStatuses(),
 		getRanks()

@@ -26,8 +26,8 @@ function getDemands() {
     })
 };
 window.addEventListener('load', function () {
-    addListener('reload', getDemands);
-    addListener('sel_demand_status', getDemands, 'change');
+    add_listener('reload', getDemands);
+    add_listener('sel_demand_status', getDemands, 'change');
     add_sort_listeners('demands', getDemands);
     getDemands();
 });

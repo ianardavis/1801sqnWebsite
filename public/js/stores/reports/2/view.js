@@ -41,5 +41,5 @@ function getLines() {
     })
 };
 window.addEventListener('load', function () {
-    addListener('reload', getLines);
+    add_listener('reload', getLines);
 });

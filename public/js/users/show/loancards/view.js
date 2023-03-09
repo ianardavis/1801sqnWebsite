@@ -24,8 +24,8 @@ function getLoancards () {
     .catch(err => console.log(err));
 };
 window.addEventListener('load', function () {
-    addListener('reload', getLoancards);
-    addListener('sel_loancard_statuses', getLoancards, 'change');
+    add_listener('reload', getLoancards);
+    add_listener('sel_loancard_statuses', getLoancards, 'change');
     add_sort_listeners('loancards', getLoancards);
     getLoancards();
 });

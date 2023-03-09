@@ -27,6 +27,6 @@ window.addEventListener( "load", function () {
             ]
         }
     );
-    addListener('sel_nsn_groups', getNSNClassifications, 'change');
+    add_listener('sel_nsn_groups', getNSNClassifications, 'change');
     modalOnShow('nsn_edit', viewNSNEdit);
 });

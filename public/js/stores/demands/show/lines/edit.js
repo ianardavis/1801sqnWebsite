@@ -119,15 +119,20 @@ function setActionButton() {
         where: {demand_id: path[2]}
     })
     .then(function([result, options]) {
-        if ([1,2].includes(result.status)) enable_button('action')
-        else                               disable_button('action');
+        if ([1,2].includes(result.status)) {
+            enable_button('action');
+            
+        } else {
+            disable_button('action');
+            
+        };
     });
 };
 window.addEventListener( "load", function () {
     enable_button('action');
     setActionButton();
     addFormListener(
-        'action',
+        'lines',
         'PUT',
         '/demand_lines',
         {

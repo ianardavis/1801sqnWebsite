@@ -34,7 +34,7 @@ function viewGiftaid(giftaid_id) {
     });
 };
 window.addEventListener('load', function () {
-    addListener('reload', getGiftaids);
+    add_listener('reload', getGiftaids);
     getGiftaids();
     modalOnShow('giftaid_view', function (event) {
         if (event.relatedTarget.dataset.id) {

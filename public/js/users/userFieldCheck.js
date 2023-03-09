@@ -18,10 +18,10 @@ function check_fields() {
     } else save_user.disabled = true;
 };
 window.addEventListener('load', function () {
-    addListener('inp_service_number', check_fields, 'input');
-    addListener('inp_surname',        check_fields, 'input');
-    addListener('inp_first_name',     check_fields, 'input');
-    addListener('inp_login_id',       check_fields, 'input');
-    addListener('sel_ranks_add',      check_fields, 'change');
-    addListener('sel_statuses_add',   check_fields, 'change');
+    add_listener('inp_service_number', check_fields, 'input');
+    add_listener('inp_surname',        check_fields, 'input');
+    add_listener('inp_first_name',     check_fields, 'input');
+    add_listener('inp_login_id',       check_fields, 'input');
+    add_listener('sel_ranks_add',      check_fields, 'change');
+    add_listener('sel_statuses_add',   check_fields, 'change');
 });

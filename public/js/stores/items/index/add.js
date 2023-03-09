@@ -7,7 +7,7 @@ window.addEventListener( "load", function () {
     enable_button('item_add');
     modalOnShow('item_add', getGendersAdd);
     modalOnShow('item_add', get_size_descriptions);
-    addListener('reload_genders_add', getGendersAdd);
+    add_listener('reload_genders_add', getGendersAdd);
     addFormListener(
         'item_add',
         'POST',

@@ -20,7 +20,7 @@ function reset_add_detail() {
     set_value('detail_value_add');
 };
 window.addEventListener('load', function () {
-    addListener('reload_options', getDetailOptions)
+    add_listener('reload_options', getDetailOptions)
     modalOnShow('detail_add', reset_add_detail);
     modalOnShow('detail_add', getDetailOptions);
     enable_button('detail_add');

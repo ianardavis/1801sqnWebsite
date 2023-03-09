@@ -89,9 +89,9 @@ function sum_order_qtys(orders) {
 };
 
 window.addEventListener('load', function () {
-    addListener('reload', getLines);
+    add_listener('reload', getLines);
     
-    addListener('sel_lines_statuses', getLines, 'input');
+    add_listener('sel_lines_statuses', getLines, 'input');
 
     modalOnShow('line_view', function (event) {showLine(event.relatedTarget.dataset.id)});
     

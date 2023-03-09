@@ -14,5 +14,5 @@ function checkSession() {
     });
 };
 window.addEventListener('load', function () {
-    addListener('reload', checkSession);
+    add_listener('reload', checkSession);
 });

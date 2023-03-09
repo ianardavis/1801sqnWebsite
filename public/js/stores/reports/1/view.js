@@ -39,7 +39,7 @@ function getSizes() {
     });
 };
 window.addEventListener('load', function () {
-    addListener('reload', getSizes);
+    add_listener('reload', getSizes);
     addFormListener(
         'adjustments',
         'PUT',

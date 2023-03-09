@@ -110,12 +110,12 @@ window.addEventListener('load', function () {
             ]
         }
     );
-    addListener('reload', getLines);
-    addListener('filter_scrap_line_statuses', getLines, 'input');
-    addListener('filter_scrap_line_size_1',   getLines, 'input');
-    addListener('filter_scrap_line_size_2',   getLines, 'input');
-    addListener('filter_scrap_line_size_3',   getLines, 'input');
-    addListener('filter_scrap_line_item',     getLines, 'input');
+    add_listener('reload', getLines);
+    add_listener('filter_scrap_line_statuses', getLines, 'input');
+    add_listener('filter_scrap_line_size_1',   getLines, 'input');
+    add_listener('filter_scrap_line_size_2',   getLines, 'input');
+    add_listener('filter_scrap_line_size_3',   getLines, 'input');
+    add_listener('filter_scrap_line_item',     getLines, 'input');
     modalOnShow('line_view', function (event) {viewLine(event.relatedTarget.dataset.id)});
     add_sort_listeners('scrap_lines', getLines);
     getLines();

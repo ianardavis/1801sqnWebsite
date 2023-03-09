@@ -13,5 +13,5 @@ function getHolding() {
     });
 };
 window.addEventListener('load', function () {
-    addListener('reload', getHolding);
+    add_listener('reload', getHolding);
 });

@@ -15,5 +15,5 @@ function getWriteoff() {
     });
 };
 window.addEventListener('load', function () {
-    addListener('reload', getWriteoff);
+    add_listener('reload', getWriteoff);
 });

@@ -12,5 +12,5 @@ function getSale() {
     });
 };
 window.addEventListener('load', function () {
-    addListener('reload', getSale);
+    add_listener('reload', getSale);
 });

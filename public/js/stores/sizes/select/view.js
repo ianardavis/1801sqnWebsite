@@ -53,10 +53,10 @@ function selectSizes() {
     } else alert_toast('Source window not found');
 };
 window.addEventListener('load', function () {
-    addListener('tbl_sizes', toggle_checkbox_on_row_click);
-    addListener('btn_select',   selectSizes);
-    addListener('sel_items',    getSizes, 'input');
-    addListener('filter_items', getItems, 'input');
+    add_listener('tbl_sizes', toggle_checkbox_on_row_click);
+    add_listener('btn_select',   selectSizes);
+    add_listener('sel_items',    getSizes, 'input');
+    add_listener('filter_items', getItems, 'input');
     add_sort_listeners('sizes', getSizes);
     // add_sort_listeners('items', getItems);
     getItems();

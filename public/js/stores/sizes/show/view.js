@@ -39,6 +39,6 @@ function get_size() {
     .catch(err => window.location.assign('/items'));
 };
 window.addEventListener('load', function () {
-    addListener('reload', get_size);
+    add_listener('reload', get_size);
     get_size();
 });

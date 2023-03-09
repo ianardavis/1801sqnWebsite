@@ -107,9 +107,9 @@ function getSuppliers() {
     });
 };
 window.addEventListener('load', function () {
-    addListener('reload', getSizes);
-    addListener('sel_suppliers', getSizes, 'input');
-    addListener('sel_items',     getSizes, 'input');
+    add_listener('reload', getSizes);
+    add_listener('sel_suppliers', getSizes, 'input');
+    add_listener('sel_items',     getSizes, 'input');
     addFormListener(
         'sizes',
         'POST',

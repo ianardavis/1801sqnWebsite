@@ -15,5 +15,5 @@ function getSession() {
     });
 };
 window.addEventListener('load', function () {
-    addListener('reload', getSession);
+    add_listener('reload', getSession);
 });

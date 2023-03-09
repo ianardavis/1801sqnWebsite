@@ -43,7 +43,7 @@ function viewNSN(event) {
     });
 };
 window.addEventListener('load', function() {
-    addListener('reload', getNSNs);
+    add_listener('reload', getNSNs);
     modalOnShow('nsn_view', viewNSN);
     add_sort_listeners('nsns', getNSNs);
     getNSNs();

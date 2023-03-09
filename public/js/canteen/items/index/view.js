@@ -22,8 +22,8 @@ function getItems() {
     });
 };
 window.addEventListener('load', function () {
-    addListener('reload', getItems);
-    addListener('current', getItems, 'change');
+    add_listener('reload', getItems);
+    add_listener('current', getItems, 'change');
     add_sort_listeners('canteen_items', getItems);
     getItems();
 });

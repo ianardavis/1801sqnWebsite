@@ -41,10 +41,10 @@ function selectUsers() {
     } else alert_toast('Source window not found');
 };
 window.addEventListener('load', function () {
-    addListener('tbl_users', toggle_checkbox_on_row_click);
-    addListener('sel_ranks',    getUsers, 'change');
-    addListener('sel_statuses', getUsers, 'change');
-    addListener('btn_select',   selectUsers);
+    add_listener('tbl_users', toggle_checkbox_on_row_click);
+    add_listener('sel_ranks',    getUsers, 'change');
+    add_listener('sel_statuses', getUsers, 'change');
+    add_listener('btn_select',   selectUsers);
     listRanks();
     listStatuses();
     add_sort_listeners('users', getUsers);

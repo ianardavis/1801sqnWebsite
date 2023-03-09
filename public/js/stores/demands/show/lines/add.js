@@ -64,7 +64,7 @@ function setAddButton() {
 };
 window.addEventListener('load', function () {
     setAddButton();
-    addListener('btn_line_sizes', selectSize);
+    add_listener('btn_line_sizes', selectSize);
     modalOnShow('line_add', function () {clear('tbl_line_add')});
     addFormListener(
         'line_add',

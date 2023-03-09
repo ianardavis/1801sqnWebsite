@@ -1,17 +1,17 @@
 module.exports = function (m, fn) {
     fn.suppliers = {contacts: {}, addresses: {}};
 
-    fn.suppliers.get = function (where, includes = []) {
+    fn.suppliers.get = function (where, options = {}) {
         return new Promise((resolve, reject) => {
             m.suppliers.findOne({
                 where: where,
                 include: [
                     fn.inc.stores.account()
-                ].concat(includes)
+                ].concat(options.include || [])
             })
             .then(supplier => {
                 if (supplier) {
-                    resolve(supplier);
+                    resolve(...[supplier].concat(options.pass_on || []));
 
                 } else {
                     reject(new Error('Supplier not found'));

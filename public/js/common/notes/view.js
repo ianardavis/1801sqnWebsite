@@ -44,13 +44,13 @@ function viewNote(note_id) {
     });
 };
 window.addEventListener('load', function () {
-    addListener('reload', getNotes);
+    add_listener('reload', getNotes);
     modalOnShow('note_view', function(event) {
         if (event.relatedTarget.dataset.id) {
             viewNote(event.relatedTarget.dataset.id)
         } else modalHide('note_view');
     });
-    addListener('sel_system', getNotes, 'input');
+    add_listener('sel_system', getNotes, 'input');
     add_sort_listeners('notes', getNotes);
     getNotes();
 });

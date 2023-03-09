@@ -32,5 +32,5 @@ window.addEventListener('load', function () {
     modalOnShow('transfer_add', resetTransferAdd);
     modalOnShow('transfer_add', viewTransferAdd);
     modalOnShow('transfer_add', getLocations);
-    addListener('reload_locations_transfer', getLocations);
+    add_listener('reload_locations_transfer', getLocations);
 });

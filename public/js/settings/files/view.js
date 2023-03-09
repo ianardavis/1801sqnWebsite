@@ -32,7 +32,7 @@ function getFiles() {
     });
 };
 window.addEventListener('load', function () {
-    addListener('reload', getFiles);
+    add_listener('reload', getFiles);
     add_sort_listeners('files', getFiles);
     getFiles();
 });

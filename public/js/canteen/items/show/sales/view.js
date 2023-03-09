@@ -22,7 +22,7 @@ function getSales() {
     });
 };
 window.addEventListener('load', function () {
-    addListener('reload', getSales);
+    add_listener('reload', getSales);
     add_sort_listeners('sale_lines', getSales);
     getSales();
 });

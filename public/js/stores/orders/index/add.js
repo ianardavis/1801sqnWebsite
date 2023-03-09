@@ -48,7 +48,7 @@ function selectedSizes(sizes) {
     };
 };
 window.addEventListener('load', function () {
-    addListener('btn_order_sizes', selectSize);
+    add_listener('btn_order_sizes', selectSize);
     modalOnShow('order_add', reset_order_add);
     addFormListener(
         'order_add',

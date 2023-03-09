@@ -3,7 +3,7 @@ function set_image_id_delete() {
     if (image) set_value('image_id_delete', image.dataset.id)
 };
 window.addEventListener('load', function () {
-    addListener('btn_image_delete', set_image_id_delete)
+    add_listener('btn_image_delete', set_image_id_delete)
     addFormListener(
         'image_delete',
         'DELETE',

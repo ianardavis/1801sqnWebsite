@@ -37,7 +37,7 @@ function viewGender(gender_id) {
     });
 };
 window.addEventListener('load', function () {
-    addListener('reload', getGenders);
+    add_listener('reload', getGenders);
     modalOnShow('gender_view', function (event) {viewGender(event.relatedTarget.dataset.id)});
     add_sort_listeners('genders', getGenders);
     getGenders();

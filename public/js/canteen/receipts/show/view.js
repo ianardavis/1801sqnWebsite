@@ -15,5 +15,5 @@ function getReceipt() {
     })
 };
 window.addEventListener('load', function () {
-    addListener('reload', getReceipt);
+    add_listener('reload', getReceipt);
 });

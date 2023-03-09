@@ -23,7 +23,7 @@ function getSessions() {
     });
 };
 window.addEventListener('load', function () {
-    addListener('reload', getSessions);
+    add_listener('reload', getSessions);
     add_sort_listeners('sessions', getSessions);
     getSessions();
 });

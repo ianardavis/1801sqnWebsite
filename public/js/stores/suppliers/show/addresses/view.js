@@ -44,7 +44,7 @@ function viewAddress(supplier_address_id) {
     });
 };
 window.addEventListener('load', function () {
-    addListener('reload', getAddresses);
+    add_listener('reload', getAddresses);
     modalOnShow('address_view', function (event) {viewAddress(event.relatedTarget.dataset.id)});
     add_sort_listeners('addresses', getAddresses);
     getAddresses();

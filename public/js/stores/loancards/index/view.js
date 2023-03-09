@@ -50,17 +50,17 @@ function GoToEnter(input) {
     if(event.key === 'Enter') gotoLoancard(input.value);
 };
 window.addEventListener('load', function () {
-    addListener('reload', getLoancards);
-    addListener('goto_loancard_id', );
+    add_listener('reload', getLoancards);
+    add_listener('goto_loancard_id', );
     modalOnShow('loancard_open', function () {StartScanning(gotoLoancard)});
     modalOnHide('loancard_open', StopScanning);
     
     getUsers();
-    addListener('reload_users', getUsers);
-    addListener('sel_loancard_statuses', getLoancards, 'input');
-    addListener('sel_users',    getLoancards, 'change');
-    addListener('createdAt_from', function (){filter()}, 'change');
-    addListener('createdAt_to',   function (){filter()}, 'change');
+    add_listener('reload_users', getUsers);
+    add_listener('sel_loancard_statuses', getLoancards, 'input');
+    add_listener('sel_users',    getLoancards, 'change');
+    add_listener('createdAt_from', function (){filter()}, 'change');
+    add_listener('createdAt_to',   function (){filter()}, 'change');
     add_sort_listeners('loancards', getLoancards);
     getLoancards();
 });

@@ -59,7 +59,7 @@ function viewLine(action_id) {
     });
 };
 window.addEventListener('load', function () {
-    addListener('reload', getActions);
+    add_listener('reload', getActions);
     modalOnShow('action_view', function (event) {viewLine(event.relatedTarget.dataset.id)});
     modalOnShow('action_view', function (event) {getLinks(event.relatedTarget.dataset.id)});
     add_sort_listeners('actions', getActions);

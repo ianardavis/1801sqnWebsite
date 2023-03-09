@@ -24,10 +24,10 @@ function getItems() {
     });
 };
 window.addEventListener('load', function () {
-    addListener('reload', getItems);
-    addListener('sel_genders',      getItems, 'input');
-    addListener('item_description', getItems, 'input');
-    addListener('reload_genders',   getGenders);
+    add_listener('reload', getItems);
+    add_listener('sel_genders',      getItems, 'input');
+    add_listener('item_description', getItems, 'input');
+    add_listener('reload_genders',   getGenders);
     add_sort_listeners('items', getItems);
     getItems();
 });

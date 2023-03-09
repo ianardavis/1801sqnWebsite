@@ -59,12 +59,12 @@ function filter(tbl_issues) {
     });
 };
 window.addEventListener('load', function () {
-    addListener('reload', getIssues);
-    addListener('sel_issue_statuses', getIssues, 'change');
-    addListener('issue_createdAt_from', function (){filter()}, 'change');
-    addListener('issue_createdAt_to',   function (){filter()}, 'change');
-    addListener('item',           function (){filter()}, 'input');
-    addListener('size',           function (){filter()}, 'input');
+    add_listener('reload', getIssues);
+    add_listener('sel_issue_statuses', getIssues, 'change');
+    add_listener('issue_createdAt_from', function (){filter()}, 'change');
+    add_listener('issue_createdAt_to',   function (){filter()}, 'change');
+    add_listener('item',           function (){filter()}, 'input');
+    add_listener('size',           function (){filter()}, 'input');
     add_sort_listeners('issues', getIssues);
     getIssues();
 });

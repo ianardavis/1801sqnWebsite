@@ -52,7 +52,7 @@ function viewIssue(issue_id) {
     .catch(err => console.log(err));
 };
 window.addEventListener('load', function () {
-    addListener('reload', getIssues);
+    add_listener('reload', getIssues);
     document.querySelector('#sel_issue_statuses').addEventListener('change', getIssues);
     modalOnShow('issue_view', function (event) {viewIssue(event.relatedTarget.dataset.id)});
     add_sort_listeners('issues', getIssues);

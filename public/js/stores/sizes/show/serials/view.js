@@ -22,7 +22,7 @@ function getSerials() {
     });
 };
 window.addEventListener('load', function () {
-    addListener('reload', getSerials);
+    add_listener('reload', getSerials);
     add_sort_listeners('serials', getSerials);
     getSerials();
 });

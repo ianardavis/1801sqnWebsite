@@ -10,9 +10,9 @@ const config = {
     qrbox: { width: 250, height: 250 }
 };
 const html5QrCode = new Html5Qrcode(
-    "scannerWindow",
-    { formatsToSupport: formats },
-    /* verbose= */ true
+    "scannerWindow"//,
+    // { formatsToSupport: formats },
+    // /* verbose= */ true
 );
 function StopScanning() {
     html5QrCode.stop()
@@ -23,7 +23,8 @@ function StartScanning(onSuccess) {
         { facingMode: "environment" },
         config,
         onSuccess
-    );
+    )
+    .catch(err => console.log(err));
     // Html5Qrcode.getCameras()
     // .then(devices => {
     //     if (devices && devices.length) {

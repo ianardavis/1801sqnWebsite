@@ -19,7 +19,7 @@ function getSizes() {
     });
 };
 window.addEventListener('load', function () {
-    addListener('reload', getSizes);
+    add_listener('reload', getSizes);
     add_sort_listeners('sizes', getSizes);
     getSizes();
 });

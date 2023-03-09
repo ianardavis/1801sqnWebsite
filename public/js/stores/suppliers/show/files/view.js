@@ -39,7 +39,7 @@ function viewFile(file_id) {
     });
 };
 window.addEventListener('load', function () {
-    addListener('reload', getFiles);
+    add_listener('reload', getFiles);
     modalOnShow('file_view', function (event) {viewFile(event.relatedTarget.dataset.id)});
     add_sort_listeners('files', getFiles);
     getFiles();

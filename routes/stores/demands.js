@@ -31,8 +31,13 @@ module.exports = (app, fn) => {
         .then(demand => res.send({success: true, result: demand}))
         .catch(err => fn.send_error(res, err));
     });
+    app.get('/get/demand/users',     fn.loggedIn(), fn.permissions.check('authorised_demander'), (req, res) => {
+        fn.demands.get_users(req.query.where.demand_id)
+        .then(users => res.send({success: true, result: users}))
+        .catch(err => fn.send_error(res, err));
+    });
     app.get('/get/demands',          fn.loggedIn(), fn.permissions.check('authorised_demander'), (req, res) => {
-        fn.demands.getAll(
+        fn.demands.get_all(
             fn.build_query(req.query),
             fn.pagination(req.query)
         )

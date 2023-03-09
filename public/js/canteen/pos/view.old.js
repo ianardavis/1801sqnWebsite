@@ -233,7 +233,7 @@ function getSession() {
 };
 
 window.addEventListener('load', function () {
-    addListener('reload', getSale);
+    add_listener('reload', getSale);
     numberEvents();
     modalOnShow('sale_complete', reset_sale_complete);
     addFormListener(

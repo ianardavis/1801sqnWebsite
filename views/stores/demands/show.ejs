@@ -22,6 +22,7 @@
 	<ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
         <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'demand'}) %>
         <%- include(`${partials}/tab_head`, {id: 'lines',   title: 'Lines',	  spinner: 'demand_lines',  count_id: 'line'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'users',   title: 'Users',	  spinner: 'users',  		count_id: 'user'}) %>
         <%- include(`${partials}/common/actions/tab_head`) %>
         <%- include(`${partials}/common/notes/tab_head`) %>
     </ul>
@@ -66,6 +67,18 @@
 				<%- include(`${partials}/limit`, {table: 'demand_lines'}) %>
 			</form>
 		</div>
+		<div class="tab-pane fade" id="users" role="tabpanel" aria-labelledby="users-tab">
+			<h5>Users For This Demand</h5>
+			<table class='table table-sm table-hover'>
+				<thead class='thead-dark' id='tbl_users_head'>
+					<th class='w-50' data-column='["surname"]' data-dir='ASC'>Surname</th>
+					<th class='w-50' data-column='["first_name"]'			 >First Name</th>
+					<th><i class='fas fa-search'></i></th>
+				</thead>
+				<tbody id='tbl_users'></tbody>
+			</table>
+			<%- include(`${partials}/limit`, {table: 'users'}) %>
+		</div>
         <%- include(`${partials}/common/actions/tab_body`) %>
         <%- include(`${partials}/common/notes/tab_body`) %>
 	</div>
@@ -88,6 +101,7 @@
 <script src="/js/stores/demands/show/view.js"></script>
 <script src="/js/stores/demands/show/edit.js"></script>
 <script src="/js/stores/demands/show/delete.js"></script>
+<script src="/js/stores/demands/show/users/view.js"></script>
 <script src="/js/stores/demands/show/lines/view.js"></script>
 <script src="/js/stores/demands/show/lines/edit.js"></script>
 <script src="/js/stores/stocks/list.js"></script>

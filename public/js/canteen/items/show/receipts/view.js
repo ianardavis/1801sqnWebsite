@@ -22,7 +22,7 @@ function getReceipts() {
     });
 };
 window.addEventListener('load', function () {
-    addListener('reload', getReceipts);
+    add_listener('reload', getReceipts);
     add_sort_listeners('receipts', getReceipts);
     getReceipts();
 });

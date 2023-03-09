@@ -71,19 +71,19 @@ function getUsers() {
     });
 };
 window.addEventListener('load', function () {
-    addListener('reload', getIssues);
+    add_listener('reload', getIssues);
     getUsers();
     sidebarOnShow('IssuesFilter', getUsers);
     modalOnShow('issue_add', () => {sidebarClose('IssuesFilter')});
-    addListener('btn_users_reload',            getUsers);
-    addListener('filter_issue_user',           getIssues, 'input');
-    addListener('filter_issue_statuses',       getIssues, 'input');
-    addListener('filter_issue_createdAt_from', getIssues, 'input');
-    addListener('filter_issue_createdAt_to',   getIssues, 'input');
-    addListener('filter_issue_item',           getIssues, 'input');
-    addListener('filter_issue_size_1',         getIssues, 'input');
-    addListener('filter_issue_size_2',         getIssues, 'input');
-    addListener('filter_issue_size_3',         getIssues, 'input');
+    add_listener('btn_users_reload',            getUsers);
+    add_listener('filter_issue_user',           getIssues, 'input');
+    add_listener('filter_issue_statuses',       getIssues, 'input');
+    add_listener('filter_issue_createdAt_from', getIssues, 'input');
+    add_listener('filter_issue_createdAt_to',   getIssues, 'input');
+    add_listener('filter_issue_item',           getIssues, 'input');
+    add_listener('filter_issue_size_1',         getIssues, 'input');
+    add_listener('filter_issue_size_2',         getIssues, 'input');
+    add_listener('filter_issue_size_3',         getIssues, 'input');
     addFormListener(
         'issue_edit',
         'PUT',

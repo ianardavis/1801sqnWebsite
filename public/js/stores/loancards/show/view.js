@@ -45,7 +45,7 @@ function getLoancard() {
     });
 };
 window.addEventListener('load', function () {
-    addListener('reload', getLoancard);
+    add_listener('reload', getLoancard);
     addFormListener(
         'loancard_file_print',
         'GET',

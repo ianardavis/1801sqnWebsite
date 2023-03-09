@@ -45,6 +45,6 @@ function getDemand() {
     });
 };
 window.addEventListener('load', function () {
-    addListener('reload', getDemand);
+    add_listener('reload', getDemand);
     getDemand();
 });

@@ -59,14 +59,14 @@ function getOrders() {
     });
 };
 window.addEventListener('load', function () {
-    addListener('reload', getOrders);
-    addListener('filter_order_statuses',       getOrders, 'input');
-    addListener('filter_order_createdAt_from', getOrders, 'input');
-    addListener('filter_order_createdAt_to',   getOrders, 'input');
-    addListener('filter_order_item',           getOrders, 'input');
-    addListener('filter_order_size_1',         getOrders, 'input');
-    addListener('filter_order_size_2',         getOrders, 'input');
-    addListener('filter_order_size_3',         getOrders, 'input');
+    add_listener('reload', getOrders);
+    add_listener('filter_order_statuses',       getOrders, 'input');
+    add_listener('filter_order_createdAt_from', getOrders, 'input');
+    add_listener('filter_order_createdAt_to',   getOrders, 'input');
+    add_listener('filter_order_item',           getOrders, 'input');
+    add_listener('filter_order_size_1',         getOrders, 'input');
+    add_listener('filter_order_size_2',         getOrders, 'input');
+    add_listener('filter_order_size_3',         getOrders, 'input');
     addFormListener(
         'order_edit',
         'PUT',

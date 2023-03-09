@@ -53,7 +53,7 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
-    fn.demands.lines.getAll = function (where = {}, include = [], options = {}) {
+    fn.demands.lines.get_all = function (where = {}, include = [], options = {}) {
         return new Promise((resolve, reject) => {
             m.demand_lines.findAll({
                 where:   where,

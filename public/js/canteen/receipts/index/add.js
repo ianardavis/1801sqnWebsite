@@ -34,9 +34,9 @@ function getItems() {
 }
 window.addEventListener('load', function () {
     modalOnShow('receipt_add', getItems);
-    addListener('qty',        calculate_cost, 'input');
-    addListener('cost_total', calculate_cost, 'input');
-    addListener('sel_items',  reset_add_item, 'change');
+    add_listener('qty',        calculate_cost, 'input');
+    add_listener('cost_total', calculate_cost, 'input');
+    add_listener('sel_items',  reset_add_item, 'change');
     addFormListener(
         'receipt_add',
         'POST',

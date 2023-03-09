@@ -6,7 +6,7 @@ window.addEventListener( "load", function () {
         '/nsns',
         {onComplete: getNSNs}
     );
-    addListener('sel_nsn_groups', getNSNClassifications, 'change');
+    add_listener('sel_nsn_groups', getNSNClassifications, 'change');
     modalOnShow('nsn_add', getNSNGroups);
     modalOnShow('nsn_add', getNSNCountries);
 });

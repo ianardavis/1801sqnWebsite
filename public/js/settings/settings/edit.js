@@ -87,7 +87,7 @@ window.addEventListener('load', function () {
         'POST',
         '/pm2_reload'
     );
-    addListener('btn_printers', getPrinters);
+    add_listener('btn_printers', getPrinters);
     modalOnShow('setting_edit', function (event) {viewSettingEdit(event.relatedTarget.dataset.id)});
     modalOnShow('setting_view', function (event) {settingEditBtn( event.relatedTarget.dataset.id)});
 });

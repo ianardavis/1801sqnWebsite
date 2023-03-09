@@ -25,5 +25,5 @@ window.addEventListener('load', function () {
             function () {['size1', 'size2', 'size3'].forEach(e => set_value(`size_${e}`));}
         ]}
     );
-    addListener('reload_suppliers', getSuppliers);
+    add_listener('reload_suppliers', getSuppliers);
 });

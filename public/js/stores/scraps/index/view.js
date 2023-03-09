@@ -32,13 +32,13 @@ function getSuppliers() {
     })  
 };
 window.addEventListener('load', function () {
-    addListener('reload', getScraps);
+    add_listener('reload', getScraps);
     getSuppliers();
-    addListener('reload_users', getSuppliers);
-    addListener('filter_scrap_statuses', getScraps, 'change');
-    addListener('filter_scrap_suppliers', getScraps, 'change');
-    addListener('createdAt_from',     getScraps, 'change');
-    addListener('createdAt_to',       getScraps, 'change');
+    add_listener('reload_users', getSuppliers);
+    add_listener('filter_scrap_statuses', getScraps, 'change');
+    add_listener('filter_scrap_suppliers', getScraps, 'change');
+    add_listener('createdAt_from',     getScraps, 'change');
+    add_listener('createdAt_to',       getScraps, 'change');
     add_sort_listeners('scraps', getScraps);
     getScraps();
 });

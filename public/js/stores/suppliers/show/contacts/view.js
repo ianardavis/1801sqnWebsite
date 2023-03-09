@@ -40,7 +40,7 @@ function viewContact(supplier_contact_id) {
     });
 };
 window.addEventListener('load', function () {
-    addListener('reload', getContacts);
+    add_listener('reload', getContacts);
     modalOnShow('contact_view', function (event) {viewContact(event.relatedTarget.dataset.id)});
     add_sort_listeners('contacts', getContacts);
     getContacts();

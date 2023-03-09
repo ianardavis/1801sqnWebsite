@@ -35,5 +35,5 @@ function getDemandLine() {
     });
 };
 window.addEventListener('load', function () {
-    addListener('reload', getDemandLine);
+    add_listener('reload', getDemandLine);
 });

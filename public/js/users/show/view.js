@@ -17,7 +17,7 @@ function getUser() {
     });
 };
 window.addEventListener('load', function () {
-    addListener('reload', getUser);
+    add_listener('reload', getUser);
     document.querySelectorAll('.user_id').forEach(e => e.value = path[2]);
     enable_button('user_password');
     addFormListener(

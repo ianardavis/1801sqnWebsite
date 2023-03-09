@@ -35,7 +35,7 @@ function viewCategoryEdit(category_id) {
     });
 };
 window.addEventListener('load', function () {
-    addListener('reload', loadCategoriesEdit);
+    add_listener('reload', loadCategoriesEdit);
     modalOnShow('category_view', function (event) {categoryEditBtn(event.relatedTarget.dataset.id)});
     modalOnShow('category_edit', function (event) {viewCategoryEdit(event.relatedTarget.dataset.id)});
     addFormListener(

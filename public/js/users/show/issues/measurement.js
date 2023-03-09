@@ -127,9 +127,9 @@ function get_sizes(event) {
     });
 };
 window.addEventListener( "load", function () {
-    addListener('tbl_items', toggle_checkbox_on_row_click);
+    add_listener('tbl_items', toggle_checkbox_on_row_click);
     modalOnShow('issue_measurement', get_items);
-    addListener('btn_measurement_search', get_sizes);
+    add_listener('btn_measurement_search', get_sizes);
     enable_button('issue_measurement');
     addFormListener(
         'issue_measurement',

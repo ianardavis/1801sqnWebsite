@@ -38,5 +38,5 @@ function getLoancardLine() {
     });
 };
 window.addEventListener('load', function () {
-    addListener('reload', getLoancardLine);
+    add_listener('reload', getLoancardLine);
 });

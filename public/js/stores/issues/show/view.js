@@ -76,6 +76,6 @@ function set_status_badges(status) {
     };
 };
 window.addEventListener('load', function () {
-    addListener('reload', getIssue);
+    add_listener('reload', getIssue);
     getIssue();
 });

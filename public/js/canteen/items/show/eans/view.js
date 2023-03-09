@@ -26,7 +26,7 @@ function getEANs() {
     });
 };
 window.addEventListener('load', function () {
-    addListener('reload', getEANs);
+    add_listener('reload', getEANs);
     add_sort_listeners('nsns', getEANs);
     getEANs();
 });

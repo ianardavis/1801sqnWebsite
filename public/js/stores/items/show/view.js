@@ -18,5 +18,5 @@ function getItem() {
     .catch(err => window.location.assign('/items'));
 };
 window.addEventListener('load', function () {
-    addListener('reload', getItem);
+    add_listener('reload', getItem);
 });
