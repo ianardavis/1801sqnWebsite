@@ -39,11 +39,11 @@ module.exports = function (m, fn) {
     };
     function create_action(paid_in_out_id, action, user_id, links = []) {
         return new Promise(resolve => {
-            fn.actions.create(
+            fn.actions.create([
                 `PAID OUT | ${action}`,
                 user_id,
                 [{_table: 'paid_in_outs', id: paid_in_out_id}].concat(links)
-            )
+            ])
             .then(action => resolve(true));
         });
     };

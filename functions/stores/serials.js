@@ -46,11 +46,11 @@ module.exports = function (m, fn) {
                 serial.update({serial: new_serial})
                 .then(result => {
                     if (result) {
-                        fn.actions.create(
+                        fn.actions.create([
                             `EDITED | Serial changed from ${original_serial} to ${new_serial}`,
                             user_id,
                             [{_table: 'serials', id: serial.serial_id}]
-                        )
+                        ])
                         .then(result => resolve(true));
                     } else {
                         reject(new Error('serial not updated'));
@@ -73,11 +73,11 @@ module.exports = function (m, fn) {
                             serial.update({location_id: new_location.location_id})
                             .then(result => {
                                 if (result) {
-                                    fn.actions.create(
+                                    fn.actions.create([
                                         `SERIAL | LOCATION | transferred from ${original_location} to ${new_location.location}`,
                                         user_id,
                                         [{_table: 'serials', id: serial.serial_id}]
-                                    )
+                                    ])
                                     .then(result => resolve(true));
                                 } else {
                                     reject(new Error('Serial not updated'));
@@ -129,11 +129,11 @@ module.exports = function (m, fn) {
                                     details
                                 )
                                 .then(result => {
-                                    fn.actions.create(
+                                    fn.actions.create([
                                         'SERIAL | SCRAPPED',
                                         user_id,
                                         [{_table: 'serials', id: serial.serial_id}]
-                                    )
+                                    ])
                                     .then(results => resolve(true));
                                 })
                                 .catch(err => reject(err));
@@ -167,11 +167,11 @@ module.exports = function (m, fn) {
                         })
                         .then(([serial, created]) => {
                             if (created) {
-                                fn.actions.create(
+                                fn.actions.create([
                                     'CREATED',
                                     user_id,
                                     [{_table: 'serials', id: serial.serial_id}]
-                                )
+                                ])
                                 .then(result => resolve(serial));
 
                             } else {
@@ -249,11 +249,11 @@ module.exports = function (m, fn) {
                 serial.update({location_id: location.location_id})
                 .then(result => {
                     if (result) {
-                        fn.actions.create(
+                        fn.actions.create([
                             `SERIAL | LOCATION | Set to ${location.location}${action_append}`,
                             user_id,
                             [{_table: 'serials', id: serial.serial_id}]
-                        )
+                        ])
                         .then(result => resolve(true));
 
                     } else {

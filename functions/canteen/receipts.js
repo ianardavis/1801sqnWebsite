@@ -52,11 +52,11 @@ module.exports = function (m, fn) {
     };
     function create_action(action, receipt_id, user_id) {
         return new Promise(resolve => {
-            fn.actions.create(
+            fn.actions.create([
                 `RECEIPTS | ${action}`,
                 user_id,
                 [{_table: 'receipts', id: receipt_id}]
-            )
+            ])
             .then(action => resolve(true));
         });
     };

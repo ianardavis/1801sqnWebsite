@@ -2,11 +2,11 @@ module.exports = function (m, fn) {
     const line_status = {0: "Cancelled", 1: "Pending", 2: "Open", 3: "Closed"};
     function create_line_action(action, line_id, user_id, links = []) {
         return new Promise(resolve => {
-            fn.actions.create(
+            fn.actions.create([
                 `DEMAND LINE | ${action}`,
                 user_id,
                 [{_table: 'demand_lines', id: line_id}].concat(links)
-            )
+            ])
             .then(action => resolve(true))
             .catch(err => {
                 console.log(err);
@@ -64,103 +64,105 @@ module.exports = function (m, fn) {
                     options.allowNull === true ||
                     (lines && lines.length > 0)
                 ) {
-                    resolve(lines)
+                    resolve(lines);
+
                 } else {
                     reject(new Error('No lines found'));
-                };
-            })
-            .catch(err => reject(err));
-        });
-    };
-
-    function create_check_size(size_id, demand_id, user_id, orders) {
-        return new Promise((resolve, reject) => {
-            fn.sizes.get(
-                {size_id: size_id},
-                [fn.inc.stores.details({
-                    where: {name: {[fn.op.or]:['Demand Page', 'Demand Cell']}}
-                })]
-            )
-            .then(size => {
-                if (!size.details) {
-                    reject(new Error('No demand page/cell for this size'));
-
-                } else if (!size.details.filter(e => e.name === 'Demand Page')) {
-                    reject(new Error('No demand page for this size'));
-
-                } else if (!size.details.filter(e => e.name === 'Demand Cell')) {
-                    reject(new Error('No demand cell for this size'));
-
-                } else {
-                    resolve(size, demand_id, user_id, orders);
 
                 };
             })
             .catch(err => reject(err));
         });
     };
-    function create_check_demand(size, demand_id, user_id, orders) {
-        return new Promise((resolve, reject) => {
-            fn.demands.get({demand_id: demand_id})
-            .then(demand => {
-                if (demand.status !== 1) {
-                    reject(new Error('Lines can only be added to draft demands'));
 
-                } else if (size.supplier_id !== demand.supplier_id) {
-                    reject(new Error('Size and demand are not for the same supplier'));
-
-                } else {
-                    resolve(demand.demand_id, size.size_id, user_id, orders);
-
-                };
-            })
-            .catch(err => reject(err));
-        });
-    };
-    function create_line(demand_id, size_id, user_id, orders) {
-        return new Promise((resolve, reject) => {
-            m.demand_lines.findOrCreate({
-                where: {
-                    demand_id: demand_id,
-                    size_id:   size_id
-                },
-                defaults: {
-                    user_id: user_id
-                }
-            })
-            .then(([line, created]) => {
-                let actions = [];
-                orders.forEach(order => {
-                    actions.push(m.order_demand_lines.create({
-                        order_id: order.order_id,
-                        demand_line_id: line.demand_line_id
-                    }));
-                });
-                Promise.all(actions)
-                .then(results => {
-                    let links = [];
-                    orders.forEach(e => links.push({_table: 'orders', id: e.order_id}));
-                    resolve(
-                        `DEMAND LINE | ${(created ? 'CREATED' : 'INCREMENTED')}`,
-                        user_id,
-                        [{_table: 'demand_lines', id: line_id}].concat(links)
-                        [line.demand_line_id, created],
-                        line.demand_line_id
-                    );
+    fn.demands.lines.create = function (size_id, demand_id, user_id, orders = []) {
+        function check_size(size_id) {
+            return new Promise((resolve, reject) => {
+                fn.sizes.get(
+                    {size_id: size_id},
+                    [fn.inc.stores.details({
+                        where: {name: {[fn.op.or]:['Demand Page', 'Demand Cell']}}
+                    })]
+                )
+                .then(size => {
+                    if (!size.details) {
+                        reject(new Error('No demand page/cell for this size'));
+    
+                    } else if (!size.details.filter(e => e.name === 'Demand Page')) {
+                        reject(new Error('No demand page for this size'));
+    
+                    } else if (!size.details.filter(e => e.name === 'Demand Cell')) {
+                        reject(new Error('No demand cell for this size'));
+    
+                    } else {
+                        resolve(size);
+    
+                    };
                 })
                 .catch(err => reject(err));
-            })
-            .catch(err => reject(err));
-        });
-    };
-    fn.demands.lines.create = function (size_id, demand_id, user_id, orders = []) {
+            });
+        };
+        function check_demand(size) {
+            return new Promise((resolve, reject) => {
+                fn.demands.get({demand_id: demand_id})
+                .then(demand => {
+                    if (demand.status !== 1) {
+                        reject(new Error('Lines can only be added to draft demands'));
+    
+                    } else if (size.supplier_id !== demand.supplier_id) {
+                        reject(new Error('Size and demand are not for the same supplier'));
+    
+                    } else {
+                        resolve([demand.demand_id, size.size_id]);
+    
+                    };
+                })
+                .catch(err => reject(err));
+            });
+        };
+        function create_line([demand_id, size_id]) {
+            return new Promise((resolve, reject) => {
+                m.demand_lines.findOrCreate({
+                    where: {
+                        demand_id: demand_id,
+                        size_id:   size_id
+                    },
+                    defaults: {
+                        user_id: user_id
+                    }
+                })
+                .then(([line, created]) => {
+                    let actions = [];
+                    orders.forEach(order => {
+                        actions.push(m.order_demand_lines.create({
+                            order_id:       order.order_id,
+                            demand_line_id: line.demand_line_id
+                        }));
+                    });
+                    Promise.all(actions)
+                    .then(results => {
+                        let links = [];
+                        orders.forEach(e => links.push({_table: 'orders', id: e.order_id}));
+                        resolve([
+                            `DEMAND LINE | ${(created ? 'CREATED' : 'INCREMENTED')}`,
+                            user_id,
+                            [{_table: 'demand_lines', id: line.demand_line_id}].concat(links)
+                            [line.demand_line_id, created],
+                            line.demand_line_id
+                        ]);
+                    })
+                    .catch(err => reject(err));
+                })
+                .catch(err => reject(err));
+            });
+        };
         return new Promise((resolve, reject) => {
-            create_check_size(size_id, demand_id, user_id, orders = [])
-            .then(create_check_demand)
+            check_size(size_id, demand_id, user_id, orders)
+            .then(check_demand)
             .then(create_line)
             .then(fn.actions.create)
             .then(line_id => resolve(line_id))
-            .catch(err => reject(err));
+            .catch(err => {console.log(err);reject(err)});
         });
     };
     fn.demands.lines.create_bulk = function (lines, demand_id, user_id) {
@@ -274,11 +276,11 @@ module.exports = function (m, fn) {
                 let links = [];
                 //get an array of all the orders updated
                 results.forEach(e => links.push({_table: 'orders', id: e.value}));
-                resolve(
+                resolve([
                     'DEMAND LINE | CANCELLED',
                     user_id,
                     [{_table: 'demand_lines', id: line.demand_line_id}].concat(links)
-                );
+                ]);
             })
             .catch(err => reject(err));
         });

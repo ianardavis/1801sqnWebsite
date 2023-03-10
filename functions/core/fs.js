@@ -1,20 +1,33 @@
 const fs = require("fs");
 module.exports = function (m, fn) {
 	fn.fs = {};
-	fn.fs.file_exists = function (folder, file) {
+	function path_exists(path, createIfFalse = false) {
 		return new Promise((resolve, reject) => {
-			const path = fn.public_file(folder, file);
 			if (fs.existsSync(path)) {
 				resolve(path);
 
 			} else {
-				reject(new Error('File does not exist'));
+				if (createIfFalse) {
+					fn.fs.mkdir(path)
+					.then(path => resolve(true))
+					.catch(err => reject(err));
+
+				} else {
+					reject(new Error('Path does not exist'));
+
+				};
 
 			};
 		});
 	};
-	fn.fs.mkdir = function (folder) {
-		return new Promise((resolve, reject) => {
+	fn.fs.file_exists 	= function (folder, file) {
+		return path_exists(fn.public_file(folder, file));
+	};
+	fn.fs.folder_exists = function (folder, createIfFalse = false) {
+		return path_exists(fn.public_folder(folder), createIfFalse);
+	};
+	fn.fs.mkdir 		= function (folder) {
+		return new Promise(resolve => {
 			const path = fn.public_folder(folder);
 			fn.fs.folder_exists(folder)
 			.then(result => resolve(path))
@@ -25,19 +38,7 @@ module.exports = function (m, fn) {
 			});
 		});
 	};
-	fn.fs.folder_exists = function (folder) {
-		return new Promise((resolve, reject) => {
-			const path = fn.public_folder(folder);
-			if (fs.existsSync(path)) {
-				resolve(path);
-
-			} else {
-				reject(new Error('File does not exist'));
-
-			};
-		});
-	};
-	fn.fs.copy_file = function (src, dest) {
+	fn.fs.copy_file 	= function (src, dest) {
 		return new Promise((resolve, reject) => {
 			fn.fs.file_exists(src.folder, src.folder)
 			.then(src => {
@@ -47,7 +48,7 @@ module.exports = function (m, fn) {
 					function (err) {
 						if (err) {
 							if (err.code === 'EEXIST') {
-								reject(new Error('Error copying file: This file already exists'));
+								reject(new Error('Error copying file: Destination file already exists'));
 
 							} else {
 								reject(err);
@@ -63,7 +64,7 @@ module.exports = function (m, fn) {
 			.catch(err => reject(err));
 		});
 	};
-	fn.fs.upload_file = function (options = {}) {
+	fn.fs.upload_file 	= function (options = {}) {
 		return new Promise((resolve, reject) => {
 			fn.suppliers.get({supplier_id: options.supplier_id})
 			.then(supplier => {
@@ -75,7 +76,7 @@ module.exports = function (m, fn) {
 					m.files.findOrCreate({
 						where: {filename: options.filename},
 						defaults: {
-							user_id: options.user_id,
+							user_id: 	 options.user_id,
 							supplier_id: options.supplier_id,
 							description: options.description
 						}
@@ -96,7 +97,7 @@ module.exports = function (m, fn) {
 			.catch(err => reject(err));
 		});
 	};
-	fn.fs.rmdir = function (folder) {
+	fn.fs.rmdir 		= function (folder) {
 		return new Promise((resolve, reject) => {
 			fn.fs.file_exists(folder, '')
 			.then(exists => {
@@ -118,11 +119,13 @@ module.exports = function (m, fn) {
 			.catch(err => reject(err));
 		});
 	};
-	fn.fs.rm = function (file) {
+	fn.fs.rm 			= function (file) {
 		return new Promise((resolve, reject) => {
 			fs.access(file, fs.constants.R_OK, function (err) {
-				if (err) reject(err)
-				else {
+				if (err) {
+					reject(err);
+
+				} else {
 					fs.unlink(file, function (err) {
 						if (err) {
 							reject(err);
@@ -136,7 +139,7 @@ module.exports = function (m, fn) {
 			});
 		});
 	};
-	fn.fs.delete_file = function (options = {}) {
+	fn.fs.delete_file 	= function (options = {}) {
 		return new Promise((resolve, reject) => {
 			m[options.table].findByPk(options.id)
 			.then(result => {
@@ -147,11 +150,11 @@ module.exports = function (m, fn) {
 						.then(rmresult => {
 							result.update({filename: null})
 							.then(result => {
-								fn.actions.create(
+								fn.actions.create([
 									`${options.table_s} | FILE DELETED`,
 									options.user_id,
 									[{_table: options.table, id: options.id}]
-								)
+								])
 								.then(result => resolve(true));
 							})
 							.catch(err => reject(err));
@@ -159,14 +162,16 @@ module.exports = function (m, fn) {
 						.catch(err => reject(err));
 					})
 					.catch(err => reject(err));
+					
 				} else {
 					reject(new Error('No file for this record'));
+
 				};
 			})
 			.catch(err => reject(err));
 		});
 	};
-	fn.fs.download = function (folder, file, res) {
+	fn.fs.download 		= function (folder, file, res) {
 		return new Promise((resolve, reject) => {
 			fn.fs.file_exists(folder, file)
 			.then(path => {

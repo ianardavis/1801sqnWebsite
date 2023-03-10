@@ -96,11 +96,11 @@ module.exports = function (m, fn) {
                 loancard.update({status: 0})
                 .then(result => {
                     if (result) {
-                        fn.actions.create(
+                        fn.actions.create([
                             'LOANCARD | CANCELLED',
                             options.user_id,
                             [{_table: 'loancards', id: loancard.loancard_id}]
-                        )
+                        ])
                         .then(action => resolve(true));
 
                     } else {
@@ -188,11 +188,11 @@ module.exports = function (m, fn) {
                     })
                     .then(result => {
                         if (result) {
-                            fn.actions.create(
+                            fn.actions.create([
                                 'LOANCARD | COMPLETED',
                                 options.user_id,
                                 [{_table: 'loancards', id: loancard.loancard_id}].concat(line_links)
-                            )
+                            ])
                             .then(action => resolve(loancard.loancard_id));
 
                         } else {
@@ -278,11 +278,11 @@ module.exports = function (m, fn) {
                 loancard.update({status: 3})
                 .then(result => {
                     if (result) {
-                        fn.actions.create(
+                        fn.actions.create([
                             'LOANCARD | CLOSED',
                             options.user_id,
                             [{_table: 'loancards', id: loancard.loancard_id}]
-                        )
+                        ])
                         .then(action => resolve(true));
 
                     } else {

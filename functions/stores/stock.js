@@ -170,11 +170,11 @@ module.exports = function (m, fn) {
                                 details
                             )
                             .then(result => {
-                                fn.actions.create(
+                                fn.actions.create([
                                     `STOCK | SCRAPPED | Decreased by ${details.qty}. New qty: ${Number(stock.qty - details.qty)}`,
                                     user_id,
                                     [{_table: 'stocks', id: stock.stock_id}]
-                                )
+                                ])
                                 .then(results => resolve(true));
                             })
                             .catch(err => reject(err));
@@ -195,7 +195,7 @@ module.exports = function (m, fn) {
                 let variance = qty - stock.qty;
                 stock.update({qty: qty})
                 .then(result => {
-                    fn.actions.create(
+                    fn.actions.create([
                         `COUNT | ${(variance < 0 ? 
                             `Decreased by ${variance}. New qty: ${qty}` : (variance > 0 ? 
                             `Increased by ${variance}. New qty: ${qty}` : 
@@ -204,7 +204,7 @@ module.exports = function (m, fn) {
                         )}`,
                         user_id,
                         [{_table: 'stocks', id: stock.stock_id}]
-                    )
+                    ])
                     .then(results => resolve(true));
                 })
                 .catch(err => reject(err));
@@ -218,13 +218,13 @@ module.exports = function (m, fn) {
             .then(result => {
                 if (result) {
                     if (action) {
-                        fn.actions.create(
+                        fn.actions.create([
                             action.text,
                             action.user_id,
                             [
                                 {_table: 'stocks', id: stock.stock_id}
                             ].concat(action.links || [])
-                        )
+                        ])
                         .then(result => resolve(true));
 
                     } else {
@@ -246,13 +246,13 @@ module.exports = function (m, fn) {
             .then(result => {
                 if (result) {
                     if (action) {
-                        fn.actions.create(
+                        fn.actions.create([
                             action.text,
                             action.user_id,
                             [
                                 {_table: 'stocks', id: stock.stock_id}
                             ].concat(action.links || [])
-                        )
+                        ])
                         .then(result => resolve(true));
 
                     } else {
@@ -327,14 +327,14 @@ module.exports = function (m, fn) {
                                     fn.stocks.increment(stock_to,   qty)
                                 ])
                                 .then(([decrement_result, increment_result]) => {
-                                    fn.actions.create(
+                                    fn.actions.create([
                                         `STOCK | TRANSFER | From: ${stock_from.location.location} to: ${location.location} | Qty: ${qty}`,
                                         user_id,
                                         [
                                             {_table: 'stocks', id: stock_from.stock_id},
                                             {_table: 'stocks', id: stock_to  .stock_id}
                                         ]
-                                    )
+                                    ])
                                     .then(result => resolve(true));
                                 })
                                 .catch(err => reject(err));

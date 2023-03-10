@@ -40,11 +40,11 @@ module.exports = function (m, fn) {
 	};
 	function create_action(holding_id, action, user_id) {
 		return new Promise(resolve => {
-			fn.actions.create(
+			fn.actions.create([
 				`HOLDING | ${action}`,
 				user_id,
 				[{_table: 'holdings', id: holding_id}]
-			)
+			])
 			.then(result => resolve(true));
 		});
 	};

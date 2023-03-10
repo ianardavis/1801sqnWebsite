@@ -1,6 +1,6 @@
 module.exports = function (m, fn) {
     fn.files = {add: {}, details: {}};
-    fn.files.get = function (where) {
+    fn.files.get            = function (where) {
         return new Promise((resolve, reject) => {
             m.files.findOne({
                 where: where,
@@ -18,7 +18,7 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
-    fn.files.getAll = function (where, pagination) {
+    fn.files.getAll         = function (where, pagination) {
         return new Promise((resolve, reject) => {
             m.files.findAndCountAll({
                 where: where,
@@ -29,7 +29,7 @@ module.exports = function (m, fn) {
         });
     };
 
-    fn.files.download = function(file_id, res) {
+    fn.files.download       = function(file_id, res) {
         return new Promise((resolve, reject) => {
             fn.files.get({file_id: file_id})
             .then(file => {
@@ -59,7 +59,7 @@ module.exports = function (m, fn) {
         });
     };
 
-    fn.files.edit = function (file_id, details) {
+    fn.files.edit           = function (file_id, details) {
         return new Promise((resolve, reject) => {
             fn.files.get({file_id: file_id})
             .then(file => {
@@ -79,7 +79,7 @@ module.exports = function (m, fn) {
         });
     };
 
-    fn.files.create = function (details, files, user_id) {
+    fn.files.create         = function (details, files, user_id) {
         return new Promise((resolve, reject) => {
             if (!files) {
                 reject(new Error('No file submitted'));
@@ -114,7 +114,7 @@ module.exports = function (m, fn) {
         });
     };
 
-    fn.files.delete = function (file_id) {
+    fn.files.delete         = function (file_id) {
         return new Promise((resolve, reject) => {
             fn.files.get({file_id: file_id})
             .then(file => {
@@ -131,7 +131,7 @@ module.exports = function (m, fn) {
         });
     };
 
-    fn.files.details.get = function (where) {
+    fn.files.details.get    = function (where) {
         return new Promise((resolve, reject) => {
             m.files.findOne({where: where})
             .then(file => {
@@ -191,7 +191,7 @@ module.exports = function (m, fn) {
         });
     };
 
-    fn.files.details.edit = function (file_detail_id, details) {
+    fn.files.details.edit   = function (file_detail_id, details) {
         return new Promise((resolve, reject) => {
             fn.files.details.get({file_detail_id: file_detail_id})
             .then(file_detail => {

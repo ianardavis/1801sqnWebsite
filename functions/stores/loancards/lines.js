@@ -137,11 +137,11 @@ module.exports = function (m, fn) {
                     if (!line.issues || line.issues.length === 0) {
                         line.update({status: 3})
                         .then(result => {
-                            fn.actions.create(
+                            fn.actions.create([
                                 'LOANCARD LINE | CLOSED',
                                 user_id,
                                 [{_table: 'loancard_lines', id: line.loancard_line_id}]
-                            )
+                            ])
                             .then(result => resolve(true));
                         })
                         .catch(err => reject(err));
@@ -280,14 +280,14 @@ module.exports = function (m, fn) {
                     .then(([link, qty]) => {
                         line.update({status: 0})
                         .then(result => {
-                            fn.actions.create(
+                            fn.actions.create([
                                 'LOANCARD LINE | CANCELLED',
                                 user_id,
                                 [
                                     {_table: 'loancard_lines', id: line.loancard_line_id},
                                     link
                                 ].concat(links)
-                            )
+                            ])
                             .then(result => resolve(line.loancard_id));
                         })
                         .catch(err => reject(err));
@@ -388,7 +388,7 @@ module.exports = function (m, fn) {
                                 ])
                                 .then(([result1, result2]) => {
                                     console.log("Results", result1, result2);
-                                    fn.actions.create(
+                                    fn.actions.create([
                                         'LOANCARD LINE | CREATED',
                                         user_id,
                                         [
@@ -396,7 +396,7 @@ module.exports = function (m, fn) {
                                             {_table: 'serials',        id: serial.serial_id},
                                             {_table: 'issues',         id: issue.issue_id}
                                         ]
-                                    )
+                                    ])
                                     .then(action => resolve(true));
                                 })
                                 .catch(err => {
@@ -473,7 +473,7 @@ module.exports = function (m, fn) {
                             issue.update({status: 4})
                             .then(result => {
                                 if (result) {
-                                    fn.actions.create(
+                                    fn.actions.create([
                                         `LOANCARD LINE | ${(created ? 'CREATED' : `INCREMENTED BY ${line.qty}`)}`,
                                         user_id,
                                         [
@@ -481,7 +481,7 @@ module.exports = function (m, fn) {
                                             {_table: 'issues',         id: issue.issue_id},
                                             {_table: 'loancard_lines', id: loancard_line.loancard_line_id}
                                         ]
-                                    )
+                                    ])
                                     .then(action => resolve(true));
                                 } else {
                                     reject(new Error('Issue not updated'));
@@ -724,7 +724,7 @@ module.exports = function (m, fn) {
             });
             Promise.all(actions)
             .then(issue_links => {
-                resolve(
+                resolve([
                     'ISSUES | RETURNED',
                     user_id,
                     [
@@ -732,7 +732,7 @@ module.exports = function (m, fn) {
                         destination_link
                     ].concat(issue_links),
                     line.loancard_id
-                );
+                ]);
             })
             .catch(err => reject(err));
         });

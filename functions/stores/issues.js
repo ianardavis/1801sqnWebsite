@@ -93,11 +93,11 @@ module.exports = function (m, fn) {
             issue.update({status: status})
             .then(result => {
                 if (result) {
-                    fn.actions.create(
+                    fn.actions.create([
                         `ISSUE | ${action}`,
                         user_id,
                         [{_table: 'issues', id: issue.issue_id}]
-                    )
+                    ])
                     .then(action => resolve(true));
 
                 } else {
@@ -233,11 +233,11 @@ module.exports = function (m, fn) {
                         user_id
                     )
                     .then(([issue_id, action]) => {
-                        fn.actions.create(
+                        fn.actions.create([
                             `ISSUE | ${action}`,
                             user_id,
                             [{_table: 'issues', id: issue_id}]
-                        )
+                        ])
                         .then(action => resolve(issue_id));
                     })
                     .catch(err => reject(err));
@@ -669,11 +669,11 @@ module.exports = function (m, fn) {
                         issue.update({size_id: size.size_id})
                         .then(result => {
                             if (result) {
-                                fn.actions.create(
+                                fn.actions.create([
                                     `ISSUE | UPDATED | Size changed From: ${fn.print_size(original_size)} to: ${fn.print_size(size)}`,
                                     user_id,
                                     [{_table: 'issues', id: issue.issue_id}]
-                                )
+                                ])
                                 .then(result => resolve(true));
 
                             } else {
@@ -702,11 +702,11 @@ module.exports = function (m, fn) {
                     issue.update({qty: qty})
                     .then(result => {
                         if (result) {
-                            fn.actions.create(
+                            fn.actions.create([
                                 `ISSUE | UPDATED | Quantity changed From: ${original_qty} to: ${qty}`,
                                 user_id,
                                 [{_table: 'issues', id: issue.issue_id}]
-                            )
+                            ])
                             .then(result => resolve(true));
 
                         } else {

@@ -33,7 +33,7 @@ module.exports = function (m, fn) {
         });
     };
 
-    fn.actions.create = function (action, user_id, links, return_result = null) {
+    fn.actions.create = function ([action, user_id, links, return_result = null]) {
         return new Promise((resolve) => {
             m.actions.create({
                 action:  action,

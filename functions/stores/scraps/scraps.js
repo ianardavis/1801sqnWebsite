@@ -127,11 +127,11 @@ module.exports = function (m, fn) {
                     scrap.update({status: 0})
                     .then(result => {
                         if (result) {
-                            fn.actions.create(
+                            fn.actions.create([
                                 'SCRAP | CANCELLED',
                                 user_id,
                                 [{_table: 'scraps', id: scrap.scrap_id}]
-                            )
+                            ])
                             .then(result => resolve(result));
 
                         } else {

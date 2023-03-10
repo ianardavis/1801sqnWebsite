@@ -2,6 +2,7 @@ module.exports = function (m, fn) {
     fn.suppliers = {contacts: {}, addresses: {}};
 
     fn.suppliers.get = function (where, options = {}) {
+        console.log(options);
         return new Promise((resolve, reject) => {
             m.suppliers.findOne({
                 where: where,
@@ -11,7 +12,7 @@ module.exports = function (m, fn) {
             })
             .then(supplier => {
                 if (supplier) {
-                    resolve(...[supplier].concat(options.pass_on || []));
+                    resolve(supplier);
 
                 } else {
                     reject(new Error('Supplier not found'));
@@ -166,11 +167,11 @@ module.exports = function (m, fn) {
                     result.update(new_record)
                     .then(result => {
                         if (result) {
-                            fn.actions.create(
+                            fn.actions.create([
                                 `${table.si.toUpperCase()} | UPDATED`,
                                 user_id,
                                 [{_table: table.pl, id: result[`${table.si}_id`]}]
-                            )
+                            ])
                             .then(result => resolve(true));
 
                         } else {

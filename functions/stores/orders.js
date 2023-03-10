@@ -48,13 +48,13 @@ module.exports = function (m, fn) {
             .then(result => {
                 if (result) {
                     if (action) {
-                        fn.actions.create(
+                        fn.actions.create([
                             action,
                             user_id,
                             [
                                 {_table: 'orders', id: order.order_id}
                             ].concat(links)
-                        )
+                        ])
                         .then(action => resolve(true));
     
                     } else {
@@ -199,11 +199,11 @@ module.exports = function (m, fn) {
                     .then(order => {
                         let links = [];
                         issues.forEach(issue => {links.push({_table: 'issues', id: issue.issue_id})});
-                        fn.actions.create(
+                        fn.actions.create([
                             'ORDER | CREATED',
                             user_id,
                             [{_table: 'orders', id: order.order_id}].concat(links)
-                        )
+                        ])
                         .then(action => resolve(order));
                     })
                     .catch(err => reject(err));
@@ -309,11 +309,11 @@ module.exports = function (m, fn) {
                 .then(action => {
                     cancel_update_issues(order.issues)
                     .then(links => {
-                        fn.actions.create(
+                        fn.actions.create([
                             'ORDER | CANCELLED',
                             user_id,
                             [{_table: 'orders', id: order.order_id}].concat(links)
-                        )
+                        ])
                         .then(action => resolve(true));
                     })
                     .catch(err => reject(err));
@@ -345,11 +345,11 @@ module.exports = function (m, fn) {
             .then(order => {
                 update_order_status(order, 1, user_id)
                 .then(action => {
-                    fn.actions.create(
+                    fn.actions.create([
                         'ORDER | RESTORED',
                         user_id,
                         [{_table: 'orders', id: order.order_id}]
-                    )
+                    ])
                     .then(action => resolve(true));
                 })
                 .catch(err => reject(err));
@@ -432,15 +432,17 @@ module.exports = function (m, fn) {
             .then(result => {
                 sort_orders_by_supplier(orders)
                 .then(suppliers => {
-                    let demand_actions = [];
+                    let actions = [];
                     suppliers.forEach(supplier => {
-                        demand_actions.push(new Promise((resolve, reject) => {
+                        actions.push(new Promise((resolve, reject) => {
                             fn.demands.create(
                                 supplier.supplier_id,
                                 user_id
                             )
                             .then(demand_id => {
+                                console.log("demand_id: ", demand_id);
                                 let line_actions = [];
+                                console.log('sizes', supplier.sizes);
                                 supplier.sizes.forEach(size => {
                                     line_actions.push(new Promise((resolve, reject) => {
                                         fn.demands.lines.create(
@@ -466,8 +468,8 @@ module.exports = function (m, fn) {
                             .catch(err => reject(err));
                         }));
                     });
-                    Promise.allSettled(demand_actions)
-                    .then(results => resolve(true))
+                    Promise.allSettled(actions)
+                    .then(results => {console.log(results);resolve(true)})
                     .catch(err => reject(err));
                 })
                 .catch(err => reject(err));
@@ -673,11 +675,11 @@ module.exports = function (m, fn) {
                         order.update({size_id: size.size_id})
                         .then(result => {
                             if (result) {
-                                fn.actions.create(
+                                fn.actions.create([
                                     `ORDER | UPDATED | Size changed From: ${fn.print_size(original_size)} to: ${fn.print_size(size)}`,
                                     user_id,
                                     [{_table: 'orders', id: order.order_id}]
-                                )
+                                ])
                                 .then(result => resolve(true));
 
                             } else {
@@ -706,11 +708,11 @@ module.exports = function (m, fn) {
                     order.update({qty: qty})
                     .then(result => {
                         if (result) {
-                            fn.actions.create(
+                            fn.actions.create([
                                 `ORDER | UPDATED | Quantity changed From: ${original_qty} to: ${qty}`,
                                 user_id,
                                 [{_table: 'orders', id: order.order_id}]
-                            )
+                            ])
                             .then(result => resolve(true));
 
                         } else {
