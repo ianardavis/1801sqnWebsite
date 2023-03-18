@@ -17,7 +17,7 @@ module.exports = function (m, fn) {
 			.catch(err => reject(err));
 		});
 	};
-	fn.holdings.getAll = function (where, pagination) {
+	fn.holdings.get_all = function (where, pagination) {
 		return new Promise((resolve, reject) => {
 			m.holdings.findAndCountAll({
 				where: where,
@@ -50,39 +50,39 @@ module.exports = function (m, fn) {
 	};
 
 	// CREATE FUNCTIONS
-	function check_holding_details(holding) {
-		return new Promise((resolve, reject) => {
-			if (!holding) {
-				reject(new Error('No holding details'));
-
-			} else if (!holding.description) {
-				reject(new Error('No description submitted'));
-
-			} else {
-				resolve(true);
-
-			};
-		});
-	};
-	function create_holding(holding) {
-		return new Promise((resolve, reject) => {
-			m.holdings.findOrCreate({
-				where:    {description: holding.description},
-				defaults: {cash:        holding.cash || 0.0}
-			})
-			.then(([holding, created]) => {
-				if (created) {
-					resolve([holding.holding_id, holding.cash]);
-					
-				} else {
-					reject(new Error('This holding already exists'));
-					
-				};
-			})
-			.catch(err => reject(err));
-		});
-	};
 	fn.holdings.create = function (holding, user_id) {
+		function check_holding_details(holding) {
+			return new Promise((resolve, reject) => {
+				if (!holding) {
+					reject(new Error('No holding details'));
+	
+				} else if (!holding.description) {
+					reject(new Error('No description submitted'));
+	
+				} else {
+					resolve(true);
+	
+				};
+			});
+		};
+		function create_holding(holding) {
+			return new Promise((resolve, reject) => {
+				m.holdings.findOrCreate({
+					where:    {description: holding.description},
+					defaults: {cash:        holding.cash || 0.0}
+				})
+				.then(([holding, created]) => {
+					if (created) {
+						resolve([holding.holding_id, holding.cash]);
+						
+					} else {
+						reject(new Error('This holding already exists'));
+						
+					};
+				})
+				.catch(err => reject(err));
+			});
+		};
 		return new Promise((resolve, reject) => {
 			check_holding_details(holding)
 			.then(result => {
@@ -106,7 +106,7 @@ module.exports = function (m, fn) {
 		return new Promise((resolve, reject) => {
 			fn.holding.get(holding_id)
 			.then(holding => {
-				let cash = fn.sessions.countCash(balance);
+				let cash = fn.sessions.count_cash(balance);
 				holding.update({cash: cash})
 				.then(result => {
 					let state = (cash === holding.cash ?

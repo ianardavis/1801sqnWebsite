@@ -157,4 +157,23 @@ module.exports = function (m, fn) {
             };
         });
     };
+
+    fn.get = function(table, where, include = []) {
+        return new Promise((resolve, reject) => {
+            table.findOne({
+                where: where,
+                include: include
+            })
+            .then(account => {
+                if (account) {
+                    resolve(account);
+
+                } else {
+                    reject(new Error('Account not found'));
+
+                };
+            })
+            .catch(err => reject(err));
+        });
+    };
 };

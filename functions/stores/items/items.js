@@ -1,5 +1,4 @@
 module.exports = function (m, fn) {
-    fn.items = {categories: {}};
     fn.items.create = function (item) {
         return new Promise((resolve, reject) => {
             item = fn.nullify(item);
@@ -38,7 +37,7 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
-    fn.items.getAll = function (query) {
+    fn.items.get_all = function (query) {
         return new Promise((resolve, reject) => {
             let where = query.where || {};
             if (query.like) where.description = {[op.substring]: query.like.description || ''};
@@ -52,7 +51,7 @@ module.exports = function (m, fn) {
         });
     };
 
-    fn.items.getUniform = function (pagination) {
+    fn.items.get_uniform = function (pagination) {
         return new Promise((resolve, reject) => {
             m.items.findAndCountAll({
                 include: [{
@@ -70,7 +69,7 @@ module.exports = function (m, fn) {
         });
     };
 
-    fn.items.getForSupplier = function (where, pagination) {
+    fn.items.get_for_supplier = function (where, pagination) {
         return new Promise((resolve, reject) => {
             m.items.findAndCountAll({
                 distinct: true,
@@ -118,77 +117,6 @@ module.exports = function (m, fn) {
                     })
                     .catch(err => reject(err));
     
-                };
-            })
-            .catch(err => reject(err));
-        });
-    };
-
-    fn.items.categories.getOne = function (where) {
-        return new Promise((resolve, reject) => {
-            m.item_categories.findOne({
-                where: where,
-                include: [m.categories]
-            })
-            .then(category => {
-                if (category) {
-                    resolve(category);
-    
-                } else {
-                    reject(new Error('Category not found'));
-    
-                };
-            })
-            .catch(err => reject(err));
-        });
-    };
-    fn.items.categories.getAll = function (where, pagination) {
-        return new Promise((resolve, reject) => {
-            m.item_categories.findAndCountAll({
-                where:   where,
-                include: [fn.inc.stores.category()],
-                ...pagination
-            })
-            .then(categories => resolve(categories))
-            .catch(err => reject(err));
-        });
-    };
-
-    fn.items.categories.create = function (item_id, category_id) {
-        return new Promise((resolve, reject) => {
-            Promise.all([
-                m.items     .findOne({where: {item_id:     item_id}}),
-                m.categories.findOne({where: {category_id: category_id}})
-            ])
-            .then(([item, category]) => {
-                if (item && category) {
-                    m.item_categories.findOrCreate({
-                        where: {
-                            item_id:     item_id,
-                            category_id: category_id
-                        }
-                    })
-                    .then(([category, created]) => resolve(true))
-                    .catch(err => reject(err));
-
-                } else {
-                    reject(new Error(`Item or category not found`));
-
-                };
-            })
-            .catch(err => reject(err));
-        });
-    };
-    fn.items.categories.delete = function (item_category_id) {
-        return new Promise((resolve, reject) => {
-            m.item_categories.destroy({where: {item_category_id: item_category_id}})
-            .then(result => {
-                if (result) {
-                    resolve(true);
-
-                } else {
-                    reject(new Error('Category not deleted'));
-
                 };
             })
             .catch(err => reject(err));

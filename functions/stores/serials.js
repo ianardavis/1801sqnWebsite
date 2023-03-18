@@ -22,7 +22,7 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
-    fn.serials.getAll = function (where, pagination) {
+    fn.serials.get_all = function (where, pagination) {
         return new Promise((resolve, reject) => {
             m.serials.findAndCountAll({
                 where:   where,
@@ -67,7 +67,7 @@ module.exports = function (m, fn) {
                 fn.serials.get({serial_id: serial_id})
                 .then(serial => {
                     let original_location = serial.location.location;
-                    fn.locations.findOrCreate({location: location})
+                    fn.locations.find_or_create({location: location})
                     .then(new_location => {
                         if (new_location.location_id !== serial.location_id) {
                             serial.update({location_id: new_location.location_id})
@@ -97,22 +97,27 @@ module.exports = function (m, fn) {
         });
     };
 
-    function scrap_check(serial, details) {
-        return new Promise((resolve, reject) => {
-            if (serial.size.has_nsns && !details.nsn_id) {
-                reject(new Error("No valid NSN submitted"));
-            } else if (!serial.location_id) {
-                reject(new Error("Serial is not in stock"));
-            } else if (serial.issue_id) {
-                reject(new Error("Serial is currently issued"));
-            } else if (!serial.location) {
-                reject(new Error("Invalid serial location"));
-            } else {
-                resolve(true);
-            };
-        });
-    };
     fn.serials.scrap = function (serial_id, details, user_id) {
+        function scrap_check(serial, details) {
+            return new Promise((resolve, reject) => {
+                if (serial.size.has_nsns && !details.nsn_id) {
+                    reject(new Error("No valid NSN submitted"));
+
+                } else if (!serial.location_id) {
+                    reject(new Error("Serial is not in stock"));
+
+                } else if (serial.issue_id) {
+                    reject(new Error("Serial is currently issued"));
+
+                } else if (!serial.location) {
+                    reject(new Error("Invalid serial location"));
+
+                } else {
+                    resolve(true);
+
+                };
+            });
+        };
         return new Promise((resolve, reject) => {
             if (details) {
                 fn.serials.get({serial_id: serial_id})
@@ -121,7 +126,7 @@ module.exports = function (m, fn) {
                     .then(result => {
                         serial.update({location_id: null})
                         .then(result => {
-                            fn.scraps.getOrCreate(serial.size.supplier_id)
+                            fn.scraps.get_or_create(serial.size.supplier_id)
                             .then(scrap => {
                                 fn.scraps.lines.create(
                                     scrap.scrap_id,
@@ -145,8 +150,10 @@ module.exports = function (m, fn) {
                     .catch(err => reject(err));
                 })
                 .catch(err => reject(err));
+                
             } else {
                 reject(new Error('No details submitted'));
+
             };
         });
     };
@@ -244,7 +251,7 @@ module.exports = function (m, fn) {
     };
     fn.serials.set_location = function (serial, location, user_id, action_append = '') {
         return new Promise((resolve, reject) => {
-            fn.locations.findOrCreate(location)
+            fn.locations.find_or_create(location)
             .then(location => {
                 serial.update({location_id: location.location_id})
                 .then(result => {

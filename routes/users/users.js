@@ -46,7 +46,7 @@ module.exports = (app, fn) => {
     });
     app.get('/get/users',         fn.loggedIn(), fn.permissions.check('access_users', true), (req, res) => {
         if (!req.allowed) req.query.where.user_id = req.user.user_id;
-        fn.users.getAll(
+        fn.users.get_all(
             req.query.where,
             fn.pagination(req.query)
         )
@@ -56,7 +56,7 @@ module.exports = (app, fn) => {
     app.get('/get/users/current', fn.loggedIn(), fn.permissions.check('access_users', true), (req, res) => {
         let where = req.query.where;
         if (!req.allowed) user_id = req.user.user_id;
-        fn.users.getAll(
+        fn.users.get_all(
             where,
             fn.pagination(req.query),
             fn.inc.users.status({current: true})

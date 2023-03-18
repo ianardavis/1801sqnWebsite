@@ -25,7 +25,7 @@ module.exports = (app, fn) => {
         ]},
     ];
     app.get('/get/permissions', fn.loggedIn(), fn.permissions.check('user_admin', true), (req, res) => {
-        fn.users.permissions.getAll(
+        fn.users.permissions.get_all(
             req.user.user_id,
             req.allowed,
             req.query.where,

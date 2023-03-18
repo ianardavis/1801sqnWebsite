@@ -15,7 +15,7 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
-    fn.genders.getAll = function (where, pagination) {
+    fn.genders.get_all = function (where, pagination) {
         return new Promise((resolve, reject) => {
             m.genders.findAndCountAll({
                 where: where,

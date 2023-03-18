@@ -29,13 +29,13 @@ module.exports = (app, fn) => {
     });
     app.get('/get/loancards',          fn.loggedIn(), fn.permissions.check('access_stores', true), (req, res) => {
         if (!req.allowed) req.query.user_id_loancard = req.user.user_id;
-        fn.loancards.getAll(req.query.where, fn.pagination(req.query))
+        fn.loancards.get_all(req.query.where, fn.pagination(req.query))
         .then(results => fn.send_res('loancards', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });
 
     app.get('/get/loancard_lines',     fn.loggedIn(), fn.permissions.check('access_stores', true), (req, res) => {
-        fn.loancards.lines.getAll(
+        fn.loancards.lines.get_all(
             req.query.where,
             {
                 loancard_where: (
@@ -72,7 +72,7 @@ module.exports = (app, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/loancard_lines_due', fn.loggedIn(), fn.permissions.check('access_stores'),       (req, res) => {
-        fn.loancards.lines.getAll(
+        fn.loancards.lines.get_all(
             {status: 2},
             {
                 loancard_where: {

@@ -1,6 +1,6 @@
 module.exports = (app, fn) => {
     app.get('/get/statuses', fn.loggedIn(), (req, res) => {
-        fn.users.statuses.getAll(
+        fn.users.statuses.get_all(
             req.query.where,
             fn.pagination(req.query)
         )

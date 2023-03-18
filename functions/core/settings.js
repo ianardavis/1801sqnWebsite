@@ -23,7 +23,7 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
-    fn.settings.getAll = function (where, pagination) {
+    fn.settings.get_all = function (where, pagination) {
         return new Promise((resolve, reject) => {
             m.settings.findAll({
                 where:      where,

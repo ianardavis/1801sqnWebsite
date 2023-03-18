@@ -1,5 +1,3 @@
-const { formCheckbox } = require("pdfkit");
-
 module.exports = function (m, fn) {
     fn.writeoffs = {};
     fn.writeoffs.get = function (where) {
@@ -23,7 +21,7 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
-    fn.writeoffs.getAll = function (where, pagination) {
+    fn.writeoffs.get_all = function (where, pagination) {
         return new Promise((resolve, reject) => {
             m.writeoffs.findAndCountAll({
                 where: where,
@@ -37,27 +35,27 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
-    function create_check(writeoff) {
-        return new Promise((resolve, reject) => {
-            if (!writeoff.reason) {
-                reject(new Error('No reason'));
-
-            } else if (!writeoff.qty) {
-                reject(new Error('No quantity'));
-
-            } else if (!writeoff.item_id) {
-                reject(new Error('No item ID'));
-
-            } else {
-                resolve(true);
-
-            };
-        });
-    };
     fn.writeoffs.create = function (writeoff, user_id) {
+        function check(writeoff) {
+            return new Promise((resolve, reject) => {
+                if (!writeoff.reason) {
+                    reject(new Error('No reason'));
+    
+                } else if (!writeoff.qty) {
+                    reject(new Error('No quantity'));
+    
+                } else if (!writeoff.item_id) {
+                    reject(new Error('No item ID'));
+    
+                } else {
+                    resolve(true);
+    
+                };
+            });
+        };
         return new Promise((resolve, reject) => {
             if (writeoff) {
-                create_check(writeoff)
+                check(writeoff)
                 .then(result => {
                     fn.canteen_items.get({item_id: writeoff.item_id})
                     .then(item => {

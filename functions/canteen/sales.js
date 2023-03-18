@@ -22,7 +22,7 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
-    fn.sales.getAll = function (where, pagination) {
+    fn.sales.get_all = function (where, pagination) {
         return new Promise((resolve, reject) => {
             m.sales.findAndCountAll({
                 where: where,
@@ -36,9 +36,9 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
-    fn.sales.getCurrent = function (user_id) {
+    fn.sales.get_current = function (user_id) {
         return new Promise((resolve, reject) => {
-            fn.sessions.getCurrent()
+            fn.sessions.get_current()
             .then(session => {
                 m.sales.findOrCreate({
                     where: {
@@ -70,7 +70,7 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
-    fn.sales.lines.getAll = function (where, pagination) {
+    fn.sales.lines.get_all = function (where, pagination) {
         return new Promise((resolve, reject) => {
             m.sale_lines.findAndCountAll({
                 where:   where,
@@ -82,150 +82,159 @@ module.exports = function (m, fn) {
         });
     };
 
-    function debit_account(sale_id, account, amount, user_id) {
-        return new Promise((resolve, reject) => {
-            account.decrement('credit', {by: amount})
-            .then(result => {
-                fn.payments.create(
-                    sale_id,
-                    amount,
-                    user_id,
-                    {
-                        type: 'Account',
-                        user_id_payment: account.user_id
-                    }
-                )
-                .then(result => resolve(true))
-                .catch(err => reject(err));
-            })
-            .catch(err => reject(err));
-        });
-    };
-    function credit_account(user_id_credit, amount) {
-        return new Promise(resolve => {
-            m.credits.findOrCreate({
-                where: {user_id: user_id_credit},
-                defaults: {credit: amount}
-            })
-            .then(([credit, created]) => {
-                if (created) {
-                    resolve(0);
-                } else {
-                    credit.increment('qty', {by: amount})
-                    .then(result => resolve(0))
+    fn.sales.complete = function (sale_id, _sale, user_id) {
+        function process_payments(sale_id, sale, user_id) {
+            function credit_account(user_id_credit, amount) {
+                return new Promise(resolve => {
+                    m.credits.findOrCreate({
+                        where: {user_id: user_id_credit},
+                        defaults: {credit: amount}
+                    })
+                    .then(([credit, created]) => {
+                        if (created) {
+                            resolve(0);
+                        } else {
+                            credit.increment('qty', {by: amount})
+                            .then(result => resolve(0))
+                            .catch(err => {
+                                console.log(err)
+                                resolve(amount);
+                            });
+                        };
+                    })
                     .catch(err => {
                         console.log(err)
                         resolve(amount);
                     });
-                };
-            })
-            .catch(err => {
-                console.log(err)
-                resolve(amount);
-            });
-        });
-    };
-    function get_sale_total(sale_id) {
-        return new Promise((resolve, reject) => {
-            m.sale_lines.findAll({
-                where: {sale_id: sale_id}
-            })
-            .then(lines => {
-                if (lines.length === 0) {
-                    reject(new Error('No open lines on this sale'));
-                } else {
-                    let total = 0;
-                    lines.forEach(line => {total += (line.qty * line.price)});
-                    // let total = lines.reduce((a, b) => {a + (b.qty * b.price)});
-                    resolve(total);
-                };
-            })
-            .catch(err => reject(err));
-        });
-    };
-    function get_payment_total(sale_id) {
-        return new Promise((resolve, reject) => {
-            m.payments.sum('amount', {where: {sale_id: sale_id}})
-            .then(paid => resolve(paid))
-            .catch(err => reject(err));
-        });
-    };
-    function process_account_payment(user_id_debit, balance, sale_id, user_id) {
-        return new Promise((resolve, reject) => {
-            fn.credits.get(user_id_debit)
-            .then(account => {
-                if (balance <= account.credit) {
-                    debit_account(sale_id, account, balance, user_id)
-                    .then(result => resolve(true))
+                });
+            };
+            function get_sale_total(sale_id) {
+                return new Promise((resolve, reject) => {
+                    m.sale_lines.findAll({
+                        where: {sale_id: sale_id}
+                    })
+                    .then(lines => {
+                        if (lines.length === 0) {
+                            reject(new Error('No open lines on this sale'));
+    
+                        } else {
+                            let total = 0;
+                            lines.forEach(line => {total += (line.qty * line.price)});
+                            // let total = lines.reduce((a, b) => {a + (b.qty * b.price)});
+                            resolve(total);
+    
+                        };
+                    })
                     .catch(err => reject(err));
-                } else {
-                    debit_account(sale_id, account, account.credit, user_id)
-                    .then(result => resolve(true))
+                });
+            };
+            function get_payment_total(sale_id) {
+                return new Promise((resolve, reject) => {
+                    m.payments.sum('amount', {where: {sale_id: sale_id}})
+                    .then(paid => resolve(paid))
                     .catch(err => reject(err));
-                };
-            })
-            .catch(err => reject(err));
-        });
-    };
-    function confirm_payments(sale_id) {
-        return new Promise((resolve, reject) => {
-            m.payments.update({status: 2}, {where: {sale_id: sale_id, status: 1}})
-            .then(result => {
-                if (!result) {
-                    reject(new Error('Payments not confirmed'));
-                } else resolve(true);
-            })
-            .catch(err => reject(err));
-        });
-    };
-    function process_payments(sale_id, sale, user_id) {
-        return new Promise((resolve, reject) => {
-            Promise.all( //Process cash payments first
-                (sale.tendered && sale.tendered > 0 ?
-                    [fn.payments.create(
-                        sale_id,
-                        sale.tendered,
-                        user_id,
-                        {
-                            ...(sale.user_id_payment ? {user_id_payment: sale.user_id_payment} : {})
-                        }
-                    )] :
-                    []
-                )
-            )
-            .then(result => {
-                get_payment_total(sale_id) //Check total payments made
-                .then(paid => {
-                    get_sale_total(sale_id)
-                    .then(total => {
-                        let balance = Number(total - paid);
-                        Promise.all(
-                            (paid < total && sale.user_id_debit ? 
-                                [process_account_payment(sale.user_id_debit, balance, sale_id, user_id)] : 
-                                []
-                            )
-                        )
+                });
+            };
+            function process_account_payment(user_id_debit, balance, sale_id, user_id) {
+                function debit_account(sale_id, account, amount, user_id) {
+                    return new Promise((resolve, reject) => {
+                        account.decrement('credit', {by: amount})
                         .then(result => {
-                            get_payment_total(sale_id)
-                            .then(paid => {
-                                if (paid >= total) {
-                                    confirm_payments(sale_id)
-                                    .then(result => {
-                                        if (sale.user_id_credit) {
-                                            credit_account(sale.user_id_credit, Number(paid - total))
-                                            .then(change => resolve(change))
-                                            .catch(err => {
-                                                console.log(err);
+                            fn.payments.create(
+                                sale_id,
+                                amount,
+                                user_id,
+                                {
+                                    type: 'Account',
+                                    user_id_payment: account.user_id
+                                }
+                            )
+                            .then(result => resolve(true))
+                            .catch(err => reject(err));
+                        })
+                        .catch(err => reject(err));
+                    });
+                };
+                return new Promise((resolve, reject) => {
+                    fn.credits.get(user_id_debit)
+                    .then(account => {
+                        if (balance <= account.credit) {
+                            debit_account(sale_id, account, balance, user_id)
+                            .then(result => resolve(true))
+                            .catch(err => reject(err));
+                        } else {
+                            debit_account(sale_id, account, account.credit, user_id)
+                            .then(result => resolve(true))
+                            .catch(err => reject(err));
+                        };
+                    })
+                    .catch(err => reject(err));
+                });
+            };
+            function confirm_payments(sale_id) {
+                return new Promise((resolve, reject) => {
+                    m.payments.update({status: 2}, {where: {sale_id: sale_id, status: 1}})
+                    .then(result => {
+                        if (!result) {
+                            reject(new Error('Payments not confirmed'));
+                            
+                        } else {
+                            resolve(true);
+                        
+                        };
+                    })
+                    .catch(err => reject(err));
+                });
+            };
+            return new Promise((resolve, reject) => {
+                Promise.all( //Process cash payments first
+                    (sale.tendered && sale.tendered > 0 ?
+                        [fn.payments.create(
+                            sale_id,
+                            sale.tendered,
+                            user_id,
+                            {
+                                ...(sale.user_id_payment ? {user_id_payment: sale.user_id_payment} : {})
+                            }
+                        )] :
+                        []
+                    )
+                )
+                .then(result => {
+                    get_payment_total(sale_id) //Check total payments made
+                    .then(paid => {
+                        get_sale_total(sale_id)
+                        .then(total => {
+                            let balance = Number(total - paid);
+                            Promise.all(
+                                (paid < total && sale.user_id_debit ? 
+                                    [process_account_payment(sale.user_id_debit, balance, sale_id, user_id)] : 
+                                    []
+                                )
+                            )
+                            .then(result => {
+                                get_payment_total(sale_id)
+                                .then(paid => {
+                                    if (paid >= total) {
+                                        confirm_payments(sale_id)
+                                        .then(result => {
+                                            if (sale.user_id_credit) {
+                                                credit_account(sale.user_id_credit, Number(paid - total))
+                                                .then(change => resolve(change))
+                                                .catch(err => {
+                                                    console.log(err);
+                                                    resolve(Number(paid - total));
+                                                });
+                                            } else {
                                                 resolve(Number(paid - total));
-                                            });
-                                        } else {
-                                            resolve(Number(paid - total));
-                                        };
-                                    })
-                                    .catch(err => reject(err));
-                                } else {
-                                    reject(new Error('Not enough tendered or in credit'));
-                                };
+                                            };
+                                        })
+                                        .catch(err => reject(err));
+                                    } else {
+                                        reject(new Error('Not enough tendered or in credit'));
+                                    };
+                                })
+                                .catch(err => reject(err));
                             })
                             .catch(err => reject(err));
                         })
@@ -234,22 +243,19 @@ module.exports = function (m, fn) {
                     .catch(err => reject(err));
                 })
                 .catch(err => reject(err));
-            })
-            .catch(err => reject(err));
-        });
-    };
-    function subtract_sold_qty_from_stock(item_id, qty) {
-        return new Promise((resolve, reject) => {
-            fn.canteen_items.get({item_id: item_id})
-            .then(item => {
-                item.decrement('qty', {by: qty})
-                .then(result => resolve(true))
+            });
+        };
+        function subtract_sold_qty_from_stock(item_id, qty) {
+            return new Promise((resolve, reject) => {
+                fn.canteen_items.get({item_id: item_id})
+                .then(item => {
+                    item.decrement('qty', {by: qty})
+                    .then(result => resolve(true))
+                    .catch(err => reject(err));
+                })
                 .catch(err => reject(err));
-            })
-            .catch(err => reject(err));
-        });
-    }
-    fn.sales.complete = function (sale_id, _sale, user_id) {
+            });
+        }
         return new Promise((resolve, reject) => {
             fn.sales.get({sale_id: sale_id})
             .then(sale => {
@@ -279,29 +285,29 @@ module.exports = function (m, fn) {
         });
     };
 
-    function check_sale(sale_id) {
-        return new Promise((resolve, reject) => {
-            fn.sales.get({sale_id: sale_id})
-            .then(sale => {
-                if (!sale.session) {
-                    reject(new Error('Session not found'));
-
-                } else if (sale.session.status !== 1) {
-                    reject(new Error('Session for this sale is not open'));
-
-                } else {
-                    resolve(sale);
-
-                };
-            })
-            .catch(err => reject(err));
-        });
-    };
     fn.sales.lines.create = function (ean, sale_id) {
+        function check_sale(sale_id) {
+            return new Promise((resolve, reject) => {
+                fn.sales.get({sale_id: sale_id})
+                .then(sale => {
+                    if (!sale.session) {
+                        reject(new Error('Session not found'));
+    
+                    } else if (sale.session.status !== 1) {
+                        reject(new Error('Session for this sale is not open'));
+    
+                    } else {
+                        resolve(sale);
+    
+                    };
+                })
+                .catch(err => reject(err));
+            });
+        };
         return new Promise((resolve, reject) => {
             Promise.all([
                 check_sale(sale_id),
-                fn.canteen_items.getByEAN(ean)
+                fn.canteen_items.get_by_EAN(ean)
             ])
             .then(([sale, item]) => {
                 m.sale_lines.findOrCreate({
@@ -331,54 +337,54 @@ module.exports = function (m, fn) {
         });
     };
 
-    function check_sale_line(_line) {
-        return new Promise((resolve, reject) => {
-            fn.sales.lines.get(_line.sale_line_id)
-            .then(line => {
-                if (!line.sale) {
-                    reject(new Error('Sale not found'));
-
-                } else if (!line.sale.session) {
-                    reject(new Error('Session not found'));
-
-                } else if ( line.sale.session.status !== 1) {
-                    reject(new Error('Session for this sale is not open'));
-
-                } else {
-                    resolve([line, _line.qty]);
-
-                };
-            })
-            .catch(err => reject(err));
-        });
-    };
-    function increase_qty([line, qty]) {
-        return new Promise((resolve, reject) => {
-            line.increment('qty', {by: qty})
-            .then(updated_line => resolve(updated_line))
-            .catch(err => reject(err));
-        });
-    };
-    function delete_if_qty_zero (line) {
-        return new Promise((resolve, reject) => {
-            if (line.qty <= 0) {
-                line.destroy()
-                .then(result => { 
-                    if (result) {
-                        resolve(true);
-
+    fn.sales.lines.edit = function (line) {
+        function check_sale_line(_line) {
+            return new Promise((resolve, reject) => {
+                fn.sales.lines.get(_line.sale_line_id)
+                .then(line => {
+                    if (!line.sale) {
+                        reject(new Error('Sale not found'));
+    
+                    } else if (!line.sale.session) {
+                        reject(new Error('Session not found'));
+    
+                    } else if ( line.sale.session.status !== 1) {
+                        reject(new Error('Session for this sale is not open'));
+    
                     } else {
-                        reject(new Error('Line not updated'));
-
+                        resolve([line, _line.qty]);
+    
                     };
                 })
-            } else {
-                resolve(true);
-
-            };
-        });
-    };
-    fn.sales.lines.edit = function (line) {
+                .catch(err => reject(err));
+            });
+        };
+        function increase_qty([line, qty]) {
+            return new Promise((resolve, reject) => {
+                line.increment('qty', {by: qty})
+                .then(updated_line => resolve(updated_line))
+                .catch(err => reject(err));
+            });
+        };
+        function delete_if_qty_zero (line) {
+            return new Promise((resolve, reject) => {
+                if (line.qty <= 0) {
+                    line.destroy()
+                    .then(result => { 
+                        if (result) {
+                            resolve(true);
+    
+                        } else {
+                            reject(new Error('Line not updated'));
+    
+                        };
+                    })
+                } else {
+                    resolve(true);
+    
+                };
+            });
+        };
         return new Promise((resolve, reject) => {
             if (line) {
                 check_sale_line(line)

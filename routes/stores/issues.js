@@ -15,7 +15,7 @@ module.exports = (app, fn) => {
     });
 
     app.get('/get/issues',      fn.loggedIn(), fn.permissions.check('issuer',        true), (req, res) => {
-        fn.issues.getAll(req.allowed, req.query, req.user.user_id)
+        fn.issues.get_all(req.allowed, req.query, req.user.user_id)
         .then(results => fn.send_res('issues', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });

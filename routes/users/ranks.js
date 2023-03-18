@@ -1,6 +1,6 @@
 module.exports = (app, fn) => {
     app.get('/get/ranks', fn.loggedIn(), (req, res) => {
-        fn.users.ranks.getAll(
+        fn.users.ranks.get_all(
             req.query.where,
             fn.pagination(req.query)
         )

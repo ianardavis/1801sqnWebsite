@@ -7,7 +7,7 @@ module.exports = (app, fn) => {
         if (req.query.like && req.query.like.name) {
             where.name = {[fn.op.substring]: req.query.like.name}
         }
-        fn.suppliers.getAll(
+        fn.suppliers.get_all(
             where,
             fn.pagination(req.query)
         )

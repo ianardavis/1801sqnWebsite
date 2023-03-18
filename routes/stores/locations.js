@@ -6,7 +6,7 @@ module.exports = (app, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/locations', fn.loggedIn(),                                             (req, res) => {
-        fn.locations.getAll(req.query.where, fn.pagination(req.query))
+        fn.locations.get_all(req.query.where, fn.pagination(req.query))
         .then(locations => fn.send_res('locations', res, locations, req.query))
         .catch(err => fn.send_error(res, err));
     });
@@ -18,7 +18,7 @@ module.exports = (app, fn) => {
     });
 
     app.post('/locations',    fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
-        fn.locations.findOrCreate(req.body.location.location)
+        fn.locations.find_or_create(req.body.location.location)
         .then(location_id => res.send({success: true, message: 'Location created'}))
         .catch(err => fn.send_error(res, err));
     });

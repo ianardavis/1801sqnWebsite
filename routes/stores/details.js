@@ -5,7 +5,7 @@ module.exports = (app, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/details',    fn.loggedIn(), fn.permissions.check('access_stores'), (req, res) => {
-        fn.sizes.details.getAll(req.query.where, fn.pagination(req.query))
+        fn.sizes.details.get_all(req.query.where, fn.pagination(req.query))
         .then(details => fn.send_res('details', res, details, req.query))
         .catch(err =>    fn.send_error(res, err));
     });
@@ -22,7 +22,7 @@ module.exports = (app, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.put('/details',        fn.loggedIn(), fn.permissions.check('stores_stock_admin'),   (req, res) => {
-        fn.sizes.details.updateBulk(req.body.sizes)
+        fn.sizes.details.update_bulk(req.body.sizes)
         .then(result => res.send({success: true, message: 'Detail saved'}))
         .catch(err => fn.send_error(res, err));
     });

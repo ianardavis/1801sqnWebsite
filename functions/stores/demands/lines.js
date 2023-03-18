@@ -37,7 +37,7 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
-    fn.demands.lines.getCountAll = function (where, pagination) {
+    fn.demands.lines.get_and_count_all = function (where, pagination) {
         return new Promise((resolve, reject) => {
             m.demand_lines.findAndCountAll({
                 where: where,
@@ -220,262 +220,260 @@ module.exports = function (m, fn) {
         });
     };
     
-    function cancel_check(line_id, user_id) {
-        return new Promise((resolve, reject) => {
-            fn.demands.lines.get(
-                {demand_line_id: line_id},
-                [m.orders]
-            )
-            .then(line => {
-                //Check it is Pending or Open
-                if (line.status !== 1 && line.status !== 2) {
-                    reject(new Error(`This line is ${line_status[line.status]}, only pending or open lines can be cancelled`));
-
-                } else {
-                    resolve(line, user_id);
-
-                };
-            })
-            .catch(err => reject(err));
-        });
-    };
-    function cancel_update_line(line, user_id) {
-        return new Promise((resolve, reject) => {
-            line.update({status: 0})
-            .then(result => {
-                if (result) {
-                    resolve(line, user_id);
-
-                } else {
-                    reject(new Error('Line not updated'));
-
-                };
-            })
-            .catch(err => reject(err));
-        });
-    };
-    function cancel_update_orders(line, user_id) {
-        return new Promise((resolve, reject) => {
-            let order_actions = [];
-            line.orders.forEach(order => {
-                //For each order, if its status is demanded, change to Placed and return order id
-                order_actions.push(new Promise((resolve, reject) => {
-                    if (order.status === 3) {
-                        order.update({status: 2})
-                        .then(result => resolve(order.order_id))
-                        .catch(err => reject(err));
-
-                    } else {
-                        reject(new Error(`Non-allowed order status: ${order.status}`));
-
-                    };
-                }));
-            });
-            Promise.allSettled(order_actions)
-            .then(results => {
-                let links = [];
-                //get an array of all the orders updated
-                results.forEach(e => links.push({_table: 'orders', id: e.value}));
-                resolve([
-                    'DEMAND LINE | CANCELLED',
-                    user_id,
-                    [{_table: 'demand_lines', id: line.demand_line_id}].concat(links)
-                ]);
-            })
-            .catch(err => reject(err));
-        });
-    };
     fn.demands.lines.cancel = function (demand_line_id, user_id) {
+        function check(line_id, user_id) {
+            return new Promise((resolve, reject) => {
+                fn.demands.lines.get(
+                    {demand_line_id: line_id},
+                    [m.orders]
+                )
+                .then(line => {
+                    //Check it is Pending or Open
+                    if (line.status !== 1 && line.status !== 2) {
+                        reject(new Error(`This line is ${line_status[line.status]}, only pending or open lines can be cancelled`));
+    
+                    } else {
+                        resolve(line, user_id);
+    
+                    };
+                })
+                .catch(err => reject(err));
+            });
+        };
+        function update_line(line, user_id) {
+            return new Promise((resolve, reject) => {
+                line.update({status: 0})
+                .then(result => {
+                    if (result) {
+                        resolve(line, user_id);
+    
+                    } else {
+                        reject(new Error('Line not updated'));
+    
+                    };
+                })
+                .catch(err => reject(err));
+            });
+        };
+        function update_orders(line, user_id) {
+            return new Promise((resolve, reject) => {
+                let order_actions = [];
+                line.orders.forEach(order => {
+                    //For each order, if its status is demanded, change to Placed and return order id
+                    order_actions.push(new Promise((resolve, reject) => {
+                        if (order.status === 3) {
+                            order.update({status: 2})
+                            .then(result => resolve(order.order_id))
+                            .catch(err => reject(err));
+    
+                        } else {
+                            reject(new Error(`Non-allowed order status: ${order.status}`));
+    
+                        };
+                    }));
+                });
+                Promise.allSettled(order_actions)
+                .then(results => {
+                    let links = [];
+                    //get an array of all the orders updated
+                    results.forEach(e => links.push({_table: 'orders', id: e.value}));
+                    resolve([
+                        'DEMAND LINE | CANCELLED',
+                        user_id,
+                        [{_table: 'demand_lines', id: line.demand_line_id}].concat(links)
+                    ]);
+                })
+                .catch(err => reject(err));
+            });
+        };
         return new Promise ((resolve, reject) => {
-            cancel_check(demand_line_id, user_id)
-            .then(cancel_update_line)
-            .then(cancel_update_orders)
+            check(demand_line_id, user_id)
+            .then(update_line)
+            .then(update_orders)
             .then(fn.actions.create)
             .then(result => resolve(true))
             .catch(err => reject(err));
         });
     };
 
-    function receive_orders(line, details, user_id) {
-        return new Promise((resolve, reject) => {
-            const has_serials = (line.size.has_serials);
-            let action = null;
-            if (has_serials) {
-                action = receive_order_serials;
-
-            } else {
-                action = receive_order_stock;
-
-            };
-            action(line, details, user_id)
-            .then(([results, remaining]) => {
-                fn.allSettledResults(results);
-
-                let qty_received = 0;
-                results.filter(e => e.status === 'fulfilled').forEach(e => qty_received += Number(e.value.qty));
-                resolve({
-                    demand_line: line,
-                    qty:         qty_received,
-                    remaining:   (has_serials ? remaining : {qty: remaining, location: details.location})
-                });
-            })
-            .catch(err => reject(err));
-        });
-    };
-    function receive_order_serials(line, details, user_id) {
-        return new Promise((resolve, reject) => {
-            let actions = [];
-            let serials = details.serials
-            for (let i = 0; (i < line.orders.length) && (serials.length > 0); i++) {
-                let order   = line.orders[i];
-                let receipt = {serials: []};
-                let qty = Math.min(order.qty, serials.length);
-                for (let i = 0; i < qty; i++) {
-                    receipt.serials.push(serials.pop());
-                };
-                actions.push(
-                    fn.orders.receive(
-                        order.order_id,
-                        receipt,
-                        user_id,
-                        [{_table: 'demand_lines', id: line.demand_line_id}]
-                    )
-                );
-            };
-            Promise.allSettled(actions)
-            .then(results => resolve([results, serials]))
-            .catch(err => reject(err));
-        });
-    };
-    function receive_order_stock(line, details, user_id) {
-        return new Promise((resolve, reject) => {
-            let qty_left = details.qty || 0;
-            let actions = []
-            for (let i = 0; (i < line.orders.length) && (qty_left > 0); i++) {
-                let order = line.orders[i];
-                let receipt = {};
-                if (qty_left === 0) break;
-                receipt.location = details.location;
-                if (qty_left >= details.qty) {
-                    receipt.qty = order.qty;
-
-                } else {
-                    receipt.qty = qty_left;
-
-                };
-                qty_left -= receipt.qty;
-                actions.push(
-                    fn.orders.receive(
-                        order.order_id,
-                        receipt,
-                        user_id,
-                        [{_table: 'demand_lines', id: line.demand_line_id}]
-                    )
-                );
-            };
-            Promise.allSettled(actions)
-            .then(results => resolve([results, qty_left]))
-            .catch(err => reject(err));
-        });
-    };
-
-    function receive_remaining(order_qty, size_id, demand_line_id, user_id, receipt) {
-        return new Promise((resolve, reject) => {
-            if (order_qty > 0) {
-                fn.orders.create(
-                    size_id,
-                    order_qty,
-                    user_id,
+    fn.demands.lines.receive = function (line, user_id) {
+        function check(details, user_id) {
+            return new Promise((resolve, reject) => {
+                fn.demands.lines.get(
+                    {demand_line_id: details.demand_line_id},
+                    [{
+                        model: m.orders,
+                        where: {status: 2}
+                    }]
                 )
-                .then(order => {
-                    fn.orders.receive(
-                        order.order_id,
-                        receipt,
-                        user_id,
-                        [{_table: 'demand_lines', id: demand_line_id}]
-                    )
-                    .then(result => resolve(result.qty))
-                    .catch(err => reject(err));
-                })
-                .catch(err => reject(err));
-
-            } else {
-                resolve(0);
-
-            };
-        });
-    };
-    function check_receipt_variance(demand_line, qty, user_id) {
-        return new Promise((resolve, reject) => {
-            let qty_original = demand_line.qty;
-            if (qty > qty_original) {
-                demand_line.update({qty: qty})
-                .then(result => {
-                    if (result) {
-                        create_line_action(
-                            `UPDATED | Qty increased from ${qty_original} to ${qty} on receipt`,
-                            demand_line.demand_line_id,
-                            user_id
-                        )
-                        .then(action => resolve({demand_line: demand_line}));
+                .then(demand_line => {
+                    if (!demand_line.size) {
+                        reject(new Error('Size not found'));
+    
                     } else {
-                        reject(new Error('Line not updated'));
+                        resolve(demand_line, details, user_id);
+    
                     };
                 })
                 .catch(err => reject(err));
-            } else if (qty < qty_original) {
-                m.demand_lines.create({
-                    demand_id: demand_line.demand_id,
-                    size_id:   demand_line.size_id,
-                    qty:       qty,
-                    status:    3,
-                    user_id:   user_id
-                })
-                .then(new_line => {
-                    demand_line.decrement('qty', {by: qty})
-                    .then(result => {
-                        create_line_action(
-                            `UPDATED | Partial receipt | New demand line created for receipt qty | Existing demand line qty updated from ${qty_original} to ${qty_original - qty}`,
-                            demand_line.demand_line_id,
-                            user_id,
-                            [{_table: 'demand_lines', id: new_line.demand_line_id}]
-                        )
-                        .then(action => resolve({demand_line: new_line}));
-                    })
+            });
+        };
+        function receive_orders(line, details, user_id) {
+            function receive_serials(line, details, user_id) {
+                return new Promise((resolve, reject) => {
+                    let actions = [];
+                    let serials = details.serials
+                    for (let i = 0; (i < line.orders.length) && (serials.length > 0); i++) {
+                        let order   = line.orders[i];
+                        let receipt = {serials: []};
+                        let qty = Math.min(order.qty, serials.length);
+                        for (let i = 0; i < qty; i++) {
+                            receipt.serials.push(serials.pop());
+                        };
+                        actions.push(
+                            fn.orders.receive(
+                                order.order_id,
+                                receipt,
+                                user_id,
+                                [{_table: 'demand_lines', id: line.demand_line_id}]
+                            )
+                        );
+                    };
+                    Promise.allSettled(actions)
+                    .then(results => resolve([results, serials]))
                     .catch(err => reject(err));
+                });
+            };
+            function receive_stock(line, details, user_id) {
+                return new Promise((resolve, reject) => {
+                    let qty_left = details.qty || 0;
+                    let actions = []
+                    for (let i = 0; (i < line.orders.length) && (qty_left > 0); i++) {
+                        let order = line.orders[i];
+                        let receipt = {};
+                        if (qty_left === 0) break;
+                        receipt.location = details.location;
+                        if (qty_left >= details.qty) {
+                            receipt.qty = order.qty;
+        
+                        } else {
+                            receipt.qty = qty_left;
+        
+                        };
+                        qty_left -= receipt.qty;
+                        actions.push(
+                            fn.orders.receive(
+                                order.order_id,
+                                receipt,
+                                user_id,
+                                [{_table: 'demand_lines', id: line.demand_line_id}]
+                            )
+                        );
+                    };
+                    Promise.allSettled(actions)
+                    .then(results => resolve([results, qty_left]))
+                    .catch(err => reject(err));
+                });
+            };
+            return new Promise((resolve, reject) => {
+                const has_serials = (line.size.has_serials);
+                let action = null;
+                if (has_serials) {
+                    action = receive_serials;
+    
+                } else {
+                    action = receive_stock;
+    
+                };
+                action(line, details, user_id)
+                .then(([results, remaining]) => {
+                    fn.allSettledResults(results);
+    
+                    let qty_received = 0;
+                    results.filter(e => e.status === 'fulfilled').forEach(e => qty_received += Number(e.value.qty));
+                    resolve({
+                        demand_line: line,
+                        qty:         qty_received,
+                        remaining:   (has_serials ? remaining : {qty: remaining, location: details.location})
+                    });
                 })
                 .catch(err => reject(err));
-            } else {
-                resolve({demand_line: demand_line});
-            };
-        });
-    };
-
-    function receive_check_demand(details, user_id) {
-        return new Promise((resolve, reject) => {
-            fn.demands.lines.get(
-                {demand_line_id: details.demand_line_id},
-                [{
-                    model: m.orders,
-                    where: {status: 2}
-                }]
-            )
-            .then(demand_line => {
-                if (!demand_line.size) {
-                    reject(new Error('Size not found'));
-
+            });
+        };
+        function receive_remaining(order_qty, size_id, demand_line_id, user_id, receipt) {
+            return new Promise((resolve, reject) => {
+                if (order_qty > 0) {
+                    fn.orders.create(
+                        size_id,
+                        order_qty,
+                        user_id,
+                    )
+                    .then(order => {
+                        fn.orders.receive(
+                            order.order_id,
+                            receipt,
+                            user_id,
+                            [{_table: 'demand_lines', id: demand_line_id}]
+                        )
+                        .then(result => resolve(result.qty))
+                        .catch(err => reject(err));
+                    })
+                    .catch(err => reject(err));
+    
                 } else {
-                    resolve(demand_line, details, user_id);
-
+                    resolve(0);
+    
                 };
-            })
-            .catch(err => reject(err));
-        });
-    };
-    fn.demands.lines.receive = function (line, user_id) {
+            });
+        };
+        function check_receipt_variance(demand_line, qty, user_id) {
+            return new Promise((resolve, reject) => {
+                let qty_original = demand_line.qty;
+                if (qty > qty_original) {
+                    demand_line.update({qty: qty})
+                    .then(result => {
+                        if (result) {
+                            create_line_action(
+                                `UPDATED | Qty increased from ${qty_original} to ${qty} on receipt`,
+                                demand_line.demand_line_id,
+                                user_id
+                            )
+                            .then(action => resolve({demand_line: demand_line}));
+                        } else {
+                            reject(new Error('Line not updated'));
+                        };
+                    })
+                    .catch(err => reject(err));
+                } else if (qty < qty_original) {
+                    m.demand_lines.create({
+                        demand_id: demand_line.demand_id,
+                        size_id:   demand_line.size_id,
+                        qty:       qty,
+                        status:    3,
+                        user_id:   user_id
+                    })
+                    .then(new_line => {
+                        demand_line.decrement('qty', {by: qty})
+                        .then(result => {
+                            create_line_action(
+                                `UPDATED | Partial receipt | New demand line created for receipt qty | Existing demand line qty updated from ${qty_original} to ${qty_original - qty}`,
+                                demand_line.demand_line_id,
+                                user_id,
+                                [{_table: 'demand_lines', id: new_line.demand_line_id}]
+                            )
+                            .then(action => resolve({demand_line: new_line}));
+                        })
+                        .catch(err => reject(err));
+                    })
+                    .catch(err => reject(err));
+                } else {
+                    resolve({demand_line: demand_line});
+                };
+            });
+        };
         // 
         return new Promise((resolve, reject) => {
-            receive_check_demand(line, user_id)
+            check(line, user_id)
             .then(receive_orders)
             .then(result => {
                 let order_qty = 0, receipt = {};

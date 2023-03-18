@@ -15,7 +15,7 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
-    fn.payments.getAll = function (where, pagination) {
+    fn.payments.get_all = function (where, pagination) {
         return new Promise((resolve, reject) => {
             m.payments.findAndCountAll({
                 where: where,
@@ -29,7 +29,7 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
-    fn.payments.getAllForSession = function (where, pagination) {
+    fn.payments.get_all_for_session = function (where, pagination) {
         return new Promise((resolve, reject) => {
             m.payments.findAndCountAll({
                 include: [

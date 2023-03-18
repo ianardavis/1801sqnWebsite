@@ -1,6 +1,6 @@
 module.exports = (app, fn) => {
     app.get('/get/notes',    fn.loggedIn(), (req, res) => {
-        fn.notes.getAll(req.query.where, fn.pagination(req.query))
+        fn.notes.get_all(req.query.where, fn.pagination(req.query))
         .then(results => fn.send_res('notes', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });

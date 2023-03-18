@@ -2,7 +2,7 @@ module.exports = (app, fn) => {
     app.get('/sales/:id',            fn.loggedIn(), fn.permissions.get('pos_user'),   (req, res) => res.render('canteen/sales/show'));
 
     app.get('/get/sales',            fn.loggedIn(), fn.permissions.check('pos_user'), (req, res) => {
-        fn.sales.getAll(req.query.where, fn.pagination(req.query))
+        fn.sales.get_all(req.query.where, fn.pagination(req.query))
         .then(results => fn.send_res('sales', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });
@@ -12,12 +12,12 @@ module.exports = (app, fn) => {
         .catch(err => fn.send_error(res, err))
     });
     app.get('/get/sale_current',     fn.loggedIn(), fn.permissions.check('pos_user'), (req, res) => {
-        fn.sales.getCurrent(req.user.user_id)
+        fn.sales.get_current(req.user.user_id)
         .then(sale_id => res.send({success: true, result: sale_id}))
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/sale_lines',       fn.loggedIn(), fn.permissions.check('pos_user'), (req, res) => {
-        fn.sales.lines.getAll(req.query.where, fn.pagination(req.query))
+        fn.sales.lines.get_all(req.query.where, fn.pagination(req.query))
         .then(results => fn.send_res('lines', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });

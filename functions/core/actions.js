@@ -18,7 +18,7 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
-    fn.actions.getAll = function (where, pagination) {
+    fn.actions.get_all = function (where, pagination) {
         return new Promise((resolve, reject) => {
             m.actions.findAndCountAll({
                 include: [{
@@ -85,7 +85,7 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
-    fn.actions.links.getAll = function (where, pagination) {
+    fn.actions.links.get_all = function (where, pagination) {
         return new Promise((resolve, reject) => {
             m.action_links.findAndCountAll({
                 where: where,

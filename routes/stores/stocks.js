@@ -4,7 +4,7 @@ module.exports = (app, fn) => {
         let where = req.query.where || {};
         if (req.query.gt) where[req.query.gt.column] = {[fn.op.gt]: req.query.gt.value};
         if (req.query.lt) where[req.query.lt.column] = {[fn.op.lt]: req.query.lt.value};
-        fn.stocks.getAll(
+        fn.stocks.get_all(
             where,
             fn.pagination(req.query))
         .then(results => fn.send_res('stocks', res, results, req.query))
@@ -55,9 +55,9 @@ module.exports = (app, fn) => {
         };
     });
     app.put('/stocks/:id',          fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
-        fn.stocks.getByID(req.params.id)
+        fn.stocks.get_by_ID(req.params.id)
         .then(stock => {
-            fn.locations.findOrCreate(req.body.location)
+            fn.locations.find_or_create(req.body.location)
             .then(location => {
                 stock.update({location_id: location.location_id})
                 .then(result => res.send({success: result, message: `Stock ${(result ? '' : 'not ')}saved`}))
@@ -99,7 +99,7 @@ module.exports = (app, fn) => {
     
     app.delete('/stocks/:id',       fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
         Promise.all([
-            fn.stocks.getByID(req.params.id),
+            fn.stocks.get_by_ID(req.params.id),
             fn.actions.get({_table: 'stocks', id: stock.stock_id}),
             fn.adjustments.get({stock_id: stock.stock_id})
         ])

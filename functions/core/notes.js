@@ -17,7 +17,7 @@ module.exports = function (m, fn) {
             })
         });
     };
-    fn.notes.getAll = function (where, pagination) {
+    fn.notes.get_all = function (where, pagination) {
         return new Promise((resolve, reject) => {
             m.notes.findAndCountAll({
                 where:   where,

@@ -1,6 +1,6 @@
 module.exports = (app, fn) => {
     app.get('/get/actions',      fn.loggedIn(), (req, res) => {
-        fn.actions.getAll(req.query.where, fn.pagination(req.query))
+        fn.actions.get_all(req.query.where, fn.pagination(req.query))
         .then(results => fn.send_res('actions', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });
@@ -10,7 +10,7 @@ module.exports = (app, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/action_links', fn.loggedIn(), (req, res) => {
-        fn.actions.links.getAll(req.query.where, fn.pagination(req.query))
+        fn.actions.links.get_all(req.query.where, fn.pagination(req.query))
         .then(links => res.send({success: true, result: links}))
         .catch(err => fn.send_error(res, err));
     });

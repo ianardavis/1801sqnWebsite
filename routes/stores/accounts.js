@@ -5,7 +5,7 @@ module.exports = (app, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/accounts',    fn.loggedIn(), fn.permissions.check('access_stores'),  (req, res) => {
-        fn.accounts.getAll(req.query.where, fn.pagination(req.query))
+        fn.accounts.get_all(req.query.where, fn.pagination(req.query))
         .then(accounts => fn.send_res('accounts', res, accounts, req.query))
         .catch(err => fn.send_error(res, err));
     });

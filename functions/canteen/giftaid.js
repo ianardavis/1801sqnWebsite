@@ -15,14 +15,14 @@ module.exports = function (m, fn) {
 			.catch(err => reject(err));
 		});
 	};
-	fn.giftaid.getAll = function (where, pagination) {
+	fn.giftaid.get_all = function (where, pagination) {
 		return new Promise((resolve, reject) => {
 			m.giftaid.findAndCountAll({
 				where: where,
 				...pagination
 			})
-			.then(results => fn.send_res('giftaid', res, {rows: results}, req.query))
-			.catch(err => fn.send_error(res, err));
+			.then(results => resolve(results))
+			.catch(err => reject(err));
 		});
 	};
 

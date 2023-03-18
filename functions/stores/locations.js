@@ -1,7 +1,7 @@
 module.exports = function (m, fn) {
     fn.locations = {};
 
-    fn.locations.getByID = function (location_id) {
+    fn.locations.get_by_ID = function (location_id) {
         return new Promise((resolve, reject) => {
             m.locations.findOne({where: {location_id: location_id}})
             .then(location => {
@@ -16,7 +16,7 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
-    fn.locations.getByLocation = function (location) {
+    fn.locations.get_by_location = function (location) {
         return new Promise((resolve, reject) => {
             m.locations.findOne({where: {location: location}})
             .then(location => {
@@ -31,7 +31,7 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
-    fn.locations.getAll = function (where, pagination) {
+    fn.locations.get_all = function (where, pagination) {
         return new Promise((resolve, reject) => {
             m.locations.findAndCountAll({
                 where: where,
@@ -43,10 +43,10 @@ module.exports = function (m, fn) {
     };
     fn.locations.get = function (search) {
         if (search.location_id) {
-            return fn.locations.getByID(search.location_id);
+            return fn.locations.get_by_ID(search.location_id);
 
         } else if (search.location) {
-            return fn.locations.getByLocation(search.location);
+            return fn.locations.get_by_location(search.location);
 
         } else {
             return new Promise.reject(new Error('No location ID or location specified'));
@@ -54,7 +54,7 @@ module.exports = function (m, fn) {
         };
     };
 
-    fn.locations.findOrCreate = function (location) {
+    fn.locations.find_or_create = function (location) {
         return new Promise((resolve, reject) => {
             if (location) {
                 m.locations.findOrCreate({where: {location: location}})
@@ -71,10 +71,10 @@ module.exports = function (m, fn) {
     fn.locations.edit = function (location_id, new_location) {
         return new Promise((resolve, reject) => {
             if (new_location) {
-                fn.locations.getByID(location_id)
+                fn.locations.get_by_ID(location_id)
                 .then(location => {
                     if (location) {
-                        fn.locations.getByLocation(new_location)
+                        fn.locations.get_by_location(new_location)
                         .then(existing_location => reject(new Error('Location already exists')))
                         .catch(err => {
                             if (err.message === 'Location not found') {

@@ -45,7 +45,7 @@ module.exports = (app, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/demand_lines',     fn.loggedIn(), fn.permissions.check('authorised_demander'), (req, res) => {
-        fn.demands.lines.getCountAll(
+        fn.demands.lines.get_and_count_all(
             req.query.where,
             fn.pagination(req.query)
         )

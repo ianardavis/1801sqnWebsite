@@ -21,7 +21,7 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
-    fn.sessions.getAll = function (where, pagination) {
+    fn.sessions.get_all = function (where, pagination) {
         return new Promise((resolve, reject) => {
             m.sessions.findAndCountAll({
                 where: where,
@@ -35,7 +35,7 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
-    fn.sessions.getCurrent = function () {
+    fn.sessions.get_current = function () {
         return new Promise((resolve, reject) => {
             m.sessions.findAll({
                 where: {
@@ -59,7 +59,7 @@ module.exports = function (m, fn) {
         });
     };
     
-    fn.sessions.countCash = function (obj) {
+    fn.sessions.count_cash = function (obj) {
         let cash = 0.0;
         for (let [key, denomination] of Object.entries(obj)) {
             for (let [key, value] of Object.entries(denomination)) {
@@ -132,7 +132,7 @@ module.exports = function (m, fn) {
                             .then(takings => {
                                 m.holdings.findOrCreate({where: {description: 'Canteen float'}})
                                 .then(([holding, created]) => {
-                                    let counted = fn.sessions.countCash(balance),
+                                    let counted = fn.sessions.count_cash(balance),
                                         cash_in = counted - holding.cash,
                                         actions = [];
                                     actions.push(holding.update({cash: counted}));

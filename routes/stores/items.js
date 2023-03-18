@@ -3,7 +3,7 @@ module.exports = (app, fn) => {
     app.get('/items/:id',              fn.loggedIn(), fn.permissions.get('access_stores'),        (req, res) => res.render('stores/items/show'));
     
     app.get('/get/items/supplier',     fn.loggedIn(), fn.permissions.check('access_stores'),      (req, res) => {
-        fn.items.getForSupplier(
+        fn.items.get_for_supplier(
             req.query.where,
             fn.pagination(req.query)
         )
@@ -11,12 +11,12 @@ module.exports = (app, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/items/uniform',      fn.loggedIn(), fn.permissions.check('access_stores'),      (req, res) => {
-        fn.items.getUniform(fn.pagination(req.query))
+        fn.items.get_uniform(fn.pagination(req.query))
         .then(items => fn.send_res('items', res, items, req.query))
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/items',              fn.loggedIn(), fn.permissions.check('access_stores'),      (req, res) => {
-        fn.items.getAll(req.query)
+        fn.items.get_all(req.query)
         .then(items => fn.send_res('items', res, items, req.query))
         .catch(err => fn.send_error(res, err));
     });
@@ -26,12 +26,12 @@ module.exports = (app, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/item_categories',    fn.loggedIn(), fn.permissions.check('access_stores'),      (req, res) => {
-        fn.items.categories.getAll(req.query.where, fn.pagination(req.query))
+        fn.items.categories.get_all(req.query.where, fn.pagination(req.query))
         .then(categories => fn.send_res('categories', res, categories, req.query))
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/item_category',      fn.loggedIn(), fn.permissions.check('access_stores'),      (req, res) => {
-        fn.items.categories.getOne(req.query.where)
+        fn.items.categories.get(req.query.where)
         .then(category => res.send({success: true, result: category}))
         .catch(err => fn.send_error(res, err));
     });
