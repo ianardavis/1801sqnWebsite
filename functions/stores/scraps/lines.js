@@ -1,29 +1,18 @@
 module.exports = function (m, fn) {
     fn.scraps.lines.get = function (where) {
-        return new Promise((resolve, reject) => {
-            m.scrap_lines.findOne({
-                where: where,
-                include: [
-                    fn.inc.stores.serial(),
-                    fn.inc.stores.size(),
-                    fn.inc.stores.scrap({
-                        include: [
-                            fn.inc.stores.supplier()
-                        ]
-                    })
-                ]
-            })
-            .then(line => {
-                if (line) {
-                    resolve(line);
-    
-                } else {
-                    reject(new Error('Line not found'));
-                    
-                };
-            })
-            .catch(err => reject(err));
-        });
+        return fn.get(
+            m.scrap_lines,
+            where,
+            [
+                fn.inc.stores.serial(),
+                fn.inc.stores.size(),
+                fn.inc.stores.scrap({
+                    include: [
+                        fn.inc.stores.supplier()
+                    ]
+                })
+            ]
+        );
     };
     fn.scraps.lines.get_all = function (query, pagination) {
         return new Promise((resolve, reject) => {

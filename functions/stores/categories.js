@@ -1,22 +1,11 @@
 module.exports = function (m, fn) {
     fn.categories = {};
     fn.categories.get = function (where) {
-        return new Promise((resolve, reject) => {
-            m.categories.findOne({
-                where: where,
-                include: [fn.inc.stores.categories({as: 'parent'})]
-            })
-            .then(category => {
-                if (category) {
-                    resolve(category);
-
-                } else {
-                    reject(new Error('Category not found'));
-
-                };
-            })
-            .catch(err => reject(err));
-        });
+        return fn.get(
+            m.categories,
+            where,
+            [fn.inc.stores.categories({as: 'parent'})]
+        );
     };
     fn.categories.get_all = function (where, pagination) {
         return new Promise((resolve, reject) => {

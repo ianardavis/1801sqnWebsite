@@ -1,25 +1,14 @@
 module.exports = function (m, fn) {
     fn.sessions = {};
     fn.sessions.get = function (where) {
-        return new Promise((resolve, reject) => {
-            m.sessions.findOne({
-                where: where,
-                include: [
-                    fn.inc.users.user({as: 'user_open'}),
-                    fn.inc.users.user({as: 'user_close'}),
-                ]
-            })
-            .then(session => {
-                if (session) {
-                    resolve(session);
-
-                } else {
-                    reject(new Error('Session not found'));
-
-                };
-            })
-            .catch(err => reject(err));
-        });
+        return fn.get(
+            m.sessions,
+            where,
+            [
+                fn.inc.users.user({as: 'user_open'}),
+                fn.inc.users.user({as: 'user_close'})
+            ]
+        );
     };
     fn.sessions.get_all = function (where, pagination) {
         return new Promise((resolve, reject) => {

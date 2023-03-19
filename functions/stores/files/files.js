@@ -1,21 +1,10 @@
 module.exports = function (m, fn) {
-    fn.files.get      = function (where) {
-        return new Promise((resolve, reject) => {
-            m.files.findOne({
-                where: where,
-                include: [fn.inc.users.user()]
-            })
-            .then(file => {
-                if (file) {
-                    resolve(file);
-
-                } else {
-                    reject(new Error('File not found'));
-                
-                  };
-            })
-            .catch(err => reject(err));
-        });
+    fn.files.get = function (where) {
+        return fn.get(
+            m.files,
+            where,
+            [fn.inc.users.user()]
+        );
     };
     fn.files.get_all   = function (where, pagination) {
         return new Promise((resolve, reject) => {

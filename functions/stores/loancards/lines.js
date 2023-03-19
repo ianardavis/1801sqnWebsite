@@ -1,21 +1,10 @@
 module.exports = function (m, fn) {
-    fn.loancards.lines.get = function (where, includes = []) {
-        return new Promise((resolve, reject) => {
-            m.loancard_lines.findOne({
-                where: where,
-                include: includes
-            })
-            .then(line => {
-                if (line) {
-                    resolve(line);
-
-                } else {
-                    reject(new Error('Line not found'));
-
-                };
-            })
-            .catch(err => reject(err));
-        });
+    fn.loancards.lines.get = function (where, include = []) {
+        return fn.get(
+            m.loancard_lines,
+            where,
+            include
+        );
     };
     fn.loancards.lines.get_all = function (where, options) {
         return new Promise((resolve, reject) => {

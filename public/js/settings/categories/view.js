@@ -51,4 +51,5 @@ function viewCategory(category_id) {
 window.addEventListener('load', function () {
     add_listener('reload', getCategories);
     modalOnShow('category_view', function (event) {viewCategory(event.relatedTarget.dataset.id)});
+    getCategories();
 });

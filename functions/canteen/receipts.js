@@ -1,25 +1,14 @@
 module.exports = function (m, fn) {
     fn.receipts = {};
     fn.receipts.get = function (where) {
-        return new Promise((resolve, reject) => {
-            m.receipts.findOne({
-                where: where,
-                include: [
-                    fn.inc.users.user(),
-                    fn.inc.canteen.item()
-                ]
-            })
-            .then(receipt => {
-                if (receipt) {
-                    resolve(receipt);
-    
-                } else {
-                    reject(new Error('Receipt not found'));
-    
-                };
-            })
-            .catch(err => reject(err));
-        });
+        return fn.get(
+            m.receipts,
+            where,
+            [
+                fn.inc.users.user(),
+                fn.inc.canteen.item()
+            ]
+        );
     };
     fn.receipts.get_all = function (where, pagination) {
         return new Promise((resolve, reject) => {

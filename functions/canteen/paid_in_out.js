@@ -2,26 +2,15 @@ module.exports = function (m, fn) {
     fn.paid_in_outs = {};
     
     fn.paid_in_outs.get = function (where) {
-        return new Promise((resolve, reject) => {
-            m.paid_in_outs.findOne({
-                where: where,
-                include: [
-                    fn.inc.users.user({as: 'user_paid_in_out'}),
-                    fn.inc.users.user(),
-                    fn.inc.canteen.holding()
-                ]
-            })
-            .then(paid_in_out => {
-                if (paid_in_out) {
-                    resolve(paid_in_out);
-
-                }else {
-                    reject(new Error('Paid In/Out not found'));
-
-                };
-            })
-            .catch(err => reject(err));
-        });
+        return fn.get(
+            m.paid_in_outs,
+            where,
+            [
+                fn.inc.users.user({as: 'user_paid_in_out'}),
+                fn.inc.users.user(),
+                fn.inc.canteen.holding()
+            ]
+        );
     };
     fn.paid_in_outs.get_all = function (where, pagination) {
         return new Promise((resolve, reject) => {

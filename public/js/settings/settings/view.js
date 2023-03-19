@@ -81,4 +81,7 @@ window.addEventListener('load', function () {
     modalOnShow('setting_view', function (event) {viewSetting(event.relatedTarget.dataset.id)});
     add_sort_listeners('settings', getSettings);
     getSettings();
+    getPrinter();
+    getErrorLog();
+    getOutLog();
 });

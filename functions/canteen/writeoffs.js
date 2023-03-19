@@ -1,25 +1,14 @@
 module.exports = function (m, fn) {
     fn.writeoffs = {};
     fn.writeoffs.get = function (where) {
-        return new Promise((resolve, reject) => {
-            m.writeoffs.findOne({
-                where: where,
-                include: [
-                    fn.inc.users.user(),
-                    fn.inc.canteen.item()
-                ]
-            })
-            .then(writeoff => {
-                if (writeoff) {
-                    resolve(writeoff);
-    
-                } else {
-                    reject(new Error('Writeoff not found'));
-                
-                };
-            })
-            .catch(err => reject(err));
-        });
+        return fn.get(
+            m.writeoffs,
+            where,
+            [
+                fn.inc.users.user(),
+                fn.inc.canteen.item()
+            ]
+        );
     };
     fn.writeoffs.get_all = function (where, pagination) {
         return new Promise((resolve, reject) => {

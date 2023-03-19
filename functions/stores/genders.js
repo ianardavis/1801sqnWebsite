@@ -1,19 +1,10 @@
 module.exports = function (m, fn) {
     fn.genders = {};
     fn.genders.get = function (where) {
-        return new Promise((resolve, reject) => {
-            m.genders.findOne({where: where})
-            .then(gender => {
-                if (gender) {
-                    resolve(gender);
-
-                } else {
-                    reject(new Error('Gender not found'));
-                    
-                };
-            })
-            .catch(err => reject(err));
-        });
+        return fn.get(
+            m.genders,
+            where
+        );
     };
     fn.genders.get_all = function (where, pagination) {
         return new Promise((resolve, reject) => {

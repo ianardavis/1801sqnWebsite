@@ -1,17 +1,9 @@
 module.exports = function (m, fn) {
-    fn.nsns.classes.get = function (nsn_class_id) {
-        return new Promise((resolve, reject) => {
-            m.nsn_classes.findOne({where: {nsn_class_id: nsn_class_id}})
-            .then(nsn_class => {
-                if (nsn_class) {
-                    resolve(nsn_class);
-
-                } else {
-                    reject(new Error('Class not found'));
-                };
-            })
-            .catch(err => reject(err));
-        });
+    fn.nsns.classes.get = function (where) {
+        return fn.get(
+            m.nsn_classes,
+            where
+        );
     };
     fn.nsns.classes.get_all = function (where, pagination) {
         return new Promise((resolve, reject) => {

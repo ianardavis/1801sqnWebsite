@@ -74,25 +74,14 @@ module.exports = function (m, fn) {
         });
     };
     fn.stocks.get = function (where) {
-        return new Promise((resolve, reject) => {
-            m.stocks.findOne({
-                where: where,
-                include: [
-                    fn.inc.stores.size(),
-                    fn.inc.stores.location()
-                ]
-            })
-            .then(stock => {
-                if (stock) {
-                    resolve(stock);
-    
-                } else {
-                    reject(new Error('Stock not found'));
-                
-                };
-            })
-            .catch(err => reject(err));
-        });
+        return fn.get(
+            m.stocks,
+            where,
+            [
+                fn.inc.stores.size(),
+                fn.inc.stores.location()
+            ]
+        )
     };
 
     fn.stocks.get_all = function (where, pagination) {

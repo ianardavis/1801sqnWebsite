@@ -16,26 +16,15 @@ module.exports = function (m, fn) {
     };
     fn.demands.lines.count = function (where) { return m.demand_lines.count({where: where})};
     fn.demands.lines.sum = function (where) { return m.demand_lines.sum('qty', {where: where})};
-    fn.demands.lines.get = function (where, includes = []) {
-        return new Promise((resolve, reject) => {
-            m.demand_lines.findOne({
-                where: where,
-                include: [
-                    m.demands, 
-                    fn.inc.stores.size()
-                ].concat(includes)
-            })
-            .then(line => {
-                if (line) {
-                    resolve(line);
-
-                } else {
-                    reject(new Error('Line not found'));
-
-                };
-            })
-            .catch(err => reject(err));
-        });
+    fn.demands.lines.get = function (where, include = []) {
+        return fn.get(
+            m.demand_lines,
+            where,
+            [
+                m.demands, 
+                fn.inc.stores.size()
+            ].concat(include)
+        );
     };
     fn.demands.lines.get_and_count_all = function (where, pagination) {
         return new Promise((resolve, reject) => {

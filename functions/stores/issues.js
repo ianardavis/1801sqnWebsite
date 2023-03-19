@@ -2,6 +2,7 @@ const statuses = {0: 'cancelled', 1: 'requested', 2: 'approved', 3: 'ordered', 4
 module.exports = function (m, fn) {
     // Common functions
     fn.issues = {};
+    
     fn.issues.get = function (where, include = {}) {
         return new Promise((resolve, reject) => {
             let includes = [
@@ -14,21 +15,7 @@ module.exports = function (m, fn) {
                 include: [m.loancards]
             });
             if (include.order) includes.push(m.orders);
-            
-            m.issues.findOne({
-                where: where,
-                include: includes
-            })
-            .then(issue => {
-                if (issue) {
-                    resolve(issue);
-
-                } else {
-                    reject(new Error('Issue not found'));
-
-                };
-            })
-            .catch(err => reject(err));
+            return fn.get(m.issues, where, includes);
         });
     };
     fn.issues.count = function (where) {return m.issues.count({where: where})};

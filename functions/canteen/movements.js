@@ -1,19 +1,16 @@
 module.exports = function (m, fn) {
     fn.movements = {};
     fn.movements.get = function (where) {
-        return new Promise((resolve, reject) => {
-            m.movements.findOne({
-                where: where,
-                include: [
-                    fn.inc.canteen.session(),
-                    fn.inc.canteen.holding({as: 'holding_to'}),
-                    fn.inc.canteen.holding({as: 'holding_from'}),
-                    fn.inc.users.user()
-                ]
-            })
-            .then(movements => resolve(movements))
-            .catch(err => reject(err));
-        });
+        return fn.get(
+            m.movements,
+            where,
+            [
+                fn.inc.canteen.session(),
+                fn.inc.canteen.holding({as: 'holding_to'}),
+                fn.inc.canteen.holding({as: 'holding_from'}),
+                fn.inc.users.user()
+            ]
+        );
     };
     fn.movements.get_all = function (where, pagination) {
         return new Promise((resolve, reject) => {

@@ -1,26 +1,15 @@
 module.exports = function (m, fn) {
     fn.sales = {lines: {}, payments: {}};
     fn.sales.get = function (where) {
-        return new Promise((resolve, reject) => {
-            m.sales.findOne({
-                where: where,
-                include: [
-                    fn.inc.canteen.session(),
-                    fn.inc.canteen.sale_lines(),
-                    fn.inc.users.user()
-                ]
-            })
-            .then(sale => {
-                if (sale) {
-                    resolve(sale);
-
-                }else {
-                    reject(new Error('Sale not found'));
-
-                };
-            })
-            .catch(err => reject(err));
-        });
+        return fn.get(
+            m.sales,
+            where,
+            [
+                fn.inc.canteen.session(),
+                fn.inc.canteen.sale_lines(),
+                fn.inc.users.user()
+            ]
+        );
     };
     fn.sales.get_all = function (where, pagination) {
         return new Promise((resolve, reject) => {
@@ -156,7 +145,7 @@ module.exports = function (m, fn) {
                     });
                 };
                 return new Promise((resolve, reject) => {
-                    fn.credits.get(user_id_debit)
+                    fn.credits.get({credit_id: user_id_debit})
                     .then(account => {
                         if (balance <= account.credit) {
                             debit_account(sale_id, account, balance, user_id)
@@ -402,7 +391,7 @@ module.exports = function (m, fn) {
 
     fn.sales.payments.delete = function (payment_id) {
         return new Promise((resolve, reject) => {
-            fn.payments.get(payment_id)
+            fn.payments.get({payment_id: payment_id})
             .then(payment => {
                 if (payment.status === 0) {
                     reject(new Error('Payment has been cancelled'));

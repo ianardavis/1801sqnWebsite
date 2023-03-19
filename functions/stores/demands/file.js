@@ -41,12 +41,12 @@ module.exports = function (m, fn) {
                 return new Promise((resolve, reject) => {
                     fn.suppliers.get(
                         {supplier_id: supplier_id},
-                        {include: [
+                        [
                             fn.inc.stores.files({
                                 where: {description: 'Demand'},
                                 details: true
                             })
-                        ]}
+                        ]
                     )
                     .then(supplier => {
                         if (!supplier.files) {

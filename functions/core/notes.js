@@ -1,21 +1,11 @@
 module.exports = function (m, fn) {
     fn.notes = {};
     fn.notes.get = function (where) {
-        return new Promise((resolve, reject) => {
-            m.notes.findOne({
-                where: where,
-                include: [fn.inc.users.user()]
-            })
-            .then(note => {
-                if (note) {
-                    resolve(note);
-
-                } else {
-                    reject(new Error('Note not found'));
-
-                };
-            })
-        });
+        return fn.get(
+            m.notes,
+            where,
+            [fn.inc.users.user()]
+        );
     };
     fn.notes.get_all = function (where, pagination) {
         return new Promise((resolve, reject) => {

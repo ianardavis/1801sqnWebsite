@@ -100,4 +100,5 @@ window.addEventListener('load', function () {
             };
         });
     };
+    loadCategoriesEdit();
 });

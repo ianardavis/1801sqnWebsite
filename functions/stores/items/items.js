@@ -19,23 +19,12 @@ module.exports = function (m, fn) {
         });
     };
 
-    fn.items.getOne = function (where) {
-        return new Promise((resolve, reject) => {
-            m.items.findOne({
-                where: where,
-                include: [m.genders]
-            })
-            .then(item => {
-                if (item) {
-                    resolve(item);
-
-                } else {
-                    reject(new Error('Item not found'));
-
-                };
-            })
-            .catch(err => reject(err));
-        });
+    fn.items.get = function (where) {
+        return fn.get(
+            m.items,
+            where,
+            [m.genders]
+        );
     };
     fn.items.get_all = function (query) {
         return new Promise((resolve, reject) => {
@@ -87,7 +76,7 @@ module.exports = function (m, fn) {
 
     fn.items.edit = function (item_id, details) {
         return new Promise((resolve, reject) => {
-            fn.items.getOne({item_id: item_id})
+            fn.items.get({item_id: item_id})
             .then(item => {
                 item.update(details)
                 .then(result => resolve(result))

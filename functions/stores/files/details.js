@@ -1,18 +1,9 @@
 module.exports = function (m, fn) {
-    fn.files.details.get    = function (where) {
-        return new Promise((resolve, reject) => {
-            m.files.findOne({where: where})
-            .then(file => {
-                if (file) {
-                    resolve(file);
-
-                } else {
-                    reject(new Error('File not found'));
-                
-                };
-            })
-            .catch(err => reject(err));
-        });
+    fn.files.details.get = function (where) {
+        return fn.get(
+            m.file_details,
+            where
+        );
     };
     fn.files.details.get_all = function (where, pagination) {
         return new Promise((resolve, reject) => {
@@ -59,7 +50,7 @@ module.exports = function (m, fn) {
         });
     };
 
-    fn.files.details.edit   = function (file_detail_id, details) {
+    fn.files.details.edit = function (file_detail_id, details) {
         return new Promise((resolve, reject) => {
             fn.files.details.get({file_detail_id: file_detail_id})
             .then(file_detail => {

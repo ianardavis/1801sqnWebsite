@@ -1,20 +1,11 @@
 module.exports = function (m, fn) {
 	fn.credits = {};
-	fn.credits.get = function (credit_id) {
-		return new Promise((resolve, reject) => {
-			m.credits.findOne({
-				where: {credit_id: credit_id}
-			})
-			.then(credit => {
-				if (credit) {
-					resolve(credit);
-				} else {
-					reject(new Error('Credit not found'));
-				};
-			})
-			.catch(err => reject(err));
-		});
-	};
+    fn.credits.get = function (where) {
+        return fn.get(
+            m.credits,
+            where
+        );
+    };
 	fn.credits.get_All = function (pagination) {
 		return new Promise((resolve, reject) => {
 			m.credits.findAndCountAll({

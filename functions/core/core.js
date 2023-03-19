@@ -164,12 +164,12 @@ module.exports = function (m, fn) {
                 where: where,
                 include: include
             })
-            .then(account => {
-                if (account) {
-                    resolve(account);
+            .then(result => {
+                if (result) {
+                    resolve(result);
 
                 } else {
-                    reject(new Error('Account not found'));
+                    reject(new Error(`${table.tableName} not found`));
 
                 };
             })

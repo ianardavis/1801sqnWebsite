@@ -1,24 +1,13 @@
 module.exports = function (m, fn) {
-    fn.sizes.get = function (where, includes = []) {
-        return new Promise((resolve, reject) => {
-            m.sizes.findOne({
-                where: where,
-                include: [
-                    fn.inc.stores.item(),
-                    fn.inc.stores.supplier()
-                ].concat(includes)
-            })
-            .then(size => {
-                if (size) {
-                    resolve(size);
-
-                } else {
-                    reject(new Error('Size not found'));
-
-                };
-            })
-            .catch(err => reject(err));
-        });
+    fn.sizes.get = function (where, include = []) {
+        return fn.get(
+            m.sizes,
+            where,
+            [
+                fn.inc.stores.item(),
+                fn.inc.stores.supplier()
+            ].concat(include)
+        );
     };
     fn.sizes.get_all = function (where, pagination) {
         return new Promise((resolve, reject) => {

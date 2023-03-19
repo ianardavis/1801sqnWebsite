@@ -21,7 +21,7 @@ module.exports = (app, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/item',               fn.loggedIn(), fn.permissions.check('access_stores'),      (req, res) => {
-        fn.items.getOne(req.query.where)
+        fn.items.get(req.query.where)
         .then(item => res.send({success: true, result: item}))
         .catch(err => fn.send_error(res, err));
     });

@@ -1,19 +1,10 @@
 module.exports = function (m, fn) {
     fn.payments = {};
-    fn.payments.get = function (payment_id) {
-        return new Promise((resolve, reject) => {
-            m.payments.findOne({where: {payment_id: payment_id}})
-            .then(payment => {
-                if (payment) {
-                    resolve(payment);
-
-                } else {
-                    reject(new Error('Payment not found'));
-
-                };
-            })
-            .catch(err => reject(err));
-        });
+    fn.payments.get = function (where) {
+        return fn.get(
+            m.payments,
+            where
+        );
     };
     fn.payments.get_all = function (where, pagination) {
         return new Promise((resolve, reject) => {

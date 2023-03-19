@@ -1,29 +1,15 @@
 const statuses = {0: 'cancelled', 1: 'placed', 2: 'demanded', 3: 'received'};
 module.exports = function (m, fn) {
     fn.orders = {};
-    fn.orders.get        = function (where, include = []) {
-        return new Promise((resolve, reject) => {
-            m.orders.findOne({
-                where: where,
-                include: [
-                    fn.inc.stores.size({supplier: true}),
-                    {
-                        model: m.issues,
-                        include: [fn.inc.users.user({as: 'user_issue'})]
-                    }
-                ].concat(include)
-            })
-            .then(order => {
-                if (order) {
-                    resolve(order);
-
-                } else {
-                    reject(new Error('Order not found'));
-
-                };
-            })
-            .catch(err => reject(err));
-        });
+    fn.orders.get = function (where, include = []) {
+        return fn.get(
+            m.orders,
+            where,
+            [
+                fn.inc.stores.size({supplier: true}),
+                fn.inc.stores.issues()
+            ].concat(include)
+        )
     };
     fn.orders.get_all    = function (where, pagination) {
         return new Promise((resolve, reject) => {

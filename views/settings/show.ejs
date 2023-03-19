@@ -353,9 +353,6 @@
 <script src="/js/settings/settings/add.js"></script>
 <script src="/js/settings/settings/edit.js"></script>
 <script src="/js/settings/settings/delete.js"></script>
-<script async>getPrinter()</script>
-<script async>getErrorLog()</script>
-<script async>getOutLog()</script>
 
 <% if (permissions.stores_stock_admin) { %>
     <script src="/js/settings/genders/view.js"></script>
@@ -365,10 +362,8 @@
     <script src="/js/utils/list/categories.js"></script>
     <script src="/js/settings/categories/view.js"></script>
     <script src="/js/tree.js"></script>
-    <script async>getCategories('')</script>
     <script src="/js/settings/categories/add.js"></script>
     <script src="/js/settings/categories/edit.js"></script>
-    <script async>loadCategoriesEdit()</script>
     <script src="/js/settings/categories/delete.js"></script>
 <% } %>
 

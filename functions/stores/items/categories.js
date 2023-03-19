@@ -1,21 +1,10 @@
 module.exports = function (m, fn) {
     fn.items.categories.get = function (where) {
-        return new Promise((resolve, reject) => {
-            m.item_categories.findOne({
-                where: where,
-                include: [m.categories]
-            })
-            .then(category => {
-                if (category) {
-                    resolve(category);
-    
-                } else {
-                    reject(new Error('Category not found'));
-    
-                };
-            })
-            .catch(err => reject(err));
-        });
+        return fn.get(
+            m.item_categories,
+            where,
+            [m.categories]
+        );
     };
     fn.items.categories.get_all = function (where, pagination) {
         return new Promise((resolve, reject) => {

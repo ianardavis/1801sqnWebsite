@@ -1,26 +1,15 @@
 module.exports = function (m, fn) {
     fn.serials = {};
-    fn.serials.get = function(where) {
-        return new Promise((resolve, reject) => {
-            m.serials.findOne({
-                where: where,
-                include: [
-                    fn.inc.stores.location(),
-                    fn.inc.stores.issue(),
-                    fn.inc.stores.size()
-                ]
-            })
-            .then(serial => {
-                if (serial) {
-                    resolve(serial);
-
-                } else {
-                    reject(new Error('Serial not found'));
-
-                };
-            })
-            .catch(err => reject(err));
-        });
+    fn.serials.get = function (where) {
+        return fn.get(
+            m.serials,
+            where,
+            [
+                fn.inc.stores.location(),
+                fn.inc.stores.issue(),
+                fn.inc.stores.size()
+            ]
+        )
     };
     fn.serials.get_all = function (where, pagination) {
         return new Promise((resolve, reject) => {

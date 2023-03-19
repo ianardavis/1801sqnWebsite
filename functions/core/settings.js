@@ -5,9 +5,9 @@ module.exports = function (m, fn) {
         printers: {},
         logs: {}
     };
-    fn.settings.get = function (name) {
+    fn.settings.get = function (where) {
         return new Promise((resolve, reject) => {
-            m.settings.findAll({where: {name: name}})
+            m.settings.findAll({where: where})
             .then(settings => {
                 if (!settings || settings.length === 0) {
                     reject(new Error('Setting not found'));

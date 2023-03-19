@@ -1,24 +1,13 @@
 module.exports = function (m, fn) {
-    fn.loancards.get = function (where, includes = []) {
-        return new Promise((resolve, reject) => {
-            m.loancards.findOne({
-                where: where,
-                include: [
-                    fn.inc.users.user(),
-                    fn.inc.users.user({as: 'user_loancard'})
-                ].concat(includes)
-            })
-            .then(loancard => {
-                if (loancard) {
-                    resolve(loancard);
-
-                } else {
-                    reject(new Error('Loancard not found'));
-
-                };
-            })
-            .catch(err => reject(err));
-        });
+    fn.loancards.get = function (where, include = []) {
+        return fn.get(
+            m.loancards,
+            where,
+            [
+                fn.inc.users.user(),
+                fn.inc.users.user({as: 'user_loancard'})
+            ].concat(include)
+        );
     };
     fn.loancards.get_all = function (where, pagination) {
         return new Promise((resolve, reject) => {

@@ -1,22 +1,11 @@
 module.exports = function (m, fn) {
 	fn.holdings = {};
-	fn.holdings.get = function (holding_id) {
-		return new Promise((resolve, reject) => {
-			m.holdings.findOne({
-				where: {holding_id: holding_id}
-			})
-			.then(holding => {
-				if (holding) {
-					resolve(holding);
-
-				} else {
-					reject(new Error('Holding not found'));
-					
-				};
-			})
-			.catch(err => reject(err));
-		});
-	};
+    fn.holdings.get = function (where) {
+        return fn.get(
+            m.holdings,
+            where
+        );
+    };
 	fn.holdings.get_all = function (where, pagination) {
 		return new Promise((resolve, reject) => {
 			m.holdings.findAndCountAll({

@@ -1,22 +1,10 @@
 module.exports = function (m, fn) {
-    fn.actions = {links: {}};
     fn.actions.get = function (where) {
-        return new Promise((resolve, reject) => {
-            m.actions.findOne({
-                where:   where,
-                include: [fn.inc.users.user()]
-            })
-            .then(action => {
-                if (action) {
-                    resolve(action);
-
-                } else {
-                    reject(new Error('Action not found'));
-
-                };
-            })
-            .catch(err => reject(err));
-        });
+        return fn.get(
+            m.actions,
+            where,
+            [fn.inc.users.user()]
+        );
     };
     fn.actions.get_all = function (where, pagination) {
         return new Promise((resolve, reject) => {
@@ -65,34 +53,6 @@ module.exports = function (m, fn) {
 
                 };
             });
-        });
-    };
-
-    fn.actions.links.get = function (where) {
-        return new Promise((resolve, reject) => {
-            m.action_links.findOne({
-                where: where
-            })
-            .then(link => {
-                if (link) {
-                    resolve(link);
-    
-                } else {
-                    reject(new Error('Link not found'));
-                
-                };
-            })
-            .catch(err => reject(err));
-        });
-    };
-    fn.actions.links.get_all = function (where, pagination) {
-        return new Promise((resolve, reject) => {
-            m.action_links.findAndCountAll({
-                where: where,
-                ...pagination
-            })
-            .then(links => resolve(links))
-            .catch(err => reject(err));
         });
     };
 };

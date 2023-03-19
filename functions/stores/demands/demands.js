@@ -4,22 +4,11 @@ module.exports = function (m, fn) {
     fn.demands.count = function (where) { return m.demands.count({where: where}) };
     
     fn.demands.get = function (where, include = []) {
-        return new Promise((resolve, reject) => {
-            m.demands.findOne({
-                where:   where,
-                include: include
-            })
-            .then(demand => {
-                if (demand) {
-                    resolve(demand);
-                    
-                } else {
-                    reject(new Error('Demand not found'));
-                    
-                };
-            })
-            .catch(err => reject(err));
-        });
+        return fn.get(
+            m.demands,
+            where,
+            include
+        );
     };
     fn.demands.get_all = function (where, pagination) {
         return new Promise((resolve, reject) => {

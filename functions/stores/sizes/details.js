@@ -1,18 +1,9 @@
 module.exports = function (m, fn) {
     fn.sizes.details.get = function (where) {
-        return new Promise((resolve, reject) => {
-            m.details.findOne({where: where})
-            .then(detail => {
-                if (detail) {
-                    resolve(detail);
-                    
-                } else {
-                    reject(new Error('Detail not found'));
-                    
-                };
-            })
-            .catch(err => reject(err));
-        });
+        return fn.get(
+            m.details,
+            where
+        );
     };
     fn.sizes.details.get_all = function (where, pagination) {
         return new Promise((resolve, reject) => {

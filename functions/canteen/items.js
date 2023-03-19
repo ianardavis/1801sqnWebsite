@@ -1,21 +1,10 @@
 module.exports = function (m, fn) {
     fn.canteen_items = {};
     fn.canteen_items.get = function (where) {
-        return new Promise((resolve, reject) => {
-            m.canteen_items.findOne({
-                where: where
-            })
-            .then(item => {
-                if (item) {
-                    resolve(item);
-
-                } else {
-                    reject(new Error('Item not found'));
-
-                };
-            })
-            .catch(err => reject(err));
-        });
+        return fn.get(
+            m.canteen_items,
+            where
+        );
     };
     fn.canteen_items.get_all = function (where, pagination) {
         return new Promise((resolve, reject) => {

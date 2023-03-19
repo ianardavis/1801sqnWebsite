@@ -55,12 +55,28 @@ module.exports = function (m) {
             foreignKey:'address_id'
         }
     );
+    m.supplier_addresses.hasOne(
+        m.addresses,
+        {
+            foreignKey: 'address_id',
+            sourceKey: 'address_id',
+            constraints: false
+        }
+    );
     
     m.contacts.belongsToMany(
         m.suppliers,
         {
             through: m.supplier_contacts,
             foreignKey:'contact_id'
+        }
+    );
+    m.supplier_contacts.hasOne(
+        m.contacts,
+        {
+            foreignKey: 'contact_id',
+            sourceKey: 'contact_id',
+            constraints: false
         }
     );
 };

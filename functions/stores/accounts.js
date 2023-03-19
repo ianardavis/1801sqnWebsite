@@ -1,23 +1,12 @@
 module.exports = function (m, fn) {
     fn.accounts = {};
-    fn.accounts.get = fn.get(m.accounts, where, [fn.inc.users.user()])//function (where) {
-        //return  new Promise((resolve, reject) => {
-        //     m.accounts.findOne({
-        //         where: where,
-        //         include: [fn.inc.users.user()]
-        //     })
-        //     .then(account => {
-        //         if (account) {
-        //             resolve(account);
-
-        //         } else {
-        //             reject(new Error('Account not found'));
-
-        //         };
-        //     })
-        //     .catch(err => reject(err));
-        // });
-    // };
+    fn.accounts.get = function (where) {
+        return fn.get(
+            m.accounts,
+            where,
+            [fn.inc.users.user()]
+        )
+    };
     fn.accounts.get_all = function (where, pagination) {
         return new Promise((resolve, reject) => {
             m.accounts.findAndCountAll({

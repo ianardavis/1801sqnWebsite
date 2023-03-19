@@ -13,7 +13,6 @@ function getContacts() {
                 add_cell(row, {text: contact.type});
                 add_cell(row, {text: contact.description});
                 add_cell(row, {text: contact.contact});
-                console.log(contact);
                 add_cell(row, {append: new Modal_Button(
                     _search(),
                     'contact_view',

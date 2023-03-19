@@ -42,9 +42,9 @@ module.exports = function (m, fn) {
         return new Promise((resolve, reject) => {
             Promise.all([
                 fn.sizes.get({size_id: nsn.size_id}),
-                fn.nsns.groups   .get(nsn.nsn_group_id),
-                fn.nsns.classes  .get(nsn.nsn_class_id),
-                fn.nsns.countries.get(nsn.nsn_country_id)
+                fn.nsns.groups.get({nsn_group_id: nsn.nsn_group_id}),
+                fn.nsns.classes.get({nsn_class_id: nsn.nsn_class_id}),
+                fn.nsns.countries.get({nsn_country_id: nsn.nsn_country_id})
             ])
             .then(([size, nsn_group, nsn_class, nsn_country]) => {
                 m.nsns.findOrCreate({
@@ -85,9 +85,9 @@ module.exports = function (m, fn) {
         return new Promise((resolve, reject) => {
             Promise.all([
                 fn.nsns.get({nsn_id: nsn_id}, false),
-                fn.nsns.groups   .get(details.nsn_group_id),
-                fn.nsns.classes  .get(details.nsn_class_id),
-                fn.nsns.countries.get(details.nsn_country_id)
+                fn.nsns.groups.get({nsn_group_id: details.nsn_group_id}),
+                fn.nsns.classes.get({nsn_class_id: details.nsn_class_id}),
+                fn.nsns.countries.get({nsn_country_id: details.nsn_country_id})
             ])
             .then(([nsn, nsn_group, nsn_class, nsn_country]) => {
                 nsn.update({
