@@ -29,7 +29,7 @@ module.exports = function (m, fn) {
     fn.items.get_all = function (query) {
         return new Promise((resolve, reject) => {
             let where = query.where || {};
-            if (query.like) where.description = {[op.substring]: query.like.description || ''};
+            if (query.like) where.description = {[fn.op.substring]: query.like.description || ''};
             m.items.findAndCountAll({
                 where:   where,
                 include: [fn.inc.stores.gender()],
