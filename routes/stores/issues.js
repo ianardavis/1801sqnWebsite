@@ -21,6 +21,7 @@ module.exports = (app, fn) => {
     });
     app.get('/get/issue',       fn.loggedIn(), fn.permissions.check('issuer',        true), (req, res) => {
         if (!req.allowed) req.query.where["user_id_issue"] = req.user.user_id;
+        console.log(req.query.where);
         fn.issues.get(req.query.where, {order: true, loancard_lines: true})
         .then(issue => res.send({success: true, result: issue}))
         .catch(err => fn.send_error(res, err));

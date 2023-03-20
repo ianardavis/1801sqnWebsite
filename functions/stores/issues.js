@@ -4,19 +4,17 @@ module.exports = function (m, fn) {
     fn.issues = {};
     
     fn.issues.get = function (where, include = {}) {
-        return new Promise((resolve, reject) => {
-            let includes = [
-                fn.inc.stores.size(),
-                fn.inc.users.user(),
-                fn.inc.users.user({as: 'user_issue'})
-            ];
-            if (include.loancard_lines) includes.push({
-                model: m.loancard_lines,
-                include: [m.loancards]
-            });
-            if (include.order) includes.push(m.orders);
-            return fn.get(m.issues, where, includes);
+        let includes = [
+            fn.inc.stores.size(),
+            fn.inc.users.user(),
+            fn.inc.users.user({as: 'user_issue'})
+        ];
+        if (include.loancard_lines) includes.push({
+            model: m.loancard_lines,
+            include: [m.loancards]
         });
+        if (include.order) includes.push(m.orders);
+        return fn.get(m.issues, where, includes);
     };
     fn.issues.count = function (where) {return m.issues.count({where: where})};
     fn.issues.sum   = function (where) {return m.issues.sum('qty', {where: where})};

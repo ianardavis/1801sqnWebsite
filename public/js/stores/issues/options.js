@@ -15,12 +15,14 @@ function issue_options() {
                 });
 
             } else if (this.value === '4') { // Issue
+                console.log(this.dataset.id);
                 get({
                     table: 'issue',
                     where: {issue_id: this.dataset.id},
                     index: this.dataset.index
                 })
                 .then(function ([issue, options]) {
+                    console.log(issue);
                     if ([2,3].includes(issue.status)) {
                         if (issue.size.has_nsns)    {
                             add_nsn_select(div_details, options.index, issue.size_id);
