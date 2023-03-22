@@ -84,6 +84,12 @@ module.exports = (app, fn) => {
             .catch(err => fn.send_error(res, err));
         };
     });
+    app.put('/password/:id/toggle', fn.loggedIn(), fn.permissions.check('user_admin'),       (req, res) => {
+        fn.users.toggle_reset(req.params.id)
+        .then(result => res.send({success: true, message: 'Password reset toggled'}))
+        .catch(err => fn.send_error(res, err));
+    });
+
     app.put('/users/:id',         fn.loggedIn(), fn.permissions.check('user_admin'),         (req, res) => {
         fn.users.edit(req.params.id, req.body.user)
         .then(result => res.send({success: true, message: 'User saved'}))
