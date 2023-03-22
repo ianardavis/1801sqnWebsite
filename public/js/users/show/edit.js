@@ -32,7 +32,7 @@ window.addEventListener('load', function () {
     addFormListener(
         'password_reset',
         'PUT',
-        `users/${path[2]}`,
+        `/password/${path[2]}/toggle`,
         {onComplete: getUser}
     );
     modalOnShow('user_edit', viewUserEdit);
