@@ -24,7 +24,7 @@ module.exports = function (m, fn) {
                     doc.font(`${process.env.ROOT}/public/lib/fonts/myriad-pro/d (1).woff`);
                     resolve([doc, filename, writeStream]);
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             } catch (err) {
                 console.log(err);
                 reject(err);
@@ -82,9 +82,9 @@ module.exports = function (m, fn) {
                     const file = fn.public_file('barcodes', `${text}_${type}.png`);
                     fs.writeFile(file, barcode, () => resolve(file));
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
     fn.pdfs.create_barcodes = function (text, options = {}) {
@@ -94,7 +94,7 @@ module.exports = function (m, fn) {
                 fn.pdfs.create_barcode(text, 'qrcode',  {scale: 3, height: 30, includetext: false, ...options})
             ])
             .then(([file_128, file_qr]) => resolve([file_128.value, file_qr.value]))
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
     fn.pdfs.print = function (folder, file) {
@@ -107,11 +107,11 @@ module.exports = function (m, fn) {
                     ptp
                     .print(path, {printer: printer.value, unix: options})
                     .then(result => resolve(true))
-                    .catch(err => reject(err));
+                    .catch(reject);
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 };

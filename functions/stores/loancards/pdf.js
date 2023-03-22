@@ -34,7 +34,7 @@ module.exports = function (m, fn) {
     
                     };
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             });
         };
         function create_pdf(loancard) {
@@ -53,9 +53,9 @@ module.exports = function (m, fn) {
                         y += add_header(doc, loancard, y);
                         resolve([loancard, doc, filename, writeStream, y]);
                     })
-                    .catch(err => reject(err));
+                    .catch(reject);
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             });
         };
         function add_lines([loancard, doc, filename, writeStream, y]) {
@@ -115,9 +115,9 @@ module.exports = function (m, fn) {
         };
         function update_loancard([loancard, filename]) {
             return new Promise((resolve, reject) => {
-                loancard.update({filename: filename})
+                fn.update(loancard, {filename: filename})
                 .then(result => resolve(filename))
-                .catch(err => reject(err));
+                .catch(reject);
             });
         };
         function print_loancard(filename) {
@@ -176,7 +176,7 @@ module.exports = function (m, fn) {
             .then(update_loancard)
             .then(print_loancard)
             .then(filename => resolve(filename))
-            .catch(err => reject(err));
+            .catch(reject);
         })
     };
 };

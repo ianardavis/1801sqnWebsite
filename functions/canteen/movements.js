@@ -24,7 +24,7 @@ module.exports = function (m, fn) {
                 ...pagination
             })
             .then(results => resolve(results))
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
     //
@@ -59,7 +59,7 @@ module.exports = function (m, fn) {
                     fn.holdings.get({holding_id: holding_id_to})
                 ])
                 .then(results => resolve([results[0], results[1]]))
-                .catch(err => reject(err));
+                .catch(reject);
             });
         };
         function transfer_cash(holding_from, holding_to, amount) {
@@ -72,7 +72,7 @@ module.exports = function (m, fn) {
                         holding_to  .increment('cash', {by: amount})
                     ])
                     .then(result => resolve(true))
-                    .catch(err => reject(err));
+                    .catch(reject);
                 };
             });
         };
@@ -84,7 +84,7 @@ module.exports = function (m, fn) {
                     user_id: user_id
                 })
                 .then(movement => resolve(true))
-                .catch(err => reject(err));
+                .catch(reject);
             });
         };
         return new Promise((resolve, reject) => {
@@ -102,11 +102,11 @@ module.exports = function (m, fn) {
                                 resolve(true);
                             });
                         })
-                        .catch(err => reject(err));
+                        .catch(reject);
                     })
-                    .catch(err => reject(err));
+                    .catch(reject);
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             } else {
                 reject(new Error('No details'));
                 

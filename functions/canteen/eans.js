@@ -14,7 +14,7 @@ module.exports = function (m, fn) {
 
                 };
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
     fn.eans.get_by_EAN = function (ean) {
@@ -31,7 +31,7 @@ module.exports = function (m, fn) {
 
                 };
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
     fn.eans.get_all = function (where, pagination) {
@@ -41,7 +41,7 @@ module.exports = function (m, fn) {
                 ...pagination
             })
             .then(results => resolve(results))
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 
@@ -62,9 +62,9 @@ module.exports = function (m, fn) {
                     // })
                     item.addEan({ean: ean})
                     .then(ean => resolve(ean))
-                    .catch(err => reject(err));
+                    .catch(reject);
                 })
-                .catch(err => reject(err));
+                .catch(reject);
 
             };
         });
@@ -77,14 +77,14 @@ module.exports = function (m, fn) {
                 if (ean) {
                     ean.destroy()
                     .then(result => resolve(true))
-                    .catch(err => reject(err));
+                    .catch(reject);
 
                 } else {
                     reject(new Error('EAN not found'));
 
                 };
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 };

@@ -12,7 +12,7 @@ module.exports = function (m, fn) {
                 ...pagination
             })
             .then(details => resolve(details))
-            .catch(err =>    reject(err));
+            .catch(reject);
         });
     };
 
@@ -41,7 +41,7 @@ module.exports = function (m, fn) {
 
                     };
                 })
-                .catch(err => reject(err))
+                .catch(reject);
             };
         });
     };
@@ -50,11 +50,11 @@ module.exports = function (m, fn) {
         return new Promise((resolve, reject) => {
             fn.sizes.details.get(detail_id)
             .then(detail => {
-                detail.update(details)
-                .then(result => resolve(result))
-                .catch(err => reject(err));
+                fn.update(detail, details)
+                .then(result => resolve(true))
+                .catch(reject);
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
     fn.sizes.details.update_bulk = function (details) {
@@ -68,12 +68,12 @@ module.exports = function (m, fn) {
                     if (value === '') {
                         detail.destroy()
                         .then(result => resolve(true))
-                        .catch(err => reject(err));
+                        .catch(reject);
 
                     } else if (detail) {
-                        detail.update({value: value})
+                        fn.update(detail, {value: value})
                         .then(result => resolve(true))
-                        .catch(err => reject(err));
+                        .catch(reject);
 
                     } else {
                         m.details.create({
@@ -82,7 +82,7 @@ module.exports = function (m, fn) {
                             value: value
                         })
                         .then(result => resolve(true))
-                        .catch(err => reject(err));
+                        .catch(reject);
 
                     };
                 })
@@ -94,7 +94,7 @@ module.exports = function (m, fn) {
                             value: value
                         })
                         .then(result => resolve(true))
-                        .catch(err => reject(err));
+                        .catch(reject);
 
                     } else {
                         resolve(false);
@@ -110,11 +110,11 @@ module.exports = function (m, fn) {
                 actions.push(update_detail(_detail.size_id, 'Page', _detail.Page));
             });
             Promise.allSettled(actions)
+            .then(fn.log_rejects)
             .then(results => {
-                results.filter(e => e.status === 'rejected').forEach(e => console.log(e));
                 resolve(true);
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 
@@ -130,7 +130,7 @@ module.exports = function (m, fn) {
     
                 };
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 };

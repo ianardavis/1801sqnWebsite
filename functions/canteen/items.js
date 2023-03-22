@@ -13,7 +13,7 @@ module.exports = function (m, fn) {
                 ...pagination
             })
             .then(results => resolve(results))
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
     fn.canteen_items.get_by_EAN = function (ean) {
@@ -34,9 +34,10 @@ module.exports = function (m, fn) {
 
                 } else {
                     reject(new Error('EAN not found'));
+                    
                 }
             })
-            .catch(err => reject(err))
+            .catch(reject);
         });
     };
 
@@ -44,19 +45,11 @@ module.exports = function (m, fn) {
         return new Promise((resolve, reject) => {
             fn.canteen_items.get({item_id: item_id})
             .then(item => {
-                item.update(details)
-                .then(result => {
-                    if (result) {
-                        resolve(result);
-
-                    } else {
-                        reject(new Error('Item not updated'));
-
-                    };
-                })
-                .catch(err => reject(err));
+                fn.update(item, details)
+                .then(result => resolve(result))
+                .catch(reject);
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
     fn.canteen_items.create = function (item) {
@@ -64,7 +57,7 @@ module.exports = function (m, fn) {
             if (item) {
                 m.canteen_items.create(item)
                 .then(item => resolve(true))
-                .catch(err => reject(err));
+                .catch(reject);
 
             } else {
                 reject(new Error('No item'));
@@ -90,7 +83,7 @@ module.exports = function (m, fn) {
                         
                     };
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             });
         };
         return new Promise((resolve, reject) => {
@@ -99,9 +92,9 @@ module.exports = function (m, fn) {
                 check_for_linked_data(item.item_id)
                 .then(item.destroy)
                 .then(results => resolve(true))
-                .catch(err => reject(err));
+                .catch(reject);
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 };

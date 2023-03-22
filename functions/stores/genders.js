@@ -13,7 +13,7 @@ module.exports = function (m, fn) {
                 ...pagination
             })
             .then(results => resolve(results))
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 
@@ -21,7 +21,7 @@ module.exports = function (m, fn) {
         return new Promise((resolve, reject) => {
             m.genders.create(gender)
             .then(new_gender => resolve(new_gender))
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 
@@ -29,11 +29,11 @@ module.exports = function (m, fn) {
         return new Promise((resolve, reject) => {
             fn.genders.get({gender_id: gender_id})
             .then(gender => {
-                gender.update(details)
-                .then(result => resolve(result))
-                .catch(err => reject(err));
+                fn.update(gender, details)
+                .then(result => resolve(true))
+                .catch(reject);
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 
@@ -56,11 +56,11 @@ module.exports = function (m, fn) {
 
                         };
                     })
-                    .catch(err => reject(err))
+                    .catch(reject);
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 };

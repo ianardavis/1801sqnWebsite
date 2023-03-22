@@ -1,6 +1,7 @@
 node_modules
 .env*
 .vscode
+.vs
 public/lib/icons
 public/img/favicon
 public/res

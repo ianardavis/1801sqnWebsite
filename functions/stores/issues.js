@@ -62,29 +62,23 @@ module.exports = function (m, fn) {
                     ...fn.pagination(query)
                 })
                 .then(results => resolve(results))
-                .catch(err => reject(err));
+                .catch(reject);
             });
         });
     };
 
     function update_issue_status(issue, status, user_id, action) {
         return new Promise((resolve, reject) => {
-            issue.update({status: status})
+            fn.update(issue, {status: status})
             .then(result => {
-                if (result) {
-                    fn.actions.create([
-                        `ISSUE | ${action}`,
-                        user_id,
-                        [{_table: 'issues', id: issue.issue_id}]
-                    ])
-                    .then(action => resolve(true));
-
-                } else {
-                    reject(new Error('Issue status not updated'));
-
-                };
+                fn.actions.create([
+                    `ISSUE | ${action}`,
+                    user_id,
+                    [{_table: 'issues', id: issue.issue_id}]
+                ])
+                .then(action => resolve(true));
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 
@@ -102,7 +96,7 @@ module.exports = function (m, fn) {
     
                         };
                     })
-                    .catch(err => reject(err));
+                    .catch(reject);
     
                 } else {
                     reject(new Error('Invalid status'));
@@ -121,9 +115,9 @@ module.exports = function (m, fn) {
                     `${status_text.toUpperCase()} | Set manually`
                 )
                 .then(result => resolve(`Issue marked as ${status_text}`))
-                .catch(err => reject(err));
+                .catch(reject);
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 
@@ -161,20 +155,20 @@ module.exports = function (m, fn) {
     
                 if (actions.length > 0) {
                     Promise.allSettled(actions)
+                    .then(fn.log_rejects)
                     .then(results => {
-                        results.filter(e => e.status === 'rejected').forEach(fail => console.log(fail));
                         const resolved = results.filter(e => e.status ==='fulfilled').length;
                         const message = `${resolved} of ${submitted} tasks completed`;
                         resolve(message)
                     })
-                    .catch(err => reject(err));
+                    .catch(reject);
     
                 } else {
                     reject(new Error('No actions to perform'));
     
                 };
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 
@@ -226,11 +220,11 @@ module.exports = function (m, fn) {
         
                                 };
                             })
-                            .catch(err => reject(err));
+                            .catch(reject);
         
                         };
                     })
-                    .catch(err => reject(err));
+                    .catch(reject);
                 });
             };
             return new Promise((resolve, reject) => {
@@ -255,14 +249,14 @@ module.exports = function (m, fn) {
                             ])
                             .then(action => resolve(issue_id));
                         })
-                        .catch(err => reject(err));
+                        .catch(reject);
     
                     } else {
                         reject(new Error('Size can not be issued'));
     
                     };
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             });
         };
         return new Promise((resolve, reject) => {
@@ -283,9 +277,9 @@ module.exports = function (m, fn) {
                 });
                 Promise.all(actions)
                 .then(issue_ids => resolve(issue_ids))
-                .catch(err => reject(err));
+                .catch(reject);
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 
@@ -296,9 +290,9 @@ module.exports = function (m, fn) {
             .then(issue => {
                 update_issue_status(issue, -1, user_id, 'DECLINED')
                 .then(action => resolve(true))
-                .catch(err => reject(err));
+                .catch(reject);
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
     fn.issues.approve = function (issue_id, user_id) {
@@ -307,9 +301,9 @@ module.exports = function (m, fn) {
             .then(issue => {
                 update_issue_status(issue, 2, user_id, 'APPROVED')
                 .then(action => resolve(true))
-                .catch(err => reject(err));
+                .catch(reject);
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
     fn.issues.cancel_own = function (issue_id, user_id) {
@@ -319,12 +313,12 @@ module.exports = function (m, fn) {
                 if (issue.user_id_issue === user_id) {
                     update_issue_status(issue, -1, user_id, 'CANCELLED BY REQUESTER')
                     .then(action => resolve(true))
-                    .catch(err => reject(err));
+                    .catch(reject);
                 } else {
                     reject('This is not your request');
                 };
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 
@@ -341,7 +335,7 @@ module.exports = function (m, fn) {
                     
                 };
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
     fn.issues.cancel = function (issue_id, status, user_id) {
@@ -350,9 +344,9 @@ module.exports = function (m, fn) {
             .then(issue => {
                 update_issue_status(issue, status, user_id, 'CANCELLED')
                 .then(action => resolve(true))
-                .catch(err => reject(err));
+                .catch(reject);
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 
@@ -366,17 +360,17 @@ module.exports = function (m, fn) {
                 } else {
                     update_issue_status(issue, 2, user_id, 'RESTORED')
                     .then(action => resolve(true))
-                    .catch(err => reject(err));
+                    .catch(reject);
 
                 };
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
     
     fn.issues.order = function (issues, user_id) {
-        function sort_issues_by_size(lines) {
-            function get_line_issues_for_order(lines) {
+        function sort_issues_by_size() {
+            function get_line_issues_for_order() {
                 function fulfilled(results) {
                     const fulfilled = results.filter(e => e.status === 'fulfilled');
                     let issues = [];
@@ -385,7 +379,7 @@ module.exports = function (m, fn) {
                 };
                 return new Promise((resolve, reject) => {
                     let actions = [];
-                    lines.forEach(line => {
+                    issues.forEach(line => {
                         actions.push(
                             new Promise((resolve, reject) => {
                                 fn.issues.get({issue_id: line.issue_id})
@@ -401,17 +395,17 @@ module.exports = function (m, fn) {
         
                                     };
                                 })
-                                .catch(err => reject(err));
+                                .catch(reject);
                             })
                         );
                     });
                     Promise.allSettled(actions)
                     .then(issues => resolve(fulfilled(issues)))
-                    .catch(err => reject(err));
+                    .catch(reject);
                 });
             };
             return new Promise((resolve, reject) => {
-                get_line_issues_for_order(lines)
+                get_line_issues_for_order()
                 .then(issues => {
                     let sizes = [];
                     issues.forEach(issue => {
@@ -437,59 +431,51 @@ module.exports = function (m, fn) {
     
                     };
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             });
         };
         return new Promise((resolve, reject) => {
             fn.allowed(user_id, 'stores_stock_admin')
-            .then(result => {
-                sort_issues_by_size(issues)
-                .then(sizes => {
-                    let actions = [];
-                    sizes.forEach(size => {
-                        actions.push(new Promise((resolve, reject) => {
-                            fn.orders.create(
-                                size.size_id,
-                                size.qty,
-                                user_id,
-                                size.issues
-                            )
-                            .then(order => {
-                                let update_actions = [];
-                                size.issues.forEach(issue => {
-                                    update_actions.push(
-                                        new Promise((resolve, reject) => {
-                                            issue.update({
+            .then(sort_issues_by_size)
+            .then(sizes => {
+                let actions = [];
+                sizes.forEach(size => {
+                    actions.push(new Promise((resolve, reject) => {
+                        fn.orders.create(
+                            size.size_id,
+                            size.qty,
+                            user_id,
+                            size.issues
+                        )
+                        .then(order => {
+                            let update_actions = [];
+                            size.issues.forEach(issue => {
+                                update_actions.push(
+                                    new Promise((resolve, reject) => {
+                                        fn.update(
+                                            issue,
+                                            {
                                                 status: 3,
                                                 order_id: order.order_id
-                                            })
-                                            .then(result => {
-                                                if (result) {
-                                                    resolve(true);
-                                                    
-                                                } else {
-                                                    reject(new Error('Issue not updated'));
-                                                    
-                                                };
-                                            })
-                                            .catch(err => reject(err));
-                                        })
-                                    );
-                                });
-                                Promise.allSettled(update_actions)
-                                .then(results => resolve(true))
-                                .catch(err => reject(err));
-                            })
-                            .catch(err => reject(err));
-                        }));
-                    })
-                    Promise.all(actions)
-                    .then(results => resolve(true))
-                    .catch(err => reject(err));
+                                            }
+                                        )
+                                        .then(result => resolve(true))
+                                        .catch(reject);
+                                    })
+                                );
+                            });
+                            Promise.allSettled(update_actions)
+                            .then(results => resolve(true))
+                            .catch(reject);
+                        })
+                        .catch(reject);
+                    }));
                 })
-                .catch(err => reject(err));
+                Promise.all(actions)
+                .then(results => resolve(true))
+                .catch(reject);
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 
@@ -516,7 +502,7 @@ module.exports = function (m, fn) {
                             
                         };
                     })
-                    .catch(err => reject(err));
+                    .catch(reject);
                 });
             };
             return new Promise((resolve, reject) => {
@@ -539,7 +525,7 @@ module.exports = function (m, fn) {
                             };
                             resolve(true);
                         })
-                        .catch(err => reject(err));
+                        .catch(reject);
                     }));
                 });
                 Promise.all(actions)
@@ -552,7 +538,7 @@ module.exports = function (m, fn) {
     
                     };
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             });
         };
         function add_issues_to_loancards(user, user_id) {
@@ -568,13 +554,13 @@ module.exports = function (m, fn) {
                             new Promise((resolve, reject) => {
                                 fn.loancards.lines.create(loancard_id, issue.issue, user_id, issue.line)
                                 .then(result => resolve(true))
-                                .catch(err => reject(err));
+                                .catch(reject);
                             })
                         );
                     });
                     Promise.allSettled(issue_actions)
+                    .then(fn.log_rejects)
                     .then(results => {
-                        results.filter(e => e.status === 'rejected' ).forEach(e => console.log(e));
                         if (results.filter(e => e.status === 'fulfilled').length > 0) {
                             resolve(true);
     
@@ -583,9 +569,9 @@ module.exports = function (m, fn) {
     
                         };
                     })
-                    .catch(err => reject(err));
+                    .catch(reject);
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             });
         };
         return new Promise((resolve, reject) => {
@@ -599,9 +585,9 @@ module.exports = function (m, fn) {
                     users.forEach(user => actions.push(add_issues_to_loancards(user, user_id)))
                     Promise.all(actions)
                     .then(result => resolve(true))
-                    .catch(err => reject(err));
+                    .catch(reject);
                 })
-                .catch(err => reject(err));
+                .catch(reject);
 
             };
         });
@@ -622,7 +608,7 @@ module.exports = function (m, fn) {
 
                 };
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
     fn.issues.change_size = function (issue_id, size_id, user_id) {
@@ -636,27 +622,24 @@ module.exports = function (m, fn) {
 
                     } else {
                         const original_size = issue.size;
-                        issue.update({size_id: size.size_id})
+                        fn.update(
+                            issue,
+                            {size_id: size.size_id}
+                        )
                         .then(result => {
-                            if (result) {
-                                fn.actions.create([
-                                    `ISSUE | UPDATED | Size changed From: ${fn.print_size(original_size)} to: ${fn.print_size(size)}`,
-                                    user_id,
-                                    [{_table: 'issues', id: issue.issue_id}]
-                                ])
-                                .then(result => resolve(true));
-
-                            } else {
-                                reject(new Error('Issue not updated'));
-
-                            };
+                            fn.actions.create([
+                                `ISSUE | UPDATED | Size changed From: ${fn.print_size(original_size)} to: ${fn.print_size(size)}`,
+                                user_id,
+                                [{_table: 'issues', id: issue.issue_id}]
+                            ])
+                            .then(result => resolve(true));
                         })
-                        .catch(err => reject(err));
+                        .catch(reject);
                     };
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
     fn.issues.change_qty = function (issue_id, qty, user_id) {
@@ -669,24 +652,21 @@ module.exports = function (m, fn) {
                 change_check(issue_id)
                 .then(issue => {
                     let original_qty = issue.qty;
-                    issue.update({qty: qty})
+                    fn.update(
+                        issue,
+                        {qty: qty}
+                    )
                     .then(result => {
-                        if (result) {
-                            fn.actions.create([
-                                `ISSUE | UPDATED | Quantity changed From: ${original_qty} to: ${qty}`,
-                                user_id,
-                                [{_table: 'issues', id: issue.issue_id}]
-                            ])
-                            .then(result => resolve(true));
-
-                        } else {
-                            reject(new Error('Issue not updated'));
-
-                        };
+                        fn.actions.create([
+                            `ISSUE | UPDATED | Quantity changed From: ${original_qty} to: ${qty}`,
+                            user_id,
+                            [{_table: 'issues', id: issue.issue_id}]
+                        ])
+                        .then(result => resolve(true));
                     })
-                    .catch(err => reject(err));
+                    .catch(reject);
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             };
         });
     };

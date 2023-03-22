@@ -23,7 +23,7 @@ module.exports = function (m, fn) {
                 ...pagination
             })
             .then(results => resolve(results))
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 
@@ -32,22 +32,19 @@ module.exports = function (m, fn) {
             fn.serials.get({serial_id: serial_id})
             .then(serial => {
                 let original_serial = serial.serial;
-                serial.update({serial: new_serial})
+                fn.update(serial, {serial: new_serial})
                 .then(result => {
-                    if (result) {
-                        fn.actions.create([
-                            `EDITED | Serial changed from ${original_serial} to ${new_serial}`,
-                            user_id,
-                            [{_table: 'serials', id: serial.serial_id}]
-                        ])
-                        .then(result => resolve(true));
-                    } else {
-                        reject(new Error('serial not updated'));
-                    };
+                    fn.actions.create([
+                        `EDITED | Serial changed from ${original_serial} to ${new_serial}`,
+                        user_id,
+                        [{_table: 'serials', id: serial.serial_id}]
+                    ])
+                    .then(result => resolve(true));
+
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             })
-        .catch(err => reject(err));
+        .catch(reject);
         });
     };
     fn.serials.transfer = function (serial_id, location, user_id) {
@@ -59,27 +56,25 @@ module.exports = function (m, fn) {
                     fn.locations.find_or_create({location: location})
                     .then(new_location => {
                         if (new_location.location_id !== serial.location_id) {
-                            serial.update({location_id: new_location.location_id})
+                            fn.update(serial, {location_id: new_location.location_id})
                             .then(result => {
-                                if (result) {
-                                    fn.actions.create([
-                                        `SERIAL | LOCATION | transferred from ${original_location} to ${new_location.location}`,
-                                        user_id,
-                                        [{_table: 'serials', id: serial.serial_id}]
-                                    ])
-                                    .then(result => resolve(true));
-                                } else {
-                                    reject(new Error('Serial not updated'));
-                                };
+                                fn.actions.create([
+                                    `SERIAL | LOCATION | transferred from ${original_location} to ${new_location.location}`,
+                                    user_id,
+                                    [{_table: 'serials', id: serial.serial_id}]
+                                ])
+                                .then(result => resolve(true));
                             })
-                            .catch(err => reject(err));
+                            .catch(reject);
+
                         } else {
                             reject(new Error('From and to locations are the same'));
+
                         };
                     })
-                    .catch(err => reject(err));
+                    .catch(reject);
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             } else {
                 reject(new Error('No location specified'));
             };
@@ -113,7 +108,7 @@ module.exports = function (m, fn) {
                 .then(serial => {
                     scrap_check(serial, details)
                     .then(result => {
-                        serial.update({location_id: null})
+                        fn.update(serial, {location_id: null})
                         .then(result => {
                             fn.scraps.get_or_create(serial.size.supplier_id)
                             .then(scrap => {
@@ -130,15 +125,15 @@ module.exports = function (m, fn) {
                                     ])
                                     .then(results => resolve(true));
                                 })
-                                .catch(err => reject(err));
+                                .catch(reject);
                             })
-                            .catch(err => reject(err));
+                            .catch(reject);
                         })
-                        .catch(err => reject(err));
+                        .catch(reject);
                     })
-                    .catch(err => reject(err));
+                    .catch(reject);
                 })
-                .catch(err => reject(err));
+                .catch(reject);
                 
             } else {
                 reject(new Error('No details submitted'));
@@ -175,10 +170,10 @@ module.exports = function (m, fn) {
 
                             };
                         })
-                        .catch(err => reject(err));
+                        .catch(reject);
                     };
                 })
-                .catch(err => reject(err));
+                .catch(reject);
 
             } else {
                 reject(new Error('Not all required fields have been submitted'));
@@ -201,18 +196,21 @@ module.exports = function (m, fn) {
                         where: {location: location}
                     })
                     .then(([location, created]) => {
-                        serial.update({
-                            location_id: location.location_id,
-                            issue_id:    null
-                        })
+                        fn.update(
+                            serial,
+                            {
+                                location_id: location.location_id,
+                                issue_id:    null
+                            }
+                        )
                         .then(result => resolve({_table: 'serials', id: serial.serial_id}))
-                        .catch(err => reject(err));
+                        .catch(reject);
                     })
-                    .catch(err => reject(err));
+                    .catch(reject);
 
                 };
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
     fn.serials.receive = function (location, serial, size_id, user_id) {
@@ -232,7 +230,7 @@ module.exports = function (m, fn) {
                         resolve({serial_id: serial.serial_id});
                     });
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             } else {
                 reject(new Error('Not all details present'));
             };
@@ -242,24 +240,18 @@ module.exports = function (m, fn) {
         return new Promise((resolve, reject) => {
             fn.locations.find_or_create(location)
             .then(location => {
-                serial.update({location_id: location.location_id})
+                fn.update(serial, {location_id: location.location_id})
                 .then(result => {
-                    if (result) {
-                        fn.actions.create([
-                            `SERIAL | LOCATION | Set to ${location.location}${action_append}`,
-                            user_id,
-                            [{_table: 'serials', id: serial.serial_id}]
-                        ])
-                        .then(result => resolve(true));
-
-                    } else {
-                        reject(new Error('Serial location not updated'));
-
-                    };
+                    fn.actions.create([
+                        `SERIAL | LOCATION | Set to ${location.location}${action_append}`,
+                        user_id,
+                        [{_table: 'serials', id: serial.serial_id}]
+                    ])
+                    .then(result => resolve(true));
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 
@@ -288,11 +280,11 @@ module.exports = function (m, fn) {
                             
                         };
                     })
-                    .catch(err => reject(err));
+                    .catch(reject);
                     
                 };
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 };

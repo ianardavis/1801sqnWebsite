@@ -12,7 +12,7 @@ module.exports = function (m, fn) {
                 ...pagination
             })
             .then(links => resolve(links))
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 };

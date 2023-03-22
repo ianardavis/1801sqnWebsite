@@ -21,7 +21,7 @@ module.exports = (app, fn) => {
             {permission: 'cash_admin'}
         ]},
         {permission: 'site_functions', children: [
-            {permission: 'gallery_admin'}
+            {permission: 'site_admin'}
         ]},
     ];
     app.get('/get/permissions', fn.loggedIn(), fn.permissions.check('user_admin', true), (req, res) => {

@@ -22,7 +22,7 @@ module.exports = function (m, fn) {
                 ...pagination
             })
             .then(results => resolve(results))
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
     fn.sales.get_current = function (user_id) {
@@ -37,9 +37,9 @@ module.exports = function (m, fn) {
                     }
                 })
                 .then(([sale, created]) => resolve(sale.sale_id))
-                .catch(err => reject(err));
+                .catch(reject);
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 
@@ -56,7 +56,7 @@ module.exports = function (m, fn) {
                     reject(new Error('Line not found'));
                 };
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
     fn.sales.lines.get_all = function (where, pagination) {
@@ -67,7 +67,7 @@ module.exports = function (m, fn) {
                 ...pagination
             })
             .then(results => resolve(results))
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 
@@ -114,14 +114,14 @@ module.exports = function (m, fn) {
     
                         };
                     })
-                    .catch(err => reject(err));
+                    .catch(reject);
                 });
             };
             function get_payment_total(sale_id) {
                 return new Promise((resolve, reject) => {
                     m.payments.sum('amount', {where: {sale_id: sale_id}})
                     .then(paid => resolve(paid))
-                    .catch(err => reject(err));
+                    .catch(reject);
                 });
             };
             function process_account_payment(user_id_debit, balance, sale_id, user_id) {
@@ -139,9 +139,9 @@ module.exports = function (m, fn) {
                                 }
                             )
                             .then(result => resolve(true))
-                            .catch(err => reject(err));
+                            .catch(reject);
                         })
-                        .catch(err => reject(err));
+                        .catch(reject);
                     });
                 };
                 return new Promise((resolve, reject) => {
@@ -150,14 +150,14 @@ module.exports = function (m, fn) {
                         if (balance <= account.credit) {
                             debit_account(sale_id, account, balance, user_id)
                             .then(result => resolve(true))
-                            .catch(err => reject(err));
+                            .catch(reject);
                         } else {
                             debit_account(sale_id, account, account.credit, user_id)
                             .then(result => resolve(true))
-                            .catch(err => reject(err));
+                            .catch(reject);
                         };
                     })
-                    .catch(err => reject(err));
+                    .catch(reject);
                 });
             };
             function confirm_payments(sale_id) {
@@ -172,7 +172,7 @@ module.exports = function (m, fn) {
                         
                         };
                     })
-                    .catch(err => reject(err));
+                    .catch(reject);
                 });
             };
             return new Promise((resolve, reject) => {
@@ -218,20 +218,20 @@ module.exports = function (m, fn) {
                                                 resolve(Number(paid - total));
                                             };
                                         })
-                                        .catch(err => reject(err));
+                                        .catch(reject);
                                     } else {
                                         reject(new Error('Not enough tendered or in credit'));
                                     };
                                 })
-                                .catch(err => reject(err));
+                                .catch(reject);
                             })
-                            .catch(err => reject(err));
+                            .catch(reject);
                         })
-                        .catch(err => reject(err));
+                        .catch(reject);
                     })
-                    .catch(err => reject(err));
+                    .catch(reject);
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             });
         };
         function subtract_sold_qty_from_stock(item_id, qty) {
@@ -240,9 +240,9 @@ module.exports = function (m, fn) {
                 .then(item => {
                     item.decrement('qty', {by: qty})
                     .then(result => resolve(true))
-                    .catch(err => reject(err));
+                    .catch(reject);
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             });
         }
         return new Promise((resolve, reject) => {
@@ -257,20 +257,20 @@ module.exports = function (m, fn) {
                 } else if (sale.status === 1) {
                     process_payments(sale.sale_id, _sale, user_id)
                     .then(change => {
-                        let actions = [sale.update({status: 2})];
+                        let actions = [fn.update(sale, {status: 2})];
                         sale.lines.forEach(line => actions.push(subtract_sold_qty_from_stock(line.item_id, line.qty)));
                         Promise.all(actions)
                         .then(result => resolve(change))
-                        .catch(err => reject(err));
+                        .catch(reject);
                     })
-                    .catch(err => reject(err));
+                    .catch(reject);
 
                 } else {
                     reject(new Error('Unknown sale status'));
 
                 };
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 
@@ -290,7 +290,7 @@ module.exports = function (m, fn) {
     
                     };
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             });
         };
         return new Promise((resolve, reject) => {
@@ -316,13 +316,13 @@ module.exports = function (m, fn) {
                     } else {
                         sale_line.increment('qty', {by: 1})
                         .then(result => resolve(true))
-                        .catch(err => reject(err));
+                        .catch(reject);
 
                     };
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 
@@ -345,14 +345,14 @@ module.exports = function (m, fn) {
     
                     };
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             });
         };
         function increase_qty([line, qty]) {
             return new Promise((resolve, reject) => {
                 line.increment('qty', {by: qty})
                 .then(updated_line => resolve(updated_line))
-                .catch(err => reject(err));
+                .catch(reject);
             });
         };
         function delete_if_qty_zero (line) {
@@ -380,7 +380,7 @@ module.exports = function (m, fn) {
                 .then(increase_qty)
                 .then(delete_if_qty_zero)
                 .then(resolve(true))
-                .catch(err => reject(err));
+                .catch(reject);
 
             } else {
                 reject(new Error('No line'));
@@ -402,14 +402,14 @@ module.exports = function (m, fn) {
                 } else if (payment.status === 1) {
                     payment.destroy()
                     .then(result => resolve(true))
-                    .catch(err => reject(err));
+                    .catch(reject);
 
                 } else {
                     reject(new Error('Unknown payment status'));
 
                 };
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 };

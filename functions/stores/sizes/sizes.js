@@ -20,7 +20,7 @@ module.exports = function (m, fn) {
                 ...pagination
             })
             .then(sizes => resolve(sizes))
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
     fn.sizes.count = function (where) {return m.sizes.count({where: where})};
@@ -46,7 +46,7 @@ module.exports = function (m, fn) {
 
                 };
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 
@@ -54,11 +54,11 @@ module.exports = function (m, fn) {
         return new Promise((resolve, reject) => {
             fn.sizes.get({size_id: size_id})
             .then(size => {
-                size.update(details)
-                .then(result => resolve(result))
-                .catch(err => reject(err));
+                fn.update(size, details)
+                .then(result => resolve(true))
+                .catch(reject);
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 
@@ -81,12 +81,12 @@ module.exports = function (m, fn) {
                     } else {
                         size.destroy()
                         .then(result => resolve(true))
-                        .catch(err => reject(err));
+                        .catch(reject);
                     };
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 };

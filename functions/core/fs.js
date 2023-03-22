@@ -10,7 +10,7 @@ module.exports = function (m, fn) {
 				if (createIfFalse) {
 					fn.fs.mkdir(path)
 					.then(path => resolve(true))
-					.catch(err => reject(err));
+					.catch(reject);
 
 				} else {
 					reject(new Error('Path does not exist'));
@@ -61,7 +61,7 @@ module.exports = function (m, fn) {
 					}
 				);
 			})
-			.catch(err => reject(err));
+			.catch(reject);
 		});
 	};
 	fn.fs.upload_file 	= function (options = {}) {
@@ -90,11 +90,11 @@ module.exports = function (m, fn) {
 
 						};
 					})
-					.catch(err => reject(err));
+					.catch(reject);
 				})
-				.catch(err => reject(err));
+				.catch(reject);
 			})
-			.catch(err => reject(err));
+			.catch(reject);
 		});
 	};
 	fn.fs.rmdir 		= function (folder) {
@@ -116,7 +116,7 @@ module.exports = function (m, fn) {
 					}
 				);
 			})
-			.catch(err => reject(err));
+			.catch(reject);
 		});
 	};
 	fn.fs.rm 			= function (file) {
@@ -148,7 +148,7 @@ module.exports = function (m, fn) {
 					.then(filepath => {
 						fn.rm(filepath)
 						.then(rmresult => {
-							result.update({filename: null})
+							fn.update(result, {filename: null})
 							.then(result => {
 								fn.actions.create([
 									`${options.table_s} | FILE DELETED`,
@@ -157,18 +157,18 @@ module.exports = function (m, fn) {
 								])
 								.then(result => resolve(true));
 							})
-							.catch(err => reject(err));
+							.catch(reject);
 						})
-						.catch(err => reject(err));
+						.catch(reject);
 					})
-					.catch(err => reject(err));
+					.catch(reject);
 					
 				} else {
 					reject(new Error('No file for this record'));
 
 				};
 			})
-			.catch(err => reject(err));
+			.catch(reject);
 		});
 	};
 	fn.fs.download 		= function (folder, file, res) {
@@ -185,7 +185,7 @@ module.exports = function (m, fn) {
 					};
 				});
 			})
-			.catch(err => reject(err));
+			.catch(reject);
 		});
 	};
 };

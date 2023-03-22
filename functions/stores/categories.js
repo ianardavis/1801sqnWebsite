@@ -15,7 +15,7 @@ module.exports = function (m, fn) {
                 ...pagination
             })
             .then(results => resolve(results))
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
     fn.categories.edit = function (category_id, details) {
@@ -23,11 +23,11 @@ module.exports = function (m, fn) {
             if (details.parent_category_id === '') details.parent_category_id = null;
             fn.categories.get({category_id: category_id})
             .then(category => {
-                category.update(details)
-                .then(result => resolve(result))
-                .catch(err => reject(err));
+                fn.update(category, details)
+                .then(result => resolve(true))
+                .catch(reject);
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
     fn.categories.create = function (category, user_id) {
@@ -35,7 +35,7 @@ module.exports = function (m, fn) {
             if (category.parent_category_id === '') delete category.parent_category_id;
             m.categories.create({...category, ...{user_id: user_id}})
             .then(category => resolve(true))
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
     fn.categories.delete = function (category_id) {
@@ -56,11 +56,11 @@ module.exports = function (m, fn) {
 
                         };
                     })
-                    .catch(err => reject(err));
+                    .catch(reject);
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 };

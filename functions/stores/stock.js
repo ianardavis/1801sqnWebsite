@@ -26,7 +26,7 @@ module.exports = function (m, fn) {
                             
                         };
                     })
-                    .catch(err => reject(err));
+                    .catch(reject);
 
                 } else if (options.size_id) {
                     fn.sizes.get({size_id: options.size_id})
@@ -40,7 +40,7 @@ module.exports = function (m, fn) {
                                 include: [m.locations]
                             })
                             .then(([stock, created]) => resolve(stock))
-                            .catch(err => reject(err));
+                            .catch(reject);
                             
                         } else if (options.location) {
                             fn.locations.find_or_create({location: options.location})
@@ -53,16 +53,16 @@ module.exports = function (m, fn) {
                                     include: [m.locations]
                                 })
                                 .then(([stock, created]) => resolve(stock))
-                                .catch(err => reject(err));
+                                .catch(reject);
                             })
-                            .catch(err => reject(err));
+                            .catch(reject);
 
                         } else {
                             reject(new Error('No location details submitted'));
                         
                         };
                     })
-                    .catch(err => reject(err));
+                    .catch(reject);
 
                 } else {
                     reject(new Error('No size or stock ID submitted'));
@@ -95,7 +95,7 @@ module.exports = function (m, fn) {
                 ...pagination
             })
             .then(results => resolve(results))
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
     fn.stocks.sum = function (where) {return m.stocks.sum('qty', {where: where})};
@@ -115,7 +115,7 @@ module.exports = function (m, fn) {
                     
                 };
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
     fn.stocks.create = function (size_id, location) {
@@ -131,11 +131,11 @@ module.exports = function (m, fn) {
                         }
                     })
                     .then(([stock, created]) => resolve(true))
-                    .catch(err => reject(err));
+                    .catch(reject);
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
     fn.stocks.scrap = function (stock_id, details, user_id) {
@@ -166,39 +166,59 @@ module.exports = function (m, fn) {
                                 ])
                                 .then(results => resolve(true));
                             })
-                            .catch(err => reject(err));
+                            .catch(reject);
                         })
-                        .catch(err => reject(err));
+                        .catch(reject);
                     })
-                    .catch(err => reject(err));
+                    .catch(reject);
 
                 };
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
     fn.stocks.count = function (stock_id, qty, user_id) {
+        function update_stock(stock) {
+            return new Promise((resolve, reject) => {
+                const variance = qty - stock.qty;
+                fn.update(stock, {qty: qty})
+                .then(result => resolve([
+                    `COUNT | ${(variance < 0 ? 
+                        `Decreased by ${variance}. New qty: ${qty}` : (variance > 0 ? 
+                        `Increased by ${variance}. New qty: ${qty}` : 
+                        `No variance. Qty: ${qty}`
+                        )
+                    )}`,
+                    user_id,
+                    [{_table: 'stocks', id: stock.stock_id}]
+                ]))
+                .catch(reject);
+            });
+        };
         return new Promise((resolve, reject) => {
             fn.stocks.get_by_ID(stock_id)
-            .then(stock => {
-                let variance = qty - stock.qty;
-                stock.update({qty: qty})
-                .then(result => {
-                    fn.actions.create([
-                        `COUNT | ${(variance < 0 ? 
-                            `Decreased by ${variance}. New qty: ${qty}` : (variance > 0 ? 
-                            `Increased by ${variance}. New qty: ${qty}` : 
-                            `No variance. Qty: ${qty}`
-                            )
-                        )}`,
-                        user_id,
-                        [{_table: 'stocks', id: stock.stock_id}]
-                    ])
-                    .then(results => resolve(true));
+            .then(update_stock)
+            .then(fn.actions.create)
+            .then(results => resolve(true))
+            .catch(reject);
+        });
+    };
+    fn.stocks.count_bulk = function (counts, user_id) {
+        return new Promise((resolve, reject) => {
+            if (!counts) {
+                reject(new Error('No details'));
+    
+            } else {
+                let actions = [];
+                counts.filter(a => a.qty).forEach(count => {
+                    actions.push(fn.stocks.count(count.stock_id, count.qty, user_id))
                 })
-                .catch(err => reject(err));
-            })
-            .catch(err => reject(err));
+                Promise.allSettled(actions)
+                .then(fn.log_rejects)
+                .then(results => resolve(true))
+                .catch(reject);
+    
+            };
         });
     };
     fn.stocks.increment = function (stock, qty, action = null) {//{text: '', links: [], user_id: user_id}) {
@@ -226,7 +246,7 @@ module.exports = function (m, fn) {
 
                 };
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
     fn.stocks.decrement = function (stock, qty, action = null) {
@@ -254,7 +274,7 @@ module.exports = function (m, fn) {
 
                 };
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
     fn.stocks.receive = function (options = {}) {
@@ -271,9 +291,9 @@ module.exports = function (m, fn) {
                     }
                 )
                 .then(result => resolve(true))
-                .catch(err => reject(err));
+                .catch(reject);
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
     fn.stocks.return = function (stock_id, qty) {
@@ -282,9 +302,9 @@ module.exports = function (m, fn) {
             .then(stock => {
                 fn.stocks.increment(stock, qty)
                 .then(result => resolve({_table: 'stocks', id: stock_id}))
-                .catch(err => reject(err));
+                .catch(reject);
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
     fn.stocks.transfer = function (stock_id_from, location_to, qty, user_id) {
@@ -326,15 +346,15 @@ module.exports = function (m, fn) {
                                     ])
                                     .then(result => resolve(true));
                                 })
-                                .catch(err => reject(err));
+                                .catch(reject);
                             })
-                            .catch(err => reject(err));
+                            .catch(reject);
                         };
                     })
-                    .catch(err => reject(err));
+                    .catch(reject);
                 };
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 };

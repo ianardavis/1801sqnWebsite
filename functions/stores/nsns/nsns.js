@@ -34,7 +34,7 @@ module.exports = function (m, fn) {
                 ...pagination
             })
             .then(results => resolve(results))
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 
@@ -59,8 +59,8 @@ module.exports = function (m, fn) {
                 .then(([nsn, created]) => {
                     if (created) {
                         if (isDefault === '1') {
-                            size.update({nsn_id: nsn.nsn_id})
-                            .then(result => resolve(` ${(result ? 'Set': 'Not set')} to default`))
+                            fn.update(size, {nsn_id: nsn.nsn_id})
+                            .then(result => resolve(' Set to default'))
                             .catch(err => {
                                 console.log(err);
                                 resolve(` Error setting to default: ${err.message}`);
@@ -75,9 +75,9 @@ module.exports = function (m, fn) {
     
                     };
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 
@@ -90,12 +90,15 @@ module.exports = function (m, fn) {
                 fn.nsns.countries.get({nsn_country_id: details.nsn_country_id})
             ])
             .then(([nsn, nsn_group, nsn_class, nsn_country]) => {
-                nsn.update({
-                    nsn_group_id:   nsn_group  .nsn_group_id,
-                    nsn_class_id:   nsn_class  .nsn_class_id,
-                    nsn_country_id: nsn_country.nsn_country_id,
-                    item_number:    details.item_number
-                })
+                fn.update(
+                    nsn,
+                    {
+                        nsn_group_id:   nsn_group  .nsn_group_id,
+                        nsn_class_id:   nsn_class  .nsn_class_id,
+                        nsn_country_id: nsn_country.nsn_country_id,
+                        item_number:    details.item_number
+                    }
+                )
                 .then(result => {
                     if (result) {
                         resolve(result);
@@ -105,9 +108,9 @@ module.exports = function (m, fn) {
 
                     };
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 
@@ -138,10 +141,10 @@ module.exports = function (m, fn) {
                             resolve(false);
                         });
                     })
-                    .catch(err => reject(err));
+                    .catch(reject);
                 };
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 };

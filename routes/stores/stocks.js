@@ -37,22 +37,9 @@ module.exports = (app, fn) => {
     });
 
     app.put('/stocks/counts',       fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
-        if (!req.body.counts) {
-            fn.send_error(res, 'No details');
-
-        } else {
-            let actions = [];
-            req.body.counts.filter(a => a.qty).forEach(count => {
-                actions.push(fn.stocks.count(count.stock_id, count.qty, req.user.user_id))
-            })
-            Promise.allSettled(actions)
-            .then(results => {
-                results.filter(e => e.status === 'rejected').forEach(e => console.log(e));
-                res.send({success: true, message: 'Counts saved', result: req.body.location_id});
-            })
-            .catch(err => fn.send_error(res, err));
-
-        };
+        fn.stocks.count_bulk(req.body.counts, req.user.user_id)
+        .then(result => res.send({success: true, message: 'Counts saved', result: req.body.location_id}))
+        .catch(err => fn.send_error(res, err));
     });
     app.put('/stocks/:id',          fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
         fn.stocks.get_by_ID(req.params.id)

@@ -15,7 +15,7 @@ module.exports = function (m, fn) {
                 ...pagination
             })
             .then(results => resolve(results))
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 
@@ -31,7 +31,7 @@ module.exports = function (m, fn) {
                 } else {
                     fn.users.get({user_id: details.user_id})
                     .then(user => resolve(details))
-                    .catch(err => reject(err));
+                    .catch(reject);
 
                 };
             });
@@ -40,31 +40,19 @@ module.exports = function (m, fn) {
             check()
             .then(m.accounts.create)
             .then(new_account => resolve(new_account))
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 
     fn.accounts.edit = function (account_id, details) {
         function update_account(account) {
-            return new Promise((resolve, reject) => {
-                account.update(details)
-                .then(result => {
-                    if (result) {
-                        resolve(true);
-                        
-                    } else {
-                        reject(new Error('Account not updated'));
-
-                    };
-                })
-                .catch(err => reject(err));
-            });
+            return fn.update(account, details);
         };
         return new Promise((resolve, reject) => {
             fn.accounts.get({account_id: account_id})
             .then(update_account)
             .then(result => resolve(true))
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 
@@ -83,7 +71,7 @@ module.exports = function (m, fn) {
 
                     };
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             });
         };
         function delete_account(account) {
@@ -98,7 +86,7 @@ module.exports = function (m, fn) {
 
                     };
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             });
         };
         function remove_from_supplier_records(account_id) {
@@ -120,7 +108,7 @@ module.exports = function (m, fn) {
             .then(delete_account)
             .then(remove_from_supplier_records)
             .then(then => resolve(true))
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 };

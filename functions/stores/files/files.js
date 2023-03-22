@@ -13,7 +13,7 @@ module.exports = function (m, fn) {
                 ...pagination
             })
             .then(results => resolve(results))
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 
@@ -51,19 +51,11 @@ module.exports = function (m, fn) {
         return new Promise((resolve, reject) => {
             fn.files.get({file_id: file_id})
             .then(file => {
-                file.update(details)
-                .then(result => {
-                    if (result) {
-                        resolve(result);
-
-                    } else {
-                        reject(new Error('File not updated'));
-
-                    };
-                })
-                .catch(err => reject(err));
+                fn.update(file, details)
+                .then(result => resolve(result))
+                .catch(reject);
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 
@@ -79,7 +71,7 @@ module.exports = function (m, fn) {
                 };
                 Promise.allSettled(actions)
                 .then(results => reject(new Error('Multiple files submitted')))
-                .catch(err =>    reject(err));
+                .catch(reject);
     
             } else {
                 fn.fs.upload_file({
@@ -90,12 +82,12 @@ module.exports = function (m, fn) {
                 .then(result => {
                     fn.fs.rmdir(`${process.env.ROOT}/public/uploads/${files.uploaded.uuid}`)
                     .then(result => resolve(true))
-                    .catch(err => reject(err));
+                    .catch(reject);
                 })
                 .catch(error => {
                     fn.fs.rmdir(`${process.env.ROOT}/public/uploads/${files.uploaded.uuid}`)
                     .then(result => reject(error))
-                    .catch(err => reject(err));
+                    .catch(reject);
                 });
     
             };
@@ -111,11 +103,11 @@ module.exports = function (m, fn) {
                     const path = fn.public_file('files', file.filename);
                     fn.rm(path)
                     .then(result => resolve(true))
-                    .catch(err => reject(err));
+                    .catch(reject);
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 };

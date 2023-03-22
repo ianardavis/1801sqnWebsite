@@ -5,14 +5,14 @@
         <h3>Links</h3>
     </a>
     <div class="collapse show mb-3" id="collapseLinks">
-        <div class="menu row">
-            <%- include(`${partials}/card`, {href: '/canteen',                       title: 'Canteen',      text: 'Canteen management',   body_100: true}) %>
-            <%- include(`${partials}/card`, {href: '/stores',                        title: 'Stores',       text: 'Stores management',    body_100: true}) %>
-            <%- include(`${partials}/card`, {href: '/users',                         title: 'Users',        text: 'User management',      body_100: true}) %>
-            <%- include(`${partials}/card`, {href: '/settings',                      title: 'Settings',     text: 'Settings',             body_100: true}) %>
-            <%- include(`${partials}/card`, {href: 'https://bader.mod.uk',           title: 'Bader',        text: 'Bader landing page',   body_100: true}) %>
-            <%- include(`${partials}/card`, {href: 'https://cadets.bader.mod.uk/',   title: 'Cadet Portal', text: 'Bader landing page',   body_100: true}) %>
-            <%- include(`${partials}/card`, {href: 'https://learning.bader.mod.uk/', title: 'UltiLearn',    text: 'Ultilearn login page', body_100: true}) %>
+        <div class="menu row" id="rowLinks">
+            <%- include(`${partials}/card`, {href: '/canteen',                     title: 'Canteen',      text: 'Canteen management', body_100: true}) %>
+            <%- include(`${partials}/card`, {href: '/stores',                      title: 'Stores',       text: 'Stores management',  body_100: true}) %>
+            <%- include(`${partials}/card`, {href: '/users',                       title: 'Users',        text: 'User management',    body_100: true}) %>
+            <%- include(`${partials}/card`, {href: '/settings',                    title: 'Settings',     text: 'Settings',           body_100: true}) %>
+            <%- include(`${partials}/card`, {href: 'https://bader.mod.uk',         title: 'Bader',        text: 'Bader landing page', body_100: true}) %>
+            <%- include(`${partials}/card`, {href: 'https://cadets.bader.mod.uk/', title: 'Cadet Portal', text: 'Cadet Portal',       body_100: true}) %>
+            <%- include(`${partials}/card`, {href: 'https://learn.bader.mod.uk/',  title: 'Bader Learn',  text: 'Bader Learn',        body_100: true}) %>
         </div>
     </div>
 </section>
@@ -21,7 +21,7 @@
         <h3>Videos</h3>
     </a>
     <div class="collapse mb-3" id="collapseVideos">
-        <div class="menu row">
+        <div class="menu row" id="rowVideos">
             <%- include(`${partials}/card`, {href: 'https://vimeo.com/338293093', title: 'Beret moulding'}) %>
             <%- include(`${partials}/card`, {href: 'https://vimeo.com/442125686', title: 'How to iron a shirt'}) %>
             <%- include(`${partials}/card`, {href: 'https://vimeo.com/439754523', title: 'How to iron a brassard'}) %>
@@ -37,7 +37,7 @@
         <h3>Publications</h3>
     </a>
     <div class="collapse mb-3" id="collapsePublications">
-        <div class="menu row">
+        <div class="menu row" id="rowPublications">
             <%- include(`${partials}/card`, {title: 'PI 5-01',  text: 'ATC Cadet Code of Conduct',                       href: 'https://rafac.sharepoint.com/:w:/s/interim/QM/Eex9QL5dFdpFgeS8CaEcCdQBcfqkKVmQQFGM8_LNTDE0rw?e=TUtYTi&web=1', }) %>
             <%- include(`${partials}/card`, {title: 'ACP1',     text: 'Ethos, Core Values and Standards',                href: 'https://rafac.sharepoint.com/:w:/s/interim/QM/EfTIkp4w2QtLjBxb6Y-_v9sBfYkI0wFlXZSx1CEeQGUzNw?e=e3Rded&web=1', }) %>
             <%- include(`${partials}/card`, {title: 'ACP2',     text: 'A Guide to Cultural and Religious Diversity',     href: 'https://rafac.sharepoint.com/:w:/s/interim/QM/EfxLZizAK2JNi3v6oNUENmABhoPI19AQTS7ad1JrE6Zq0g?e=ZM26sO&web=1', }) %>
@@ -53,7 +53,7 @@
         <h3>Forms</h3>
     </a>
     <div class="collapse mb-3" id="collapseForms">
-        <div class="menu row">
+        <div class="menu row" id="rowForms">
             <%- include(`${partials}/card`, {title: 'TG 21',   text: 'Cadet Activity Consent Form',     href: 'https://rafac.sharepoint.com/:w:/s/interim/QM/EfhrSpaRhRNOrLMjvFDKJp8Bgkl25I-FjQAR69Y6lyhyAw?web=1', }) %>
             <%- include(`${partials}/card`, {title: 'TG 22',   text: 'Staff Activity Consent Form',     href: 'https://rafac.sharepoint.com/:w:/r/sites/interim/QM/_layouts/15/Doc.aspx?sourcedoc=%7B517AFCD8-140E-47BC-904B-AA780CA58045%7D&file=TG%20Form%20022.docx&action=default&mobileredirect=true', }) %>
             <%- include(`${partials}/card`, {title: 'TG 23',   text: 'Health Declaration Form',         href: 'https://rafac.sharepoint.com/:w:/s/interim/QM/EVXEjgPn9rtCiLUW9b_dVHoBUkaEOvYgRbkLKswmQ-ksWQ?web=1', }) %>
@@ -61,4 +61,7 @@
         </div>
     </div>
 </section>
-<%- include(`${partials}/foot/site`) %>
+<%- include(`${partials}/foot/components/navbar`) %>
+<%- include(`${partials}/foot/components/js`) %>
+<script src="/js/site/links/view.js"></script>
+<%- include(`${partials}/foot/components/htmlClose`) %>

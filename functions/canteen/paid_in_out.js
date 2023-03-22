@@ -23,7 +23,7 @@ module.exports = function (m, fn) {
                 ...pagination
             })
             .then(results => resolve(results))
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
     function create_action(paid_in_out_id, action, user_id, links = []) {
@@ -38,22 +38,22 @@ module.exports = function (m, fn) {
     };
     function mark_complete(paid_in_out, user_id, holding_id) {
         return new Promise((resolve, reject) => {
-            paid_in_out.update({status: 2})
+            fn.update(paid_in_out, {status: 2})
             .then(result => {
                 create_action(paid_in_out.paid_in_out_id, 'COMPLETED', user_id, [{_table: 'holdings', id: holding_id}])
                 .then(result => resolve(result));
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
     function mark_cancelled(paid_in_out, user_id) {
         return new Promise((resolve, reject) => {
-            paid_in_out.update({status: 0})
+            fn.update(paid_in_out, {status: 0})
             .then(result => {
                 create_action(paid_in_out.paid_in_out_id, 'CANCELLED', user_id)
                 .then(result => resolve(result));
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
     
@@ -91,7 +91,7 @@ module.exports = function (m, fn) {
                     fn.users.get({user_id: user_id})
                 ])
                 .then(results => resolve(results[0]))
-                .catch(err => reject(err));
+                .catch(reject);
             });
         };
         function create_paid_in_out(paid_in_out, user_id) {
@@ -104,7 +104,7 @@ module.exports = function (m, fn) {
                     create_action(paid_in_out.paid_in_out_id, 'CREATED', user_id)
                     .then(result => resolve(paid_in_out));
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             });
         };
         return new Promise((resolve, reject) => {
@@ -121,18 +121,18 @@ module.exports = function (m, fn) {
                                     mark_complete(paid_in_out, user_id, holding.holding_id)
                                     .then(result => resolve(true));
                                 })
-                                .catch(err => reject(err));
+                                .catch(reject);
     
                             } else {
                                 resolve(true);
     
                             };
                         })
-                        .catch(err => reject(err));
+                        .catch(reject);
                     })
-                    .catch(err => reject(err));
+                    .catch(reject);
                 })
-                .catch(err => reject(err));
+                .catch(reject);
 
             } else {
                 reject(new Error('No details'));
@@ -178,13 +178,13 @@ module.exports = function (m, fn) {
                     .then(result => {
                         mark_complete(paid_in_out, user_id)
                         .then(result => resolve(result))
-                        .catch(err => reject(err));
+                        .catch(reject);
                     })
-                    .catch(err => reject(err));
+                    .catch(reject);
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
     
@@ -216,11 +216,11 @@ module.exports = function (m, fn) {
                 .then(result => {
                     mark_cancelled(paid_in_out.paid_in_out_id, user_id)
                     .then(result => resolve(true))
-                    .catch(err => reject(err));
+                    .catch(reject);
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 };

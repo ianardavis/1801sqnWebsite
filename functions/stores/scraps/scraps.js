@@ -17,7 +17,7 @@ module.exports = function (m, fn) {
 
                 };
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
     fn.scraps.get_or_create = function (supplier_id) {
@@ -26,7 +26,7 @@ module.exports = function (m, fn) {
                 if (supplier_id) {
                     fn.suppliers.get({supplier_id: supplier_id})
                     .then(supplier => resolve(supplier))
-                    .catch(err => reject(err));
+                    .catch(reject);
     
                 } else {
                     resolve(null);
@@ -44,9 +44,9 @@ module.exports = function (m, fn) {
                     }
                 })
                 .then(([scrap, created]) => resolve(scrap))
-                .catch(err => reject(err));
+                .catch(reject);
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
     fn.scraps.get_all = function (where, pagination) {
@@ -65,7 +65,7 @@ module.exports = function (m, fn) {
                 ...pagination
             })
             .then(results => resolve(results))
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
     fn.scraps.count = function (where) {return m.scraps.count({where: where})};
@@ -73,11 +73,11 @@ module.exports = function (m, fn) {
     fn.scraps.edit = function (scrap_id, details) {
         fn.scraps.get({scrap_id: scrap_id})
         .then(scrap => {
-            scrap.update(details)
-            .then(result => resolve(result))
-            .catch(err => reject(err));
+            fn.update(scrap, details)
+            .then(result => resolve(true))
+            .catch(reject);
         })
-        .catch(err => reject(err));
+        .catch(reject);
     };
 
     fn.scraps.cancel_check = function (scrap_id) {
@@ -124,26 +124,20 @@ module.exports = function (m, fn) {
                     {where: {status: {[fn.op.or]: [1]}}
                 })
                 .then(results => {
-                    scrap.update({status: 0})
+                    fn.update(scrap, {status: 0})
                     .then(result => {
-                        if (result) {
-                            fn.actions.create([
-                                'SCRAP | CANCELLED',
-                                user_id,
-                                [{_table: 'scraps', id: scrap.scrap_id}]
-                            ])
-                            .then(result => resolve(result));
-
-                        } else {
-                            reject(new Error('Scrap not cancelled'));
-
-                        };
+                        fn.actions.create([
+                            'SCRAP | CANCELLED',
+                            user_id,
+                            [{_table: 'scraps', id: scrap.scrap_id}]
+                        ])
+                        .then(result => resolve(result));
                     })
-                    .catch(err => reject(err));
+                    .catch(reject);
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 
@@ -181,7 +175,7 @@ module.exports = function (m, fn) {
     
                     };
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             });
         };
         return new Promise((resolve, reject) => {
@@ -189,30 +183,24 @@ module.exports = function (m, fn) {
             .then(scrap => {
                 let actions = [];
                 scrap.lines.forEach((line) => {
-                    actions.push(line.update({status: 2}));
+                    actions.push(fn.update(line, {status: 2}));
                 });
                 Promise.all(actions)
                 .then(result => {
-                    scrap.update({status: 2})
+                    fn.update(scrap, {status: 2})
                     .then(result => {
-                        if (result) {
-                            fn.scraps.pdf.create(scrap.scrap_id, user)
-                            .then(result => resolve(true))
-                            .catch(err => {
-                                console.log(err);
-                                resolve(false);
-                            });
-
-                        } else {
-                            reject(new Error('Scrap not updated'));
-
-                        };
+                        fn.scraps.pdf.create(scrap.scrap_id, user)
+                        .then(result => resolve(true))
+                        .catch(err => {
+                            console.log(err);
+                            resolve(false);
+                        });
                     })
-                    .catch(err => reject(err));
+                    .catch(reject);
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 
@@ -229,11 +217,11 @@ module.exports = function (m, fn) {
                 } else {
                     fn.scraps.pdf.create(scrap.scrap_id)
                     .then(filename => resolve(filename))
-                    .catch(err => reject(err));
+                    .catch(reject);
 
                 };
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
     fn.scraps.download = function (scrap_id, res) {
@@ -242,9 +230,9 @@ module.exports = function (m, fn) {
             .then(filename => {
                 fn.fs.download('scraps', filename, res)
                 .then(result => resolve(true))
-                .catch(err => reject(err));
+                .catch(reject);
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
     fn.scraps.print = function (scrap_id) {
@@ -253,9 +241,9 @@ module.exports = function (m, fn) {
             .then(filename => {
                 fn.pdfs.print('scraps', filename)
                 .then(result => resolve(true))
-                .catch(err => reject(err));
+                .catch(reject);
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 };

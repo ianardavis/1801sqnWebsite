@@ -11,7 +11,7 @@ module.exports = function (m, fn) {
                 
                 };
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
     fn.users.permissions.get_all = function (user_id, allowed, where, pagination) {
@@ -23,9 +23,9 @@ module.exports = function (m, fn) {
                     ...pagination
                 })
                 .then(results => resolve(results))
-                .catch(err => reject(err));
+                .catch(reject);
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
     fn.users.permissions.update = function (user_id_self, user_id, allowed, submitted_permissions) {
@@ -59,13 +59,13 @@ module.exports = function (m, fn) {
                         });
                         Promise.allSettled(actions)
                         .then(results => resolve(true))
-                        .catch(err => reject(err));
+                        .catch(reject);
                     })
-                    .catch(err => reject(err));
+                    .catch(reject);
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 };

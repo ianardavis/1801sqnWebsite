@@ -25,7 +25,7 @@ module.exports = function (m, fn) {
                 ...options.pagination || {}
             })
             .then(results => resolve(results))
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
     
@@ -56,7 +56,7 @@ module.exports = function (m, fn) {
     
                     resolve(loancards);
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             });
         };
         function check_loancard(loancard_id, user_id) {
@@ -125,7 +125,7 @@ module.exports = function (m, fn) {
                     actions = [];
                     lines.forEach(line => {
                         if (!line.issues || line.issues.length === 0) {
-                            line.update({status: 3})
+                            fn.update(line, {status: 3})
                             .then(result => {
                                 fn.actions.create([
                                     'LOANCARD LINE | CLOSED',
@@ -134,7 +134,7 @@ module.exports = function (m, fn) {
                                 ])
                                 .then(result => resolve(true));
                             })
-                            .catch(err => reject(err));
+                            .catch(reject);
     
                         } else {
                             resolve(false);
@@ -142,7 +142,7 @@ module.exports = function (m, fn) {
                         };
                     });
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             });
         };
         return new Promise((resolve, reject) => {
@@ -155,16 +155,16 @@ module.exports = function (m, fn) {
                         .then(result => {
                             check_loancard(loancard_id, user_id)
                             .then(result => resolve(true))
-                            .catch(err => reject(err));
+                            .catch(reject);
                         })
-                        .catch(err => reject(err));
+                        .catch(reject);
                     }));
                 });
                 Promise.allSettled(loancard_checks)
                 .then(results => resolve(true))
-                .catch(err => reject(err));
+                .catch(reject);
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 
@@ -199,7 +199,7 @@ module.exports = function (m, fn) {
     
                     };
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             });
         };
         function update_issues_and_destroy_links(issues) {
@@ -211,30 +211,24 @@ module.exports = function (m, fn) {
                         issue.issue_loancard_line.destroy()
                         .then(result => {
                             if (result) {
-                                issue.update({status: 2})
+                                fn.update(issue, {status: 2})
                                 .then(result => {
-                                    if (result) {
-                                        links.push({_table: 'issues', id: issue.issue_id});
-                                        resolve(issue);
-    
-                                    } else {
-                                        reject(new Error('Issue not updated'));
-    
-                                    };
+                                    links.push({_table: 'issues', id: issue.issue_id});
+                                    resolve(issue);
                                 })
-                                .catch(err => reject(err));
+                                .catch(reject);
     
                             } else {
                                 reject(new Error('Link not destroyed'));
     
                             };
                         })
-                        .catch(err => reject(err));
+                        .catch(reject);
                     }));
                 });
                 Promise.all(actions)
                 .then(resolved_issues => resolve([resolved_issues, links]))
-                .catch(err => reject(err));
+                .catch(reject);
             });
         };
         function return_to_location(serial_id, location, issues, size_id) {
@@ -248,9 +242,9 @@ module.exports = function (m, fn) {
                     .then(stock => {
                         fn.stocks.return(stock.stock_id, qty)
                         .then(link => resolve([link, qty]))
-                        .catch(err => reject(err));
+                        .catch(reject);
                     })
-                    .catch(err => reject(err));
+                    .catch(reject);
                 });
     
             };
@@ -267,7 +261,7 @@ module.exports = function (m, fn) {
                         line.size_id
                     )
                     .then(([link, qty]) => {
-                        line.update({status: 0})
+                        fn.update(line, {status: 0})
                         .then(result => {
                             fn.actions.create([
                                 'LOANCARD LINE | CANCELLED',
@@ -279,13 +273,13 @@ module.exports = function (m, fn) {
                             ])
                             .then(result => resolve(line.loancard_id));
                         })
-                        .catch(err => reject(err));
+                        .catch(reject);
                     })
-                    .catch(err => reject(err));
+                    .catch(reject);
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 
@@ -304,7 +298,7 @@ module.exports = function (m, fn) {
     
                             };
                         })
-                        .catch(err => reject(err));
+                        .catch(reject);
     
                     } else {
                         reject(new Error('No NSN ID submitted'));
@@ -339,7 +333,7 @@ module.exports = function (m, fn) {
         
                             };
                         })
-                        .catch(err => reject(err));
+                        .catch(reject);
                     };
                 });
             };
@@ -368,13 +362,14 @@ module.exports = function (m, fn) {
                                 .then(link_line => {
                                     console.log("link id", link_line.issue_loancard_line_id);
                                     Promise.all([
-                                        serial.update({
-                                            issue_id:    issue.issue_id,
-                                            location_id: null
-                                        }),
-                                        issue.update({
-                                            status: 4
-                                        })
+                                        fn.update(
+                                            serial,
+                                            {
+                                                issue_id:    issue.issue_id,
+                                                location_id: null
+                                            }
+                                        ),
+                                        fn.update(issue, {status: 4})
                                     ])
                                     .then(([result1, result2]) => {
                                         console.log("Results", result1, result2);
@@ -394,11 +389,11 @@ module.exports = function (m, fn) {
                                         reject(err);
                                     });
                                 })
-                                .catch(err => reject(err));
+                                .catch(reject);
                             })
-                            .catch(err => reject(err));
+                            .catch(reject);
                         })
-                        .catch(err => reject(err));
+                        .catch(reject);
                     }));
                 });
                 Promise.allSettled(actions)
@@ -409,7 +404,7 @@ module.exports = function (m, fn) {
                     // results.filter(e => e.status === 'fulfilled').forEach(r => resolve_obj.concat(r.value));
                     // resolve(resolve_obj);
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             });
         };
         function add_stock(size_id, nsn_id, loancard_id, user_id, line, issue) {
@@ -429,7 +424,7 @@ module.exports = function (m, fn) {
         
                             };
                         })
-                        .catch(err => reject(err));
+                        .catch(reject);
                     };
                 });
             };
@@ -453,33 +448,28 @@ module.exports = function (m, fn) {
                                 loancard_line_id: loancard_line.loancard_line_id
                             })
                             .then(link_line => {
-                                issue.update({status: 4})
+                                fn.update(issue, {status: 4})
                                 .then(result => {
-                                    if (result) {
-                                        fn.actions.create([
-                                            `LOANCARD LINE | ${(created ? 'CREATED' : `INCREMENTED BY ${line.qty}`)}`,
-                                            user_id,
-                                            [
-                                                {_table: 'stocks',         id: stock.stock_id},
-                                                {_table: 'issues',         id: issue.issue_id},
-                                                {_table: 'loancard_lines', id: loancard_line.loancard_line_id}
-                                            ]
-                                        ])
-                                        .then(action => resolve(true));
-                                    } else {
-                                        reject(new Error('Issue not updated'));
-    
-                                    };
+                                    fn.actions.create([
+                                        `LOANCARD LINE | ${(created ? 'CREATED' : `INCREMENTED BY ${line.qty}`)}`,
+                                        user_id,
+                                        [
+                                            {_table: 'stocks',         id: stock.stock_id},
+                                            {_table: 'issues',         id: issue.issue_id},
+                                            {_table: 'loancard_lines', id: loancard_line.loancard_line_id}
+                                        ]
+                                    ])
+                                    .then(action => resolve(true));
                                 })
-                                .catch(err => reject(err));
+                                .catch(reject);
                             })
-                            .catch(err => reject(err));
+                            .catch(reject);
                         })
-                        .catch(err => reject(err));
+                        .catch(reject);
                     })
-                    .catch(err => reject(err));
+                    .catch(reject);
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             });
         };
         return new Promise((resolve, reject) => {
@@ -500,11 +490,11 @@ module.exports = function (m, fn) {
                     };
                     action(size.size_id, nsn_id, loancard.loancard_id, user_id, line, issue)
                     .then(result => resolve(result))
-                    .catch(err => reject(err));
+                    .catch(reject);
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             })
-            .catch(err => reject(err));
+            .catch(reject);
         })
     };
 
@@ -515,7 +505,7 @@ module.exports = function (m, fn) {
                     if (line.scrap && line.scrap === '1') {
                         fn.scraps.get_or_create(loancard_line.size.supplier_id)
                         .then(scrap => resolve({scrap: scrap}))
-                        .catch(err => reject(err));
+                        .catch(reject);
                         
                     } else if (line.location) {
                         if (loancard_line.size.has_serials) {
@@ -527,7 +517,7 @@ module.exports = function (m, fn) {
                                         location_id: location.location_id
                                     }
                                 }))
-                                .catch(err => reject(err));
+                                .catch(reject);
         
                             } else {
                                 reject(new Error('No valid serial # on loancard'));
@@ -537,7 +527,7 @@ module.exports = function (m, fn) {
                         } else {
                             fn.stocks.find({size_id: loancard_line.size_id, location: line.location})
                             .then(stock => resolve({stock: stock}))
-                            .catch(err => reject(err));
+                            .catch(reject);
         
                         };
         
@@ -604,7 +594,7 @@ module.exports = function (m, fn) {
                                         .then(destination => resolve(
                                             [loancard_line, issues, destination, total_return_qty, user_id]
                                         ))
-                                        .catch(err => reject(err));
+                                        .catch(reject);
                 
                                     } else {
                                         reject(new Error('Size not found'));
@@ -618,13 +608,13 @@ module.exports = function (m, fn) {
                 
                                 };
                             })
-                            .catch(err => reject(err));
+                            .catch(reject);
                         } else {
                             reject(new Error('Return qty is 0'));
     
                         };
                     })
-                    .catch(err => reject(err));
+                    .catch(reject);
     
                 } else {
                     reject(new Error('No issues to return'));
@@ -646,15 +636,18 @@ module.exports = function (m, fn) {
                         }
                     )
                     .then(scrap_line_id => resolve([{_table: 'scrap_lines', id: scrap_line_id}, issues, line, user_id]))
-                    .catch(err => reject(err));
+                    .catch(reject);
     
                 } else if (destination.serial) {
-                    destination.serial.serial.update({
-                        issue_id: null,
-                        location_id: destination.serial.location_id
-                    })
+                    fn.update(
+                        destination.serial.serial,
+                        {
+                            issue_id: null,
+                            location_id: destination.serial.location_id
+                        }
+                    )
                     .then(result => resolve({_table: 'serials', id: destination.serial.serial.serial_id}, issues, line, user_id))
-                    .catch(err => reject(err));
+                    .catch(reject);
     
                 } else {
                     destination.stock.increment('qty', {by: qty})
@@ -667,7 +660,7 @@ module.exports = function (m, fn) {
     
                         };
                     })
-                    .catch(err => reject(err));
+                    .catch(reject);
     
                 };
             });
@@ -694,16 +687,16 @@ module.exports = function (m, fn) {
                             .then(new_issue => {
                                 loancard_line.addIssue(new_issue)
                                 .then(result => resolve(true))
-                                .catch(err => reject(err));
+                                .catch(reject);
                             })
-                            .catch(err => reject(err));
+                            .catch(reject);
                         }));
                         
                     };
-                    actions.push(issue.update(issue_record))
+                    actions.push(fn.update(issue, issue_record))
                     Promise.all(actions)
                     .then(results => resolve({_table: 'issues', id: issue.issue_id}))
-                    .catch(err => reject(err));
+                    .catch(reject);
                 });
             };
             return new Promise((resolve, reject) => {
@@ -723,7 +716,7 @@ module.exports = function (m, fn) {
                         line.loancard_id
                     ]);
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             });
         };
         return new Promise((resolve, reject) => {
@@ -732,7 +725,7 @@ module.exports = function (m, fn) {
             .then(update_issues)
             .then(fn.actions.create)
             .then(loancard_id => resolve(loancard_id))
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 };

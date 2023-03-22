@@ -15,7 +15,7 @@ module.exports = function (m, fn) {
                 ...pagination
             })
             .then(results => resolve(results))
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 
@@ -29,7 +29,7 @@ module.exports = function (m, fn) {
                 user_id: user_id
             })
             .then(note => resolve(true))
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 
@@ -41,20 +41,12 @@ module.exports = function (m, fn) {
                     reject(new Error('System generated notes can not be edited'));
                     
                 } else {
-                    note.update(note_text)
-                    .then(result => {
-                        if (result) {
-                            resolve(true);
-
-                        } else {
-                            reject(new Error('Note not updated'));
-
-                        };
-                    })
-                    .catch(err => reject(err));
+                    fn.update(note, note_text)
+                    .then(result => resolve(true))
+                    .catch(reject);
                 };
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 
@@ -76,11 +68,11 @@ module.exports = function (m, fn) {
 
                         };
                     })
-                    .catch(err => reject(err));
+                    .catch(reject);
 
                 };
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 };

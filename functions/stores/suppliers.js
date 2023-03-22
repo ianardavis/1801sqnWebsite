@@ -15,18 +15,18 @@ module.exports = function (m, fn) {
                 ...pagination
             })
             .then(results => resolve(results))
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
     fn.suppliers.edit = function (supplier_id, details) {
         return new Promise((resolve, reject) => {
             fn.suppliers.get({supplier_id: supplier_id})
             .then(supplier => {
-                supplier.update(details)
-                .then(result => resolve(result))
-                .catch(err => reject(err));
+                fn.update(supplier, details)
+                .then(result => resolve(true))
+                .catch(reject);
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 
@@ -35,7 +35,7 @@ module.exports = function (m, fn) {
             supplier = fn.nullify(supplier);
             m.suppliers.create(supplier)
             .then(supplier => resolve(true))
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 
@@ -54,9 +54,9 @@ module.exports = function (m, fn) {
     
                         };
                     })
-                    .catch(err => reject(err));
+                    .catch(reject);
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             });
         };
         function delete_default_supplier(supplier_id) {
@@ -89,7 +89,7 @@ module.exports = function (m, fn) {
             delete_supplier(supplier_id)
             .then(delete_default_supplier)
             .then(setting_deleted => resolve(setting_deleted))
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 
@@ -120,7 +120,7 @@ module.exports = function (m, fn) {
                 ...pagination
             })
             .then(results => resolve(results))
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
     function create(supplier_id, record, type, table) {
@@ -136,11 +136,11 @@ module.exports = function (m, fn) {
                     create_record[`${table.si}_id`] = result[`${table.si}_id`];
                     m[`supplier_${table.pl}`].create(create_record)
                     .then(result => resolve(true))
-                    .catch(err => reject(err));
+                    .catch(reject);
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
     function edit(id, new_record, user_id, table) {
@@ -150,29 +150,23 @@ module.exports = function (m, fn) {
             m[table.pl].findOne(where)
             .then(result => {
                 if (result) {
-                    result.update(new_record)
+                    fn.update(result, new_record)
                     .then(result => {
-                        if (result) {
-                            fn.actions.create([
-                                `${table.si.toUpperCase()} | UPDATED`,
-                                user_id,
-                                [{_table: table.pl, id: result[`${table.si}_id`]}]
-                            ])
-                            .then(result => resolve(true));
-
-                        } else {
-                            reject(new Error(`${table.si} not updated`));
-
-                        };
+                        fn.actions.create([
+                            `${table.si.toUpperCase()} | UPDATED`,
+                            user_id,
+                            [{_table: table.pl, id: result[`${table.si}_id`]}]
+                        ])
+                        .then(result => resolve(true));
                     })
-                    .catch(err => reject(err));
+                    .catch(reject);
 
                 } else {
                     reject(new Error(`No ${table.si} for this record`));
 
                 };
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
     function _delete(where, table) {
@@ -183,9 +177,9 @@ module.exports = function (m, fn) {
                 if (link[table.si]) actions.push(link[table.si].destroy());
                 Promise.all(actions)
                 .then(result => resolve(true))
-                .catch(err => reject(err));
+                .catch(reject);
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 

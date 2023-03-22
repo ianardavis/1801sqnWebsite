@@ -13,7 +13,7 @@ module.exports = function (m, fn) {
 
                 };
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
     fn.locations.get_by_location = function (location) {
@@ -28,7 +28,7 @@ module.exports = function (m, fn) {
 
                 };
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
     fn.locations.get_all = function (where, pagination) {
@@ -38,7 +38,7 @@ module.exports = function (m, fn) {
                 ...pagination
             })
             .then(results => resolve(results))
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
     fn.locations.get = function (search) {
@@ -59,7 +59,7 @@ module.exports = function (m, fn) {
             if (location) {
                 m.locations.findOrCreate({where: {location: location}})
                 .then(([new_location, created]) => resolve(new_location))
-                .catch(err => reject(err));
+                .catch(reject);
 
             } else {
                 reject(new Error('No location specified'));
@@ -78,9 +78,9 @@ module.exports = function (m, fn) {
                         .then(existing_location => reject(new Error('Location already exists')))
                         .catch(err => {
                             if (err.message === 'Location not found') {
-                                location.update({location: new_location})
-                                .then(result => resolve(result))
-                                .catch(err => reject(err));
+                                fn.update(location, {location: new_location})
+                                .then(result => resolve(true))
+                                .catch(reject);
     
                             } else {
                                 reject(err);
@@ -93,7 +93,7 @@ module.exports = function (m, fn) {
     
                     };
                 })
-                .catch(err => reject(err));
+                .catch(reject);
 
             } else {
                 reject(new Error('No location text specified'));

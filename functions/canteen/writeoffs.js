@@ -21,7 +21,7 @@ module.exports = function (m, fn) {
                 ...pagination
             })
             .then(results => resolve(results))
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
     fn.writeoffs.create = function (writeoff, user_id) {
@@ -56,13 +56,13 @@ module.exports = function (m, fn) {
                                 user_id: user_id
                             })
                             .then(writeoff => resolve(true))
-                            .catch(err => reject(err));
+                            .catch(reject);
                         })
-                        .catch(err => reject(err));
+                        .catch(reject);
                     })
-                    .catch(err => reject(err));
+                    .catch(reject);
                 })
-                .catch(err => reject(err));
+                .catch(reject);
 
             } else {
                 reject(new Error('No writeoff'));

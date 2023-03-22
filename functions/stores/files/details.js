@@ -12,7 +12,7 @@ module.exports = function (m, fn) {
                 ...pagination
             })
             .then(results => resolve(results))
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 
@@ -35,18 +35,21 @@ module.exports = function (m, fn) {
                         resolve(true);
 
                     } else {
-                        detail.update({
-                            value:   details.value,
-                            user_id: user_id
-                        })
+                        fn.update(
+                            detail,
+                            {
+                                value:   details.value,
+                                user_id: user_id
+                            }
+                        )
                         .then(result => resolve(true))
-                        .catch(err => reject(err));
+                        .catch(reject);
 
                     };
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 
@@ -54,19 +57,11 @@ module.exports = function (m, fn) {
         return new Promise((resolve, reject) => {
             fn.files.details.get({file_detail_id: file_detail_id})
             .then(file_detail => {
-                file_detail.update(details)
-                .then(result => {
-                    if (result) {
-                        resolve(result);
-
-                    } else {
-                        reject(new Error('File detail not updated'));
-
-                    };
-                })
-                .catch(err => reject(err));
+                fn.update(file_detail, details)
+                .then(result => resolve(result))
+                .catch(reject);
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 
@@ -84,7 +79,7 @@ module.exports = function (m, fn) {
                 
                 };
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 };

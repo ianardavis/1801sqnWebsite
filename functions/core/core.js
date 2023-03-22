@@ -48,7 +48,7 @@ module.exports = function (m, fn) {
                     resolve(true);
                 };
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
     fn.nullify = function (record) {
@@ -124,14 +124,6 @@ module.exports = function (m, fn) {
         };
         return where;
     };
-    fn.allSettledResults = function (results) {
-        let noErrors = true;
-        results.filter(e => e.status === 'rejected').forEach(e => {
-            noErrors = false;
-            console.log(e);
-        });
-        return noErrors;
-    };
     fn.public_file = function (folder, file) {
         return `${process.env.ROOT}/public/res/${folder}/${file}`;
     };
@@ -157,7 +149,10 @@ module.exports = function (m, fn) {
             };
         });
     };
-
+    fn.log_rejects = function (results) {
+        results.filter(e => e.status === 'rejected').forEach(e => console.log(e));
+        return results;
+    };
     fn.get = function(table, where, include = []) {
         return new Promise((resolve, reject) => {
             table.findOne({
@@ -173,7 +168,22 @@ module.exports = function (m, fn) {
 
                 };
             })
-            .catch(err => reject(err));
+            .catch(reject);
+        });
+    };
+    fn.update = function (record, details) {
+        return new Promise((resolve, reject) => {
+            record.update(details)
+            .then(result => {
+                if (result) {
+                    resolve(true);
+
+                } else {
+                    reject(new Error('Record not updated'));
+
+                };
+            })
+            .catch(reject);
         });
     };
 };

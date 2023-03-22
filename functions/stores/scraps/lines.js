@@ -28,7 +28,7 @@ module.exports = function (m, fn) {
                 ...pagination
             })
             .then(results => resolve(results))
-            .catch(err => reject(err));
+            .catch(reject);
         })
     };
     
@@ -48,7 +48,7 @@ module.exports = function (m, fn) {
     
                     };
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             });
         };
         function check_serial(serial_id, size_id) {
@@ -63,7 +63,7 @@ module.exports = function (m, fn) {
     
                     };
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             });
         };
         return new Promise((resolve, reject) => {
@@ -98,11 +98,11 @@ module.exports = function (m, fn) {
 
                             };
                         })
-                        .catch(err => reject(err));
+                        .catch(reject);
                         
                     };
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             })
             .catch(err => {
                 console.log(err);
@@ -121,19 +121,11 @@ module.exports = function (m, fn) {
                     } else {
                         fn.locations.find_or_create(location)
                         .then(new_location => {
-                            line.serial.update({location_id: new_location.location_id})
-                            .then(result => {
-                                if (result) {
-                                    resolve(line.scrap_id);
-    
-                                } else {
-                                    reject(new Error('Serial not updated'));
-    
-                                };
-                            })
-                            .catch(err => reject(err));
+                            fn.update(line.serial, {location_id: new_location.location_id})
+                            .then(result => resolve(line.scrap_id))
+                            .catch(reject);
                         })
-                        .catch(err => reject(err));
+                        .catch(reject);
     
                     };
     
@@ -160,11 +152,11 @@ module.exports = function (m, fn) {
                                 }
                             )
                             .then(result => resolve(line.scrap_id))
-                            .catch(err => reject(err));
+                            .catch(reject);
                         })
-                        .catch(err => reject(err));
+                        .catch(reject);
                     })
-                    .catch(err => reject(err));
+                    .catch(reject);
     
                 } else {
                     reject(new Error('Cancel quantity is greater than line quantity'));
@@ -179,16 +171,16 @@ module.exports = function (m, fn) {
                     if (line.size.has_serials) {
                         cancel_serial_scrap(line, location)
                         .then(scrap_id => resolve(scrap_id))
-                        .catch(err => reject(err));
+                        .catch(reject);
     
                     } else {
                         cancel_stock_scrap(line, location, qty, user_id)
                         .then(scrap_id => resolve(scrap_id))
-                        .catch(err => reject(err));
+                        .catch(reject);
     
                     };
                 })
-                .catch(err => reject(err));
+                .catch(reject);
 
             } else {
                 reject(new Error('No location specified'));
@@ -213,7 +205,7 @@ module.exports = function (m, fn) {
                         });
                         resolve(scrap_ids);
                     })
-                    .catch(err => reject(err));
+                    .catch(reject);
     
                 } else {
                     reject(new Error('No lines to cancel'));
@@ -227,9 +219,9 @@ module.exports = function (m, fn) {
                 .then(scrap => {
                     fn.scraps.cancel(scrap_id, user_id)
                     .then(result => resolve(true))
-                    .catch(err => reject(err));
+                    .catch(reject);
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             });
         };
         return new Promise((resolve, reject) => {
@@ -243,9 +235,9 @@ module.exports = function (m, fn) {
                 });
                 Promise.allSettled(checks)
                 .then(results => resolve(true))
-                .catch(err => reject(err));
+                .catch(reject);
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 };

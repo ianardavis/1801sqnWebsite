@@ -1,7 +1,7 @@
 function setDeleteButton(status) {
     if (status === 1) enable_button('delete');
 };
-window.addEventListener( "load", function () {
+window.addEventListener("load", function () {
     addFormListener(
         'delete',
         'DELETE',

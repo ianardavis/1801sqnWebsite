@@ -34,7 +34,7 @@ module.exports = function (m, fn) {
     
                     };
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             });
         };
         function create_pdf([scrap, user]) {
@@ -47,9 +47,9 @@ module.exports = function (m, fn) {
                         y += add_header(doc, y, true);
                         resolve([scrap, doc, file, writeStream, y-13]);
                     })
-                    .catch(err => reject(err));
+                    .catch(reject);
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             });
         };
         function add_lines([scrap, doc, file, writeStream, y]) {
@@ -88,7 +88,7 @@ module.exports = function (m, fn) {
                         doc.image(file, ...location, {fit: [x_3-x_2-20, 50], align: 'center'});
                         resolve(true);
                     })
-                    .catch(err => reject(err));
+                    .catch(reject);
                 });
             };
             return new Promise((resolve, reject) => {
@@ -108,7 +108,7 @@ module.exports = function (m, fn) {
                 });
                 Promise.all(print_nsn_barcodes)
                 .then(result => resolve([doc, scrap, writeStream, file]))
-                .catch(err => reject(err));
+                .catch(reject);
             });
         };
         function finalise_pdf([doc, scrap, writeStream, file]) {
@@ -124,9 +124,9 @@ module.exports = function (m, fn) {
         };
         function update_scrap([scrap, filename]) {
             return new Promise((resolve, reject) => {
-                scrap.update({filename: filename})
+                fn.update(scrap, {filename: filename})
                 .then(result => resolve(filename))
-                .catch(err => reject(err))
+                .catch(reject);
             });
         };
         function print_pdf(filename) {
@@ -186,7 +186,7 @@ module.exports = function (m, fn) {
             .then(update_scrap)
             .then(print_pdf)
             .then(filename => resolve(filename))
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 };

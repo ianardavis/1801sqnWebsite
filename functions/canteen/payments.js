@@ -17,7 +17,7 @@ module.exports = function (m, fn) {
                 ...pagination
             })
             .then(results => resolve(results))
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
     fn.payments.get_all_for_session = function (where, pagination) {
@@ -33,7 +33,7 @@ module.exports = function (m, fn) {
                 ...pagination
             })
             .then(results => resolve(results))
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 
@@ -47,7 +47,7 @@ module.exports = function (m, fn) {
                 user_id_payment: options.user_id_payment || null
             })
             .then(payment => resolve(true))
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 };

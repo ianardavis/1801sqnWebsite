@@ -13,18 +13,18 @@ module.exports = function (m, fn) {
 				...pagination
 			})
 			.then(results => resolve(results))
-			.catch(err => reject(err));
+			.catch(reject);
 		});
 	};
 	fn.holdings.edit = function (holding_id, details) {
 		return new Promise((resolve, reject) => {
 			fn.holding.get(holding_id)
 			.then(holding => {
-				holding.update(details)
+				fn.update(holding, details)
 				.then(result => resolve(result))
-				.catch(err => reject(err));
+				.catch(reject);
 			})
-			.catch(err => reject(err));
+			.catch(reject);
 		});
 	};
 	function create_action(holding_id, action, user_id) {
@@ -69,7 +69,7 @@ module.exports = function (m, fn) {
 						
 					};
 				})
-				.catch(err => reject(err));
+				.catch(reject);
 			});
 		};
 		return new Promise((resolve, reject) => {
@@ -84,9 +84,9 @@ module.exports = function (m, fn) {
 						resolve(false);
 					});
 				})
-				.catch(err => reject(err));
+				.catch(reject);
 			})
-			.catch(err => reject(err));
+			.catch(reject);
 		});
 	};
 
@@ -96,7 +96,7 @@ module.exports = function (m, fn) {
 			fn.holding.get(holding_id)
 			.then(holding => {
 				let cash = fn.sessions.count_cash(balance);
-				holding.update({cash: cash})
+				fn.update(holding, {cash: cash})
 				.then(result => {
 					let state = (cash === holding.cash ?
 						'correct' : 
@@ -114,9 +114,9 @@ module.exports = function (m, fn) {
 					)
 					.then(result => resolve(true));
 				})
-				.catch(err => reject(err));
+				.catch(reject);
 			})
-			.catch(err => reject(err));
+			.catch(reject);
 		});
 	};
 };

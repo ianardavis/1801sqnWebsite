@@ -14,7 +14,7 @@ module.exports = function (m, fn) {
                 ...pagination
             })
             .then(categories => resolve(categories))
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 
@@ -33,14 +33,14 @@ module.exports = function (m, fn) {
                         }
                     })
                     .then(([category, created]) => resolve(true))
-                    .catch(err => reject(err));
+                    .catch(reject);
 
                 } else {
                     reject(new Error(`Item or category not found`));
 
                 };
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
     fn.items.categories.delete = function (item_category_id) {
@@ -55,7 +55,7 @@ module.exports = function (m, fn) {
 
                 };
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 };

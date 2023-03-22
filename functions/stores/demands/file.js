@@ -33,7 +33,7 @@ module.exports = function (m, fn) {
     
                     };
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             });
         };
         function create_file(demand) {
@@ -63,7 +63,7 @@ module.exports = function (m, fn) {
         
                         };
                     })
-                    .catch(err => reject(err));
+                    .catch(reject);
                 });
             };
             return new Promise((resolve, reject) => {
@@ -79,14 +79,14 @@ module.exports = function (m, fn) {
                             fn.public_file('demands', filename)
                         )
                         .then(result => resolve([filename, file, account, demand]))
-                        .catch(err => reject(err));
+                        .catch(reject);
     
                     } else {
                         reject(new Error('No demand file specified'));
     
                     };
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             });
         };
         function write_file([filename, file, account, demand]) {
@@ -167,7 +167,7 @@ module.exports = function (m, fn) {
         
                         };
                     })
-                    .catch(err => reject(err));
+                    .catch(reject);
                 });
             };
             function write_items(workbook) {
@@ -231,7 +231,7 @@ module.exports = function (m, fn) {
                         });
                         resolve(workbook);
                     })
-                    .catch(err => reject(err));
+                    .catch(reject);
                 });
             };
             return new Promise((resolve, reject) => {
@@ -244,11 +244,11 @@ module.exports = function (m, fn) {
                     .then(workbook => {
                         workbook.xlsx.writeFile(path)
                         .then(() => resolve({filename: filename}))
-                        .catch(err => reject(err));
+                        .catch(reject);
                     })
-                    .catch(err => reject(err));
+                    .catch(reject);
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             });
         };
 
@@ -264,11 +264,11 @@ module.exports = function (m, fn) {
                     .then(demand.update)
                     .then(demand.reload)
                     .then(result => resolve(demand.filename))
-                    .catch(err => reject(err));
+                    .catch(reject);
 
                 };
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 };

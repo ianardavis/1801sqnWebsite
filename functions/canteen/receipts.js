@@ -21,7 +21,7 @@ module.exports = function (m, fn) {
                 ...pagination
             })
             .then(results => resolve(results))
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
     
@@ -44,28 +44,22 @@ module.exports = function (m, fn) {
             function check_item_qty(item, user_id) {
                 return new Promise((resolve, reject) => {
                     if (item.qty < 0) {
-                        item.update({qty: 0})
+                        fn.update(item, {qty: 0})
                         .then(result => {
-                            if (result) {
-                                m.notes.create({
-                                    _table:  'canteen_items',
-                                    id:      item.item_id,
-                                    note:    'Item quantity below 0. Reset to 0 on receipt',
-                                    system:  1,
-                                    user_id: user_id
-                                })
-                                .then(note => resolve(true))
-                                .catch(err => {
-                                    console.log(err);
-                                    resolve(true);
-                                });
-    
-                            } else {
-                                reject(new Error('Item quantity not updated'));
-    
-                            };
+                            m.notes.create({
+                                _table:  'canteen_items',
+                                id:      item.item_id,
+                                note:    'Item quantity below 0. Reset to 0 on receipt',
+                                system:  1,
+                                user_id: user_id
+                            })
+                            .then(note => resolve(true))
+                            .catch(err => {
+                                console.log(err);
+                                resolve(true);
+                            });
                         })
-                        .catch(err => reject(err));
+                        .catch(reject);
                     } else {
                         resolve(true);
                     };
@@ -95,11 +89,9 @@ module.exports = function (m, fn) {
                             create_action('CREATED', receipt.receipt_id, user_id)
                             .then(result => resolve(receipt));
                         })
-                        .catch(err => {
-                            reject(err);
-                        });
+                        .catch(reject);
                     })
-                    .catch(err => reject(err));
+                    .catch(reject);
                 });
             };
             function check_item_cost(original_qty, item, receipt) {
@@ -109,24 +101,19 @@ module.exports = function (m, fn) {
                         const stock_value_received = receipt .qty * receipt.cost;
                         const total_qty = original_qty + receipt.qty;
                         const cost_new = Number((stock_value_original + stock_value_received) / total_qty);
-                        item.update({cost: cost_new})
+                        fn.update(item, {cost: cost_new})
                         .then(result => {
-                            if (result) {
-                                fn.notes.create(
-                                    'canteen_items',
-                                    user_id,
-                                    item.item_id,
-                                    `Item cost updated from £${item.cost.toFixed(2)} to £${cost_new.toFixed(2)} by receipt`
-                                )
-                                .then(note => resolve(true))
-                                .catch(err => {
-                                    console.log(err);
-                                    resolve(false);
-                                });
-                            } else {
-                                console.log('Item cost not updated');
-                                resolve(true);
-                            };
+                            fn.notes.create(
+                                'canteen_items',
+                                user_id,
+                                item.item_id,
+                                `Item cost updated from £${item.cost.toFixed(2)} to £${cost_new.toFixed(2)} by receipt`
+                            )
+                            .then(note => resolve(true))
+                            .catch(err => {
+                                console.log(err);
+                                resolve(false);
+                            });
                         })
                         .catch(err => resolve(true))
                     } resolve(true);
@@ -145,13 +132,13 @@ module.exports = function (m, fn) {
                                 check_item_cost(qty_original, item, receipt)
                                 .then(result => resolve(true));
                             })
-                            .catch(err => reject(err));
+                            .catch(reject);
                         })
-                        .catch(err => reject(err));
+                        .catch(reject);
                     })
-                    .catch(err => reject(err));
+                    .catch(reject);
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             });
         };
         return new Promise((resolve, reject) => {
@@ -166,6 +153,7 @@ module.exports = function (m, fn) {
                     );
                 });
                 Promise.allSettled(actions)
+                .then(fn.log_rejects)
                 .then(results => {
                     const failed_qty = results.filter(e => e.status === 'rejected').length;
                     if (failed_qty > 0) {
@@ -176,7 +164,7 @@ module.exports = function (m, fn) {
                     
                     };
                 })
-                .catch(err => reject(err));
+                .catch(reject);
     
             } else {
                 reject(new Error('No items submitted'));

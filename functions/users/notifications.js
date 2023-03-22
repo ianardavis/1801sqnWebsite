@@ -4,7 +4,7 @@ module.exports = function (m, fn) {
         return new Promise((resolve, reject) => {
             m.notifications.findAll({where: {user_id: user_id}})
             .then(notifications => resolve(notifications))
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 };

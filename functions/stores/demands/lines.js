@@ -39,7 +39,7 @@ module.exports = function (m, fn) {
                 ...pagination
             })
             .then(results => resolve(results))
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
     fn.demands.lines.get_all = function (where = {}, include = [], options = {}) {
@@ -60,7 +60,7 @@ module.exports = function (m, fn) {
 
                 };
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 
@@ -88,7 +88,7 @@ module.exports = function (m, fn) {
     
                     };
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             });
         };
         function check_demand(size) {
@@ -106,7 +106,7 @@ module.exports = function (m, fn) {
     
                     };
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             });
         };
         function create_line([demand_id, size_id]) {
@@ -140,9 +140,9 @@ module.exports = function (m, fn) {
                             line.demand_line_id
                         ]);
                     })
-                    .catch(err => reject(err));
+                    .catch(reject);
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             });
         };
         return new Promise((resolve, reject) => {
@@ -173,7 +173,7 @@ module.exports = function (m, fn) {
                 });
                 Promise.all(actions)
                 .then(result => resolve(true))
-                .catch(err => reject(err));
+                .catch(reject);
 
             };
         });
@@ -203,7 +203,7 @@ module.exports = function (m, fn) {
                 });
                 Promise.all(actions)
                 .then(results => resolve(true))
-                .catch(err => reject(err));
+                .catch(reject);
                 
             };
         });
@@ -226,22 +226,14 @@ module.exports = function (m, fn) {
     
                     };
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             });
         };
         function update_line(line, user_id) {
             return new Promise((resolve, reject) => {
-                line.update({status: 0})
-                .then(result => {
-                    if (result) {
-                        resolve(line, user_id);
-    
-                    } else {
-                        reject(new Error('Line not updated'));
-    
-                    };
-                })
-                .catch(err => reject(err));
+                fn.update(line, {status: 0})
+                .then(result => resolve(line, user_id))
+                .catch(reject);
             });
         };
         function update_orders(line, user_id) {
@@ -251,9 +243,9 @@ module.exports = function (m, fn) {
                     //For each order, if its status is demanded, change to Placed and return order id
                     order_actions.push(new Promise((resolve, reject) => {
                         if (order.status === 3) {
-                            order.update({status: 2})
+                            fn.update(order, {status: 2})
                             .then(result => resolve(order.order_id))
-                            .catch(err => reject(err));
+                            .catch(reject);
     
                         } else {
                             reject(new Error(`Non-allowed order status: ${order.status}`));
@@ -272,7 +264,7 @@ module.exports = function (m, fn) {
                         [{_table: 'demand_lines', id: line.demand_line_id}].concat(links)
                     ]);
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             });
         };
         return new Promise ((resolve, reject) => {
@@ -281,7 +273,7 @@ module.exports = function (m, fn) {
             .then(update_orders)
             .then(fn.actions.create)
             .then(result => resolve(true))
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 
@@ -304,7 +296,7 @@ module.exports = function (m, fn) {
     
                     };
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             });
         };
         function receive_orders(line, details, user_id) {
@@ -329,8 +321,9 @@ module.exports = function (m, fn) {
                         );
                     };
                     Promise.allSettled(actions)
+                    .then(fn.log_rejects)
                     .then(results => resolve([results, serials]))
-                    .catch(err => reject(err));
+                    .catch(reject);
                 });
             };
             function receive_stock(line, details, user_id) {
@@ -360,8 +353,9 @@ module.exports = function (m, fn) {
                         );
                     };
                     Promise.allSettled(actions)
+                    .then(fn.log_rejects)
                     .then(results => resolve([results, qty_left]))
-                    .catch(err => reject(err));
+                    .catch(reject);
                 });
             };
             return new Promise((resolve, reject) => {
@@ -376,8 +370,6 @@ module.exports = function (m, fn) {
                 };
                 action(line, details, user_id)
                 .then(([results, remaining]) => {
-                    fn.allSettledResults(results);
-    
                     let qty_received = 0;
                     results.filter(e => e.status === 'fulfilled').forEach(e => qty_received += Number(e.value.qty));
                     resolve({
@@ -386,7 +378,7 @@ module.exports = function (m, fn) {
                         remaining:   (has_serials ? remaining : {qty: remaining, location: details.location})
                     });
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             });
         };
         function receive_remaining(order_qty, size_id, demand_line_id, user_id, receipt) {
@@ -405,9 +397,9 @@ module.exports = function (m, fn) {
                             [{_table: 'demand_lines', id: demand_line_id}]
                         )
                         .then(result => resolve(result.qty))
-                        .catch(err => reject(err));
+                        .catch(reject);
                     })
-                    .catch(err => reject(err));
+                    .catch(reject);
     
                 } else {
                     resolve(0);
@@ -419,20 +411,17 @@ module.exports = function (m, fn) {
             return new Promise((resolve, reject) => {
                 let qty_original = demand_line.qty;
                 if (qty > qty_original) {
-                    demand_line.update({qty: qty})
+                    fn.update(demand_line, {qty: qty})
                     .then(result => {
-                        if (result) {
-                            create_line_action(
-                                `UPDATED | Qty increased from ${qty_original} to ${qty} on receipt`,
-                                demand_line.demand_line_id,
-                                user_id
-                            )
-                            .then(action => resolve({demand_line: demand_line}));
-                        } else {
-                            reject(new Error('Line not updated'));
-                        };
+                        create_line_action(
+                            `UPDATED | Qty increased from ${qty_original} to ${qty} on receipt`,
+                            demand_line.demand_line_id,
+                            user_id
+                        )
+                        .then(action => resolve({demand_line: demand_line}));
                     })
-                    .catch(err => reject(err));
+                    .catch(reject);
+
                 } else if (qty < qty_original) {
                     m.demand_lines.create({
                         demand_id: demand_line.demand_id,
@@ -452,11 +441,13 @@ module.exports = function (m, fn) {
                             )
                             .then(action => resolve({demand_line: new_line}));
                         })
-                        .catch(err => reject(err));
+                        .catch(reject);
                     })
-                    .catch(err => reject(err));
+                    .catch(reject);
+
                 } else {
                     resolve({demand_line: demand_line});
+                    
                 };
             });
         };
@@ -486,23 +477,15 @@ module.exports = function (m, fn) {
                 .then(received => {
                     check_receipt_variance(result.demand_line, Number(result.qty) + Number(received), user_id)
                     .then(variance_result => {
-                        variance_result.demand_line.update({status: 3})
-                        .then(result => {
-                            if (result) {
-                                resolve(true);
-
-                            } else {
-                                reject(new Error('Line not updated'));
-
-                            };
-                        })
-                        .catch(err => reject(err));
+                        fn.update(variance_result.demand_line, {status: 3})
+                        .then(result => resolve(true))
+                        .catch(reject);
                     })
-                    .catch(err => reject(err));
+                    .catch(reject);
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 };

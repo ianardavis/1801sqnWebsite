@@ -26,18 +26,18 @@ module.exports = function (m, fn) {
                 ...pagination
             })
             .then(results => resolve(results))
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
     fn.loancards.edit = function (loancard_id, details) {
         return new Promise((resolve, reject) => {
             fn.loancards.get({loancard_id: loancard_id})
             .then(loancard => {
-                loancard.update(details)
-                .then(result => resolve(result))
-                .catch(err => reject(err));
+                fn.update(loancard, details)
+                .then(result => resolve(true))
+                .catch(reject);
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
     fn.loancards.count = function (where) { return m.loancards.count({where: where}) };
@@ -76,30 +76,24 @@ module.exports = function (m, fn) {
                         reject(new Error('Unknown loancard status'));
                     };
                 })
-                .then(err => reject(err));
+                .then(reject);
             });
         };
         return new Promise((resolve, reject) => {
             check(options.loancard_id)
             .then(loancard => {
-                loancard.update({status: 0})
+                fn.update(loancard, {status: 0})
                 .then(result => {
-                    if (result) {
-                        fn.actions.create([
-                            'LOANCARD | CANCELLED',
-                            options.user_id,
-                            [{_table: 'loancards', id: loancard.loancard_id}]
-                        ])
-                        .then(action => resolve(true));
-
-                    } else {
-                        reject(new Error('Loancard not cancelled'));
-
-                    };
+                    fn.actions.create([
+                        'LOANCARD | CANCELLED',
+                        options.user_id,
+                        [{_table: 'loancards', id: loancard.loancard_id}]
+                    ])
+                    .then(action => resolve(true));
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
     fn.loancards.create = function (options = {}) {
@@ -112,7 +106,7 @@ module.exports = function (m, fn) {
                 defaults: {user_id: options.user_id}
             })
             .then(([loancard, created]) => resolve(loancard.loancard_id))
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 
@@ -140,7 +134,7 @@ module.exports = function (m, fn) {
                         
                     };
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             });
         };
         function update_lines(lines) {
@@ -148,22 +142,14 @@ module.exports = function (m, fn) {
                 let actions = [];
                 lines.forEach(line => {
                     actions.push(new Promise((resolve, reject) => {
-                        line.update({status: 2})
-                        .then(result => {
-                            if (result) {
-                                resolve({_table: 'loancard_lines', id: line.loancard_line_id});
-    
-                            } else {
-                                reject(new Error('Line not updated'));
-    
-                            };
-                        })
-                        .catch(err => reject(err));
+                        fn.update(line, {status: 2})
+                        .then(result => resolve({_table: 'loancard_lines', id: line.loancard_line_id}))
+                        .catch(reject);
                     }));
                 });
                 Promise.all(actions)
                 .then(links => resolve(links))
-                .catch(err => reject(err));
+                .catch(reject);
             });
         };
         return new Promise((resolve, reject) => {
@@ -171,29 +157,26 @@ module.exports = function (m, fn) {
             .then(loancard => {
                 update_lines(loancard.lines)
                 .then(line_links => {
-                    loancard.update({
-                        status:   2,
-                        date_due: options.date_due
-                    })
+                    fn.update(
+                        loancard,
+                        {
+                            status:   2,
+                            date_due: options.date_due
+                        }
+                    )
                     .then(result => {
-                        if (result) {
-                            fn.actions.create([
-                                'LOANCARD | COMPLETED',
-                                options.user_id,
-                                [{_table: 'loancards', id: loancard.loancard_id}].concat(line_links)
-                            ])
-                            .then(action => resolve(loancard.loancard_id));
-
-                        } else {
-                            reject(new Error('Loancard not updated'));
-
-                        };
+                        fn.actions.create([
+                            'LOANCARD | COMPLETED',
+                            options.user_id,
+                            [{_table: 'loancards', id: loancard.loancard_id}].concat(line_links)
+                        ])
+                        .then(action => resolve(loancard.loancard_id));
                     })
-                    .catch(err => reject(err));
+                    .catch(reject);
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 
@@ -204,14 +187,14 @@ module.exports = function (m, fn) {
                 if (!loancard.filename) {
                     fn.loancards.pdf.create(loancard.loancard_id)
                     .then(filename => resolve(filename))
-                    .catch(err => reject(err));
+                    .catch(reject);
 
                 } else {
                     resolve(loancard.filename);
                 
                 };
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
     fn.loancards.download = function (loancard_id, res) {
@@ -219,9 +202,9 @@ module.exports = function (m, fn) {
             get_filename(loancard_id)
             .then(filename => {
                 fn.fs.download('loancards', filename, res)
-                .catch(err => reject(err));
+                .catch(reject);
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
     
@@ -231,9 +214,9 @@ module.exports = function (m, fn) {
             .then(filename => {
                 fn.pdfs.print('loancards', filename)
                 .then(result => resolve(true))
-                .catch(err => reject(err));
+                .catch(reject);
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 
@@ -258,30 +241,24 @@ module.exports = function (m, fn) {
                         
                     };
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             });
         };
         return new Promise((resolve, reject) => {
             check(options.loancard_id)
             .then(loancard => {
-                loancard.update({status: 3})
+                fn.update(loancard, {status: 3})
                 .then(result => {
-                    if (result) {
-                        fn.actions.create([
-                            'LOANCARD | CLOSED',
-                            options.user_id,
-                            [{_table: 'loancards', id: loancard.loancard_id}]
-                        ])
-                        .then(action => resolve(true));
-
-                    } else {
-                        reject(new Error('Loancard not updated'));
-
-                    };
+                    fn.actions.create([
+                        'LOANCARD | CLOSED',
+                        options.user_id,
+                        [{_table: 'loancards', id: loancard.loancard_id}]
+                    ])
+                    .then(action => resolve(true));
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 };

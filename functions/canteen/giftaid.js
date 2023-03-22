@@ -13,7 +13,7 @@ module.exports = function (m, fn) {
 				...pagination
 			})
 			.then(results => resolve(results))
-			.catch(err => reject(err));
+			.catch(reject);
 		});
 	};
 
@@ -22,7 +22,7 @@ module.exports = function (m, fn) {
 			if (giftaid) {
 				m.giftaid.create(giftaid)
 				.then(giftaid => resolve(giftaid))
-				.catch(err => reject(err));
+				.catch(reject);
 
 			} else {
 				reject(new Error('No record'));
@@ -36,19 +36,11 @@ module.exports = function (m, fn) {
 			if (giftaid) {
 				fn.giftaid.get({giftaid_id: giftaid_id})
 				.then(giftaid => {
-					giftaid.update(details)
-					.then(result => {
-						if (result) {
-							resolve(true);
-
-						} else {
-							reject(new Error('Giftaid not updated'));
-							
-						};
-					})
-					.catch(err => reject(err));
+					fn.update(giftaid, details)
+					.then(result => resolve(true))
+					.catch(reject);
 				})
-				.catch(err => reject(err));
+				.catch(reject);
 
 			} else {
 				reject(new Error('No record'));

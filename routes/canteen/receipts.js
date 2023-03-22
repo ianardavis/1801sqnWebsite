@@ -10,7 +10,7 @@ module.exports = (app, fn) => {
     app.get('/get/receipt',  fn.loggedIn(), fn.permissions.check('canteen_stock_admin'), (req, res) => {
         fn.receipts.get(req.query.where)
         .then(receipt => res.send({success: true, result: receipt}))
-        .catch(err => reject(err));
+        .catch(reject);
     });
 
     app.post('/receipts',    fn.loggedIn(), fn.permissions.check('canteen_stock_admin'), (req, res) => {

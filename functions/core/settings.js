@@ -20,7 +20,7 @@ module.exports = function (m, fn) {
                 
                 };
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
     fn.settings.get_all = function (where, pagination) {
@@ -31,7 +31,7 @@ module.exports = function (m, fn) {
                 ...pagination
             })
             .then(settings => resolve(settings))
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 
@@ -40,16 +40,16 @@ module.exports = function (m, fn) {
             m.settings.findOne({where: {setting_id: setting_id}})
             .then(setting => {
                 if (setting) {
-                    setting.update(details)
-                    .then(result => resolve(result))
-                    .catch(err => reject(err));
+                    fn.update(setting, details)
+                    .then(result => resolve(true))
+                    .catch(reject);
 
                 } else {
                     reject(new Error('Setting not found'));
                 
                 };
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
     fn.settings.set = function (name, value) {
@@ -63,13 +63,13 @@ module.exports = function (m, fn) {
                     resolve(true);
 
                 } else {
-                    setting.update({value: value})
+                    fn.update(setting, {value: value})
                     .then(result => resolve(true))
-                    .catch(err => reject(err));
+                    .catch(reject);
 
                 };
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
     fn.settings.delete = function (setting_id) {
@@ -86,9 +86,9 @@ module.exports = function (m, fn) {
 
                     };
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 
@@ -96,7 +96,7 @@ module.exports = function (m, fn) {
         return new Promise((resolve, reject) => {
             ptp.getPrinters()
             .then(printers => resolve(printers))
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 
@@ -113,7 +113,7 @@ module.exports = function (m, fn) {
                 });
                 resolve(true);
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 

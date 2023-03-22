@@ -21,7 +21,7 @@ module.exports = function (m, fn) {
                 ...pagination
             })
             .then(results => resolve(results))
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
     fn.sessions.get_current = function () {
@@ -44,7 +44,7 @@ module.exports = function (m, fn) {
 
                 };
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
     
@@ -69,16 +69,16 @@ module.exports = function (m, fn) {
                     if (created) {
                         fn.holdings.count(holding.holding_id, balance, user_id)
                         .then(result => resolve('Session opened'))
-                        .catch(err => reject(err));
+                        .catch(reject);
                         
                     } else {
                         reject('Session already open');
 
                     };
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
     fn.sessions.getSales = function (session_id) {
@@ -92,7 +92,7 @@ module.exports = function (m, fn) {
                 payments.forEach(e => takings.cash += e.amount);
                 resolve(takings);
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
     fn.sessions.close = function (session_id, balance, user_id) {
@@ -124,7 +124,7 @@ module.exports = function (m, fn) {
                                     let counted = fn.sessions.count_cash(balance),
                                         cash_in = counted - holding.cash,
                                         actions = [];
-                                    actions.push(holding.update({cash: counted}));
+                                    actions.push(fn.update(holding, {cash: counted}));
                                     if (cash_in !== 0) {
                                         actions.push(
                                             m.movements.create({
@@ -148,27 +148,30 @@ module.exports = function (m, fn) {
                                     };
                                     Promise.all(actions)
                                     .then(results => {
-                                        session.update({
-                                            status:        2,
-                                            datetime_end:  Date.now(),
-                                            user_id_close: user_id
-                                        })
+                                        fn.update(
+                                            session,
+                                            {
+                                                status:        2,
+                                                datetime_end:  Date.now(),
+                                                user_id_close: user_id
+                                            }
+                                        )
                                         .then(result => resolve({takings: takings, cash_in: cash_in}))
-                                        .catch(err => reject(err));
+                                        .catch(reject);
                                     })
-                                    .catch(err => reject(err));
+                                    .catch(reject);
                                 })
-                                .catch(err => reject(err));
+                                .catch(reject);
                             })
-                            .catch(err => reject(err));
+                            .catch(reject);
                         })
-                        .catch(err => reject(err));
+                        .catch(reject);
                     })
-                    .catch(err => reject(err));
+                    .catch(reject);
 
                 };
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 };

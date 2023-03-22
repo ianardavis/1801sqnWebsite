@@ -21,7 +21,7 @@ module.exports = function (m, fn) {
                 ...pagination
             })
             .then(results => resolve(results))
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
     fn.demands.get_users = function (demand_id) {
@@ -53,7 +53,7 @@ module.exports = function (m, fn) {
                 ]
             })
             .then(users => resolve(users))
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
     
@@ -81,14 +81,14 @@ module.exports = function (m, fn) {
 
                     };
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             });
         };
         return new Promise((resolve, reject) => {
             fn.suppliers.get({supplier_id: supplier_id})
             .then(create_demand)
             .then(demand_id => resolve(demand_id))
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 
@@ -117,13 +117,13 @@ module.exports = function (m, fn) {
     
                     };
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             });
         };
         function update_lines(demand) {
             return new Promise((resolve, reject) => {
-                let actions = [demand.update({status: 2})];
-                demand.lines.forEach(line => actions.push(line.update({status: 2})));
+                let actions = [fn.update(demand, {status: 2})];
+                demand.lines.forEach(line => actions.push(fn.update(line, {status: 2})));
                 Promise.all(actions)
                 .then(result => resolve([
                     'DEMAND | COMPLETED',
@@ -131,7 +131,7 @@ module.exports = function (m, fn) {
                     [{_table: 'demands', id: demand.demand_id}],
                     [demand.demand_id, user]
                 ]))
-                .catch(err => reject(err));
+                .catch(reject);
             });
         };
         return new Promise((resolve, reject) => {
@@ -140,7 +140,7 @@ module.exports = function (m, fn) {
             .then(fn.actions.create)
             .then(fn.demands.file.create)
             .then(filename => resolve(`Filename: ${filename}`))
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 
@@ -163,17 +163,17 @@ module.exports = function (m, fn) {
     
                     };
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             });
         };
         function update_demand_and_lines(demand) {
             return new Promise((resolve, reject) => {
                 Promise.all([
-                    demand.update({status: 0}),
+                    fn.update(demand, {status: 0}),
                     cancel_open_demand_lines(demand.demand_id)
                 ])
                 .then(result => resolve(['CANCELLED', demand.demand_id, user_id]))
-                .catch(err => reject(err));
+                .catch(reject);
             });
         };
         function cancel_open_demand_lines(demand_id) {
@@ -194,9 +194,9 @@ module.exports = function (m, fn) {
                     });
                     Promise.all(actions)
                     .then(results => resolve(true))
-                    .catch(err => reject(err));
+                    .catch(reject);
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             })
         };
         return new Promise((resolve, reject) => {
@@ -204,7 +204,7 @@ module.exports = function (m, fn) {
             .then(update_demand_and_lines)
             .then(fn.actions.create)
             .then(result => resolve(true))
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 
@@ -232,26 +232,20 @@ module.exports = function (m, fn) {
     
                     };
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             });
         };
         function update_demand(demand) {
             return new Promise((resolve, reject) => {
-                demand.update({status: 3})
+                fn.update(demand, {status: 3})
                 .then(result => {
-                    if (result) {
-                        resolve([
-                            'DEMAND | CLOSED',
-                            user_id,
-                            [{_table: 'demands', id: demand.demand_id}]
-                        ]);
-    
-                    } else {
-                        reject(new Error('Demand not updated'));
-    
-                    };
+                    resolve([
+                        'DEMAND | CLOSED',
+                        user_id,
+                        [{_table: 'demands', id: demand.demand_id}]
+                    ]);
                 })
-                .catch(err => reject(err));
+                .catch(reject);
             });
         };
         return new Promise((resolve, reject) => {
@@ -259,7 +253,7 @@ module.exports = function (m, fn) {
             .then(update_demand)
             .then(fn.actions.create)
             .then(result => resolve(true))
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 

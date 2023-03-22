@@ -17,12 +17,17 @@ function Card(options = {}) {
     title.innerText = options.title;
     header.appendChild(title);
 
-    subtitle.classList.add('card-subtitle', 'text-muted', 'f-10');
-    subtitle.setAttribute('id', options.subtitle.id);
-    header.appendChild(subtitle);
+    if (options.subtitle) {
+        subtitle.classList.add('card-subtitle', 'text-muted', 'f-10');
+        subtitle.setAttribute('id', options.subtitle.id);
+        header.appendChild(subtitle);
+    };
 
     body.classList.add('card-body');
-    body.setAttribute(`data-${options.body.data.field}`, options.body.data.value);
+    if (options.body) {
+        body.setAttribute(`data-${options.body.data.field}`, options.body.data.value);
+    };
+    if (options.text) body.innerText = options.text;
 
     a.appendChild(header);
     a.appendChild(body);

@@ -16,7 +16,7 @@ module.exports = function (m, fn) {
                 
                 };
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
     fn.users.get_all = function (where, pagination, status_include = fn.inc.users.status()) {
@@ -28,7 +28,7 @@ module.exports = function (m, fn) {
                 ...pagination
             })
             .then(results => resolve(results))
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
     fn.users.create = function (user) {
@@ -79,17 +79,9 @@ module.exports = function (m, fn) {
                         ['user_id', 'full_name', 'salt', 'password', 'last_login', 'createdAt', 'updatedAt'].forEach(e => {
                             if (details[e]) delete details[e];
                         });
-                        user.update(details)
-                        .then(result => {
-                            if (result) {
-                                resolve(result);
-
-                            } else {
-                                reject(new Error('User not updated'));
-
-                            };
-                        })
-                        .catch(err => reject(err));
+                        fn.update(user, details)
+                        .then(result => resolve(result))
+                        .catch(reject);
 
                     } else {
                         reject(new Error('User not found'));
@@ -115,7 +107,7 @@ module.exports = function (m, fn) {
                         user.destroy()
                     ])
                     .then(([result1, result2]) => resolve(true))
-                    .catch(err => reject(err));
+                    .catch(reject);
 
                 };
             })

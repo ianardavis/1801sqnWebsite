@@ -33,13 +33,13 @@ module.exports = function (m, fn) {
                     reject(new Error('That is the current password!'));
 
                 } else {
-                    user.update(fn.users.password.encrypt(password))
+                    fn.update(user, fn.users.password.encrypt(password))
                     .then(result => resolve(true))
-                    .catch(err => reject(err));
+                    .catch(reject);
 
                 };
             })
-            .catch(err => reject(err));
+            .catch(reject);
         });
     };
 };
