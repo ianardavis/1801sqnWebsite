@@ -9,7 +9,7 @@ module.exports = (app, fn) => {
         };
     });
     app.get('/users/select',      fn.loggedIn(),                                             (req, res) => res.render('users/select'));
-    app.get('/password/:id',      fn.loggedIn(),                                             (req, res) => res.render('users/password'));
+    app.get('/password/:id',      fn.loggedIn(), fn.permissions.get('access_stores',         (req, res) => res.render('users/password'));
     app.get('/users/:id',         fn.loggedIn(), fn.permissions.get('access_users',   true), (req, res) => {
         if (req.allowed || req.params.id == req.user.user_id) {
             res.render('users/show');
