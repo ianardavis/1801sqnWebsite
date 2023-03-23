@@ -171,12 +171,12 @@ module.exports = function (m, fn) {
             .catch(reject);
         });
     };
-    fn.update = function (record, details) {
+    fn.update = function (record, details, return_value = true) {
         return new Promise((resolve, reject) => {
             record.update(details)
             .then(result => {
                 if (result) {
-                    resolve(true);
+                    resolve(return_value);
 
                 } else {
                     reject(new Error('Record not updated'));

@@ -72,7 +72,7 @@ module.exports = function (m, fn) {
                         .catch(reject);
                         
                     } else {
-                        reject('Session already open');
+                        reject(new Error('Session already open'));
 
                     };
                 })

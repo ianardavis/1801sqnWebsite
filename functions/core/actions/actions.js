@@ -21,7 +21,7 @@ module.exports = function (m, fn) {
         });
     };
 
-    fn.actions.create = function ([action, user_id, links, return_result = null]) {
+    fn.actions.create = function ([action, user_id, links, return_result = true]) {
         return new Promise((resolve) => {
             m.actions.create({
                 action:  action,
@@ -33,25 +33,10 @@ module.exports = function (m, fn) {
                     as: 'links'
                 }]
             })
-            .then(action => {
-                if (return_result) {
-                    resolve(return_result);
-
-                } else {
-                    resolve(true);
-
-                };
-                
-            })
+            .then(action => resolve(return_result))
             .catch(err => {
                 console.log(err);
-                if (return_result) {
-                    resolve(return_result);
-
-                } else {
-                    resolve(true);
-
-                };
+                resolve(return_result);
             });
         });
     };

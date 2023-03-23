@@ -82,7 +82,7 @@ module.exports = function (m, fn) {
                         resolve(true);
 
                     } else {
-                        reject('Setting not deleted');
+                        reject(new Error('Setting not deleted'));
 
                     };
                 })

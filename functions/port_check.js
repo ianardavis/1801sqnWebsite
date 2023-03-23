@@ -13,12 +13,18 @@ module.exports = function () {
                 const kill_output = runCmd(`kill -9 ${pid}`);
                 console.log('   PID killed');
                 resolve(port);
-            } catch (error) {reject(error);};
+
+            } catch (error) {
+                reject(error);
+            
+            };
         } catch (error) {
             if (error.output[0]) {
                 reject(error);
-            }else {
+
+            } else {
                 resolve(port);
+                
             };
         };
     });

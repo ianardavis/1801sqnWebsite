@@ -151,7 +151,7 @@ module.exports = function (m, fn) {
             .then(create_line)
             .then(fn.actions.create)
             .then(line_id => resolve(line_id))
-            .catch(err => {console.log(err);reject(err)});
+            .catch(reject);
         });
     };
     fn.demands.lines.create_bulk = function (lines, demand_id, user_id) {
