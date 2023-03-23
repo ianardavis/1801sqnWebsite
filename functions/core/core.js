@@ -186,4 +186,32 @@ module.exports = function (m, fn) {
             .catch(reject);
         });
     };
+    fn.destroy = function (record) {
+        return new Promise((resolve, reject) => {
+            record.destroy()
+            .then(result => {
+                if (result) {
+                    resolve(true);
+                    
+                } else {
+                    reject(new Error('Record not deleted'));
+                    
+                };
+            })
+            .catch(reject);
+        });
+    };
+    fn.check_results = function (results) {
+        let return_result = [];
+        results.forEach(result => {
+            if (result.status === 'fulfilled') {
+                return_result.push(result.value);
+
+            } else {
+                console.log(result.message);
+
+            };
+        });
+        return return_result;
+    };
 };

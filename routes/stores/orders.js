@@ -34,7 +34,7 @@ module.exports = (app, fn) => {
     });
 
     app.post('/orders',         fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
-        fn.orders.createBulk(req.body.orders.filter(e => e.qty), req.user.user_id)
+        fn.orders.create_bulk(req.body.orders.filter(e => e.qty), req.user.user_id)
         .then(result => res.send({success: true, message: 'Orders placed'}))
         .catch(err => fn.send_error(res, err));
     });

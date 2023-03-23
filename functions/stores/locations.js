@@ -69,36 +69,30 @@ module.exports = function (m, fn) {
     };
 
     fn.locations.edit = function (location_id, new_location) {
-        return new Promise((resolve, reject) => {
-            if (new_location) {
+        if (new_location) {
+            return new Promise((resolve, reject) => {
                 fn.locations.get_by_ID(location_id)
                 .then(location => {
-                    if (location) {
-                        fn.locations.get_by_location(new_location)
-                        .then(existing_location => reject(new Error('Location already exists')))
-                        .catch(err => {
-                            if (err.message === 'Location not found') {
-                                fn.update(location, {location: new_location})
-                                .then(result => resolve(true))
-                                .catch(reject);
+                    fn.locations.get_by_location(new_location)
+                    .then(existing_location => reject(new Error('Location already exists')))
+                    .catch(err => {
+                        if (err.message === 'Location not found') {
+                            fn.update(location, {location: new_location})
+                            .then(resolve)
+                            .catch(reject);
     
-                            } else {
-                                reject(err);
+                        } else {
+                            reject(err);
     
-                            };
-                        });
-    
-                    } else {
-                        reject(new Error('Location not found'));
-    
-                    };
+                        };
+                    });
                 })
                 .catch(reject);
+            });
+            
+        } else {
+            return Promise.reject(new Error('No location text specified'));
 
-            } else {
-                reject(new Error('No location text specified'));
-
-            };
-        });
+        };
     };
 };

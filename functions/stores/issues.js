@@ -485,7 +485,7 @@ module.exports = function (m, fn) {
     };
 
     fn.issues.add_to_loancard = function (issues, user_id) {
-        function sort_issues_by_user(lines) {
+        function sort_issues_by_user() {
             function get_issue_for_line(line) {
                 return new Promise((resolve, reject) => {
                     fn.issues.get({issue_id: line.issue_id})
@@ -513,7 +513,7 @@ module.exports = function (m, fn) {
             return new Promise((resolve, reject) => {
                 let users = [];
                 let actions = [];
-                lines.forEach(line => {
+                issues.forEach(line => {
                     actions.push(new Promise((resolve, reject) => {
                         get_issue_for_line(line)
                         .then(issue => {
@@ -546,7 +546,7 @@ module.exports = function (m, fn) {
                 .catch(reject);
             });
         };
-        function add_issues_to_loancards(user, user_id) {
+        function add_issues_to_loancards(user) {
             return new Promise((resolve, reject) => {
                 fn.loancards.create({
                     user_id_loancard: user.user_id,
@@ -584,10 +584,10 @@ module.exports = function (m, fn) {
                 resolve(false);
 
             } else {
-                sort_issues_by_user(issues)
+                sort_issues_by_user()
                 .then(users => {
                     let actions = [];
-                    users.forEach(user => actions.push(add_issues_to_loancards(user, user_id)))
+                    users.forEach(user => actions.push(add_issues_to_loancards(user)))
                     Promise.all(actions)
                     .then(result => resolve(true))
                     .catch(reject);
@@ -626,19 +626,18 @@ module.exports = function (m, fn) {
                         reject(new Error('New size is for a different item'));
 
                     } else {
-                        const original_size = issue.size;
+                        const original_size = fn.print_size(issue.size);
                         fn.update(
                             issue,
-                            {size_id: size.size_id}
-                        )
-                        .then(result => {
-                            fn.actions.create([
-                                `ISSUE | UPDATED | Size changed From: ${fn.print_size(original_size)} to: ${fn.print_size(size)}`,
+                            {size_id: size.size_id},
+                            [
+                                `ISSUE | UPDATED | Size changed From: ${original_size} to: ${fn.print_size(size)}`,
                                 user_id,
                                 [{_table: 'issues', id: issue.issue_id}]
-                            ])
-                            .then(result => resolve(true));
-                        })
+                            ]
+                        )
+                        .then(fn.actions.create)
+                        .then(result => resolve(true))
                         .catch(reject);
                     };
                 })
@@ -656,19 +655,18 @@ module.exports = function (m, fn) {
             } else {
                 change_check(issue_id)
                 .then(issue => {
-                    let original_qty = issue.qty;
+                    const original_qty = issue.qty;
                     fn.update(
                         issue,
-                        {qty: qty}
-                    )
-                    .then(result => {
-                        fn.actions.create([
+                        {qty: qty},
+                        [
                             `ISSUE | UPDATED | Quantity changed From: ${original_qty} to: ${qty}`,
                             user_id,
                             [{_table: 'issues', id: issue.issue_id}]
-                        ])
-                        .then(result => resolve(true));
-                    })
+                        ]
+                    )
+                    .then(fn.actions.create)
+                    .then(result => resolve(true))
                     .catch(reject);
                 })
                 .catch(reject);

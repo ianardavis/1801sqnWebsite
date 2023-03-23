@@ -57,7 +57,7 @@ module.exports = function (m, fn) {
         });
     };
     
-    fn.demands.create = function (supplier_id, user_id) {
+    fn.demands.create = function (supplier_id, user_id, return_append = []) {
         function create_demand(supplier) {
             return new Promise((resolve, reject) => {
                 m.demands.findOrCreate({
@@ -74,10 +74,10 @@ module.exports = function (m, fn) {
                             user_id,
                             [{_table: 'demands', id: demand.demand_id}]
                         ])
-                        .then(result => resolve(demand.demand_id));
+                        .then(result => resolve(demand));
 
                     } else {
-                        resolve(demand.demand_id);
+                        resolve(demand);
 
                     };
                 })
@@ -87,7 +87,7 @@ module.exports = function (m, fn) {
         return new Promise((resolve, reject) => {
             fn.suppliers.get({supplier_id: supplier_id})
             .then(create_demand)
-            .then(demand_id => resolve(demand_id))
+            .then(demand => resolve([demand].concat(return_append)))
             .catch(reject);
         });
     };

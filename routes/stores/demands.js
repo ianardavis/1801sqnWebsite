@@ -78,7 +78,7 @@ module.exports = (app, fn) => {
             req.body.supplier_id,
             req.user.user_id
         )
-        .then(demand => res.send({success: true, message: (demand.created ? 'There is already a demand open for this supplier' : 'Demand raised')}))
+        .then(([demand]) => res.send({success: true, message: 'Demand raised'}))
         .catch(err => fn.send_error(res, err));
     });
 

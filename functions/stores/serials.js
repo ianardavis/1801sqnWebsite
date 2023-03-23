@@ -35,7 +35,7 @@ module.exports = function (m, fn) {
                 fn.update(serial, {serial: new_serial})
                 .then(result => {
                     fn.actions.create([
-                        `EDITED | Serial changed from ${original_serial} to ${new_serial}`,
+                        `EDITED | Serial # changed from ${original_serial} to ${new_serial}`,
                         user_id,
                         [{_table: 'serials', id: serial.serial_id}]
                     ])
@@ -48,23 +48,25 @@ module.exports = function (m, fn) {
         });
     };
     fn.serials.transfer = function (serial_id, location, user_id) {
-        return new Promise((resolve, reject) => {
-            if (location) {
+        if (location) {
+            return new Promise((resolve, reject) => {
                 fn.serials.get({serial_id: serial_id})
                 .then(serial => {
                     let original_location = serial.location.location;
                     fn.locations.find_or_create({location: location})
                     .then(new_location => {
                         if (new_location.location_id !== serial.location_id) {
-                            fn.update(serial, {location_id: new_location.location_id})
-                            .then(result => {
-                                fn.actions.create([
+                            fn.update(
+                                serial,
+                                {location_id: new_location.location_id},
+                                [
                                     `SERIAL | LOCATION | transferred from ${original_location} to ${new_location.location}`,
                                     user_id,
                                     [{_table: 'serials', id: serial.serial_id}]
-                                ])
-                                .then(result => resolve(true));
-                            })
+                                ]
+                            )
+                            .then(fn.actions.create)
+                            .then(result => resolve(true))
                             .catch(reject);
 
                         } else {
@@ -75,75 +77,71 @@ module.exports = function (m, fn) {
                     .catch(reject);
                 })
                 .catch(reject);
-            } else {
-                reject(new Error('No location specified'));
-            };
-        });
+            });
+            
+        } else {
+            return Promise.reject(new Error('No location specified'));
+            
+        };
     };
 
     fn.serials.scrap = function (serial_id, details, user_id) {
-        function scrap_check(serial, details) {
+        if (details) {
+            function check_serial(serial) {
+                return new Promise((resolve, reject) => {
+                    if (serial.size.has_nsns && !details.nsn_id) {
+                        reject(new Error("No valid NSN submitted"));
+
+                    } else if (!serial.location_id) {
+                        reject(new Error("Serial is not in stock"));
+
+                    } else if (serial.issue_id) {
+                        reject(new Error("Serial is currently issued"));
+
+                    } else if (!serial.location) {
+                        reject(new Error("Invalid serial location"));
+
+                    } else {
+                        resolve(serial);
+
+                    };
+                });
+            };
             return new Promise((resolve, reject) => {
-                if (serial.size.has_nsns && !details.nsn_id) {
-                    reject(new Error("No valid NSN submitted"));
-
-                } else if (!serial.location_id) {
-                    reject(new Error("Serial is not in stock"));
-
-                } else if (serial.issue_id) {
-                    reject(new Error("Serial is currently issued"));
-
-                } else if (!serial.location) {
-                    reject(new Error("Invalid serial location"));
-
-                } else {
-                    resolve(true);
-
-                };
-            });
-        };
-        return new Promise((resolve, reject) => {
-            if (details) {
                 fn.serials.get({serial_id: serial_id})
+                .then(check_serial)
                 .then(serial => {
-                    scrap_check(serial, details)
-                    .then(result => {
-                        fn.update(serial, {location_id: null})
+                    fn.update(serial, {location_id: null}, serial.size.supplier_id)
+                    .then(fn.scraps.get_or_create)
+                    .then(scrap => {
+                        fn.scraps.lines.create(
+                            scrap.scrap_id,
+                            serial.size_id,
+                            details
+                        )
                         .then(result => {
-                            fn.scraps.get_or_create(serial.size.supplier_id)
-                            .then(scrap => {
-                                fn.scraps.lines.create(
-                                    scrap.scrap_id,
-                                    serial.size_id,
-                                    details
-                                )
-                                .then(result => {
-                                    fn.actions.create([
-                                        'SERIAL | SCRAPPED',
-                                        user_id,
-                                        [{_table: 'serials', id: serial.serial_id}]
-                                    ])
-                                    .then(results => resolve(true));
-                                })
-                                .catch(reject);
-                            })
-                            .catch(reject);
+                            fn.actions.create([
+                                'SERIAL | SCRAPPED',
+                                user_id,
+                                [{_table: 'serials', id: serial.serial_id}]
+                            ])
+                            .then(results => resolve(true));
                         })
                         .catch(reject);
                     })
                     .catch(reject);
                 })
                 .catch(reject);
-                
-            } else {
-                reject(new Error('No details submitted'));
+            });
 
-            };
-        });
+        } else {
+            return Promise.reject(new Error('No details submitted'));
+
+        };
     };
     fn.serials.create = function (serial, size_id, user_id) {
-        return new Promise((resolve, reject) => {
-            if (serial && size_id) {
+        if (serial && size_id) {
+            return new Promise((resolve, reject) => {
                 fn.sizes.get({size_id: size_id})
                 .then(size => {
                     if (!size.has_serials) {
@@ -174,48 +172,57 @@ module.exports = function (m, fn) {
                     };
                 })
                 .catch(reject);
+            });
 
-            } else {
-                reject(new Error('Not all required fields have been submitted'));
-                
-            };
-        });
+        } else {
+            return Promise.reject(new Error('Not all required fields have been submitted'));
+            
+        };
     };
     fn.serials.return = function (serial_id, location) {
+        function check_serial() {
+            return new Promise((resolve, reject) => {
+                fn.serials.get({serial_id: serial_id})
+                .then(serial => {
+                    if (!serial.issue_id) {
+                        reject(new Error('Serial # not issued'));
+    
+                    } else if (serial.location_id) {
+                        reject(new Error('Serial # already in stock'));
+    
+                    } else {
+                        resolve(serial);
+    
+                    };
+                })
+                .catch(reject);
+            });
+        };
         return new Promise((resolve, reject) => {
-            fn.serials.get({serial_id: serial_id})
+            check_serial()
             .then(serial => {
-                if (!serial.issue_id) {
-                    reject(new Error('Serial # not issued'));
-
-                } else if (serial.location_id) {
-                    reject(new Error('Serial # already in stock'));
-
-                } else {
-                    m.locations.findOrCreate({
-                        where: {location: location}
-                    })
-                    .then(([location, created]) => {
-                        fn.update(
-                            serial,
-                            {
-                                location_id: location.location_id,
-                                issue_id:    null
-                            }
-                        )
-                        .then(result => resolve({_table: 'serials', id: serial.serial_id}))
-                        .catch(reject);
-                    })
+                m.locations.findOrCreate({
+                    where: {location: location}
+                })
+                .then(([location, created]) => {
+                    fn.update(
+                        serial,
+                        {
+                            location_id: location.location_id,
+                            issue_id:    null
+                        }
+                    )
+                    .then(result => resolve({_table: 'serials', id: serial.serial_id}))
                     .catch(reject);
-
-                };
+                })
+                .catch(reject);
             })
             .catch(reject);
         });
     };
     fn.serials.receive = function (location, serial, size_id, user_id) {
-        return new Promise((resolve, reject) => {
-            if (location && serial && size_id && user_id) {
+        if (location && serial && size_id && user_id) {
+            return new Promise((resolve, reject) => {
                 fn.serials.create(serial, size_id, user_id)
                 .then(serial => {
                     fn.serials.set_location(
@@ -231,24 +238,28 @@ module.exports = function (m, fn) {
                     });
                 })
                 .catch(reject);
-            } else {
-                reject(new Error('Not all details present'));
-            };
-        });
+            });
+
+        } else {
+            return Promise.reject(new Error('Not all details present'));
+
+        };
     };
     fn.serials.set_location = function (serial, location, user_id, action_append = '') {
         return new Promise((resolve, reject) => {
             fn.locations.find_or_create(location)
             .then(location => {
-                fn.update(serial, {location_id: location.location_id})
-                .then(result => {
-                    fn.actions.create([
+                fn.update(
+                    serial,
+                    {location_id: location.location_id},
+                    [
                         `SERIAL | LOCATION | Set to ${location.location}${action_append}`,
                         user_id,
                         [{_table: 'serials', id: serial.serial_id}]
-                    ])
-                    .then(result => resolve(true));
-                })
+                    ]
+                )
+                .then(fn.actions.create)
+                .then(result => resolve(true))
                 .catch(reject);
             })
             .catch(reject);
@@ -269,17 +280,9 @@ module.exports = function (m, fn) {
                 } else if (line) {
                     reject(new Error('Cannot delete a serial with loancards'));
                             
-                } else {   
-                    serial.destroy()
-                    .then(result => {
-                        if (result) {
-                            resolve(true);
-                            
-                        } else {
-                            reject(new Error('Serial not deleted'));
-                            
-                        };
-                    })
+                } else {
+                    fn.destroy(serial)
+                    .then(resolve)
                     .catch(reject);
                     
                 };
