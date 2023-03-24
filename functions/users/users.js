@@ -70,33 +70,35 @@ module.exports = function (m, fn) {
         });
     };
     fn.users.edit = function (user_id, details) {
-        return new Promise((resolve, reject) => {
-            if (details) {
-                fn.users.get({user_id: user_id})
-                .then(user => {
-                    if (user) {
-                        if (!details.reset) details.reset = 0;
-                        ['user_id', 'full_name', 'salt', 'password', 'last_login', 'createdAt', 'updatedAt'].forEach(e => {
-                            if (details[e]) delete details[e];
-                        });
-                        fn.update(user, details)
-                        .then(result => resolve(result))
-                        .catch(reject);
-
-                    } else {
-                        reject(new Error('User not found'));
-                    
-                    };
-                })
-            } else {
-                reject(new Error('No details submitted'));
-            
+        if (details) {
+            function update_user(user) {
+                return new Promise((resolve, reject) => {
+                    ['user_id', 'full_name', 'salt', 'password', 'last_login', 'createdAt', 'updatedAt', 'reset'].forEach(e => {
+                        if (details[e]) delete details[e];
+                    });
+                    fn.update(user, details)
+                    .then(resolve)
+                    .catch(reject);
+                });
             };
-        });
+            return new Promise((resolve, reject) => {
+                fn.users.get(
+                    {user_id: user_id},
+                    ['user_id', 'login_id', 'first_name', 'surname', 'status_id', 'rank_id', 'service_number']
+                )
+                .then(update_user)
+                .then(resolve)
+                .catch(reject);
+            });
+
+        } else {
+            return Promise.reject(new Error('No details submitted'));
+        
+        };
     };
     fn.users.toggle_reset = function (user_id) {
         return new Promise((resolve, reject) => {
-            fn.users.get({user_id: user_id})
+            fn.users.get({user_id: user_id}, ["user_id", "reset"])
             .then(user => {
                 fn.update(user, {reset: !user.reset})
                 .then(result => resolve(result))

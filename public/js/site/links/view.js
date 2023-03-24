@@ -6,7 +6,7 @@ function get_links(heading) {
             where: {heading: heading}
         })
         .then(function ([result, options]) {
-            result.resource_links.forEach(link => {
+            result.forEach(link => {
                 row.appendChild(new Card({
                     href:  link.href,
                     title: link.title,

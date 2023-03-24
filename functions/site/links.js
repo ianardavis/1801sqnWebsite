@@ -1,5 +1,5 @@
 module.exports = function (m, fn) {
-    fn.site.links = {};
+    fn.site = {links: {}};
     fn.site.links.get_all = function (where) {
         return new Promise((resolve, reject) => {
             m.resource_links.findAll({

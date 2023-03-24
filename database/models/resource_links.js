@@ -9,11 +9,6 @@ module.exports = function(sequelize, DataTypes) {
       comment: "null",
       primaryKey: true
     },
-    'resource_link_id': {
-      type: DataTypes.UUIDV4,
-      allowNull: false,
-      comment: "null"
-    },
     'heading': {
       type: DataTypes.TEXT,
       allowNull: false,

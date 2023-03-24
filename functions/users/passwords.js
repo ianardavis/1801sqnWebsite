@@ -27,14 +27,19 @@ module.exports = function (m, fn) {
     };
     fn.users.password.edit = function (user_id, password) {
         return new Promise((resolve, reject) => {
-            fn.users.get({user_id: user_id})
+            fn.users.get({user_id: user_id}, ["user_id", "password", "salt"])
             .then(user => {
                 if (user.password === fn.users.password.encrypt(password, user.salt).password) {
                     reject(new Error('That is the current password!'));
 
                 } else {
-                    fn.update(user, fn.users.password.encrypt(password))
-                    .then(result => resolve(true))
+                    fn.update(
+                        user,
+                        {
+                            ...fn.users.password.encrypt(password),
+                            reset: 0
+                        })
+                    .then(resolve)
                     .catch(reject);
 
                 };
