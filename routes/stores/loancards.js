@@ -1,7 +1,7 @@
 module.exports = (app, fn) => {
-    app.get('/loancards',              fn.loggedIn(), fn.permissions.get('access_stores'),         (req, res) => res.render('stores/loancards/index'));
-    app.get('/loancards/:id',          fn.loggedIn(), fn.permissions.get('access_stores'),         (req, res) => res.render('stores/loancards/show'));
-    app.get('/loancard_lines/:id',     fn.loggedIn(), fn.permissions.get('access_stores'),         (req, res) => res.render('stores/loancard_lines/show'));
+    app.get('/loancards',              fn.loggedIn(), fn.permissions.get(  'access_stores'),       (req, res) => res.render('stores/loancards/index'));
+    app.get('/loancards/:id',          fn.loggedIn(), fn.permissions.get(  'access_stores'),       (req, res) => res.render('stores/loancards/show'));
+    app.get('/loancard_lines/:id',     fn.loggedIn(), fn.permissions.get(  'access_stores'),       (req, res) => res.render('stores/loancard_lines/show'));
     app.get('/loancards/:id/download', fn.loggedIn(), fn.permissions.check('access_stores'),       (req, res) => {
         fn.loancards.download(req.params.id, res)
         .catch(err => fn.send_error(res, err));
@@ -12,7 +12,7 @@ module.exports = (app, fn) => {
         .catch(err => fn.send_error(res, err));
     });
 
-    app.get('/count/loancards',        fn.loggedIn(), fn.permissions.check('issuer', true),        (req, res) => {
+    app.get('/count/loancards',        fn.loggedIn(), fn.permissions.check('issuer',        true), (req, res) => {
         if (!req.allowed) req.query.where.user_id_loancard = req.user.user_id;
         fn.loancards.count(req.query.where)
         .then(count => res.send({success: true, result: count}))
@@ -141,14 +141,6 @@ module.exports = (app, fn) => {
         .then(result => res.send({success: true, message: `Loancard cancelled${(result ? '' : ', action not created')}.`}))
         .catch(err => fn.send_error(res, err));
     });
-    // app.delete('/loancard_lines/:id',  fn.loggedIn(), fn.permissions.check('issuer'),              (req, res) => {
-    //     fn.loancards.lines.cancel({
-    //         loancard_line_id: req.params.id,
-    //         user_id: req.user.user_id
-    //     })
-    //     .then(result => res.send({success: true, message: 'Line cancelled'}))
-    //     .catch(err => fn.send_error(res, err));
-    // });
     app.delete('/loancards/:id/file',  fn.loggedIn(), fn.permissions.check('issuer'),              (req, res) => {
         fn.fs.delete_file({
             table:   'loancards',
