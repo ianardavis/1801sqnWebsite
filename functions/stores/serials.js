@@ -53,7 +53,7 @@ module.exports = function (m, fn) {
                 fn.serials.get({serial_id: serial_id})
                 .then(serial => {
                     let original_location = serial.location.location;
-                    fn.locations.find_or_create({location: location})
+                    fn.locations.find_or_create(location)
                     .then(new_location => {
                         if (new_location.location_id !== serial.location_id) {
                             fn.update(

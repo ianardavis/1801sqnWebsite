@@ -562,7 +562,7 @@ module.exports = function (m, fn) {
                     if (loancard_line.size.has_serials) {
                         console.log('serial');
                         if (loancard_line.serial) {
-                            fn.locations.find_or_create({location: options.location})
+                            fn.locations.find_or_create(options.location)
                             .then(location => {console.log('serial resolved');resolve([
                                 loancard_line, 
                                 {
