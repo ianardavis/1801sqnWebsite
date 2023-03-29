@@ -551,19 +551,16 @@ module.exports = function (m, fn) {
         };
         function check_return_destination(loancard_line) {
             return new Promise((resolve, reject) => {
-                console.log(options);
                 if (options.scrap && options.scrap === '1') {
-                    console.log('scrap');
                     fn.scraps.get_or_create(loancard_line.size.supplier_id)
-                    .then(scrap => {console.log('scrap resolved');resolve([loancard_line, {scrap: scrap}])})
+                    .then(scrap => resolve([loancard_line, {scrap: scrap}]))
                     .catch(reject);
                     
                 } else if (options.location) {
                     if (loancard_line.size.has_serials) {
-                        console.log('serial');
                         if (loancard_line.serial) {
                             fn.locations.find_or_create(options.location)
-                            .then(location => {console.log('serial resolved');resolve([
+                            .then(location => resolve([
                                 loancard_line, 
                                 {
                                     serial: {
@@ -571,7 +568,7 @@ module.exports = function (m, fn) {
                                         location_id: location.location_id
                                     }
                                 }
-                            ])})
+                            ]))
                             .catch(reject);
     
                         } else {
@@ -580,22 +577,19 @@ module.exports = function (m, fn) {
                         };
                 
                     } else {
-                        console.log('stock');
                         fn.stocks.find({size_id: loancard_line.size_id, location: options.location})
-                        .then(stock => {console.log('Stock resolved');resolve([loancard_line, {stock: stock}])})
+                        .then(stock => resolve([loancard_line, {stock: stock}]))
                         .catch(reject);
     
                     };
     
                 } else {
-                    console.log('588');
                     reject(new Error('No return destination specified'));
     
                 };
             });
         };
         function return_stock([loancard_line, destination]) {
-            console.log(destination);
             return new Promise((resolve, reject) => {
                 if (destination.scrap) {
                     fn.scraps.lines.create(
@@ -638,7 +632,6 @@ module.exports = function (m, fn) {
             });
         };
         function update_issues([loancard_line, destination_link]) {
-            console.log('(637) Stock returned');
             let remaining_qty = options.qty;
             function update_issue(issue, remaining_qty) {
                 function create_issue_for_remainder() {
@@ -676,6 +669,7 @@ module.exports = function (m, fn) {
                         actions.push(create_issue_for_remainder);
                         
                     };
+                    console.log(issue_record);
                     actions.push(fn.update(issue, issue_record))
                     Promise.all(actions)
                     .then(results => resolve({_table: 'issues', id: issue.issue_id}))
@@ -686,6 +680,7 @@ module.exports = function (m, fn) {
             return new Promise((resolve, reject) => {
                 let actions = [];
                 loancard_line.issues.forEach(issue => {
+                    console.log(`Remaining qty: ${remaining_qty}`);
                     if (remaining_qty > 0) {
                         actions.push(update_issue(issue, remaining_qty));
                         remaining_qty -= issue.qty;

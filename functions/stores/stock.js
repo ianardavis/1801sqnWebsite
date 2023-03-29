@@ -1,7 +1,6 @@
 module.exports = function (m, fn) {
     fn.stocks = {};
     fn.stocks.find = function (options = {}) {
-        console.log(options);
         return new Promise((resolve, reject) => {
             if (
                 options.stock_id ||
@@ -44,7 +43,6 @@ module.exports = function (m, fn) {
                             .catch(reject);
                             
                         } else if (options.location) {
-                            console.log(options.location);
                             fn.locations.find_or_create(options.location)
                             .then(location => {
                                 m.stocks.findOrCreate({
