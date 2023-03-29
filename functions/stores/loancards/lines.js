@@ -531,7 +531,6 @@ module.exports = function (m, fn) {
                                 reject(new Error('Return quantity is greater than open quantity'));
         
                             } else if (loancard_line.size) {
-                                console.log('(534) Resolved');
                                 resolve(loancard_line);
         
                             } else {
@@ -552,16 +551,19 @@ module.exports = function (m, fn) {
         };
         function check_return_destination(loancard_line) {
             return new Promise((resolve, reject) => {
+                console.log(options);
                 if (options.scrap && options.scrap === '1') {
+                    console.log('scrap');
                     fn.scraps.get_or_create(loancard_line.size.supplier_id)
-                    .then(scrap => resolve([loancard_line, {scrap: scrap}]))
+                    .then(scrap => {console.log('scrap resolved');resolve([loancard_line, {scrap: scrap}])})
                     .catch(reject);
                     
                 } else if (options.location) {
                     if (loancard_line.size.has_serials) {
+                        console.log('serial');
                         if (loancard_line.serial) {
                             fn.locations.find_or_create({location: options.location})
-                            .then(location => resolve([
+                            .then(location => {console.log('serial resolved');resolve([
                                 loancard_line, 
                                 {
                                     serial: {
@@ -569,7 +571,7 @@ module.exports = function (m, fn) {
                                         location_id: location.location_id
                                     }
                                 }
-                            ]))
+                            ])})
                             .catch(reject);
     
                         } else {
@@ -578,13 +580,15 @@ module.exports = function (m, fn) {
                         };
                 
                     } else {
+                        console.log('stock');
                         fn.stocks.find({size_id: loancard_line.size_id, location: options.location})
-                        .then(stock => resolve([loancard_line, {stock: stock}]))
+                        .then(stock => {console.log('Stock resolved');resolve([loancard_line, {stock: stock}])})
                         .catch(reject);
     
                     };
     
                 } else {
+                    console.log('588');
                     reject(new Error('No return destination specified'));
     
                 };
@@ -710,7 +714,7 @@ module.exports = function (m, fn) {
             .then(update_issues)
             .then(fn.actions.create)
             .then(resolve)
-            .catch(reject);
+            .catch(err => {console.log(err);reject(err)});
         });
     };
 };
