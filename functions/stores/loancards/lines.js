@@ -168,7 +168,7 @@ module.exports = function (m, fn) {
             action_lines()
             .then(check_loancards)
             .then(resolve)
-            .catch(err => {console.log(err);reject(err)});
+            .catch(err => {console.log(`Error (171): ${err}`);reject(err)});
         });
     };
 
@@ -496,7 +496,6 @@ module.exports = function (m, fn) {
     };
 
     fn.loancards.lines.return = function (options, user_id) {
-
         function check_loancard_line() {
             return new Promise((resolve, reject) => {
                 fn.loancards.lines.get(
@@ -532,6 +531,7 @@ module.exports = function (m, fn) {
                                 reject(new Error('Return quantity is greater than open quantity'));
         
                             } else if (loancard_line.size) {
+                                console.log('(534) Resolved');
                                 resolve(loancard_line);
         
                             } else {
@@ -591,6 +591,7 @@ module.exports = function (m, fn) {
             });
         };
         function return_stock([loancard_line, destination]) {
+            console.log(destination);
             return new Promise((resolve, reject) => {
                 if (destination.scrap) {
                     fn.scraps.lines.create(
@@ -633,6 +634,7 @@ module.exports = function (m, fn) {
             });
         };
         function update_issues([loancard_line, destination_link]) {
+            console.log('(637) Stock returned');
             let remaining_qty = options.qty;
             function update_issue(issue, remaining_qty) {
                 function create_issue_for_remainder() {
