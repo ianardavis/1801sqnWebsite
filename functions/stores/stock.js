@@ -1,6 +1,7 @@
 module.exports = function (m, fn) {
     fn.stocks = {};
     fn.stocks.find = function (options = {}) {
+        console.log(options);
         return new Promise((resolve, reject) => {
             if (
                 options.stock_id ||
