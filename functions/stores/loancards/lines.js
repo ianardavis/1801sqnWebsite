@@ -37,7 +37,6 @@ module.exports = function (m, fn) {
                 lines
                 .filter (e => e.status === '3')
                 .forEach(line => {
-                    console.log(`line (40): ${line}`)
                     actions.push(fn.loancards.lines.return(line, user_id));
                 });
     
@@ -64,28 +63,32 @@ module.exports = function (m, fn) {
                         include: [{
                             model: m.issues,
                             where: {status: 4},
+                            required: false
                         }]
                     });
                 };
                 function check_lines(lines) {
+                    function close_loancard_line(line) {
+                        return new Promise((resolve, reject) => {
+                            fn.update(line, {status: 3})
+                            .then(result => {
+                                fn.actions.create([
+                                    'LOANCARD LINE | CLOSED',
+                                    user_id,
+                                    [{_table: 'loancard_lines', id: line.loancard_line_id}]
+                                ])
+                                .then(resolve);
+                            })
+                            .catch(reject);
+                        });
+                    };
+
                     return new Promise((resolve, reject) => {
                         let actions = [];
                         lines.forEach(line => {
+                            console.log(line.issues);
                             if (!line.issues || line.issues.length === 0) {
-                                actions.push(
-                                    new Promise((resolve, reject) => {
-                                        fn.update(line, {status: 3})
-                                        .then(result => {
-                                            fn.actions.create([
-                                                'LOANCARD LINE | CLOSED',
-                                                user_id,
-                                                [{_table: 'loancard_lines', id: line.loancard_line_id}]
-                                            ])
-                                            .then(resolve);
-                                        })
-                                        .catch(reject);
-                                    })
-                                );
+                                actions.push(close_loancard_line(line));
                             };
                         });
                         Promise.all(actions)
@@ -168,7 +171,7 @@ module.exports = function (m, fn) {
             action_lines()
             .then(check_loancards)
             .then(resolve)
-            .catch(err => {console.log(`Error (171): ${err}`);reject(err)});
+            .catch(reject);
         });
     };
 
@@ -709,7 +712,7 @@ module.exports = function (m, fn) {
             .then(update_issues)
             .then(fn.actions.create)
             .then(resolve)
-            .catch(err => {console.log(err);reject(err)});
+            .catch(reject);
         });
     };
 };
