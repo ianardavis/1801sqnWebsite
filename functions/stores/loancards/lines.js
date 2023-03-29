@@ -30,6 +30,7 @@ module.exports = function (m, fn) {
     };
     
     fn.loancards.lines.process = function (lines, user_id) {
+        console.log(lines);
         function action_lines() {
             return new Promise((resolve, reject) => {
                 let actions = [];
