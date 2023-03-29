@@ -30,7 +30,6 @@ module.exports = function (m, fn) {
     };
     
     fn.loancards.lines.process = function (lines, user_id) {
-        console.log(lines);
         function action_lines() {
             return new Promise((resolve, reject) => {
                 let actions = [];
@@ -38,6 +37,7 @@ module.exports = function (m, fn) {
                 lines
                 .filter (e => e.status === '3')
                 .forEach(line => {
+                    console.log(`line (40): ${line}`)
                     actions.push(fn.loancards.lines.return(line, user_id));
                 });
     
@@ -168,7 +168,7 @@ module.exports = function (m, fn) {
             action_lines()
             .then(check_loancards)
             .then(resolve)
-            .catch(reject);
+            .catch(err => {console.log(err);reject(err)});
         });
     };
 
@@ -496,6 +496,7 @@ module.exports = function (m, fn) {
     };
 
     fn.loancards.lines.return = function (options, user_id) {
+
         function check_loancard_line() {
             return new Promise((resolve, reject) => {
                 fn.loancards.lines.get(
