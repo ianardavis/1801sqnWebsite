@@ -110,7 +110,7 @@ module.exports = function (m, fn) {
                 };
             })
             .catch(err => {
-                console.log(err);
+                console.error(err);
                 reject(err);
             });
         });
@@ -192,7 +192,7 @@ module.exports = function (m, fn) {
                         fn.scraps.pdf.create(scrap.scrap_id, user)
                         .then(result => resolve(true))
                         .catch(err => {
-                            console.log(err);
+                            console.error(err);
                             resolve(false);
                         });
                     })

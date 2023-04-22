@@ -6,7 +6,7 @@ module.exports = function (m, fn) {
             where
         );
     };
-	fn.credits.get_All = function (pagination) {
+	fn.credits.get_all = function (pagination) {
 		return new Promise((resolve, reject) => {
 			m.credits.findAndCountAll({
 				include: [fn.inc.users.user()],

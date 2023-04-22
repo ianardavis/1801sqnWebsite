@@ -9,7 +9,7 @@ module.exports = function (m, fn) {
             ])
             .then(action => resolve(true))
             .catch(err => {
-                console.log(err);
+                console.error(err);
                 resolve(false)
             });
         });
@@ -371,7 +371,7 @@ module.exports = function (m, fn) {
                 action(line, details, user_id)
                 .then(([results, remaining]) => {
                     let qty_received = 0;
-                    results.filter(e => e.status === 'fulfilled').forEach(e => qty_received += Number(e.value.qty));
+                    results.filter(e => e.status === 'fulfilled').forEach(e => qty_received += Number(e.value));
                     resolve({
                         demand_line: line,
                         qty:         qty_received,
@@ -396,7 +396,7 @@ module.exports = function (m, fn) {
                             user_id,
                             [{_table: 'demand_lines', id: demand_line_id}]
                         )
-                        .then(result => resolve(result.qty))
+                        .then(resolve)
                         .catch(reject);
                     })
                     .catch(reject);

@@ -120,59 +120,74 @@ module.exports = function (m, fn) {
     };
     fn.stocks.create = function (size_id, location) {
         return new Promise((resolve, reject) => {
-            fn.sizes.get({size_id: size_id})
-            .then(size => {
+            Promise.all([
+                fn.sizes.get({size_id: size_id}),
                 m.locations.findOrCreate({where: {location: location}})
-                .then(([location, created]) => {
-                    m.stocks.findOrCreate({
-                        where: {
-                            size_id:     size.size_id,
-                            location_id: location.location_id
-                        }
-                    })
-                    .then(([stock, created]) => resolve(true))
-                    .catch(reject);
+            ])
+            .then(([size, [location, created]]) => {
+                m.stocks.findOrCreate({
+                    where: {
+                        size_id:     size.size_id,
+                        location_id: location.location_id
+                    }
                 })
+                .then(([stock, created]) => resolve(true))
                 .catch(reject);
             })
             .catch(reject);
         });
     };
     fn.stocks.scrap = function (stock_id, details, user_id) {
-        return new Promise((resolve, reject) => {
-            m.stocks.findOne({
-                where: {stock_id: stock_id},
-                include: [m.sizes]
-            })
-            .then(stock => {
-                if (stock.size.has_nsns && !details.nsn_id) {
-                    reject(new Error("No valid NSN submitted"));
+        function check_stock() {
+            return new Promise((resolve, reject) => {
+                m.stocks.findOne({
+                    where: {stock_id: stock_id},
+                    include: [m.sizes]
+                })
+                .then(stock => {
+                    if (stock.size.has_nsns && !details.nsn_id) {
+                        reject(new Error("No valid NSN submitted"));
+    
+                    } else {
+                        resolve(stock);
 
-                } else {
-                    fn.stocks.decrement(stock, details.qty)
-                    .then(result => {
-                        fn.scraps.get_or_create(stock.size.supplier_id)
-                        .then(scrap => {
-                            fn.scraps.lines.create(
-                                scrap.scrap_id,
-                                stock.size_id,
-                                details
-                            )
-                            .then(result => {
-                                fn.actions.create([
-                                    `STOCK | SCRAPPED | Decreased by ${details.qty}. New qty: ${Number(stock.qty - details.qty)}`,
-                                    user_id,
-                                    [{_table: 'stocks', id: stock.stock_id}]
-                                ])
-                                .then(results => resolve(true));
-                            })
-                            .catch(reject);
-                        })
+                    };
+                })
+                .catch(reject);
+            });
+        };
+        function create_scrap_line(stock) {
+            return new Promise((resolve, reject) => {
+                fn.scraps.get_or_create(stock.size.supplier_id)
+                    .then(scrap => {
+                        fn.scraps.lines.create(
+                            scrap.scrap_id,
+                            stock.size_id,
+                            details
+                        )
+                        .then(scrap_line => resolve({_table: 'scrap_lines', id: scrap_line.line_id}))
                         .catch(reject);
                     })
                     .catch(reject);
-
-                };
+            });
+        };
+        return new Promise((resolve, reject) => {
+            check_stock()
+            .then(stock => {
+                Promise.all([
+                    fn.stocks.decrement(stock, details.qty),
+                    create_scrap_line(stock)
+                ])
+                
+                .then(([stock_link, scrap_line_link]) => {
+                    fn.actions.create([
+                        `STOCK | SCRAPPED | Decreased by ${details.qty}. New qty: ${Number(stock.qty - details.qty)}`,
+                        user_id,
+                        [stock_link, scrap_line_link]
+                    ])
+                    .then(action => resolve(true));
+                })
+                .catch(reject);
             })
             .catch(reject);
         });
@@ -204,11 +219,11 @@ module.exports = function (m, fn) {
         });
     };
     fn.stocks.count_bulk = function (counts, user_id) {
-        return new Promise((resolve, reject) => {
-            if (!counts) {
-                reject(new Error('No details'));
-    
-            } else {
+        if (!counts) {
+            return Promise.reject(new Error('No details'));
+
+        } else {
+            return new Promise((resolve, reject) => {
                 let actions = [];
                 counts.filter(a => a.qty).forEach(count => {
                     actions.push(fn.stocks.count(count.stock_id, count.qty, user_id))
@@ -218,28 +233,16 @@ module.exports = function (m, fn) {
                 .then(results => resolve(true))
                 .catch(reject);
     
-            };
-        });
+            });
+
+        };
     };
-    fn.stocks.increment = function (stock, qty, action = null) {//{text: '', links: [], user_id: user_id}) {
+    fn.stocks.increment = function (stock, qty) {
         return new Promise((resolve, reject) => {
             stock.increment('qty', {by: qty})
             .then(result => {
                 if (result) {
-                    if (action) {
-                        fn.actions.create([
-                            action.text,
-                            action.user_id,
-                            [
-                                {_table: 'stocks', id: stock.stock_id}
-                            ].concat(action.links || [])
-                        ])
-                        .then(result => resolve(true));
-
-                    } else {
-                        resolve(true);
-
-                    };
+                    resolve({_table: 'stocks', id: stock.stock_id});
 
                 } else {
                     reject(new Error('Stock not incremented'));
@@ -249,25 +252,12 @@ module.exports = function (m, fn) {
             .catch(reject);
         });
     };
-    fn.stocks.decrement = function (stock, qty, action = null) {
+    fn.stocks.decrement = function (stock, qty) {
         return new Promise((resolve, reject) => {
             stock.decrement('qty', {by: qty})
             .then(result => {
                 if (result) {
-                    if (action) {
-                        fn.actions.create([
-                            action.text,
-                            action.user_id,
-                            [
-                                {_table: 'stocks', id: stock.stock_id}
-                            ].concat(action.links || [])
-                        ])
-                        .then(result => resolve(true));
-
-                    } else {
-                        resolve(true);
-
-                    };
+                    resolve({_table: 'stocks', id: stock.stock_id});
 
                 } else {
                     reject(new Error('Stock not decremented'));
@@ -283,14 +273,16 @@ module.exports = function (m, fn) {
             .then(stock => {
                 fn.stocks.increment(
                     stock,
-                    options.qty, 
-                    {
-                        text:    `STOCK | RECEIVED | Qty: ${options.qty}`,
-                        links:   options.action_links || [],
-                        user_id: options.user_id
-                    }
+                    options.qty
                 )
-                .then(result => resolve(true))
+                .then(stock_link => {
+                    fn.actions.create([
+                        `STOCK | RECEIVED | Qty: ${options.qty}`,
+                        options.user_id,
+                        [stock_link].concat(options.action_links || [])
+                    ])
+                    .then(action => resolve(true));
+                })
                 .catch(reject);
             })
             .catch(reject);
@@ -307,53 +299,73 @@ module.exports = function (m, fn) {
             .catch(reject);
         });
     };
+    
     fn.stocks.transfer = function (stock_id_from, location_to, qty, user_id) {
+        function check_from_stock() {
+            return new Promise((resolve, reject) => {
+                fn.stocks.get_by_ID(stock_id_from)
+                .then(stock => {
+                    if (qty > stock.qty) {
+                        reject(new Error('Transfer quantity is greater than stock quantity'));
+
+                    } else {
+                        resolve(stock);
+
+                    };
+                })
+                .catch(reject);
+            });
+        };
+        function check_to_stock(stock_from) {
+            return new Promise((resolve, reject) => {
+                m.locations.findOrCreate({where: {location: location_to}})
+                .then(([location, created]) => {
+                    if (
+                        stock_from.location_id       === location.location_id ||
+                        stock_from.location.location === location.location
+                    ) {
+                        reject(new Error('Transfer to and from locations are the same'));
+
+                    } else {
+                        m.stocks.findOrCreate({
+                            where:    {
+                                location_id: location_to.location_id,
+                                size_id:     stock_from .size_id
+                            }
+                        })
+                        .then(([stock_to, created]) => resolve([stock_from, stock_to]))
+                        .catch(reject);
+
+                    };
+                })
+                .catch(reject);
+            });
+        };
+        function transfer_stock([stock_from, stock_to]) {
+            return new Promise((resolve, reject) => {
+                Promise.all([
+                    fn.stocks.decrement(stock_from, qty),
+                    fn.stocks.increment(stock_to,   qty)
+                ])
+                .then(([stock_link_from, stock_link_to]) => {
+                    resolve([
+                        `STOCK | TRANSFER | From: ${stock_from.location.location} to: ${stock_to.location.location} | Qty: ${qty}`,
+                        user_id,
+                        [
+                            stock_link_from,
+                            stock_link_to
+                        ]
+                    ]);
+                })
+                .catch(reject);
+            });
+        };
         return new Promise((resolve, reject) => {
-            fn.stocks.get_by_ID(stock_id_from)
-            .then(stock_from => {
-                if (qty > stock_from.qty) {
-                    reject(new Error('Transfer quantity is greater than stock quantity'));
-
-                } else {
-                    m.locations.findOrCreate({where: {location: location_to}})
-                    .then(([location, created]) => {
-                        if (
-                            stock_from.location_id       === location.location_id ||
-                            stock_from.location.location === location.location
-                        ) {
-                            reject(new Error('Transfer to and from locations are the same'));
-
-                        } else {
-                            m.stocks.findOrCreate({
-                                where:    {
-                                    location_id: location.location_id,
-                                    size_id:     stock_from.size_id
-                                }
-                            })
-                            .then(([stock_to, created]) => {
-                                Promise.all([
-                                    fn.stocks.decrement(stock_from, qty),
-                                    fn.stocks.increment(stock_to,   qty)
-                                ])
-                                .then(([decrement_result, increment_result]) => {
-                                    fn.actions.create([
-                                        `STOCK | TRANSFER | From: ${stock_from.location.location} to: ${location.location} | Qty: ${qty}`,
-                                        user_id,
-                                        [
-                                            {_table: 'stocks', id: stock_from.stock_id},
-                                            {_table: 'stocks', id: stock_to  .stock_id}
-                                        ]
-                                    ])
-                                    .then(result => resolve(true));
-                                })
-                                .catch(reject);
-                            })
-                            .catch(reject);
-                        };
-                    })
-                    .catch(reject);
-                };
-            })
+            check_from_stock()
+            .then(check_to_stock)
+            .then(transfer_stock)
+            .then(fn.actions.create)
+            .then(result => resolve(true))
             .catch(reject);
         });
     };

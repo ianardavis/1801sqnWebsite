@@ -19,7 +19,7 @@ function getEANs() {
                     }).e});
                     add_cell(row, );
                 } catch (error) {
-                    console.log(error);
+                    console.error(error);
                 };
             });
         });

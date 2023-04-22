@@ -22,7 +22,7 @@ function getUsers() {
             });
         });
     })
-    .catch(err => console.log(err));
+    .catch(err => console.error(err));
 };
 function getStatuses() {
     return listStatuses({
@@ -48,7 +48,7 @@ window.addEventListener("load", function () {
 	])
 	.then(results => getUsers())
 	.catch(err => {
-		console.log(err);
+		console.error(err);
 		getUsers();
 	});
     add_sort_listeners('users', getUsers);

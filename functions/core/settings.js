@@ -108,7 +108,7 @@ module.exports = function (m, fn) {
                 readStream.on('open',  ()  => {readStream.pipe(res)});
                 readStream.on('close', ()  => {res.end()});
                 readStream.on('error', err => {
-                    console.log(err);
+                    console.error(err);
                     res.end();
                 });
                 resolve(true);
@@ -121,7 +121,7 @@ module.exports = function (m, fn) {
         return new Promise((resolve, reject) => {
             try {
                 const output = fn.run_cmd(command);
-                console.log(output);
+                console.error(output);
                 resolve(true);
             } catch (err) {
                 reject(err);

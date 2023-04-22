@@ -86,13 +86,13 @@ module.exports = function (m, fn) {
                             credit.increment('qty', {by: amount})
                             .then(result => resolve(0))
                             .catch(err => {
-                                console.log(err)
+                                console.error(err)
                                 resolve(amount);
                             });
                         };
                     })
                     .catch(err => {
-                        console.log(err)
+                        console.error(err)
                         resolve(amount);
                     });
                 });
@@ -211,7 +211,7 @@ module.exports = function (m, fn) {
                                                 credit_account(sale.user_id_credit, Number(paid - total))
                                                 .then(change => resolve(change))
                                                 .catch(err => {
-                                                    console.log(err);
+                                                    console.error(err);
                                                     resolve(Number(paid - total));
                                                 });
                                             } else {

@@ -26,9 +26,9 @@ function getUsers() {
                 add_cell(row, {text: user.first_name});
             });
         })
-        .catch(err => console.log(err));
+        .catch(err => console.error(err));
     })
-    .catch(err => console.log(err));
+    .catch(err => console.error(err));
 };
 function selectUsers() {
     if (window.opener.selectedUsers) {

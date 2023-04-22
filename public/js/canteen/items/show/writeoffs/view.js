@@ -16,7 +16,7 @@ function getWriteoffs() {
                     add_cell(row, {text: writeoff.qty});
                     add_cell(row, {append: new Link(`/writeoffs/${writeoff.writeoff_id}`).e});
                 } catch (error) {
-                    console.log(error);
+                    console.error(error);
                 };
             });
         });

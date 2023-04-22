@@ -137,7 +137,7 @@ module.exports = function (m, fn) {
                         fn.pdfs.print('scraps', file)
                         .then(result => resolve(filename))
                         .catch(err => {
-                            console.log(err);
+                            console.error(err);
                             resolve(filename);
                         });
     
@@ -147,7 +147,7 @@ module.exports = function (m, fn) {
                     };
                 })
                 .catch(err => {
-                    console.log(err);
+                    console.error(err);
                     resolve(filename)
                 });
             });

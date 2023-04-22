@@ -58,9 +58,9 @@ function eventParse(event) {
     });
 };
 function print_error(message, error) {
-    console.log(`************ message ************`);
-    console.log(error);
-    console.log('********************************************');
+    console.error(`************ message ************`);
+    console.error(error);
+    console.error('********************************************');
     alert_toast(message);
 };
 function get_stream(streamAction) {
@@ -135,11 +135,11 @@ function addFormListener(form_id, method, location, options = {reload: false}) {
             });
             
         } else {
-            console.log(`${form_id} not found`);
+            console.error(`${form_id} not found`);
 
         };
     } catch (error) {
-        console.log(`Error on form: ${form_id}: `, error);
+        console.error(`Error on form: ${form_id}: `, error);
 
     };
 };
@@ -172,7 +172,7 @@ function sendData(form, method, _location, options = {reload: false}) {
 
                 };
             } else {
-                console.log(response);
+                console.error(response);
                 alert_toast(response.message || 'Ooooopsie');
 
             };

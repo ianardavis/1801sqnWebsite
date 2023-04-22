@@ -26,7 +26,7 @@ function getNotes() {
             });
         });
     })
-    .catch(err => console.log(err));
+    .catch(err => console.error(err));
 };
 function viewNote(note_id) {
     get({

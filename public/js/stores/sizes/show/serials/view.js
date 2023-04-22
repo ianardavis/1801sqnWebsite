@@ -15,7 +15,7 @@ function getSerials() {
                     add_cell(row, {text: (serial.location ? serial.location.location : (serial.issue ? 'Issued' : 'Unknown'))});
                     add_cell(row, {append: new Link(`/serials/${serial.serial_id}`).e});
                 } catch (error) {
-                    console.log(error);
+                    console.error(error);
                 };
             });
         });

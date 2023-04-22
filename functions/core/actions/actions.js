@@ -35,7 +35,7 @@ module.exports = function (m, fn) {
             })
             .then(action => resolve(return_result))
             .catch(err => {
-                console.log(err);
+                console.error(err);
                 resolve(return_result);
             });
         });

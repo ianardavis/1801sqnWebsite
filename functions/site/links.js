@@ -5,8 +5,8 @@ module.exports = function (m, fn) {
             m.resource_links.findAll({
                 where: where
             })
-                .then(links => resolve(links))
-                .catch(reject);
+            .then(links => resolve(links))
+            .catch(reject);
         });
     };
 
@@ -34,7 +34,21 @@ module.exports = function (m, fn) {
     };
     fn.site.links.delete = function (resource_link_id) {
         return new Promise((resolve, reject) => {
+            fn.site.links.get({resource_link_id: resource_link_id})
+            .then(link => {
+                link.destroy()
+                .then(result => {
+                    if (result) {
+                        resolve(true);
 
+                    } else {
+                        reject(new Error('Link not deleted'));
+
+                    }
+                })
+                .catch(reject);
+            })
+            .catch(reject);
         });
     };
 };

@@ -43,7 +43,7 @@ module.exports = (passport, m) => {
                     };
                 })
                 .catch(err => {
-                    console.log(err);
+                    console.error(err);
                     req.flash('danger', 'Something went wrong with your signin!');
                     done(null, false, {message: 'Something went wrong with your signin!'});
                 });

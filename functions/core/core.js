@@ -2,30 +2,26 @@ const execSync = require('child_process').execSync;
 module.exports = function (m, fn) {
     fn.op = require('sequelize').Op;
     fn.send_error = function (res, err) {
-        if (err.message) console.log(err);
+        if (err.message) console.error(err);
         res.send({success: false, message: err.message || err});
     };
     fn.send_res = function (table, res, result, query, inc = []) {
-        let _return = {success: true, result: {}};
+        let _return = {
+            success: true,
+            result: {
+                ...(result.count  ? {count:  result.count} : {}),
+                ...(result.limit  ? {limit:  query.limit}  : {}),
+                ...(result.offset ? {offset: query.offset} : {})
+            }
+        };
         if (result.rows) {
             _return.result[table] = result.rows;
+
         } else {
             _return.result[table] = result;
+            
         };
-
-        if (result.count) {
-            _return.result.count  = result.count;
-        };
-
-        if (query.limit) {
-            _return.result.limit  = query.limit;
-        };
-
-        if (query.offset) {
-            _return.result.offset = query.offset;
-        };
-
-        inc.forEach(i => _return.result[i.name] = i.obj);
+        
         res.send(_return);
     };
     fn.allowed = function (user_id, _permission, allow = false) {
@@ -150,7 +146,7 @@ module.exports = function (m, fn) {
         });
     };
     fn.log_rejects = function (results) {
-        results.filter(e => e.status === 'rejected').forEach(e => console.log(e));
+        results.filter(e => e.status === 'rejected').forEach(e => console.error(e));
         return results;
     };
     fn.get = function(table, where, include = []) {
@@ -208,7 +204,7 @@ module.exports = function (m, fn) {
                 return_result.push(result.value);
 
             } else {
-                console.log(result.message);
+                console.error(result.message);
 
             };
         });

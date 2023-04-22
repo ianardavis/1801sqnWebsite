@@ -21,7 +21,7 @@ function getLoancards () {
             });
         });
     })
-    .catch(err => console.log(err));
+    .catch(err => console.error(err));
 };
 window.addEventListener('load', function () {
     add_listener('reload', getLoancards);

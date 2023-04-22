@@ -138,6 +138,12 @@ function Delete_Button(options = {}) {
         ...(options.small ? {small: true} : {})
     }).e);
 };
+function Label(innerHTML, options = {}) {
+    this.e = document.createElement('label');
+    if (options.classes)    options.classes   .forEach(e => this.e.classList.add(e));
+    if (options.attributes) options.attributes.forEach(a => this.e.setAttribute(a.field, a.value));
+    this.e.innerHTML = innerHTML;
+};
 function Checkbox(options = {}) {
     if (!options.id) options.id = random_id();
     this.e = new Span((options.float ? {float: true} : {})).e;
@@ -155,12 +161,6 @@ function Checkbox(options = {}) {
             attributes: [{field: 'for', value: `chk_${options.id}`}]
         }
     ).e);
-};
-function Label(innerHTML, options = {}) {
-    this.e = document.createElement('label');
-    if (options.classes)    options.classes   .forEach(e => this.e.classList.add(e));
-    if (options.attributes) options.attributes.forEach(a => this.e.setAttribute(a.field, a.value));
-    this.e.innerHTML = innerHTML;
 };
 function Radio(options = {}) {
     if (!options.id) options.id = random_id();
@@ -371,4 +371,21 @@ function Collapse_A(id) {
             ]
         }
     ).e);
+};
+function Link_Section(title) {
+    this.e = document.createElement('section');
+    this.e.classList.add('container', 'bordered', 'mb-2');
+
+    let a = document.createElement('a');
+    a.classList.add('my-3');
+    a.setAttribute('data-bs-toggle', 'collapse');
+    a.setAttribute('href', `#collapse${title}`);
+    a.setAttribute('rolse', 'button');
+    a.setAttribute('aria-expanded', 'false');
+    a.setAttribute('aria-controls', `collapse${title}`);
+    this.e.appendChild(a);
+
+    let div = document.createElement('div');
+    div.classList.add('collapse', 'show', 'mb-3', 'menu', 'row'); //menu and row here or in sub div?
+    this.e.appendChild(div);
 };

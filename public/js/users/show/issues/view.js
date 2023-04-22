@@ -40,7 +40,7 @@ function getIssues () {
         })
         .then(tbl_issues => filter(tbl_issues));
     })
-    .catch(err => console.log(err));
+    .catch(err => console.error(err));
 };
 function filter(tbl_issues) {
     if (!tbl_issues) tbl_issues = document.querySelector('#tbl_issues');

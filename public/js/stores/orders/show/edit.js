@@ -19,7 +19,7 @@ function get_qty() {
             alert_toast('Not an editable status');
         };
     })
-    .catch(err => console.log(err));
+    .catch(err => console.error(err));
 };
 function get_sizes() {
     clear('tbl_sizes')
@@ -51,13 +51,13 @@ function get_sizes() {
                         }).e});
                     });
                 })
-                .catch(err => console.log(err));
+                .catch(err => console.error(err));
             } else {
                 modalHide('size_edit');
                 alert_toast('Not an editable status');
             };
         })
-        .catch(err => console.log(err));
+        .catch(err => console.error(err));
     });
 };
 window.addEventListener('load', function () {

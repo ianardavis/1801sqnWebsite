@@ -1,26 +1,12 @@
 function getPermissionsEdit () {
-    clear('ul_tree')
-    .then(ul_tree => {
+    load_permission_tree()
+    .then(() => {
         get({
             table: 'permissions',
             where: {user_id: path[2]},
             spinner: 'permission_edit'
         })
         .then(function ([permissions, options]) {
-            permissions.tree.forEach(e => {
-                ul_tree.appendChild(
-                    new List_Item(
-                        e.permission,
-                        (e.children && e.children.length > 0)
-                    ).e
-                );
-                if (e.children && e.children.length > 0) {
-                    e.children.forEach(f => {
-                        add_permission(document.querySelector(`#ul_${e.permission}`), f)
-                    });
-                };
-            });
-            configure_tree();
             permissions.permissions.forEach(e => {
                 let checkbox = document.querySelector(`#chk_${e.permission}`);
                 if (checkbox) checkbox.setAttribute('checked', true);
@@ -28,20 +14,51 @@ function getPermissionsEdit () {
         });
     });
 };
-function add_permission(parent, e) {
-    if (parent) {
-        parent.appendChild(
-            new List_Item(
-                e.permission,
-                (e.children && e.children.length > 0)
-            ).e
-        );
-        if (e.children && e.children.length > 0) {
-            e.children.forEach(f => {
-                add_permission(document.querySelector(`#ul_${e.permission}`), f)
-            })
+function load_permission_tree() {
+    function add_permission(parent, e) {
+        if (parent) {
+            parent.appendChild(
+                new List_Item(
+                    e.permission,
+                    (e.children && e.children.length > 0)
+                ).e
+            );
+            if (e.children && e.children.length > 0) {
+                e.children.forEach(f => {
+                    add_permission(document.querySelector(`#ul_${e.permission}`), f)
+                })
+            };
         };
     };
+    return new Promise((resolve, reject) => {
+        clear('ul_tree')
+        .then(ul_tree => {
+            get({
+                location: 'permissions/tree',
+                table:    'permissions', // do i need this????
+                spinner:  'permission_edit'
+            })
+            .then(function ([tree, options]) {
+                tree.forEach(e => {
+                    ul_tree.appendChild(
+                        new List_Item(
+                            e.permission,
+                            (e.children && e.children.length > 0)
+                        ).e
+                    );
+                    if (e.children && e.children.length > 0) {
+                        e.children.forEach(f => {
+                            add_permission(document.querySelector(`#ul_${e.permission}`), f)
+                        });
+                    };
+                });
+                configure_tree();
+                resolve(true);
+            })
+            .catch(reject);
+        })
+        .catch(reject)
+    });
 };
 function select_all_permissions() {
     document.querySelectorAll('#ul_tree input[type="checkbox"]').forEach(e => check_permission(e));
@@ -93,5 +110,5 @@ window.addEventListener('load', function () {
     modalOnShow('permissions_edit', getPermissionsEdit);
     add_listener('btn_select_all', select_all_permissions);
     add_listener('btn_permissions_storeman', set_storeman);
-    add_listener('btn_permissions_canteen', set_canteen);
+    add_listener('btn_permissions_canteen',  set_canteen);
 });

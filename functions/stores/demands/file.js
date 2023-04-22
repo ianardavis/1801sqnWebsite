@@ -1,7 +1,7 @@
 module.exports = function (m, fn) {
     const excel = require('exceljs');
     fn.demands.file.create = function ([demand_id, user]) {
-        function check(demand_id) {
+        function check_demand(demand_id) {
             return new Promise((resolve, reject) => {
                 fn.demands.get(
                     {demand_id: demand_id},
@@ -11,13 +11,7 @@ module.exports = function (m, fn) {
                         where:   {status: 2},
                         include: [
                             m.orders,
-                            {
-                                model: m.sizes,
-                                include: [
-                                    m.details,
-                                    m.items
-                                ]
-                            }
+                            fn.inc.stores.size({details: true})
                         ]
                     }]
                 )
@@ -73,7 +67,7 @@ module.exports = function (m, fn) {
                 ])
                 .then(([[file, account], folderPath]) => {
                     if (file.filename) {
-                        const filename = `${demand.demand_id}.xlsx`;
+                        const filename = `demand_${demand.demand_id}.xlsx`;
                         fn.fs.copy_file(
                             fn.public_file('files', file.filename),
                             fn.public_file('demands', filename)
@@ -253,7 +247,7 @@ module.exports = function (m, fn) {
         };
 
         return new Promise((resolve, reject) => {
-            check(demand_id)
+            check_demand(demand_id)
             .then(demand => {
                 if (demand.filename && demand.filename !== '') {
                     resolve(demand.filename);

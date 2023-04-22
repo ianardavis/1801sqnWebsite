@@ -73,8 +73,8 @@ function getLines() {
                         ).e
                     });
                 } catch (error) {
-                    console.log(`Error loading line ${line.loancard_line_id}:`)
-                    console.log(error);
+                    console.error(`Error loading line ${line.loancard_line_id}:`)
+                    console.error(error);
                 };
                 row_index++
             });

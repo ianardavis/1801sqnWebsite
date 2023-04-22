@@ -16,7 +16,7 @@ const html5QrCode = new Html5Qrcode(
 );
 function StopScanning() {
     html5QrCode.stop()
-    .catch(err => console.log(err));
+    .catch(err => console.error(err));
 }
 function StartScanning(onSuccess) {
     html5QrCode.start(
@@ -24,7 +24,7 @@ function StartScanning(onSuccess) {
         config,
         onSuccess
     )
-    .catch(err => console.log(err));
+    .catch(err => console.error(err));
     // Html5Qrcode.getCameras()
     // .then(devices => {
     //     if (devices && devices.length) {
@@ -35,5 +35,5 @@ function StartScanning(onSuccess) {
     //         );
     //     }
     // })
-    // .catch(err => console.log(err));
+    // .catch(err => console.error(err));
 };

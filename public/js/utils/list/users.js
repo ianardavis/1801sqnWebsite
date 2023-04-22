@@ -27,12 +27,12 @@ function listUsers(options = {}) {
                 resolve(true);
             })
             .catch(err => {
-                console.log(err);
+                console.error(err);
                 resolve(false);
             });
         })
         .catch(err => {
-            console.log(err);
+            console.error(err);
             resolve(false);
         });
     });
@@ -67,12 +67,12 @@ function listCurrentUsers(options = {}) {
                 resolve(true);
             })
             .catch(err => {
-                console.log(err);
+                console.error(err);
                 resolve(false);
             });
         })
         .catch(err => {
-            console.log(err);
+            console.error(err);
             resolve(false);
         });
     });

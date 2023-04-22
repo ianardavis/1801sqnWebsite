@@ -15,7 +15,6 @@
                 <%- include(`${partials}/menu/button`, {id: 'gender_add',   text: 'Add Gender',     modal: 'gender_add'}) %>
                 <%- include(`${partials}/menu/button`, {id: 'account_add',  text: 'Add Account',    modal: 'account_add'}) %>
                 <%- include(`${partials}/menu/button`, {id: 'category_add', text: 'Add Category',   modal: 'category_add'}) %>
-                <%- include(`${partials}/menu/button`, {id: 'migrate_actions', text: 'Migrate Actions', btn_form: {id: 'migrate_actions'}}) %>
             </div>
         </li>
         <%- include(`${partials}/tab_head`, {id: 'printers',   title: 'Printers',     spinner: 'printers'}) %>
@@ -24,6 +23,7 @@
         <%- include(`${partials}/tab_head`, {id: 'files',      title: 'Files',        spinner: 'files',      permission: 'supplier_admin'}) %>
         <%- include(`${partials}/tab_head`, {id: 'accounts',   title: 'Accounts',     spinner: 'accounts',   permission: 'supplier_admin'}) %>
         <%- include(`${partials}/tab_head`, {id: 'categories', title: 'Categories',   spinner: 'categories', permission: 'stores_stock_admin'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'links',      title: 'Links',        spinner: 'links'}) %>
         <%- include(`${partials}/tab_head`, {id: 'settings',   title: 'All Settings', spinner: 'settings'}) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
@@ -102,6 +102,17 @@
                 </form>
             </div>
         <% } %>
+        <div class="tab-pane fade" id="links" role="tabpanel" aria-labelledby="links-tab">
+            <table class="table table-sm table-hover">
+                <thead class="thead-dark" id="tbl_links_head">
+                    <th class='w-100' data-column='["heading"]' data-dir="ASC">Heading</th>
+                    <th class='w-100' data-column='["title"]'>Title</th>
+                    <th class='w-100' data-column='["text"]' >Text</th>
+                    <th><i class='fas fa-search'></i></th>
+                </thead>
+                <tbody id='tbl_links'></tbody>
+            </table>
+        </div>
         <div class="tab-pane fade" id="settings" role="tabpanel" aria-labelledby="settings-tab">
 	        <table class="table table-sm table-hover">
                 <thead class="thead-dark" id="tbl_settings_head">
@@ -170,6 +181,70 @@
                 </form>
             </div>
         </div>
+
+        <div class="modal fade" id="mdl_link_view" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Link</h5>
+                    <span class="float-end">
+                        <span id="link_delete" class='float-end ms-1'></span>
+                        <span id="link_edit"   class='float-end ms-1'></span>
+                    </span>
+                    </div>
+                    <div class="modal-body">
+                        <%- include(`${partials}/inputs/display`, {title: 'Heading', id: 'link_heading'}) %>
+                        <%- include(`${partials}/inputs/display`, {title: 'Title',   id: 'link_title'}) %>
+                        <%- include(`${partials}/inputs/display`, {title: 'Text',    id: 'link_text'}) %>
+                        <%- include(`${partials}/inputs/display`, {title: 'URL',     id: 'link_href'}) %>
+                        <%- include(`${partials}/inputs/display`, {title: 'Created', id: 'link_createdAt'}) %>
+                        <%- include(`${partials}/inputs/display`, {title: 'Updated', id: 'link_updatedAt'}) %>
+                    </div>
+                    <div class="modal-footer">
+                    <p class='me-auto'>ID: <span id='resource_link_id'></span></p>
+                    <%- include(`${partials}/button/modal/close`) %>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="mdl_link_add" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <form class="modal-content" id='form_link_add'>
+                    <div class="modal-header">
+                        <h5 class="modal-title">Link</h5>
+                    </div>
+                    <div class="modal-body">
+                        <%- include(`${partials}/inputs/select`, {title: 'Heading', name: 'link[heading]', required: true, id: 'link_heading_add'}) %>
+                        <%- include(`${partials}/inputs/text`,   {title: 'Title',   name: 'link[title]',   required: true}) %>
+                        <%- include(`${partials}/inputs/text`,   {title: 'Text',    name: 'link[text]'}) %>
+                        <%- include(`${partials}/inputs/text`,   {title: 'URL',     name: 'link[href]',    required: true}) %>
+                    </div>
+                    <div class="modal-footer">
+                    <%- include(`${partials}/button/save`) %>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="modal fade" id="mdl_link_edit" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <form class="modal-content" id='form_link_edit'>
+                    <div class="modal-header">
+                        <h5 class="modal-title">Link</h5>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" name='link[resource_link_id]' id='resource_link_id_edit'>
+                        <%- include(`${partials}/inputs/select`, {title: 'Heading', id: 'link_heading_edit', name: 'link[heading]', required: true}) %>
+                        <%- include(`${partials}/inputs/text`,   {title: 'Title',   id: 'link_title_edit',   name: 'link[title]',   required: true}) %>
+                        <%- include(`${partials}/inputs/text`,   {title: 'Text',    id: 'link_text_edit',    name: 'link[text]'}) %>
+                        <%- include(`${partials}/inputs/text`,   {title: 'URL',     id: 'link_href_edit',    name: 'link[href]',    required: true}) %>
+                    </div>
+                    <div class="modal-footer">
+                        <%- include(`${partials}/button/save`) %>
+                    </div>
+                </form>
+            </div>
+        </div>
+
         <% if (permissions.stores_stock_admin) { %>
             <div class="modal fade" id="mdl_gender_view" tabindex="-1" aria-hidden="true">
                 <div class="modal-dialog">
@@ -219,7 +294,7 @@
                             <%- include(`${partials}/inputs/text`, {title: 'Gender', id: 'gender_gender_edit', name: 'gender[gender]', required: true}) %>
                         </div>
                         <div class="modal-footer">
-                        <%- include(`${partials}/button/save`) %>
+                            <%- include(`${partials}/button/save`) %>
                         </div>
                     </form>
                 </div>
@@ -354,11 +429,18 @@
 <script src="/js/settings/settings/edit.js"></script>
 <script src="/js/settings/settings/delete.js"></script>
 
+<script src="/js/utils/list/link_headings.js"></script>
+<script src="/js/settings/links/view.js"></script>
+<script src="/js/settings/links/add.js"></script>
+<script src="/js/settings/links/edit.js"></script>
+<script src="/js/settings/links/delete.js"></script>
+
 <% if (permissions.stores_stock_admin) { %>
     <script src="/js/settings/genders/view.js"></script>
     <script src="/js/settings/genders/add.js"></script>
     <script src="/js/settings/genders/edit.js"></script>
     <script src="/js/settings/genders/delete.js"></script>
+
     <script src="/js/utils/list/categories.js"></script>
     <script src="/js/settings/categories/view.js"></script>
     <script src="/js/tree.js"></script>
@@ -370,6 +452,7 @@
 <% if (permissions.supplier_admin) { %>
     <script src="/js/settings/files/view.js"></script>
     <script src="/js/settings/files/delete.js"></script>
+
     <script src="/js/settings/accounts/view.js"></script>
     <script src="/js/utils/list/users.js"></script>
     <script src="/js/settings/accounts/add.js"></script>

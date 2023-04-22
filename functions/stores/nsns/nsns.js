@@ -62,7 +62,7 @@ module.exports = function (m, fn) {
                             fn.update(size, {nsn_id: nsn.nsn_id})
                             .then(result => resolve(' Set to default'))
                             .catch(err => {
-                                console.log(err);
+                                console.error(err);
                                 resolve(` Error setting to default: ${err.message}`);
                             });
     
@@ -137,7 +137,7 @@ module.exports = function (m, fn) {
                         )
                         .then(result => resolve(true))
                         .catch(err => {
-                            console.log(err);
+                            console.error(err);
                             resolve(false);
                         });
                     })

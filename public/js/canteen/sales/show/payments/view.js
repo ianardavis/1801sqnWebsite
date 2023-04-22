@@ -16,7 +16,7 @@ function getPayments() {
                     add_cell(row, {text: payment.type});
                     add_cell(row, {text: print_user(payment.user)});
                 } catch (error) {
-                    console.log(error);
+                    console.error(error);
                 };
             });
         });

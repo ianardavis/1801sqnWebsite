@@ -20,7 +20,7 @@ function getNSNs() {
                             [{field: 'nsn_id', value: nsn.nsn_id}]
                         ).e}
                     );
-                } catch (error) {console.log(error)};
+                } catch (error) {console.error(error)};
             });
         });
     });

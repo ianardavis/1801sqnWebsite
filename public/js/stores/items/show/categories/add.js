@@ -24,7 +24,7 @@ function listCategories(select, parent_id = null) {
                 });
             };
         })
-        .catch(err => console.log(err));
+        .catch(err => console.error(err));
     });
 };
 function addCategorySelect() {

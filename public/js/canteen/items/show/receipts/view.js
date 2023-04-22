@@ -15,7 +15,7 @@ function getReceipts() {
                     add_cell(row, {text: receipt.qty});
                     add_cell(row, {append: new Link(`/receipts/${receipt.receipt_id}`).e});
                 } catch (error) {
-                    console.log(error);
+                    console.error(error);
                 };
             });
         });

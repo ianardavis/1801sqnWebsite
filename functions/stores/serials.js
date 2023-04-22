@@ -66,7 +66,7 @@ module.exports = function (m, fn) {
                                 ]
                             )
                             .then(fn.actions.create)
-                            .then(result => resolve(true))
+                            .then(action => resolve(true))
                             .catch(reject);
 
                         } else {
@@ -87,29 +87,32 @@ module.exports = function (m, fn) {
 
     fn.serials.scrap = function (serial_id, details, user_id) {
         if (details) {
-            function check_serial(serial) {
+            function check_serial() {
                 return new Promise((resolve, reject) => {
-                    if (serial.size.has_nsns && !details.nsn_id) {
-                        reject(new Error("No valid NSN submitted"));
-
-                    } else if (!serial.location_id) {
-                        reject(new Error("Serial is not in stock"));
-
-                    } else if (serial.issue_id) {
-                        reject(new Error("Serial is currently issued"));
-
-                    } else if (!serial.location) {
-                        reject(new Error("Invalid serial location"));
-
-                    } else {
-                        resolve(serial);
-
-                    };
+                    fn.serials.get({serial_id: serial_id})
+                    .then(serial => {
+                        if (serial.size.has_nsns && !details.nsn_id) {
+                            reject(new Error("No valid NSN submitted"));
+    
+                        } else if (!serial.location_id) {
+                            reject(new Error("Serial is not in stock"));
+    
+                        } else if (serial.issue_id) {
+                            reject(new Error("Serial is currently issued"));
+    
+                        } else if (!serial.location) {
+                            reject(new Error("Invalid serial location"));
+    
+                        } else {
+                            resolve(serial);
+    
+                        };
+                    })
+                    .catch(reject);
                 });
             };
             return new Promise((resolve, reject) => {
-                fn.serials.get({serial_id: serial_id})
-                .then(check_serial)
+                check_serial()
                 .then(serial => {
                     fn.update(serial, {location_id: null}, serial.size.supplier_id)
                     .then(fn.scraps.get_or_create)
@@ -140,7 +143,7 @@ module.exports = function (m, fn) {
         };
     };
     fn.serials.create = function (serial, size_id, user_id) {
-        if (serial && size_id) {
+        function check_size() {
             return new Promise((resolve, reject) => {
                 fn.sizes.get({size_id: size_id})
                 .then(size => {
@@ -148,29 +151,44 @@ module.exports = function (m, fn) {
                         reject(new Error('This size does not have serials'));
 
                     } else {
-                        m.serials.findOrCreate({
-                            where: {
-                                size_id: size.size_id,
-                                serial:  serial
-                            }
-                        })
-                        .then(([serial, created]) => {
-                            if (created) {
-                                fn.actions.create([
-                                    'CREATED',
-                                    user_id,
-                                    [{_table: 'serials', id: serial.serial_id}]
-                                ])
-                                .then(result => resolve(serial));
+                        resolve(size.size_id);
 
-                            } else {
-                                reject(new Error('Serial already exists'));
-
-                            };
-                        })
-                        .catch(reject);
                     };
                 })
+                .catch(reject);
+            });
+        };
+        function create_serial(size_id) {
+            return new Promise((resolve, reject) => {
+                m.serials.findOrCreate({
+                    where: {
+                        size_id: size_id,
+                        serial:  serial
+                    }
+                })
+                .then(([serial, created]) => {
+                    if (created) {
+                        resolve([
+                            'SERIAL | CREATED',
+                            user_id,
+                            [{_table: 'serials', id: serial.serial_id}],
+                            serial
+                        ]);
+
+                    } else {
+                        reject(new Error('Serial already exists'));
+
+                    };
+                })
+                .catch(reject);
+            });
+        };
+        if (serial && size_id) {
+            return new Promise((resolve, reject) => {
+                check_size()
+                .then(create_serial)
+                .then(fn.actions.create)
+                .then(resolve)
                 .catch(reject);
             });
 
@@ -233,7 +251,7 @@ module.exports = function (m, fn) {
                     )
                     .then(result => resolve({serial_id: serial.serial_id, location_id: location.location_id}))
                     .catch(err => {
-                        console.log(err);
+                        console.error(err);
                         resolve({serial_id: serial.serial_id});
                     });
                 })

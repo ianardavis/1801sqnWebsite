@@ -68,4 +68,31 @@ module.exports = function (m, fn) {
             .catch(reject);
         });
     };
+    fn.users.permissions.tree = function () {
+        return [
+            {permission: 'access_settings'},
+            {permission: 'access_users',   children: [
+                {permission: 'user_admin'}
+            ]},
+            {permission: 'edit_own_permissions'},
+            {permission: 'access_stores', children: [
+                {permission: 'issuer'},
+                {permission: 'stores_stock_admin', children: [
+                    {permission: 'authorised_demander'}
+                ]},
+                {permission: 'supplier_admin'}
+            ]},
+            {permission: 'access_canteen', children: [
+                {permission: 'pos_user',   children: [
+                    {permission: 'pos_supervisor'}
+                ]},
+                {permission: 'canteen_stock_admin'},
+                {permission: 'pay_in_out'},
+                {permission: 'cash_admin'}
+            ]},
+            {permission: 'site_functions', children: [
+                {permission: 'site_admin'}
+            ]},
+        ];
+    };
 };

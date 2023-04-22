@@ -462,7 +462,7 @@ module.exports = function (m, fn) {
     };
 
     fn.orders.receive     = function (order_id, receipt, user_id, links = []) {
-        function check_order() {
+        function check_order(allowed) {
             return new Promise((resolve, reject) => {
                 fn.orders.get({order_id: order_id})
                 .then(order => {
@@ -498,129 +498,146 @@ module.exports = function (m, fn) {
                 };
             });
         };
-        function receive_serials(order, receipt, user_id) {
-            return new Promise((resolve, reject) => {
-                let actions = [];
-                receipt.serials.forEach(serial => {
-                    actions.push(
-                        fn.serials.receive(
-                            serial.location,
-                            serial.serial,
-                            order.size_id,
-                            user_id
+        function receive_order(order) {
+            function receive_serials() {
+                return new Promise((resolve, reject) => {
+                    let actions = [];
+                    receipt.serials.forEach(serial => {
+                        actions.push(
+                            fn.serials.receive(
+                                serial.location,
+                                serial.serial,
+                                order.size_id,
+                                user_id
+                            )
                         )
-                    )
-                });
-                Promise.allSettled(actions)
-                .then(results => {
-                    let serials = results.filter(e => e.status === 'fulfilled');
-                    let qty = serials.length;
-                    if (qty && qty > 0) {
-                        let links = [];
-                        serials.forEach(serial => {
-                            if (serial.location_id) {
-                                if (links.indexOf({_table: 'locations', id: serial.value.location_id}) === -1) {
-                                    links.push({_table: 'locations', id: serial.value.location_id});
+                    });
+                    Promise.allSettled(actions)
+                    .then(results => {
+                        const serials = results.filter(e => e.status === 'fulfilled');
+                        const qty = serials.length;
+                        if (qty && qty > 0) {
+                            let links = [];
+                            serials.forEach(serial => {
+                                if (serial.location_id) {
+                                    if (links.indexOf({_table: 'locations', id: serial.value.location_id}) === -1) {
+                                        links.push({_table: 'locations', id: serial.value.location_id});
+                                    };
                                 };
-                            };
-                            links.push({_table: 'serials', id: serial.value.serial_id})
-                        });
-                        resolve({order: order, qty: qty, links: links});
-    
-                    } else {
-                        reject(new Error('No successful receipts'));
-    
-                    };
-                })
-                .catch(reject);
-            });
-        };
-        function receive_stock(order, receipt, user_id) {
-            return new Promise((resolve, reject) => {
-                fn.stocks.receive({
-                    qty:          receipt.qty,
-                    user_id:      user_id,
-                    action_links: [{_table: 'orders', id: order.order_id}],
-                    stock: {
-                        size_id: order.size_id,
-                        location: receipt.location
-                    },
-                })
-                .then(result => resolve({order: order, qty: receipt.qty}))
-                .catch(reject);
-            });
-        };
-        function receive_qty_variance(order, qty, user_id) {
-            return new Promise((resolve, reject) => {
-                let qty_original = order.qty;
-                if (qty > qty_original) {
-                    fn.update(order, {qty: qty})
-                    .then(result => resolve({
-                        action: ` | Order qty increased from ${qty_original} to ${qty} on receipt`,
-                        order:  order
-                    }))
-                    .catch(reject);
-                    
-                } else if (qty < qty_original) {
-                    m.orders.create({
-                        size_id: order.size_id,
-                        qty:     qty,
-                        status:  3,
-                        user_id: user_id
+                                links.push({_table: 'serials', id: serial.value.serial_id})
+                            });
+                            resolve([qty, links]);
+        
+                        } else {
+                            reject(new Error('No successful receipts'));
+        
+                        };
                     })
-                    .then(new_order => {
-                        order.decrement('qty', {by: qty})
-                        .then(result => resolve({
-                            action: ` | Partial receipt | New order created for receipt qty | Existing order qty updated from ${order.qty} to ${order.qty - qty}`,
-                            links: [{_table: 'orders', id: new_order.order_id}],
-                            order: new_order
-                        }))
+                    .catch(reject);
+                });
+            };
+            function receive_stock() {
+                return new Promise((resolve, reject) => {
+                    fn.stocks.receive({
+                        qty:          receipt.qty,
+                        user_id:      user_id,
+                        action_links: [{_table: 'orders', id: order.order_id}],
+                        stock: {
+                            size_id: order.size_id,
+                            location: receipt.location
+                        },
+                    })
+                    .then(result => resolve([receipt.qty, []]))
+                    .catch(reject);
+                });
+            };
+            function check_variance(qty, links) {
+                return new Promise((resolve, reject) => {
+                    let qty_original = order.qty;
+                    if (qty > qty_original) {
+                        fn.update(
+                            order,
+                            {qty: qty},
+                            [
+                                `ORDER | Quantity increased from ${qty_original} to ${qty} on over receipt`,
+                                user_id,
+                                [{_table: 'orders', id: order.order_id}]
+                            ]
+                        )
+                        .then(fn.actions.create)
+                        .then(result => resolve([order, links, qty]))
                         .catch(reject);
-                    })
-                    .catch(reject);
-                    
+                        
+                    } else if (qty < qty_original) {
+                        m.orders.create({
+                            size_id: order.size_id,
+                            qty:     qty,
+                            status:  3,
+                            user_id: user_id
+                        })
+                        .then(new_order => {
+                            order.decrement('qty', {by: qty})
+                            .then(result => {
+                                if (result) {
+                                    fn.actions.create([
+                                        `ORDER | Quantity created by partial receipt`,
+                                        user_id,
+                                        [
+                                            {_table: 'orders', id: order    .order_id},
+                                            {_table: 'orders', id: new_order.order_id}
+                                        ]
+                                    ])
+                                    .then(action => resolve([order, links, qty]));
+
+                                } else {
+                                    reject(new Error('Order quantity not decremented'));
+
+                                };
+                            })
+                            .catch(reject);
+                        })
+                        .catch(reject);
+                        
+                    } else {
+                        resolve([order, links, qty]);
+                        
+                    };
+                });
+            };
+            return new Promise((resolve, reject) => {
+                let action = null;
+                if (order.size.has_serials) {
+                    action = receive_serials;
+
                 } else {
-                    resolve({order: order});
+                    action = receive_stock;
                     
                 };
+                action(order)
+                .then(check_variance)
+                .then(resolve)
+                .catch(reject);
             });
         };
         return new Promise((resolve, reject) => {
             fn.allowed(user_id, 'stores_stock_admin')
-            .then(allowed => {
-                check_order()
-                .then(check_links)
-                .then(order => {
-                    let action = null;
-                    if (order.size.has_serials) {
-                        action = receive_serials;
-
-                    } else {
-                        action = receive_stock;
-                        
-                    };
-                    action(order, receipt, user_id)
-                    .then(receive_result => {
-                        receive_qty_variance(order, receive_result.qty, user_id)
-                        .then(qty_result => {
-                            update_order_status([
-                                qty_result.order,
-                                3,
-                                user_id,
-                                `ORDER | RECEIVED${qty_result.action || ''}`,
-                                links.concat(qty_result.links || []).concat(receive_result.links || [])
-                            ])
-                            .then(order => resolve({order: qty_result.order, qty: receive_result.qty}))
-                            .catch(reject);
-                        })
-                        .catch(reject);
-                    })
-                    .catch(reject);
-                })
+            .then(check_order)
+            .then(check_links)
+            .then(receive_order)
+            .then(([order, receive_links, qty]) => {
+                update_order_status([
+                    order,
+                    3,
+                    user_id,
+                    'ORDER | RECEIVED',
+                    links.concat(receive_links)
+                ])
+                .then(order => resolve(qty))
                 .catch(reject);
             })
             .catch(reject);
-        });
+        })
+        .catch(reject);
     };
     
     function change_check(order_id) {

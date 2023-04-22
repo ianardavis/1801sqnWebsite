@@ -98,7 +98,7 @@ module.exports = function (m, fn) {
                             create_movement_record(movement, user_id)
                             .then(result => resolve(true))
                             .catch(err => {
-                                console.log(err);
+                                console.error(err);
                                 resolve(true);
                             });
                         })

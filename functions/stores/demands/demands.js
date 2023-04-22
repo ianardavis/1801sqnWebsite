@@ -93,7 +93,7 @@ module.exports = function (m, fn) {
     };
 
     fn.demands.complete = function (demand_id, user) {
-        function check(demand_id) {
+        function check_demand(demand_id) {
             return new Promise((resolve, reject) => {
                 fn.demands.get(
                     {demand_id: demand_id},
@@ -120,7 +120,7 @@ module.exports = function (m, fn) {
                 .catch(reject);
             });
         };
-        function update_lines(demand) {
+        function update_demand_and_lines(demand) {
             return new Promise((resolve, reject) => {
                 let actions = [fn.update(demand, {status: 2})];
                 demand.lines.forEach(line => actions.push(fn.update(line, {status: 2})));
@@ -135,8 +135,8 @@ module.exports = function (m, fn) {
             });
         };
         return new Promise((resolve, reject) => {
-            check(demand_id)
-            .then(update_lines)
+            check_demand(demand_id)
+            .then(update_demand_and_lines)
             .then(fn.actions.create)
             .then(fn.demands.file.create)
             .then(filename => resolve(`Filename: ${filename}`))
@@ -145,7 +145,7 @@ module.exports = function (m, fn) {
     };
 
     fn.demands.cancel = function (demand_id, user_id) {
-        function check(demand_id) {
+        function check_demand(demand_id) {
             return new Promise((resolve, reject) => {
                 fn.demands.get(
                     {demand_id: demand_id},
@@ -200,7 +200,7 @@ module.exports = function (m, fn) {
             })
         };
         return new Promise((resolve, reject) => {
-            check(demand_id)
+            check_demand(demand_id)
             .then(update_demand_and_lines)
             .then(fn.actions.create)
             .then(result => resolve(true))
@@ -209,7 +209,7 @@ module.exports = function (m, fn) {
     };
 
     fn.demands.close = function (demand_id, user_id) {
-        function check(demand_id) {
+        function check_demand(demand_id) {
             return new Promise((resolve, reject) => {
                 fn.demands.get(
                     {demand_id: demand_id},
@@ -249,7 +249,7 @@ module.exports = function (m, fn) {
             });
         };
         return new Promise((resolve, reject) => {
-            check(demand_id)
+            check_demand(demand_id)
             .then(update_demand)
             .then(fn.actions.create)
             .then(result => resolve(true))

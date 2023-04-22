@@ -392,7 +392,7 @@ module.exports = function (m, fn) {
                                         .then(action => resolve(true));
                                     })
                                     .catch(err => {
-                                        console.log(err);
+                                        console.error(err);
                                         reject(err);
                                     });
                                 })
@@ -619,16 +619,8 @@ module.exports = function (m, fn) {
                     .catch(reject);
     
                 } else {
-                    destination.stock.increment('qty', {by: options.qty})
-                    .then(result => {
-                        if (result) {
-                            resolve([loancard_line, {_table: 'stocks', id: destination.stock.stock_id}]);
-    
-                        } else {
-                            reject(new Error('Stock not incremented'));
-    
-                        };
-                    })
+                    fn.stocks.return(destination.stock.stock_id, options.qty)
+                    .then(link => resolve([loancard_line, link]))
                     .catch(reject);
     
                 };

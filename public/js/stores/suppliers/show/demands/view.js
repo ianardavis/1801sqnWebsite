@@ -19,7 +19,7 @@ function getDemands() {
                     add_cell(row, {text: demand_statuses[demand.status]});
                     add_cell(row, {append: new Link(`/demands/${demand.demand_id}`).e});
                 } catch (err) {
-                    console.log(err);
+                    console.error(err);
                 };
             });
         });

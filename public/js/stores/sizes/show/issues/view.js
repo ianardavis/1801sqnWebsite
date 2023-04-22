@@ -25,7 +25,7 @@ function getIssues() {
                         [{field: 'id', value: issue.issue_id}]
                     ).e});
                 } catch (error) {
-                    console.log(error);
+                    console.error(error);
                 };
             });
         });
@@ -49,7 +49,7 @@ function viewIssue(issue_id) {
         set_href('issue_user_to_link', `/users/${issue.user_id_issue}`);
         set_href('issue_user_by_link', `/users/${issue.user_id}`);
     })
-    .catch(err => console.log(err));
+    .catch(err => console.error(err));
 };
 window.addEventListener('load', function () {
     add_listener('reload', getIssues);

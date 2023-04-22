@@ -21,7 +21,7 @@ function getOrders() {
                         [{field: 'id', value: order.order_id}]
                     ).e});
                 } catch (error) {
-                    console.log(error);
+                    console.error(error);
                 };
             });
         });
@@ -44,7 +44,7 @@ function viewOrder(order_id) {
         set_href('btn_order_link',  `/orders/${order.order_id}`);
         set_href('order_user_link', `/users/${order.user_id}`);
     })
-    .catch(err => console.log(err));
+    .catch(err => console.error(err));
 };
 window.addEventListener('load', function () {
     add_listener('reload', getOrders);

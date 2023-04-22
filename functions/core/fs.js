@@ -106,7 +106,7 @@ module.exports = function (m, fn) {
 					{recursive: true},
 					err => {
 						if (err) {
-							console.log(err);
+							console.error(err);
 							reject(err);
 
 						} else {

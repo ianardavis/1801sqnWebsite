@@ -26,7 +26,7 @@ module.exports = function (m, fn) {
                 })
                 .catch(reject);
             } catch (err) {
-                console.log(err);
+                console.error(err);
                 reject(err);
             };
         });

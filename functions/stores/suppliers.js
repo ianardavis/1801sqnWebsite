@@ -72,13 +72,13 @@ module.exports = function (m, fn) {
                             resolve(true);
     
                         } else {
-                            console.log(`fn.suppliers.delete: Setting not deleted`);
+                            console.error(`fn.suppliers.delete: Setting not deleted`);
                             resolve(false);
                         
                         };
                     })
                     .catch(err => {
-                        console.log(err);
+                        console.error(err);
                         resolve(false);
                     });
                 })

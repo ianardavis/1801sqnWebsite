@@ -85,13 +85,13 @@ module.exports = function (m, fn) {
                 })
                 .then(([line, created]) => {
                     if (created) {
-                        resolve(line.line_id);
+                        resolve(line);
 
                     } else {
                         line.increment('qty', {by: options.qty})
                         .then(result => {
                             if (result) {
-                                resolve(line.line_id);
+                                resolve(line);
 
                             } else {
                                 reject(new Error('Existing scrap line not incremented'));
@@ -105,7 +105,7 @@ module.exports = function (m, fn) {
                 .catch(reject);
             })
             .catch(err => {
-                console.log(err);
+                console.error(err);
                 reject(new Error('Error doing pre scrap checks'));
             });
         });
@@ -144,14 +144,16 @@ module.exports = function (m, fn) {
                         .then(stock => {
                             fn.stocks.increment(
                                 stock,
-                                qty,
-                                {
-                                    text: `SCRAP LINE | CANCELLED | Qty: ${qty}`,
-                                    links: [{_table: 'scrap_lines', id: line.line_id}],
-                                    user_id: user_id
-                                }
+                                qty
                             )
-                            .then(result => resolve(line.scrap_id))
+                            .then(stock_link => {
+                                fn.actions.create([
+                                    `SCRAP LINE | CANCELLED | Qty: ${qty}`,
+                                    user_id,
+                                    [{_table: 'scrap_lines', id: line.line_id}].concat([stock_link])
+                                ])
+                                .then(action => resolve(line.scrap_id));
+                            })
                             .catch(reject);
                         })
                         .catch(reject);

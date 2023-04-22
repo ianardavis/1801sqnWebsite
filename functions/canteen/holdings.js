@@ -80,7 +80,7 @@ module.exports = function (m, fn) {
 					create_action(holding_id, `CREATED: Opening balance: £${Number(cash).toFixed(2)}`, user_id)
 					.then(result => resolve(true))
 					.catch(err => {
-						console.log(err);
+						console.error(err);
 						resolve(false);
 					});
 				})

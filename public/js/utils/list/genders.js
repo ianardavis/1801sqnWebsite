@@ -29,7 +29,7 @@ function listGenders(options = {}) {
 			});
 		})
 		.catch(err => {
-			console.log(err);
+			console.error(err);
 			resolve(false);
 		});
 	});
