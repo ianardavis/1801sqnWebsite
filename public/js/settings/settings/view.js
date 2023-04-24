@@ -78,6 +78,17 @@ window.addEventListener('load', function () {
     add_listener('reload', getOutLog);
     add_listener('reload', getPrinter);
     add_listener('reload', getSettings);
+    addFormListener(
+        'command',
+        'POST',
+        '/settings/command',
+        {
+            onComplete: [
+                getErrorLog,
+                getOutLog
+            ]
+        }
+    );
     modalOnShow('setting_view', function (event) {viewSetting(event.relatedTarget.dataset.id)});
     add_sort_listeners('settings', getSettings);
     getSettings();

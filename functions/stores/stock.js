@@ -159,16 +159,16 @@ module.exports = function (m, fn) {
         function create_scrap_line(stock) {
             return new Promise((resolve, reject) => {
                 fn.scraps.get_or_create(stock.size.supplier_id)
-                    .then(scrap => {
-                        fn.scraps.lines.create(
-                            scrap.scrap_id,
-                            stock.size_id,
-                            details
-                        )
-                        .then(scrap_line => resolve({_table: 'scrap_lines', id: scrap_line.line_id}))
-                        .catch(reject);
-                    })
+                .then(scrap => {
+                    fn.scraps.lines.create(
+                        scrap.scrap_id,
+                        stock.size_id,
+                        details
+                    )
+                    .then(scrap_line => resolve({_table: 'scrap_lines', id: scrap_line.line_id}))
                     .catch(reject);
+                })
+                .catch(reject);
             });
         };
         return new Promise((resolve, reject) => {

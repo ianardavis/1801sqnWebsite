@@ -55,17 +55,17 @@ module.exports = function (m, fn) {
     };
 
     fn.locations.find_or_create = function (location) {
-        return new Promise((resolve, reject) => {
-            if (location) {
-                m.locations.findOrCreate({where: {location: location}})
-                .then(([new_location, created]) => resolve(new_location))
-                .catch(reject);
+        if (location) {
+            return new Promise((resolve, reject) => {
+                    m.locations.findOrCreate({where: {location: location}})
+                    .then(([new_location, created]) => resolve(new_location))
+                    .catch(reject);
+            });
 
-            } else {
-                reject(new Error('No location specified'));
-                
-            };
-        });
+        } else {
+            return Promise.reject(new Error('No location specified'));
+            
+        };
     };
 
     fn.locations.edit = function (location_id, new_location) {

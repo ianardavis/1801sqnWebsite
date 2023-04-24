@@ -121,10 +121,12 @@ module.exports = function (m, fn) {
         return new Promise((resolve, reject) => {
             try {
                 const output = fn.run_cmd(command);
-                console.error(output);
+                console.log(output);
                 resolve(true);
+
             } catch (err) {
                 reject(err);
+                
             };
         });
     };

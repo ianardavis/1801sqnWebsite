@@ -75,6 +75,11 @@ module.exports = (app, fn) => {
         .then(result => res.send({success: true, message: 'App reloaded'}))
         .catch(err => fn.send_error(res, err));
     });
+    app.post('/settings/command', fn.loggedIn(), fn.permissions.check('access_settings'), (req, res) => {
+        fn.settings.run_command(req.body.command)
+        .then(result => res.send({success: true, message: 'Command run successfully'}))
+        .catch(err => fn.send_error(res, err));
+    });
     
     app.delete('/settings/:id', fn.loggedIn(), fn.permissions.check('access_settings'), (req, res) => {
         fn.settings.delete(req.params.id)
