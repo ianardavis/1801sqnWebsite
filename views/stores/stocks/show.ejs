@@ -13,7 +13,9 @@
         <%- include(`${partials}/button/modal/open`, {id: 'receipt_add',  text: 'Receive Stock', type: 'success', modal: 'receipt_add'}) %>
         <%- include(`${partials}/button/modal/open`, {id: 'count_add',    text: 'Count',         type: 'warning', modal: 'count_add'}) %>
         <%- include(`${partials}/button/modal/open`, {id: 'scrap_add',    text: 'Scrap',         type: 'danger',  modal: 'scrap_add'}) %>
-        <%- include(`${partials}/button/delete`) %>
+        <form id="form_delete" class="mt-auto">
+            <button id='btn_delete' type='button' class="btn btn-danger w-100" disabled>Delete</button>
+        </form>
     <%- include(`${partials}/sidebar/close`) %>
     <ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
         <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'stock'}) %>

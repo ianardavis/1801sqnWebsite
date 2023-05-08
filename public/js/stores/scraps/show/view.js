@@ -1,14 +1,14 @@
-let statuses = {"0": "Cancelled", "1": "Draft", "2": "Closed"};
+const statuses = {"0": "Cancelled", "1": "Draft", "2": "Closed"};
 function getScrap() {
-    disable_button('scrap_complete');
-    disable_button('scrap_file_print');
-    disable_button('scrap_file_download');
-    disable_button('scrap_file_delete');
-    get({
-        table: 'scrap',
-        where: {scrap_id: path[2]}
-    })
-    .then(function ([scrap, options]) {
+    function disable_all_buttons() {
+        disable_button('scrap_complete');
+        disable_button('scrap_file_print');
+        disable_button('scrap_file_download');
+        disable_button('scrap_file_delete');
+        disable_button('delete');
+        disable_button('lines_action');
+    };
+    function set_scrap_details([scrap, options]) {
         set_breadcrumb(`${scrap.supplier.name} | ${print_date(scrap.createdAt)}`);
         set_innerText('scrap_supplier',  scrap.supplier.name);
         set_innerText('scrap_createdAt', print_date(scrap.createdAt, true));
@@ -16,9 +16,13 @@ function getScrap() {
         set_innerText('scrap_status',    statuses[scrap.status]);
         set_innerText('scrap_filename',  scrap.filename || '');
         set_href('scrap_supplier_link', `/suppliers/${scrap.supplier_id}`);
+        return scrap;
+    };
+    function set_button_states(scrap) {
         if (scrap.status == 1) {
             enable_button('scrap_complete');
-            enable_button('scrap_delete');
+            enable_button('delete');
+            enable_button('lines_action');
         };
         if (scrap.status == 2) {
             enable_button('scrap_file_print');
@@ -30,20 +34,17 @@ function getScrap() {
             set_attribute('form_scrap_file_download', 'method');
             set_attribute('form_scrap_file_download', 'action');
         };
-        return scrap.status;
+    };
+    disable_all_buttons();
+    get({
+        table: 'scrap',
+        where: {scrap_id: path[2]}
     })
-    .then(status => {
-        if (typeof setDeleteButton === 'function') setDeleteButton(status);
-        if (typeof setActionButton === 'function') setActionButton(status);
-    });
+    .then(set_scrap_details)
+    .then(set_button_states);
 };
 window.addEventListener('load', function () {
     add_listener('reload', getScrap);
-    enable_button('scrap_complete');
-    enable_button('scrap_file_download');
-    enable_button('scrap_file_print');
-    enable_button('scrap_file_delete');
-    enable_button('delete');
     addFormListener(
         'scrap_file_print',
         'GET',

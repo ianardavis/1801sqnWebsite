@@ -6,14 +6,22 @@
 <section class='container'>
 	<%- include(`${partials}/sidebar/button`, {id: 'actions', text: 'Actions', float: true}) %>
 	<%- include(`${partials}/sidebar/open`, {id: 'actions', text: 'Actions'}) %>
-		<%- include(`${partials}/button/form`, {id: 'complete', text: 'Complete', colour: 'success'}) %>
-		<%- include(`${partials}/button/form`, {id: 'close', 	text: 'Close', 	  colour: 'warning'}) %>
-		<%- include(`${partials}/button/form`, {id: 'download', text: 'Download', colour: 'primary'}) %>
+		<form id="form_complete">
+			<button id='btn_complete' class="btn btn-success w-100 mb-1" disabled>Complete</button>
+		</form>
+		<form id="form_close">
+			<button id='btn_close' class="btn btn-warning w-100 mb-1" disabled>Close</button>
+		</form>
+		<form id="form_download">
+			<button id='btn_download' class="btn btn-primary w-100 mb-1" disabled>Download</button>
+		</form>
 		<button id="btn_action" class="btn btn-success w-100 mb-2" form='form_lines' disabled>
 			Action Lines
 		</button>
-		<%- include(`${partials}/button/form`, {id: 'delete', 	text: 'Cancel',	  colour: 'danger', align_bottom: true}) %>
-    <%- include(`${partials}/sidebar/close`) %>
+        <form id="form_delete" class="mt-auto">
+            <button id='btn_delete' type='button' class="btn btn-danger w-100" disabled>Cancel</button>
+        </form>
+	<%- include(`${partials}/sidebar/close`) %>
     <div class="row mb-1">
         <span class="badge text-bg-secondary w-33" id="bdg_status_1">Draft</span>
         <span class="badge text-bg-secondary w-33" id="bdg_status_2">Complete </span>

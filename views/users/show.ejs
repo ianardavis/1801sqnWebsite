@@ -11,12 +11,14 @@
         <%- include(`${partials}/button/modal/open`, {text: 'New Issue',                id: 'issue_add',         type: 'success'}) %>
         <%- include(`${partials}/button/modal/open`, {text: 'New Issue (Measurements)', id: 'issue_measurement', type: 'success'}) %>
         <%- include(`${partials}/button/modal/open`, {text: 'Action Lines',             id: 'issues_action',     type: 'warning'}) %>
-        <form action="" id="form_password_reset">
+        <form id="form_password_reset">
             <button class='btn btn-success w-100' id='btn_password_reset' disabled>
                 Toggle Change Password
             </button>
         </form>
-        <%- include(`${partials}/button/delete`) %>
+        <form id="form_delete" class="mt-auto">
+            <button id='btn_delete' type='button' class="btn btn-danger w-100" disabled>Delete</button>
+        </form>
     <%- include(`${partials}/sidebar/close`) %>
     <ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
         <%- include(`${partials}/tab_head`, {id: 'details',     spinner: 'user',        title: 'Details'}) %>

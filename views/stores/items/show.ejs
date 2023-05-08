@@ -9,7 +9,9 @@
         <%- include(`${partials}/button/modal/open`, {text: 'Edit',         id: 'item_edit',    type: 'warning', modal: 'item_edit'}) %>
         <%- include(`${partials}/button/modal/open`, {text: 'New Category', id: 'category_add', type: 'success', modal: 'category_add'}) %>
         <%- include(`${partials}/button/modal/open`, {text: 'New Size',     id: 'size_add',     type: 'success', modal: 'size_add'}) %>
-        <%- include(`${partials}/button/delete`) %>
+        <form id="form_delete" class="mt-auto">
+            <button id='btn_delete' type='button' class="btn btn-danger w-100" disabled>Delete</button>
+        </form>
     <%- include(`${partials}/sidebar/close`) %>
     <ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
         <%- include(`${partials}/tab_head`, {id: 'details',    title: 'Details',    spinner: 'item'}) %>

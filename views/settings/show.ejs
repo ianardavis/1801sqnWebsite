@@ -29,9 +29,9 @@
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="printers" role="tabpanel" aria-labelledby="printers-tab">
             <%- include(`${partials}/inputs/display`, {title: 'Printer', id: 'setting_printer'}) %>
-            <%- include(`${partials}/button/button`, {text: 'Find Printers', colour: 'primary', id: 'printers'}) %>
+            <button class='btn btn-primary mb-1 w-100' id='btn_printers'>Find Printers</button>
             <form id='form_printers'>
-                <%- include(`${partials}/button/button`, {text: 'Save Selected Printer', colour: 'success'}) %>
+                <button class='btn btn-success mb-1 w-100'>Save Selected Printer</button>
                 <table class="table table-sm table-hover">
                     <thead class="thead-dark">
                         <th><i class='fas fa-check'></i></th>
@@ -44,7 +44,7 @@
         <div class="tab-pane fade" id="logs" role="tabpanel" aria-labelledby="logs-tab">
             <form id="form_command">
                 <%- include(`${partials}/inputs/text`, {title: 'Command', name: 'command'}) %>
-                <%- include(`${partials}/button/button`, {text: 'Run Command'}) %>
+                <button class='btn btn-primary mb-1 w-100'>Run Command</button>
             </form>
             <ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
                 <%- include(`${partials}/tab_head`, {id: 'log-out',   title: 'Out',   spinner: 'log_out', active: true}) %>

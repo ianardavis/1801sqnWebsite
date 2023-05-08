@@ -18,8 +18,10 @@
 			</select>
 			<button class="btn btn-success" id='btn_mark_as' disabled><i class="fas fa-save"></i></button>
 		</form>
-    	<%- include(`${partials}/button/form`, {id: 'delete', text: 'Cancel', colour: 'danger', align_bottom: true}) %>
-	<%- include(`${partials}/sidebar/close`) %>
+        <form id="form_delete" class="mt-auto">
+            <button id='btn_delete' type='button' class="btn btn-danger w-100" disabled>Cancel</button>
+        </form>
+    <%- include(`${partials}/sidebar/close`) %>
     <div class="row mb-1">
         <span class="badge text-bg-secondary w-33" id="bdg_status_1">Placed</span>
         <span class="badge text-bg-secondary w-33" id="bdg_status_2">Added to Demand</span>

@@ -14,7 +14,9 @@
         <form id='form_set_default'>
             <button class='btn btn-success w-100' id='btn_default' disabled>Set Default</button>
         </form>
-        <%- include(`${partials}/button/delete`) %>
+        <form id="form_delete" class="mt-auto">
+            <button id='btn_delete' type='button' class="btn btn-danger w-100" disabled>Delete</button>
+        </form>
 	<%- include(`${partials}/sidebar/close`) %>
 
     <ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">

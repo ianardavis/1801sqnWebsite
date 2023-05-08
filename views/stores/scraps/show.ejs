@@ -6,13 +6,23 @@
 <section class='container'>
     <%- include(`${partials}/sidebar/button`, {id: 'actions', text: 'Actions', float: true}) %>
 	<%- include(`${partials}/sidebar/open`, {id: 'actions', text: 'Actions'}) %>
-		<%- include(`${partials}/button/form`, 	 {id: 'scrap_complete', 	 text: 'Complete', 		colour: 'success'}) %>
-		<%- include(`${partials}/button/form`, 	 {id: 'scrap_file_download', text: 'Download File', colour: 'success'}) %>
-		<%- include(`${partials}/button/form`, 	 {id: 'scrap_file_print', 	 text: 'Print File', 	colour: 'primary'}) %>
-		<%- include(`${partials}/button/form`, 	 {id: 'scrap_file_delete', 	 text: 'Delete File', 	colour: 'danger'}) %>
-		<%- include(`${partials}/button/button`, {id: 'lines_action', 		 text: 'Action Lines', 	colour: 'success'}) %>
-		<%- include(`${partials}/button/form`, 	 {id: 'delete', 			 text: 'Cancel', 		colour: 'danger', align_botton: true}) %>
-    <%- include(`${partials}/sidebar/close`) %>
+		<form id="form_scrap_complete">
+			<button id='btn_scrap_complete' class="btn btn-success w-100 mb-1" disabled>Complete</button>
+		</form>
+		<form id="form_scrap_file_download">
+			<button id='btn_scrap_file_download' class="btn btn-success w-100 mb-1" disabled>Download File</button>
+		</form>
+		<form id="form_scrap_file_print">
+			<button id='btn_scrap_file_print' class="btn btn-primary w-100 mb-1" disabled>Print File</button>
+		</form>
+		<form id="form_scrap_file_delete">
+			<button id='btn_scrap_file_delete' class="btn btn-danger w-100 mb-1" disabled>Delete File</button>
+		</form>
+		<button class='btn btn-success mb-1 w-100' id='btn_lines_action' disabled>Action Lines</button>
+        <form id="form_delete" class="mt-auto">
+            <button id='btn_delete' type='button' class="btn btn-danger w-100" disabled>Cancel</button>
+        </form>
+	<%- include(`${partials}/sidebar/close`) %>
 	<ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
         <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'scrap'}) %>
         <%- include(`${partials}/tab_head`, {id: 'lines',   title: 'Lines',	  spinner: 'scrap_lines', count_id: 'line'}) %>

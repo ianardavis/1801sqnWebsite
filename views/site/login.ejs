@@ -6,7 +6,7 @@
 			<input type="hidden" name='redirect' value='<%- redirect %>'>
             <%- include(`${partials}/inputs/text`, 	   {name: 'login_id', title: 'Username', required: true, autocomplete: 'username'}) %>
 			<%- include(`${partials}/inputs/password`, {name: 'password', title: 'Password'}) %>
-			<%- include(`${partials}/button/button`, {text: 'Log In', colour: 'success'}) %>
+			<button class='btn btn-success mb-1 w-100'>Log In</button>
 		</form>
 	</div>
 </div>
