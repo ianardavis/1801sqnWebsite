@@ -5,21 +5,21 @@
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/head/components/close`) %>
 <section class='container'>
-
     <%- include(`${partials}/sidebar/button`, {id: 'menu', text: 'Menu', float: true}) %>
     <%- include(`${partials}/sidebar/open`,   {id: 'menu', text: 'Menu'}) %>
-        <%- include(`${partials}/button/modal/open`, {text: 'Edit',               id: 'size_edit',   type: 'warning', modal: 'size_edit'}) %>
-        <%- include(`${partials}/button/modal/open`, {text: 'Add Detail',         id: 'detail_add',  type: 'success', modal: 'detail_add'}) %>
-        <%- include(`${partials}/button/modal/open`, {text: 'New NSN',            id: 'nsn_add',     type: 'success', modal: 'nsn_add',    classes: ['has_nsns_element']}) %>
-        <%- include(`${partials}/button/modal/open`, {text: 'New Serial',         id: 'serial_add',  type: 'success', modal: 'serial_add', classes: ['serial_element']}) %>
-        <%- include(`${partials}/button/modal/open`, {text: 'New Stock Location', id: 'stock_add',   type: 'success', modal: 'stock_add',  classes: ['stock_element']}) %>
-        <%- include(`${partials}/button/modal/open`, {text: 'Receive Stock',      id: 'receipt_add', type: 'success', modal: 'receipt_add'}) %>
-        <%- include(`${partials}/button/modal/open`, {text: 'New Order',          id: 'order_add',   type: 'success', modal: 'order_add',  classes: ['orderable_element']}) %>
-        <%- include(`${partials}/button/modal/open`, {text: 'New Issue',          id: 'issue_add',   type: 'success', modal: 'issue_add',  classes: ['issueable_element']}) %>
-        <form id="form_delete" class="mt-auto">
-            <button id='btn_delete' type='button' class="btn btn-danger w-100" disabled>Delete</button>
-        </form>
-    <%- include(`${partials}/sidebar/close`) %>
+            <%- include(`${partials}/button/modal/open`, {id: 'size_edit',   text: 'Edit',               type: 'warning'}) %>
+            <%- include(`${partials}/button/modal/open`, {id: 'detail_add',  text: 'Add Detail',         type: 'success'}) %>
+            <%- include(`${partials}/button/modal/open`, {id: 'nsn_add',     text: 'New NSN',            type: 'success', classes: ['has_nsns_element']}) %>
+            <%- include(`${partials}/button/modal/open`, {id: 'serial_add',  text: 'New Serial',         type: 'success', classes: ['serial_element']}) %>
+            <%- include(`${partials}/button/modal/open`, {id: 'stock_add',   text: 'New Stock Location', type: 'success', classes: ['stock_element']}) %>
+            <%- include(`${partials}/button/modal/open`, {id: 'receipt_add', text: 'Receive Stock',      type: 'success'}) %>
+            <%- include(`${partials}/button/modal/open`, {id: 'order_add',   text: 'New Order',          type: 'success', classes: ['orderable_element']}) %>
+            <%- include(`${partials}/button/modal/open`, {id: 'issue_add',   text: 'New Issue',          type: 'success', classes: ['issueable_element']}) %>
+            <form id="form_delete" class="mt-auto">
+                <button id='btn_delete' type='button' class="btn btn-danger w-100" disabled>Delete</button>
+            </form>
+        </div>
+    </div>
 
     <ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
         <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'size'}) %>
@@ -92,16 +92,17 @@
                     </div>
                 </div>
                 <%- include(`${partials}/sidebar/open`, {id: 'orders_filter', text: 'Filter Orders'}) %>
-                    <div class="input-group mb-1">
-                        <span class="input-group-text w-30">Status</span>
-                        <select id="sel_order_statuses" class="form-select" multiple size="4">
-                            <option value="0">Cancelled</option>
-                            <option value="1" selected>Placed</option>
-                            <option value="2" selected>Demanded</option>
-                            <option value="3">Received</option>
-                        </select>
+                        <div class="input-group mb-1">
+                            <span class="input-group-text w-30">Status</span>
+                            <select id="sel_order_statuses" class="form-select" multiple size="4">
+                                <option value="0">Cancelled</option>
+                                <option value="1" selected>Placed</option>
+                                <option value="2" selected>Demanded</option>
+                                <option value="3">Received</option>
+                            </select>
+                        </div>
                     </div>
-                <%- include(`${partials}/sidebar/close`) %>
+                </div>
                 <table class='table table-sm table-hover'>
                     <thead class='thead-dark' id="tbl_orders_head">
                         <th class='w-50' data-column='["createdAt"]'>Date</th>
@@ -121,18 +122,19 @@
                 </div>
             </div>
             <%- include(`${partials}/sidebar/open`, {id: 'issues_filter', text: 'Filter Issues'}) %>
-                <div class="input-group mb-1">
-                    <span class="input-group-text w-30">Status</span>
-                    <select id="sel_issue_statuses" class="form-select" multiple size="6">
-                        <option value="0">Cancelled</option>
-                        <option value="1" selected>Requested</option>
-                        <option value="2" selected>Approved </option>
-                        <option value="3" selected>Ordered  </option>
-                        <option value="4" selected>Issued   </option>
-                        <option value="5">Returned </option>
-                    </select>
+                    <div class="input-group mb-1">
+                        <span class="input-group-text w-30">Status</span>
+                        <select id="sel_issue_statuses" class="form-select" multiple size="6">
+                            <option value="0">Cancelled</option>
+                            <option value="1" selected>Requested</option>
+                            <option value="2" selected>Approved </option>
+                            <option value="3" selected>Ordered  </option>
+                            <option value="4" selected>Issued   </option>
+                            <option value="5">Returned </option>
+                        </select>
+                    </div>
                 </div>
-            <%- include(`${partials}/sidebar/close`) %>
+            </div>
             <table class='table table-sm table-hover'>
                 <thead class='thead-dark' id="tbl_issues_head">
 					<th class='w-20' data-column='["createdAt"]', data-dir="DESC">Date</th>
@@ -163,14 +165,14 @@
                         </span>
                     </div>
                     <div class="modal-body">
-                        <%- include(`${partials}/inputs/display`,  {title: 'Detail',  id: 'detail_name'}) %>
-                        <%- include(`${partials}/inputs/textarea`, {title: 'Value',   id: 'detail_value', readonly: true}) %>
-                        <%- include(`${partials}/inputs/display`,  {title: 'Created', id: 'detail_createdAt'}) %>
-                        <%- include(`${partials}/inputs/display`,  {title: 'Updated', id: 'detail_updatedAt'}) %>
+                        <%- include(`${partials}/inputs/display`,  {id: 'detail_name',      title: 'Detail'}) %>
+                        <%- include(`${partials}/inputs/textarea`, {id: 'detail_value',     title: 'Value', readonly: true}) %>
+                        <%- include(`${partials}/inputs/display`,  {id: 'detail_createdAt', title: 'Created'}) %>
+                        <%- include(`${partials}/inputs/display`,  {id: 'detail_updatedAt', title: 'Updated'}) %>
                     </div>
                     <div class="modal-footer">
                         <p class='me-auto'>ID: <span id='detail_id'></span></p>
-                        <%- include(`${partials}/button/modal/close`) %>
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>
@@ -184,16 +186,16 @@
                         <a id="btn_issue_link" class='btn btn-primary float-end'><i class="fas fa-search"></i></a>
                     </div>
                     <div class="modal-body">
-                        <%- include(`${partials}/inputs/display`, {title: 'Issued To', id: 'issue_user_to', link: true}) %>
-                        <%- include(`${partials}/inputs/display`, {title: 'Issued By', id: 'issue_user_by', link: true}) %>
-                        <%- include(`${partials}/inputs/display`, {title: 'Quantity',  id: 'issue_qty'}) %>
-                        <%- include(`${partials}/inputs/display`, {title: 'Status',    id: 'issue_status'}) %>
-                        <%- include(`${partials}/inputs/display`, {title: 'Issued',    id: 'issue_createdAt'}) %>
-                        <%- include(`${partials}/inputs/display`, {title: 'Updated',   id: 'issue_updatedAt'}) %>
+                        <%- include(`${partials}/inputs/display`, {id: 'issue_user_to',   title: 'Issued To', link: true}) %>
+                        <%- include(`${partials}/inputs/display`, {id: 'issue_user_by',   title: 'Issued By', link: true}) %>
+                        <%- include(`${partials}/inputs/display`, {id: 'issue_qty',       title: 'Quantity'}) %>
+                        <%- include(`${partials}/inputs/display`, {id: 'issue_status',    title: 'Status'}) %>
+                        <%- include(`${partials}/inputs/display`, {id: 'issue_createdAt', title: 'Issued'}) %>
+                        <%- include(`${partials}/inputs/display`, {id: 'issue_updatedAt', title: 'Updated'}) %>
                     </div>
                     <div class="modal-footer">
                         <p class='me-auto'>ID: <span id='issue_id'></span></p>
-                        <%- include(`${partials}/button/modal/close`) %>
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>
@@ -211,15 +213,15 @@
                         <a class='btn btn-primary float-end' id='btn_nsn_link'><i class="fas fa-search"></i></a>
                     </div>
                     <div class="modal-body">
-                        <%- include(`${partials}/inputs/display`, {id: 'nsn_group_id',   classes: ['text-start'], title: 'Group'}) %>
-                        <%- include(`${partials}/inputs/display`, {id: 'nsn_class_id',   classes: ['text-start'], title: 'Classification'}) %>
-                        <%- include(`${partials}/inputs/display`, {id: 'nsn_country_id', classes: ['text-start'], title: 'Country'}) %>
-                        <%- include(`${partials}/inputs/display`, {id: 'item_number',    classes: ['text-start'], title: 'Item Number'}) %>
-                        <%- include(`${partials}/inputs/display`, {id: '_default',       classes: ['text-start'], title: 'Is Default?'}) %>
+                        <%- include(`${partials}/inputs/display`, {id: 'nsn_group_id',   title: 'Group',          classes: ['text-start']}) %>
+                        <%- include(`${partials}/inputs/display`, {id: 'nsn_class_id',   title: 'Classification', classes: ['text-start']}) %>
+                        <%- include(`${partials}/inputs/display`, {id: 'nsn_country_id', title: 'Country',        classes: ['text-start']}) %>
+                        <%- include(`${partials}/inputs/display`, {id: 'item_number',    title: 'Item Number',    classes: ['text-start']}) %>
+                        <%- include(`${partials}/inputs/display`, {id: '_default',       title: 'Is Default?',    classes: ['text-start']}) %>
                     </div>
                     <div class="modal-footer">
                         <p class='me-auto'>ID: <span id='nsn_id'></span></p>
-                        <%- include(`${partials}/button/modal/close`) %>
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>
@@ -361,15 +363,15 @@
                             <a id="btn_order_link" class='btn btn-primary float-end'><i class="fas fa-search"></i></a>
                         </div>
                         <div class="modal-body">
-                            <%- include(`${partials}/inputs/display`, {title: 'Ordered By', id: 'order_user', link: true}) %>
-                            <%- include(`${partials}/inputs/display`, {title: 'Quantity',   id: 'order_qty'}) %>
-                            <%- include(`${partials}/inputs/display`, {title: 'Status',     id: 'order_status'}) %>
-                            <%- include(`${partials}/inputs/display`, {title: 'Ordered',    id: 'order_createdAt'}) %>
-                            <%- include(`${partials}/inputs/display`, {title: 'Updated',    id: 'order_updatedAt'}) %>
+                            <%- include(`${partials}/inputs/display`, {id: 'order_user',      title: 'Ordered By', link: true}) %>
+                            <%- include(`${partials}/inputs/display`, {id: 'order_qty',       title: 'Quantity'}) %>
+                            <%- include(`${partials}/inputs/display`, {id: 'order_status',    title: 'Status'}) %>
+                            <%- include(`${partials}/inputs/display`, {id: 'order_createdAt', title: 'Ordered'}) %>
+                            <%- include(`${partials}/inputs/display`, {id: 'order_updatedAt', title: 'Updated'}) %>
                         </div>
                         <div class="modal-footer">
                             <p class='me-auto'>ID: <span id='order_id'></span></p>
-                            <%- include(`${partials}/button/modal/close`) %>
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
                         </div>
                     </div>
                 </div>
@@ -386,7 +388,7 @@
                         </div>
                         <div class="modal-footer">
                             <input type="submit" class="btn btn-success w-100" value='Order'>
-                            <%- include(`${partials}/button/modal/close`) %>
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
                         </div>
                     </form>
                 </div>

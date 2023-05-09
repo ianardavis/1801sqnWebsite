@@ -10,17 +10,18 @@
 		</div>
 	</div>
 	<%- include(`${partials}/sidebar/open`, {id: 'filter', text: 'Filter'}) %>
-		<%- include(`${partials}/inputs/select`, {title: 'Filter By Supplier', id: 'filter_scrap_suppliers', spinner_id: 'suppliers', reload_id: 'reload_suppliers'}) %>
-		<div class="input-group mb-1">
-			<span class="input-group-text w-30">Status</span>
-			<select id="sel_scrap_statuses" class="form-select" multiple size="3">
-				<option value="0"		  >Cancelled</option>
-				<option value="1" selected>Draft	</option>
-				<option value="2"		  >Closed	</option>
-			</select>
+			<%- include(`${partials}/inputs/select`, {title: 'Filter By Supplier', id: 'filter_scrap_suppliers', spinner_id: 'suppliers', reload_id: 'reload_suppliers'}) %>
+			<div class="input-group mb-1">
+				<span class="input-group-text w-30">Status</span>
+				<select id="sel_scrap_statuses" class="form-select" multiple size="3">
+					<option value="0"		  >Cancelled</option>
+					<option value="1" selected>Draft	</option>
+					<option value="2"		  >Closed	</option>
+				</select>
+			</div>
+			<%- include(`${partials}/filter/date`, {table: 'scrap', field: 'createdAt'}) %>
 		</div>
-		<%- include(`${partials}/filter/date`, {table: 'scrap', field: 'createdAt'}) %>
-	<%- include(`${partials}/sidebar/close`) %>
+	</div>
 	<table class="table table-sm table-hover">
 		<thead class="thead-dark" id="tbl_scraps_head">
 			<th class='w-35' data-column='["createdAt"]' data-dir="DESC">Date</th>

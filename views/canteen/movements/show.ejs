@@ -11,13 +11,13 @@
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
-            <%- include(`${partials}/inputs/display`, {title: 'Description', id: 'movement_description'}) %>
-            <%- include(`${partials}/inputs/display`, {title: 'Type',        id: 'movement_type'}) %>
-            <%- include(`${partials}/inputs/display`, {title: 'Amount',      id: 'movement_amount'}) %>
-            <%- include(`${partials}/inputs/display`, {title: 'From',        id: 'movement_from', link: true}) %>
-            <%- include(`${partials}/inputs/display`, {title: 'To',          id: 'movement_to',   link: true}) %>
-            <%- include(`${partials}/inputs/display`, {title: 'By',          id: 'movement_user', link: true}) %>
-            <%- include(`${partials}/inputs/display`, {title: 'Date',        id: 'movement_createdAt'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'movement_description', title: 'Description'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'movement_type',        title: 'Type'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'movement_amount',      title: 'Amount'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'movement_from',        title: 'From', link: true}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'movement_to',          title: 'To',   link: true}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'movement_user',        title: 'By',   link: true}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'movement_createdAt',   title: 'Date'}) %>
         </div>
         <%- include(`${partials}/common/notes/tab_body`) %>
     </div>

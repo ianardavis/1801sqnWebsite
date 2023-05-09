@@ -6,11 +6,12 @@
 <section class='container'>
     <%- include(`${partials}/sidebar/button`, {id: 'actions', text: 'Actions', float: true}) %>
     <%- include(`${partials}/sidebar/open`, {id: 'actions', text: 'Actions'}) %>
-        <%- include(`${partials}/button/modal/open`, {id: 'location_edit', text: 'Edit', type: 'warning', modal: 'location_edit'}) %>
-        <form id="form_delete" class="mt-auto">
-            <button id='btn_delete' type='button' class="btn btn-danger w-100" disabled>Delete</button>
-        </form>
-    <%- include(`${partials}/sidebar/close`) %>
+            <%- include(`${partials}/button/modal/open`, {id: 'location_edit', text: 'Edit', type: 'warning'}) %>
+            <form id="form_delete" class="mt-auto">
+                <button id='btn_delete' type='button' class="btn btn-danger w-100" disabled>Delete</button>
+            </form>
+        </div>
+    </div>
     <ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
         <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'location'}) %>
         <%- include(`${partials}/tab_head`, {id: 'stocks',  title: 'Stock',   spinner: 'stocks',  count_id: 'stock'}) %>
@@ -86,7 +87,7 @@
                     </div>
                     <div class="modal-footer">
                         <p class='me-auto'>ID: <span id='stock_id'></span></p>
-                        <%- include(`${partials}/button/modal/close`) %>
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>
@@ -107,7 +108,7 @@
                     </div>
                     <div class="modal-footer">
                         <p class='me-auto'>ID: <span id='serial_id'></span></p>
-                        <%- include(`${partials}/button/modal/close`) %>
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>

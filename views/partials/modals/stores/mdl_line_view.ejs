@@ -7,12 +7,12 @@
                     <a id="btn_line_link" class='btn btn-primary float-end'><i class="fas fa-search"></i></a>
                 </div>
                 <div class="modal-body">
-                    <%- include(`${partials}/inputs/display`, {title: 'Item', 	   id: 'line_item', link: true}) %>
-                    <%- include(`${partials}/inputs/display`, {title: 'Size', 	   id: 'line_size', link: true}) %>
-                    <%- include(`${partials}/inputs/display`, {title: 'Quantity',  id: 'line_qty'}) %>
-                    <%- include(`${partials}/inputs/display`, {title: 'Raised by', id: 'line_user', link: true}) %>
-                    <%- include(`${partials}/inputs/display`, {title: 'Created',   id: 'line_createdAt'}) %>
-                    <%- include(`${partials}/inputs/display`, {title: 'Updated',   id: 'line_updatedAt'}) %>
+                    <%- include(`${partials}/inputs/display`, {id: 'line_item',      title: 'Item', 	 link: true}) %>
+                    <%- include(`${partials}/inputs/display`, {id: 'line_size',      title: 'Size', 	 link: true}) %>
+                    <%- include(`${partials}/inputs/display`, {id: 'line_qty',       title: 'Quantity'}) %>
+                    <%- include(`${partials}/inputs/display`, {id: 'line_user',      title: 'Raised by', link: true}) %>
+                    <%- include(`${partials}/inputs/display`, {id: 'line_createdAt', title: 'Created'}) %>
+                    <%- include(`${partials}/inputs/display`, {id: 'line_updatedAt', title: 'Updated'}) %>
                 </div>
                 <div class="modal-footer">
                     <p class='me-auto'>ID: <span id='<%= table.toLowerCase() %>_line_id'></span></p>

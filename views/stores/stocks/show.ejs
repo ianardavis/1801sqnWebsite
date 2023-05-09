@@ -8,15 +8,16 @@
 <section class='container'>
     <%- include(`${partials}/sidebar/button`, {id: 'actions', text: 'Actions', float: true}) %>
     <%- include(`${partials}/sidebar/open`, {id: 'actions', text: 'Actions'}) %>
-        <%- include(`${partials}/button/modal/open`, {id: 'transfer_add', text: 'Transfer',      type: 'success', modal: 'transfer_add'}) %>
-        <%- include(`${partials}/button/modal/open`, {id: 'stock_edit',   text: 'Edit',          type: 'warning', modal: 'stock_edit'}) %>
-        <%- include(`${partials}/button/modal/open`, {id: 'receipt_add',  text: 'Receive Stock', type: 'success', modal: 'receipt_add'}) %>
-        <%- include(`${partials}/button/modal/open`, {id: 'count_add',    text: 'Count',         type: 'warning', modal: 'count_add'}) %>
-        <%- include(`${partials}/button/modal/open`, {id: 'scrap_add',    text: 'Scrap',         type: 'danger',  modal: 'scrap_add'}) %>
-        <form id="form_delete" class="mt-auto">
-            <button id='btn_delete' type='button' class="btn btn-danger w-100" disabled>Delete</button>
-        </form>
-    <%- include(`${partials}/sidebar/close`) %>
+            <%- include(`${partials}/button/modal/open`, {id: 'transfer_add', text: 'Transfer',      type: 'success'}) %>
+            <%- include(`${partials}/button/modal/open`, {id: 'stock_edit',   text: 'Edit',          type: 'warning'}) %>
+            <%- include(`${partials}/button/modal/open`, {id: 'receipt_add',  text: 'Receive Stock', type: 'success'}) %>
+            <%- include(`${partials}/button/modal/open`, {id: 'count_add',    text: 'Count',         type: 'warning'}) %>
+            <%- include(`${partials}/button/modal/open`, {id: 'scrap_add',    text: 'Scrap',         type: 'danger'}) %>
+            <form id="form_delete" class="mt-auto">
+                <button id='btn_delete' type='button' class="btn btn-danger w-100" disabled>Delete</button>
+            </form>
+        </div>
+    </div>
     <ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
         <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'stock'}) %>
         <%- include(`${partials}/common/actions/tab_head`) %>
@@ -80,7 +81,7 @@
                         </div>
                         <div class="modal-footer">
                             <input type="submit"  class="btn btn-success w-100" value='Transfer'>
-                            <%- include(`${partials}/button/modal/close`) %>
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
                         </div>
                     </form>
                 </div>
@@ -96,7 +97,7 @@
                         </div>
                         <div class="modal-footer">
                             <input type="submit" class="btn btn-success w-100" value='Count Stock'>
-                            <%- include(`${partials}/button/modal/close`) %>
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
                         </div>
                     </form>
                 </div>
@@ -114,7 +115,7 @@
                         </div>
                         <div class="modal-footer">
                             <input type="submit" class="btn btn-success w-100" value='Scrap Stock'>
-                            <%- include(`${partials}/button/modal/close`) %>
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
                         </div>
                     </form>
                 </div>

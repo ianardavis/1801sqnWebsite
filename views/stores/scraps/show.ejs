@@ -6,23 +6,24 @@
 <section class='container'>
     <%- include(`${partials}/sidebar/button`, {id: 'actions', text: 'Actions', float: true}) %>
 	<%- include(`${partials}/sidebar/open`, {id: 'actions', text: 'Actions'}) %>
-		<form id="form_scrap_complete">
-			<button id='btn_scrap_complete' class="btn btn-success w-100 mb-1" disabled>Complete</button>
-		</form>
-		<form id="form_scrap_file_download">
-			<button id='btn_scrap_file_download' class="btn btn-success w-100 mb-1" disabled>Download File</button>
-		</form>
-		<form id="form_scrap_file_print">
-			<button id='btn_scrap_file_print' class="btn btn-primary w-100 mb-1" disabled>Print File</button>
-		</form>
-		<form id="form_scrap_file_delete">
-			<button id='btn_scrap_file_delete' class="btn btn-danger w-100 mb-1" disabled>Delete File</button>
-		</form>
-		<button class='btn btn-success mb-1 w-100' id='btn_lines_action' disabled>Action Lines</button>
-        <form id="form_delete" class="mt-auto">
-            <button id='btn_delete' type='button' class="btn btn-danger w-100" disabled>Cancel</button>
-        </form>
-	<%- include(`${partials}/sidebar/close`) %>
+			<form id="form_scrap_complete">
+				<button id='btn_scrap_complete' class="btn btn-success w-100 mb-1" disabled>Complete</button>
+			</form>
+			<form id="form_scrap_file_download">
+				<button id='btn_scrap_file_download' class="btn btn-success w-100 mb-1" disabled>Download File</button>
+			</form>
+			<form id="form_scrap_file_print">
+				<button id='btn_scrap_file_print' class="btn btn-primary w-100 mb-1" disabled>Print File</button>
+			</form>
+			<form id="form_scrap_file_delete">
+				<button id='btn_scrap_file_delete' class="btn btn-danger w-100 mb-1" disabled>Delete File</button>
+			</form>
+			<button class='btn btn-success mb-1 w-100' id='btn_lines_action' disabled>Action Lines</button>
+			<form id="form_delete" class="mt-auto">
+				<button id='btn_delete' type='button' class="btn btn-danger w-100" disabled>Cancel</button>
+			</form>
+		</div>
+	</div>
 	<ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
         <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'scrap'}) %>
         <%- include(`${partials}/tab_head`, {id: 'lines',   title: 'Lines',	  spinner: 'scrap_lines', count_id: 'line'}) %>
@@ -47,16 +48,17 @@
 				</div>
 			</div>
 			<%- include(`${partials}/sidebar/open`, {id: 'lines_filter', text: 'Filter Lines'}) %>
-				<div class="input-group mb-1">
-					<span class="input-group-text w-30">Status</span>
-					<select id="filter_scrap_line_statuses" class="form-select" multiple size="3">
-						<option value="0"		  >Cancelled</option>
-						<option value="1" selected>Pending	</option>
-						<option value="2" selected>Closed	</option>
-					</select>
+					<div class="input-group mb-1">
+						<span class="input-group-text w-30">Status</span>
+						<select id="filter_scrap_line_statuses" class="form-select" multiple size="3">
+							<option value="0"		  >Cancelled</option>
+							<option value="1" selected>Pending	</option>
+							<option value="2" selected>Closed	</option>
+						</select>
+					</div>
+					<%- include(`${partials}/filter/size`, {table: 'scrap_line'}) %>
 				</div>
-				<%- include(`${partials}/filter/size`, {table: 'scrap_line'}) %>
-			<%- include(`${partials}/sidebar/close`) %>
+			</div>
 			<form id='form_actions'>
 				<table class='table table-sm table-hover'>
 					<thead class='thead-dark' id="tbl_scrap_lines_head">

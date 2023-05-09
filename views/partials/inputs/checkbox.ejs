@@ -1,11 +1,13 @@
 <input
-    class="btn-check<% if (locals.classes) { classes.forEach(c => { %> <%= c %><% })} %>"
+    class="btn-check"
     type="checkbox"
-    <% if (locals.name)             { %>name='<%= name %>'<% } %>
-    <% if (locals.value)            { %>value='<%= value %>'<% } %>
-    <% if (locals.id)               { %>id='<%= id %>'<% } %>
-    <% if (locals.checked === true) { %>checked<% } %>
+    <% if (locals.name)  { %>name='<%= name %>'<% } %>
+    <% if (locals.value) { %>value='<%= value %>'<% } %>
+    <% if (locals.id)    { %>id='<%= id %>'<% } %>
 >
-<label class="btn btn-outline-<%= locals.colour || 'success' %> w-100 mb-1" <% if (locals.id) { %>for='<%= id %>'<% } %>>
+<label
+    class="btn btn-outline-success w-100 mb-1"
+    <% if (locals.id) { %>for='<%= id %>'<% } %>
+>
     <%= title %>
 </label>

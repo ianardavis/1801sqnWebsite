@@ -6,22 +6,23 @@
 <section class='container'>
     <%- include(`${partials}/sidebar/button`, {id: 'actions', text: 'Actions', float: true}) %>
 	<%- include(`${partials}/sidebar/open`, {id: 'actions', text: 'Actions'}) %>
-		<%- include(`${partials}/button/modal/open`, {text: 'Edit Size',     id: 'size_edit', type: 'warning'}) %>
-		<%- include(`${partials}/button/modal/open`, {text: 'Edit Quantity', id: 'qty_edit',  type: 'warning'}) %>
-		<form class="input-group mb-3" id='form_mark_as'>
-			<label class="input-group-text" for="sel_mark_as">Mark Order As:</label>
-			<select class="form-select" id="sel_mark_as" name='order[status]'>
-				<option value="0" id='btn_mark_0' disabled>Cancelled</option>
-				<option value="1" id='btn_mark_1' disabled>Placed</option>
-				<option value="2" id='btn_mark_2' disabled>Demanded</option>
-				<option value="3" id='btn_mark_3' disabled>Received</option>
-			</select>
-			<button class="btn btn-success" id='btn_mark_as' disabled><i class="fas fa-save"></i></button>
-		</form>
-        <form id="form_delete" class="mt-auto">
-            <button id='btn_delete' type='button' class="btn btn-danger w-100" disabled>Cancel</button>
-        </form>
-    <%- include(`${partials}/sidebar/close`) %>
+            <%- include(`${partials}/button/modal/open`, {id: 'size_edit', text: 'Edit Size',     type: 'warning'}) %>
+            <%- include(`${partials}/button/modal/open`, {id: 'qty_edit',  text: 'Edit Quantity', type: 'warning'}) %>
+            <form class="input-group mb-3" id='form_mark_as'>
+                <label class="input-group-text" for="sel_mark_as">Mark Order As:</label>
+                <select class="form-select" id="sel_mark_as" name='order[status]'>
+                    <option value="0" id='btn_mark_0' disabled>Cancelled</option>
+                    <option value="1" id='btn_mark_1' disabled>Placed</option>
+                    <option value="2" id='btn_mark_2' disabled>Demanded</option>
+                    <option value="3" id='btn_mark_3' disabled>Received</option>
+                </select>
+                <button class="btn btn-success" id='btn_mark_as' disabled><i class="fas fa-save"></i></button>
+            </form>
+            <form id="form_delete" class="mt-auto">
+                <button id='btn_delete' type='button' class="btn btn-danger w-100" disabled>Cancel</button>
+            </form>
+        </div>
+    </div>
     <div class="row mb-1">
         <span class="badge text-bg-secondary w-33" id="bdg_status_1">Placed</span>
         <span class="badge text-bg-secondary w-33" id="bdg_status_2">Added to Demand</span>

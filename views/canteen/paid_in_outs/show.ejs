@@ -21,15 +21,15 @@
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
-            <%- include(`${partials}/inputs/display`, {title: 'In/Out',     id: 'paid_in_out_paid_in'}) %>
-            <%- include(`${partials}/inputs/display`, {title: 'Holding',    id: 'paid_in_out_holding',          link: true}) %>
-            <%- include(`${partials}/inputs/display`, {title: 'To/From',    id: 'paid_in_out_user_paid_in_out', link: true}) %>
-            <%- include(`${partials}/inputs/display`, {title: 'Amount',     id: 'paid_in_out_amount'}) %>
-            <%- include(`${partials}/inputs/display`, {title: 'Reason',     id: 'paid_in_out_reason'}) %>
-            <%- include(`${partials}/inputs/display`, {title: 'Status',     id: 'paid_in_out_status'}) %>
-            <%- include(`${partials}/inputs/display`, {title: 'Entered By', id: 'paid_in_out_user',             link: true}) %>
-            <%- include(`${partials}/inputs/display`, {title: 'Entered',    id: 'paid_in_out_createdAt'}) %>
-            <%- include(`${partials}/inputs/display`, {title: 'Updated',    id: 'paid_in_out_updatedAt'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'paid_in_out_paid_in',          title: 'In/Out'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'paid_in_out_holding',          title: 'Holding',    link: true}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'paid_in_out_user_paid_in_out', title: 'To/From',    link: true}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'paid_in_out_amount',           title: 'Amount'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'paid_in_out_reason',           title: 'Reason'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'paid_in_out_status',           title: 'Status'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'paid_in_out_user',             title: 'Entered By', link: true}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'paid_in_out_createdAt',        title: 'Entered'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'paid_in_out_updatedAt',        title: 'Updated'}) %>
         </div>
         <%- include(`${partials}/common/actions/tab_body`) %>
         <%- include(`${partials}/common/notes/tab_body`) %>

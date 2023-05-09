@@ -5,18 +5,18 @@
                 <h5 class="modal-title">Movement</h5>
             </div>
             <div class="modal-body">
-                <%- include(`${partials}/inputs/display`, {title: 'Created',      id: 'movement_createdAt'}) %>
-                <%- include(`${partials}/inputs/display`, {title: 'Description',  id: 'movement_description'}) %>
-                <%- include(`${partials}/inputs/display`, {title: 'Type',         id: 'movement_type'}) %>
-                <%- include(`${partials}/inputs/display`, {title: 'Amount',       id: 'movement_amount'}) %>
-                <%- include(`${partials}/inputs/display`, {title: 'From',         id: 'movement_from'}) %>
-                <%- include(`${partials}/inputs/display`, {title: 'To',           id: 'movement_to'}) %>
-                <%- include(`${partials}/inputs/display`, {title: 'By',           id: 'movement_user'}) %>
-                <%- include(`${partials}/inputs/display`, {title: 'Confirmed By', id: 'movement_user_confirm'}) %>
+                <%- include(`${partials}/inputs/display`, {id: 'movement_createdAt',    title: 'Created'}) %>
+                <%- include(`${partials}/inputs/display`, {id: 'movement_description',  title: 'Description'}) %>
+                <%- include(`${partials}/inputs/display`, {id: 'movement_type',         title: 'Type'}) %>
+                <%- include(`${partials}/inputs/display`, {id: 'movement_amount',       title: 'Amount'}) %>
+                <%- include(`${partials}/inputs/display`, {id: 'movement_from',         title: 'From'}) %>
+                <%- include(`${partials}/inputs/display`, {id: 'movement_to',           title: 'To'}) %>
+                <%- include(`${partials}/inputs/display`, {id: 'movement_user',         title: 'By'}) %>
+                <%- include(`${partials}/inputs/display`, {id: 'movement_user_confirm', title: 'Confirmed By'}) %>
             </div>
             <div class="modal-footer">
                 <p class='me-auto'>ID: <span id='movement_id'></span></p>
-                <%- include(`${partials}/button/modal/close`) %>
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>

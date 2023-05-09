@@ -9,10 +9,11 @@
 		</div>
 	</div>
 	<%- include(`${partials}/sidebar/open`, {id: 'filter', text: 'Filter Users'}) %>
-		<%- include(`${partials}/button/modal/open`, {text: 'New User', id: 'user_add', type: 'success'}) %>
-		<%- include(`${partials}/inputs/select`, {title: 'Statuses', id: 'sel_statuses', spinner_id: 'statuses', reload_id: 'reload_statuses', multiple: true, size: 4}) %>
-		<%- include(`${partials}/inputs/select`, {title: 'Ranks', 	 id: 'sel_ranks',    spinner_id: 'ranks', 	 reload_id: 'reload_ranks',    multiple: true, size: 10}) %>
-	<%- include(`${partials}/sidebar/close`) %>
+			<%- include(`${partials}/button/modal/open`, {id: 'user_add', text: 'New User', type: 'success'}) %>
+			<%- include(`${partials}/inputs/select`, 	 {id: 'sel_statuses', title: 'Statuses', spinner_id: 'statuses', reload_id: 'reload_statuses', multiple: true, size: 4}) %>
+			<%- include(`${partials}/inputs/select`, 	 {id: 'sel_ranks',    title: 'Ranks', 	 spinner_id: 'ranks', 	 reload_id: 'reload_ranks',    multiple: true, size: 10}) %>
+		</div>
+	</div>
 	<table class="table table-sm table-hover">
 		<thead class="thead-dark" id="tbl_users_head">
 			<th class='w-20' data-column='["service_number"]'		 >Bader/Service #</th>
@@ -42,7 +43,7 @@
 						</div>
 						<div class="modal-footer">
 							<input type="submit" id='save_user' class="btn btn-success w-100" value='Save User' disabled>
-							<%- include(`${partials}/button/modal/close`) %>
+							<button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
 						</div>
 					</form>
 				</div>

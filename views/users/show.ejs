@@ -5,21 +5,22 @@
 <section class="container">
     <%- include(`${partials}/sidebar/button`, {id: 'actions', text: 'Actions', float: true}) %>
     <%- include(`${partials}/sidebar/open`, {id: 'actions', text: 'Actions'}) %>
-        <%- include(`${partials}/button/modal/open`, {text: 'Edit User',                id: 'user_edit',         type: 'warning'}) %>
-        <%- include(`${partials}/button/modal/open`, {text: 'Edit Permissions',         id: 'permissions_edit',  type: 'warning'}) %>
-        <%- include(`${partials}/button/modal/open`, {text: 'Change Password',          id: 'user_password',     type: 'warning'}) %>
-        <%- include(`${partials}/button/modal/open`, {text: 'New Issue',                id: 'issue_add',         type: 'success'}) %>
-        <%- include(`${partials}/button/modal/open`, {text: 'New Issue (Measurements)', id: 'issue_measurement', type: 'success'}) %>
-        <%- include(`${partials}/button/modal/open`, {text: 'Action Lines',             id: 'issues_action',     type: 'warning'}) %>
-        <form id="form_password_reset">
-            <button class='btn btn-success w-100' id='btn_password_reset' disabled>
-                Toggle Change Password
-            </button>
-        </form>
-        <form id="form_delete" class="mt-auto">
-            <button id='btn_delete' type='button' class="btn btn-danger w-100" disabled>Delete</button>
-        </form>
-    <%- include(`${partials}/sidebar/close`) %>
+            <%- include(`${partials}/button/modal/open`, {id: 'user_edit',         text: 'Edit User',                type: 'warning'}) %>
+            <%- include(`${partials}/button/modal/open`, {id: 'permissions_edit',  text: 'Edit Permissions',         type: 'warning'}) %>
+            <%- include(`${partials}/button/modal/open`, {id: 'user_password',     text: 'Change Password',          type: 'warning'}) %>
+            <%- include(`${partials}/button/modal/open`, {id: 'issue_add',         text: 'New Issue',                type: 'success'}) %>
+            <%- include(`${partials}/button/modal/open`, {id: 'issue_measurement', text: 'New Issue (Measurements)', type: 'success'}) %>
+            <%- include(`${partials}/button/modal/open`, {id: 'issues_action',     text: 'Action Lines',             type: 'warning'}) %>
+            <form id="form_password_reset">
+                <button class='btn btn-success w-100' id='btn_password_reset' disabled>
+                    Toggle Change Password
+                </button>
+            </form>
+            <form id="form_delete" class="mt-auto">
+                <button id='btn_delete' type='button' class="btn btn-danger w-100" disabled>Delete</button>
+            </form>
+        </div>
+    </div>
     <ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
         <%- include(`${partials}/tab_head`, {id: 'details',     spinner: 'user',        title: 'Details'}) %>
         <%- include(`${partials}/tab_head`, {id: 'permissions', spinner: 'permissions', title: 'Permissions', count_id: 'permission', permission: 'user_admin'}) %>
@@ -82,38 +83,39 @@
                 </div>
             </div>
             <%- include(`${partials}/sidebar/open`, {id: 'issues_filter', text: 'Filter Issues'}) %>
-                <div class="input-group mb-1">
-                    <span class="input-group-text w-30">Status</span>
-                    <select id="sel_issue_statuses" class="form-select" multiple size="6">
-                        <option value="0">Cancelled</option>
-                        <option value="1" selected>Requested</option>
-                        <option value="2" selected>Approved </option>
-                        <option value="3" selected>Ordered  </option>
-                        <option value="4" selected>Issued   </option>
-                        <option value="5">Returned </option>
-                    </select>
+                    <div class="input-group mb-1">
+                        <span class="input-group-text w-30">Status</span>
+                        <select id="sel_issue_statuses" class="form-select" multiple size="6">
+                            <option value="0">Cancelled</option>
+                            <option value="1" selected>Requested</option>
+                            <option value="2" selected>Approved </option>
+                            <option value="3" selected>Ordered  </option>
+                            <option value="4" selected>Issued   </option>
+                            <option value="5">Returned </option>
+                        </select>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <h5 class='text-start'>Date From:</h5>
+                            <input type="date" class='form-control' id='issue_createdAt_from'>
+                        </div>
+                        <div class="col-sm-6">
+                            <h5 class='text-start'>Date To:</h5>
+                            <input type="date" class='form-control' id='issue_createdAt_to'>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <h5 class='text-start'>Item:</h5>
+                            <input type="text" class='form-control' id='item'>
+                        </div>
+                        <div class="col-sm-12">
+                            <h5 class='text-start'>Size:</h5>
+                            <input type="text" class='form-control' id='size'>
+                        </div>
+                    </div>
                 </div>
-                <div class="row">
-                    <div class="col-sm-6">
-                        <h5 class='text-start'>Date From:</h5>
-                        <input type="date" class='form-control' id='issue_createdAt_from'>
-                    </div>
-                    <div class="col-sm-6">
-                        <h5 class='text-start'>Date To:</h5>
-                        <input type="date" class='form-control' id='issue_createdAt_to'>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-12">
-                        <h5 class='text-start'>Item:</h5>
-                        <input type="text" class='form-control' id='item'>
-                    </div>
-                    <div class="col-sm-12">
-                        <h5 class='text-start'>Size:</h5>
-                        <input type="text" class='form-control' id='size'>
-                    </div>
-                </div>
-            <%- include(`${partials}/sidebar/close`) %>
+            </div>
             <% if (permissions.issuer) { %><form id='form_issue_edit'><% } %>
 	        <table class='table table-sm table-hover'>
                 <thead class="thead-dark" id="tbl_issues_head">
@@ -146,26 +148,27 @@
                 </div>
             </div>
             <%- include(`${partials}/sidebar/open`, {id: 'loancards_filter', text: 'Filter Loancards'}) %>
-                <div class="input-group mb-1">
-                    <span class="input-group-text w-30">Status</span>
-                    <select id="sel_loancard_statuses" class="form-select" multiple size="4">
-                        <option value="0">Cancelled</option>
-                        <option value="1" selected>Draft</option>
-                        <option value="2" selected>Open </option>
-                        <option value="3">Closed  </option>
-                    </select>
-                </div>
-                <div class="row">
-                    <div class="col-sm-6">
-                        <h5 class='text-start'>Date From:</h5>
-                        <input type="date" class='form-control' id='loancard_createdAt_from'>
+                    <div class="input-group mb-1">
+                        <span class="input-group-text w-30">Status</span>
+                        <select id="sel_loancard_statuses" class="form-select" multiple size="4">
+                            <option value="0">Cancelled</option>
+                            <option value="1" selected>Draft</option>
+                            <option value="2" selected>Open </option>
+                            <option value="3">Closed  </option>
+                        </select>
                     </div>
-                    <div class="col-sm-6">
-                        <h5 class='text-start'>Date To:</h5>
-                        <input type="date" class='form-control' id='loancard_createdAt_to'>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <h5 class='text-start'>Date From:</h5>
+                            <input type="date" class='form-control' id='loancard_createdAt_from'>
+                        </div>
+                        <div class="col-sm-6">
+                            <h5 class='text-start'>Date To:</h5>
+                            <input type="date" class='form-control' id='loancard_createdAt_to'>
+                        </div>
                     </div>
                 </div>
-            <%- include(`${partials}/sidebar/close`) %>
+            </div>
 	        <table class='table table-sm table-hover'>
                 <thead class="thead-dark" id="tbl_loancards_head">
                     <th class="w-40" data-column='["createdAt"]' data-dir="DESC">Date</th>
@@ -209,8 +212,8 @@
                             <h5 class="modal-title">Edit Giftaid Record</h5>
                         </div>
                         <div class="modal-body">
-                            <%- include(`${partials}/inputs/date`, {title: 'Start Date', name: 'giftaid[startDate]', id: 'giftaid_edit_start', required: true}) %>
-                            <%- include(`${partials}/inputs/date`, {title: 'End Date',   name: 'giftaid[endDate]',   id: 'giftaid_edit_end'}) %>
+                            <%- include(`${partials}/inputs/date`, {id: 'giftaid_edit_start', title: 'Start Date', name: 'giftaid[startDate]'}) %>
+                            <%- include(`${partials}/inputs/date`, {id: 'giftaid_edit_end',   title: 'End Date',   name: 'giftaid[endDate]'}) %>
                         </div>
                         <div class="modal-footer">
                             <%- include(`${partials}/button/save`) %>
@@ -239,10 +242,10 @@
                         </span>
                     </div>
                     <div class="modal-body">
-                        <%- include(`${partials}/inputs/display`, {title: 'Start Date', id: 'giftaid_view_startDate'}) %>
-                        <%- include(`${partials}/inputs/display`, {title: 'End Date',   id: 'giftaid_view_endDate'}) %>
-                        <%- include(`${partials}/inputs/display`, {title: 'Created',    id: 'giftaid_view_createdAt'}) %>
-                        <%- include(`${partials}/inputs/display`, {title: 'Updated',    id: 'giftaid_view_updatedAt'}) %>
+                        <%- include(`${partials}/inputs/display`, {id: 'giftaid_view_startDate', title: 'Start Date'}) %>
+                        <%- include(`${partials}/inputs/display`, {id: 'giftaid_view_endDate',   title: 'End Date'}) %>
+                        <%- include(`${partials}/inputs/display`, {id: 'giftaid_view_createdAt', title: 'Created'}) %>
+                        <%- include(`${partials}/inputs/display`, {id: 'giftaid_view_updatedAt', title: 'Updated'}) %>
                     </div>
                     <div class="modal-footer">
                         <%- include(`${partials}/button/save`) %>
@@ -261,7 +264,7 @@
                     </div>
                     <div class="modal-footer">
                         <input type="submit" id='save_password' class="btn btn-success w-100" value='Save Password' disabled>
-                        <%- include(`${partials}/button/modal/close`) %>
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
                     </div>
                 </form>
             </div>

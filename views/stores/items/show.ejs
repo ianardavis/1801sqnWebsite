@@ -6,13 +6,14 @@
 <section class='container'>
     <%- include(`${partials}/sidebar/button`, {id: 'menu', text: 'Menu', float: true}) %>
     <%- include(`${partials}/sidebar/open`, {id: 'menu', text: 'Menu'}) %>
-        <%- include(`${partials}/button/modal/open`, {text: 'Edit',         id: 'item_edit',    type: 'warning', modal: 'item_edit'}) %>
-        <%- include(`${partials}/button/modal/open`, {text: 'New Category', id: 'category_add', type: 'success', modal: 'category_add'}) %>
-        <%- include(`${partials}/button/modal/open`, {text: 'New Size',     id: 'size_add',     type: 'success', modal: 'size_add'}) %>
-        <form id="form_delete" class="mt-auto">
-            <button id='btn_delete' type='button' class="btn btn-danger w-100" disabled>Delete</button>
-        </form>
-    <%- include(`${partials}/sidebar/close`) %>
+            <%- include(`${partials}/button/modal/open`, {id: 'item_edit',    text: 'Edit',         type: 'warning'}) %>
+            <%- include(`${partials}/button/modal/open`, {id: 'category_add', text: 'New Category', type: 'success'}) %>
+            <%- include(`${partials}/button/modal/open`, {id: 'size_add',     text: 'New Size',     type: 'success'}) %>
+            <form id="form_delete" class="mt-auto">
+                <button id='btn_delete' type='button' class="btn btn-danger w-100" disabled>Delete</button>
+            </form>
+        </div>
+    </div>
     <ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
         <%- include(`${partials}/tab_head`, {id: 'details',    title: 'Details',    spinner: 'item'}) %>
         <%- include(`${partials}/tab_head`, {id: 'categories', title: 'Categories', spinner: 'categories', count_id: 'category'}) %>
@@ -74,15 +75,15 @@
                         </span>
                     </div>
                     <div class="modal-body">
-                        <%- include(`${partials}/inputs/display`, {title: 'Category', id: 'category_category'}) %>
-                        <%- include(`${partials}/inputs/display`, {title: 'Created',  id: 'category_createdAt'}) %>
+                        <%- include(`${partials}/inputs/display`, {id: 'category_category',  title: 'Category'}) %>
+                        <%- include(`${partials}/inputs/display`, {id: 'category_createdAt', title: 'Created'}) %>
                     </div>
                     <div class="modal-footer">
                         <p class='me-auto text-start'>
                             Category ID: <span id='category_id'></span><br>
                             Link ID: <span id='item_category_id'></span>
                         </p>
-						<%- include(`${partials}/button/modal/close`) %>
+						<button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>

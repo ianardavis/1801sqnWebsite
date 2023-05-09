@@ -28,7 +28,7 @@
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="printers" role="tabpanel" aria-labelledby="printers-tab">
-            <%- include(`${partials}/inputs/display`, {title: 'Printer', id: 'setting_printer'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'setting_printer', title: 'Printer'}) %>
             <button class='btn btn-primary mb-1 w-100' id='btn_printers'>Find Printers</button>
             <form id='form_printers'>
                 <button class='btn btn-success mb-1 w-100'>Save Selected Printer</button>
@@ -140,14 +140,14 @@
                         </span>
                     </div>
                     <div class="modal-body">
-                        <%- include(`${partials}/inputs/display`, {title: 'Name',    id: 'setting_name'}) %>
-                        <%- include(`${partials}/inputs/display`, {title: 'Value',   id: 'setting_value'}) %>
-                        <%- include(`${partials}/inputs/display`, {title: 'Created', id: 'setting_createdAt'}) %>
-                        <%- include(`${partials}/inputs/display`, {title: 'Updated', id: 'setting_updatedAt'}) %>
+                        <%- include(`${partials}/inputs/display`, {id: 'setting_name',      title: 'Name'}) %>
+                        <%- include(`${partials}/inputs/display`, {id: 'setting_value',     title: 'Value'}) %>
+                        <%- include(`${partials}/inputs/display`, {id: 'setting_createdAt', title: 'Created'}) %>
+                        <%- include(`${partials}/inputs/display`, {id: 'setting_updatedAt', title: 'Updated'}) %>
                     </div>
                     <div class="modal-footer">
                         <p class='me-auto'>ID: <span id='setting_id'></span></p>
-                        <%- include(`${partials}/button/modal/close`) %>
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>
@@ -197,16 +197,16 @@
                     </span>
                     </div>
                     <div class="modal-body">
-                        <%- include(`${partials}/inputs/display`, {title: 'Heading', id: 'link_heading'}) %>
-                        <%- include(`${partials}/inputs/display`, {title: 'Title',   id: 'link_title'}) %>
-                        <%- include(`${partials}/inputs/display`, {title: 'Text',    id: 'link_text'}) %>
-                        <%- include(`${partials}/inputs/display`, {title: 'URL',     id: 'link_href'}) %>
-                        <%- include(`${partials}/inputs/display`, {title: 'Created', id: 'link_createdAt'}) %>
-                        <%- include(`${partials}/inputs/display`, {title: 'Updated', id: 'link_updatedAt'}) %>
+                        <%- include(`${partials}/inputs/display`, {id: 'link_heading',   title: 'Heading'}) %>
+                        <%- include(`${partials}/inputs/display`, {id: 'link_title',     title: 'Title'}) %>
+                        <%- include(`${partials}/inputs/display`, {id: 'link_text',      title: 'Text'}) %>
+                        <%- include(`${partials}/inputs/display`, {id: 'link_href',      title: 'URL'}) %>
+                        <%- include(`${partials}/inputs/display`, {id: 'link_createdAt', title: 'Created'}) %>
+                        <%- include(`${partials}/inputs/display`, {id: 'link_updatedAt', title: 'Updated'}) %>
                     </div>
                     <div class="modal-footer">
                     <p class='me-auto'>ID: <span id='resource_link_id'></span></p>
-                    <%- include(`${partials}/button/modal/close`) %>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>
@@ -261,13 +261,13 @@
                         </span>
                         </div>
                         <div class="modal-body">
-                            <%- include(`${partials}/inputs/display`, {title: 'Gender',  id: 'gender_gender'}) %>
-                            <%- include(`${partials}/inputs/display`, {title: 'Created', id: 'gender_createdAt'}) %>
-                            <%- include(`${partials}/inputs/display`, {title: 'Updated', id: 'gender_updatedAt'}) %>
+                            <%- include(`${partials}/inputs/display`, {id: 'gender_gender',    title: 'Gender'}) %>
+                            <%- include(`${partials}/inputs/display`, {id: 'gender_createdAt', title: 'Created'}) %>
+                            <%- include(`${partials}/inputs/display`, {id: 'gender_updatedAt', title: 'Updated'}) %>
                         </div>
                         <div class="modal-footer">
                         <p class='me-auto'>ID: <span id='gender_id'></span></p>
-                        <%- include(`${partials}/button/modal/close`) %>
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
                         </div>
                     </div>
                 </div>
@@ -317,15 +317,15 @@
                             </span>
                         </div>
                         <div class="modal-body">
-                            <%- include(`${partials}/inputs/display`, {title: 'Name',    id: 'account_name'}) %>
-                            <%- include(`${partials}/inputs/display`, {title: 'Number',  id: 'account_number'}) %>
-                            <%- include(`${partials}/inputs/display`, {title: 'Owner',   id: 'account_user', link: true}) %>
-                            <%- include(`${partials}/inputs/display`, {title: 'Created', id: 'account_createdAt'}) %>
-                            <%- include(`${partials}/inputs/display`, {title: 'Updated', id: 'account_updatedAt'}) %>
+                            <%- include(`${partials}/inputs/display`, {id: 'account_name',      title: 'Name'}) %>
+                            <%- include(`${partials}/inputs/display`, {id: 'account_number',    title: 'Number'}) %>
+                            <%- include(`${partials}/inputs/display`, {id: 'account_user',      title: 'Owner', link: true}) %>
+                            <%- include(`${partials}/inputs/display`, {id: 'account_createdAt', title: 'Created'}) %>
+                            <%- include(`${partials}/inputs/display`, {id: 'account_updatedAt', title: 'Updated'}) %>
                         </div>
                         <div class="modal-footer">
                         <p class='me-auto'>ID: <span id='account_id'></span></p>
-                        <%- include(`${partials}/button/modal/close`) %>
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
                         </div>
                     </div>
                 </div>
@@ -379,13 +379,13 @@
                             </span>
                         </div>
                         <div class="modal-body">
-                            <%- include(`${partials}/inputs/display`, {title: 'Parent',   id: 'parent'}) %>
-                            <%- include(`${partials}/inputs/display`, {title: 'Category', id: 'category'}) %>
-                            <%- include(`${partials}/inputs/display`, {title: 'Created',  id: 'createdAt_category'}) %>
-                            <%- include(`${partials}/inputs/display`, {title: 'Updated',  id: 'updatedAt_category'}) %>
+                            <%- include(`${partials}/inputs/display`, {id: 'parent',             title: 'Parent'}) %>
+                            <%- include(`${partials}/inputs/display`, {id: 'category',           title: 'Category'}) %>
+                            <%- include(`${partials}/inputs/display`, {id: 'createdAt_category', title: 'Created'}) %>
+                            <%- include(`${partials}/inputs/display`, {id: 'updatedAt_category', title: 'Updated'}) %>
                         </div>
                         <div class="modal-footer">
-                        <%- include(`${partials}/button/modal/close`) %>
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
                         </div>
                     </div>
                 </div>

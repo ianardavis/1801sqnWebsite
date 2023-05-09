@@ -5,23 +5,6 @@
             class="form-control mb-0<% if (locals.classes) { locals.classes.forEach(e => {%> <%= e %><% })%><% } %>"
             <% if (locals.id)   { %>id='<%= id %>'<% } %>
         ></p>
-        <% if (locals.edit) { %>
-            <button
-                type='button'
-                class='btn btn-warning'
-                id='<%= id %>_edit'
-                <% if (edit.modal) { %>
-                    data-bs-toggle="modal"
-                    data-bs-target="#mdl_<%= edit.modal %>"
-                <% } %>
-                <% if (edit.tip) { %>
-                    data-bs-toggle='tooltip'
-                    title='<%= edit.tip %>'
-                <% } %>
-            >
-                <i class="fas fa-pencil-alt"></i>
-            </button>
-        <% } %>
         <% if (locals.link) { %>
             <a
                 class='btn btn-primary'

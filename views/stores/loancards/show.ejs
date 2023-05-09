@@ -6,20 +6,22 @@
 <section class='container'>
     <%- include(`${partials}/sidebar/button`, {id: 'actions', text: 'Actions', float: true}) %>
 	<%- include(`${partials}/sidebar/open`, {id: 'actions', text: 'Actions'}) %>
-		<%- include(`${partials}/button/modal/open`, {id: 'loancard_complete', text: 'Complete', type: 'success'}) %>
-		<form id="form_loancard_file_download">
-			<button id='btn_loancard_file_download' class="btn btn-success w-100 mb-1" disabled>Download File</button>
-		</form>
-		<form id="form_loancard_file_print">
-			<button id='btn_loancard_file_print' class="btn btn-primary w-100 mb-1" disabled>Print File</button>
-		</form>
-		<form id="form_loancard_file_delete">
-			<button id='btn_loancard_file_delete' class="btn btn-danger w-100 mb-1" disabled>Delete File</button>
-		</form>
-		<form id="form_delete" class="mt-auto">
-            <button id='btn_delete' type='button' class="btn btn-danger w-100" disabled>Cancel</button>
-        </form>
-    <%- include(`${partials}/sidebar/close`) %>
+			<%- include(`${partials}/button/modal/open`, {id: 'loancard_complete', text: 'Complete',	  type: 'success'}) %>
+			<%- include(`${partials}/button/modal/open`, {id: 'due_edit', 		   text: 'Edit Due Date', type: 'warning'}) %>
+			<form id="form_loancard_file_download">
+				<button id='btn_loancard_file_download' class="btn btn-success w-100 mb-1" disabled>Download File</button>
+			</form>
+			<form id="form_loancard_file_print">
+				<button id='btn_loancard_file_print' class="btn btn-primary w-100 mb-1" disabled>Print File</button>
+			</form>
+			<form id="form_loancard_file_delete">
+				<button id='btn_loancard_file_delete' class="btn btn-danger w-100 mb-1" disabled>Delete File</button>
+			</form>
+			<form id="form_delete" class="mt-auto">
+				<button id='btn_delete' type='button' class="btn btn-danger w-100" disabled>Cancel</button>
+			</form>
+		</div>
+	</div>
 	<ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
         <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'loancard'}) %>
         <%- include(`${partials}/tab_head`, {id: 'lines',   title: 'Lines',	  spinner: 'loancard_lines', count_id: 'line'}) %>
@@ -28,9 +30,9 @@
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
-			<%- include(`${partials}/inputs/display`, {id: 'loancard_user_loancard', title: 'User',  	 link: true}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'loancard_user_loancard', title: 'User', link: true}) %>
 			<%- include(`${partials}/inputs/display`, {id: 'loancard_createdAt', 	 title: 'Date'}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'loancard_date_due', 	 title: 'Date Due',  edit:{modal: 'due_edit'}}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'loancard_date_due', 	 title: 'Date Due'}) %>
 			<%- include(`${partials}/inputs/display`, {id: 'loancard_updatedAt', 	 title: 'Last Updated'}) %>
 			<%- include(`${partials}/inputs/display`, {id: 'loancard_status',   	 title: 'Status'}) %>
 			<div class="input-group mb-1">
@@ -76,7 +78,7 @@
 						</div>
 						<div class="modal-footer">
 							<button class="btn btn-success w-100">Complete</button>
-							<%- include(`${partials}/button/modal/close`) %>
+							<button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
 						</div>
 					</form>
 				</div>

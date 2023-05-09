@@ -6,22 +6,23 @@
 <section class='container'>
 	<%- include(`${partials}/sidebar/button`, {id: 'actions', text: 'Actions', float: true}) %>
 	<%- include(`${partials}/sidebar/open`, {id: 'actions', text: 'Actions'}) %>
-		<form id="form_complete">
-			<button id='btn_complete' class="btn btn-success w-100 mb-1" disabled>Complete</button>
-		</form>
-		<form id="form_close">
-			<button id='btn_close' class="btn btn-warning w-100 mb-1" disabled>Close</button>
-		</form>
-		<form id="form_download">
-			<button id='btn_download' class="btn btn-primary w-100 mb-1" disabled>Download</button>
-		</form>
-		<button id="btn_action" class="btn btn-success w-100 mb-2" form='form_lines' disabled>
-			Action Lines
-		</button>
-        <form id="form_delete" class="mt-auto">
-            <button id='btn_delete' type='button' class="btn btn-danger w-100" disabled>Cancel</button>
-        </form>
-	<%- include(`${partials}/sidebar/close`) %>
+			<form id="form_complete">
+				<button id='btn_complete' class="btn btn-success w-100 mb-1" disabled>Complete</button>
+			</form>
+			<form id="form_close">
+				<button id='btn_close' class="btn btn-warning w-100 mb-1" disabled>Close</button>
+			</form>
+			<form id="form_download">
+				<button id='btn_download' class="btn btn-primary w-100 mb-1" disabled>Download</button>
+			</form>
+			<button id="btn_action" class="btn btn-success w-100 mb-2" form='form_lines' disabled>
+				Action Lines
+			</button>
+			<form id="form_delete" class="mt-auto">
+				<button id='btn_delete' type='button' class="btn btn-danger w-100" disabled>Cancel</button>
+			</form>
+		</div>
+	</div>
     <div class="row mb-1">
         <span class="badge text-bg-secondary w-33" id="bdg_status_1">Draft</span>
         <span class="badge text-bg-secondary w-33" id="bdg_status_2">Complete </span>
@@ -49,16 +50,17 @@
                 </div>
             </div>
             <%- include(`${partials}/sidebar/open`, {id: 'demand_lines', text: 'Filter Lines'}) %>
-				<div class="input-group mb-1">
-					<span class="input-group-text w-30">Status</span>
-					<select id="sel_lines_statuses" class="form-select" multiple size="4">
-						<option value="0"		  >Cancelled</option>
-						<option value="1" selected>Pending	</option>
-						<option value="2" selected>Open		</option>
-						<option value="3"		  >Received	</option>
-					</select>
+					<div class="input-group mb-1">
+						<span class="input-group-text w-30">Status</span>
+						<select id="sel_lines_statuses" class="form-select" multiple size="4">
+							<option value="0"		  >Cancelled</option>
+							<option value="1" selected>Pending	</option>
+							<option value="2" selected>Open		</option>
+							<option value="3"		  >Received	</option>
+						</select>
+					</div>
 				</div>
-			<%- include(`${partials}/sidebar/close`) %>
+			</div>
 
 	        <form id='form_lines'>
 				<table class='table table-sm table-hover'>

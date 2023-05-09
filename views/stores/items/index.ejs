@@ -6,12 +6,13 @@
 <section class='container'>
     <%- include(`${partials}/sidebar/button`, {id: 'menu', text: 'Menu', float: true}) %>
     <%- include(`${partials}/sidebar/open`, {id: 'menu', text: 'Menu'}) %>
-		<h5>Filter</h5>
-		<%- include(`${partials}/inputs/select`, {id: 'sel_genders', 	  title: 'Genders', spinner_id: 'genders', reload_id: 'reload_genders', multiple: true, size: '3'}) %>
-		<%- include(`${partials}/inputs/text`,   {id: 'item_description', title: 'Description'}) %>
-		<h5>Actions</h5>
-		<%- include(`${partials}/button/modal/open`, {text: 'New Item', id: 'item_add', type: 'success'}) %>
-	<%- include(`${partials}/sidebar/close`) %>
+			<h5>Filter</h5>
+			<%- include(`${partials}/inputs/select`, {id: 'sel_genders', 	  title: 'Genders', spinner_id: 'genders', reload_id: 'reload_genders', multiple: true, size: '3'}) %>
+			<%- include(`${partials}/inputs/text`,   {id: 'item_description', title: 'Description'}) %>
+			<h5>Actions</h5>
+			<%- include(`${partials}/button/modal/open`, {id: 'item_add', text: 'New Item', type: 'success'}) %>
+		</div>
+	</div>
 
 	<div class='row'>
 		<div class='col-12 col-lg-5 mx-auto'>

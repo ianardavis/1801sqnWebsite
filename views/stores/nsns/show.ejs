@@ -6,11 +6,12 @@
 <section class='container'>
     <%- include(`${partials}/sidebar/button`, {id: 'actions', text: 'Actions', float: true}) %>
     <%- include(`${partials}/sidebar/open`, {id: 'actions', text: 'Actions'}) %>
-        <%- include(`${partials}/button/modal/open`, {text: 'Edit', id: 'nsn_edit', type: 'warning', modal: 'nsn_edit'}) %>
-        <form id="form_delete" class="mt-auto">
-            <button id='btn_delete' type='button' class="btn btn-danger w-100" disabled>Delete</button>
-        </form>
-    <%- include(`${partials}/sidebar/close`) %>
+            <%- include(`${partials}/button/modal/open`, {id: 'nsn_edit', text: 'Edit', type: 'warning'}) %>
+            <form id="form_delete" class="mt-auto">
+                <button id='btn_delete' type='button' class="btn btn-danger w-100" disabled>Delete</button>
+            </form>
+        </div>
+    </div>
     <ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
         <%- include(`${partials}/tab_head`, {id: 'details',   title: 'Details',   spinner: 'nsn'}) %>
         <%- include(`${partials}/tab_head`, {id: 'loancards', title: 'Loancards', spinner: 'loancards', count_id: 'loancard'}) %>
@@ -72,28 +73,28 @@
                     </div>
                     <div class="modal-body">
                         <h5>Loancard</h5>
-                        <%- include(`${partials}/inputs/display`, {title: 'Issued To',  id: 'loancard_user_to', link: true}) %>
-                        <%- include(`${partials}/inputs/display`, {title: 'Issued By',  id: 'loancard_user_by', link: true}) %>
-                        <%- include(`${partials}/inputs/display`, {title: 'Status',     id: 'loancard_status'}) %>
-                        <%- include(`${partials}/inputs/display`, {title: 'Due Back',   id: 'loancard_date_due'}) %>
-                        <%- include(`${partials}/inputs/display`, {title: 'Created',    id: 'loancard_createdAt'}) %>
-                        <%- include(`${partials}/inputs/display`, {title: 'Updated',    id: 'loancard_updatedAt'}) %>
+                        <%- include(`${partials}/inputs/display`, {id: 'loancard_user_to',   title: 'Issued To',  link: true}) %>
+                        <%- include(`${partials}/inputs/display`, {id: 'loancard_user_by',   title: 'Issued By',  link: true}) %>
+                        <%- include(`${partials}/inputs/display`, {id: 'loancard_status',    title: 'Status'}) %>
+                        <%- include(`${partials}/inputs/display`, {id: 'loancard_date_due',  title: 'Due Back'}) %>
+                        <%- include(`${partials}/inputs/display`, {id: 'loancard_createdAt', title: 'Created'}) %>
+                        <%- include(`${partials}/inputs/display`, {id: 'loancard_updatedAt', title: 'Updated'}) %>
                         <h5>Line</h5>
-                        <%- include(`${partials}/inputs/display`, {title: 'Quantity',   id: 'loancard_line_qty'}) %>
-                        <%- include(`${partials}/inputs/display`, {title: 'Item',       id: 'loancard_line_item',   link: true}) %>
-                        <%- include(`${partials}/inputs/display`, {title: 'Size',       id: 'loancard_line_size',   link: true}) %>
-                        <%- include(`${partials}/inputs/display`, {title: 'Serial #',   id: 'loancard_line_serial', link: true}) %>
-                        <%- include(`${partials}/inputs/display`, {title: 'Status',     id: 'loancard_line_status'}) %>
-                        <%- include(`${partials}/inputs/display`, {title: 'Created By', id: 'loancard_line_user',   link: true}) %>
-                        <%- include(`${partials}/inputs/display`, {title: 'Created',    id: 'loancard_line_createdAt'}) %>
-                        <%- include(`${partials}/inputs/display`, {title: 'Updated',    id: 'loancard_line_updatedAt'}) %>
+                        <%- include(`${partials}/inputs/display`, {id: 'loancard_line_qty',       title: 'Quantity'}) %>
+                        <%- include(`${partials}/inputs/display`, {id: 'loancard_line_item',      title: 'Item',       link: true}) %>
+                        <%- include(`${partials}/inputs/display`, {id: 'loancard_line_size',      title: 'Size',       link: true}) %>
+                        <%- include(`${partials}/inputs/display`, {id: 'loancard_line_serial',    title: 'Serial #',   link: true}) %>
+                        <%- include(`${partials}/inputs/display`, {id: 'loancard_line_status',    title: 'Status'}) %>
+                        <%- include(`${partials}/inputs/display`, {id: 'loancard_line_user',      title: 'Created By', link: true}) %>
+                        <%- include(`${partials}/inputs/display`, {id: 'loancard_line_createdAt', title: 'Created'}) %>
+                        <%- include(`${partials}/inputs/display`, {id: 'loancard_line_updatedAt', title: 'Updated'}) %>
                     </div>
                     <div class="modal-footer">
                         <p class='me-auto text-start'>
                             Loancard ID: <span id='loancard_id'></span><br>
                             Line ID: <span id='loancard_line_id'></span>
                         </p>
-                        <%- include(`${partials}/button/modal/close`) %>
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>

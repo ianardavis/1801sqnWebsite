@@ -7,9 +7,10 @@
 
     <%- include(`${partials}/sidebar/button`, {id: 'actions', text: 'Actions', float: true}) %>
 	<%- include(`${partials}/sidebar/open`,   {id: 'actions', text: 'Actions'}) %>
-		<input class='form-control w-100 mb-1' type='text' id='inp_supplier_name' placeholder='Filter by name...'>
-		<%- include(`${partials}/button/modal/open`, {id: 'supplier_add', text: 'Add Supplier', type: 'success'}) %>
-	<%- include(`${partials}/sidebar/close`) %>
+			<input class='form-control w-100 mb-1' type='text' id='inp_supplier_name' placeholder='Filter by name...'>
+			<%- include(`${partials}/button/modal/open`, {id: 'supplier_add', text: 'Add Supplier', type: 'success'}) %>
+		</div>
+	</div>
 
 	<div class='menu row' id="tbl_suppliers"></div>
 

@@ -10,18 +10,19 @@
 		</div>
 	</div>
 	<%- include(`${partials}/sidebar/open`, {id: 'demands', text: 'Filter'}) %>
-		<%- include(`${partials}/filter/supplier`, {table: 'demands'}) %>
-		<div class="input-group mb-1">
-			<span class="input-group-text w-30">Status</span>
-			<select id="sel_demand_statuses" class="form-select" multiple size="4">
-				<option value="0">Cancelled</option>
-				<option value="1" selected>Draft</option>
-				<option value="2" selected>Complete</option>
-				<option value="3">Closed  </option>
-			</select>
+			<%- include(`${partials}/filter/supplier`, {table: 'demands'}) %>
+			<div class="input-group mb-1">
+				<span class="input-group-text w-30">Status</span>
+				<select id="sel_demand_statuses" class="form-select" multiple size="4">
+					<option value="0">Cancelled</option>
+					<option value="1" selected>Draft</option>
+					<option value="2" selected>Complete</option>
+					<option value="3">Closed  </option>
+				</select>
+			</div>
+			<%- include(`${partials}/filter/date`, {table: 'demands', field: 'createdAt'}) %>
 		</div>
-		<%- include(`${partials}/filter/date`, {table: 'demands', field: 'createdAt'}) %>
-	<%- include(`${partials}/sidebar/close`) %>
+	</div>
 	<table class="table table-sm table-hover">
 		<thead class="thead-dark" id='tbl_demands_head'>
 			<th class='w-30' data-column='["createdAt"]' data-dir='ASC'>Date</th>
