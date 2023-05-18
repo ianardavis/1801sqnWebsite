@@ -24,6 +24,10 @@
 			</form>
 		</div>
 	</div>
+    <div class="row mb-1">
+        <span class="badge text-bg-secondary w-50" id="bdg_status_1">Draft</span>
+        <span class="badge text-bg-secondary w-50" id="bdg_status_2">Closed</span>
+    </div>
 	<ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
         <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'scrap'}) %>
         <%- include(`${partials}/tab_head`, {id: 'lines',   title: 'Lines',	  spinner: 'scrap_lines', count_id: 'line'}) %>

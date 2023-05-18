@@ -22,6 +22,11 @@
 			</form>
 		</div>
 	</div>
+    <div class="row mb-1">
+        <span class="badge text-bg-secondary w-33" id="bdg_status_1">Draft</span>
+        <span class="badge text-bg-secondary w-33" id="bdg_status_2">Complete</span>
+        <span class="badge text-bg-secondary w-34" id="bdg_status_3">Closed</span>
+    </div>
 	<ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
         <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'loancard'}) %>
         <%- include(`${partials}/tab_head`, {id: 'lines',   title: 'Lines',	  spinner: 'loancard_lines', count_id: 'line'}) %>
@@ -34,7 +39,6 @@
 			<%- include(`${partials}/inputs/display`, {id: 'loancard_createdAt', 	 title: 'Date'}) %>
 			<%- include(`${partials}/inputs/display`, {id: 'loancard_date_due', 	 title: 'Date Due'}) %>
 			<%- include(`${partials}/inputs/display`, {id: 'loancard_updatedAt', 	 title: 'Last Updated'}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'loancard_status',   	 title: 'Status'}) %>
 			<div class="input-group mb-1">
 				<span class="input-group-text w-30">Filename</span>
 				<p class="form-control mb-0" id='loancard_filename'></p>

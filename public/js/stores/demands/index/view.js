@@ -1,7 +1,6 @@
 let demand_statuses = {"0": "Cancelled", "1": "Draft", "2": "Complete", "3":"Closed"};
 function getDemands() {
-    clear('tbl_demands')
-    .then(tbl_demands => {
+    function demand_query() {
         let where = {},
             gt    = null,
             lt    = null,
@@ -13,12 +12,17 @@ function getDemands() {
         if (supplier  && supplier .value !== '') where.supplier_id = supplier.value;
         if (date_from && date_from.value !== '') gt = {column: 'createdAt', value: date_from.value};
         if (date_to   && date_to  .value !== '') lt = {column: 'createdAt', value: date_to  .value};
+        return {
+            where: where,
+            gt:    gt,
+            lt:    lt
+        };
+    };
+    clear('tbl_demands')
+    .then(tbl_demands => {
         get({
             table: 'demands',
-            where: where,
-            gt: gt,
-            lt: lt,
-            // ...build_filter_query('demands'),
+            ...demand_query(),
             func: getDemands
         })
         .then(function ([result, options]) {
@@ -52,8 +56,7 @@ function getSuppliers() {
         blank_text: 'All',
         id_only: true
     })
-    .then(result => getDemands())
-    .catch(err =>   getDemands())
+    .finally(() => getDemands());
 };
 window.addEventListener('load', function () {
     add_listener('reload', getDemands);

@@ -1,4 +1,12 @@
-const statuses = {'-3': 'Cancelled (Ordered)', '-2': 'Cancelled (Approved)', '1': 'Requested', '2': 'Approved', '3': 'Ordered', '4': 'Added To Loancard', '5': 'Returned'};
+const statuses = {
+    '-3': 'Cancelled (Ordered)',
+    '-2': 'Cancelled (Approved)',
+     '1': 'Requested',
+     '2': 'Approved',
+     '3': 'Ordered',
+     '4': 'Added To Loancard',
+     '5': 'Returned'
+};
 function getIssues() {
     clear('tbl_issues')
     .then(tbl_issues => {

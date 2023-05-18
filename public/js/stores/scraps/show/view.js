@@ -8,14 +8,31 @@ function getScrap() {
         disable_button('delete');
         disable_button('lines_action');
     };
-    function set_scrap_details([scrap, options]) {
+    function display_details([scrap, options]) {
         set_breadcrumb(`${scrap.supplier.name} | ${print_date(scrap.createdAt)}`);
         set_innerText('scrap_supplier',  scrap.supplier.name);
         set_innerText('scrap_createdAt', print_date(scrap.createdAt, true));
         set_innerText('scrap_updatedAt', print_date(scrap.updatedAt, true));
-        set_innerText('scrap_status',    statuses[scrap.status]);
         set_innerText('scrap_filename',  scrap.filename || '');
+        return scrap;
+    };
+    function set_links(scrap) {
         set_href('scrap_supplier_link', `/suppliers/${scrap.supplier_id}`);
+        return scrap;
+    };
+    function set_status_badges(scrap) {
+        clear_statuses(3, statuses);
+        if ([0, 1, 2, 3].includes(scrap.status)) {
+            if (scrap.status === 0) {
+                set_badge(1, 'danger', 'Cancelled');
+
+            } else {
+                set_badge(1, 'success');
+                if (scrap.status > 1) {
+                    set_badge(2, 'success');
+                };
+            };
+        };
         return scrap;
     };
     function set_button_states(scrap) {
@@ -34,15 +51,20 @@ function getScrap() {
             set_attribute('form_scrap_file_download', 'method');
             set_attribute('form_scrap_file_download', 'action');
         };
+        return scrap;
     };
+    
     disable_all_buttons();
     get({
         table: 'scrap',
         where: {scrap_id: path[2]}
     })
-    .then(set_scrap_details)
+    .then(display_details)
+    .then(set_links)
+    .then(set_status_badges)
     .then(set_button_states);
 };
+
 window.addEventListener('load', function () {
     add_listener('reload', getScrap);
     addFormListener(

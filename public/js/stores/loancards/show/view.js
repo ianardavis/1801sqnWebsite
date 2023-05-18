@@ -1,13 +1,36 @@
-let statuses = {"0": "Cancelled", "1": "Draft", "2": "Complete", "3": "Closed"};
+const statuses = {"0": "Cancelled", "1": "Draft", "2": "Complete", "3": "Closed"};
 function getLoancard() {
-    disable_button('loancard_complete');
-    disable_button('delete');
-    disable_button('download');
-    disable_button('print');
-    disable_button('loancard_file_print');
-    disable_button('loancard_file_download');
-    disable_button('loancard_file_delete');
-    disable_button('loancard_date_due_edit');
+    function set_status_badges(status) {
+        clear_statuses(3, statuses);
+        if ([0, 1, 2, 3].includes(status)) {
+            if (status === 0) {
+                set_badge(1, 'danger', 'Cancelled');
+
+            } else {
+                set_badge(1, 'success');
+                if (status > 1) {
+                    set_badge(2, 'success');
+                };
+                if (status > 2) {
+                    set_badge(3, 'success');
+                };
+            };
+        };
+    };
+    function disable_all_buttons() {
+        [
+            'loancard_complete',
+            'delete',
+            'download',
+            'print',
+            'loancard_file_print',
+            'loancard_file_download',
+            'loancard_file_delete',
+            'loancard_date_due_edit'
+        ].forEach(button => disable_button(button));
+    };
+
+    disable_all_buttons();
     get({
         table: 'loancard',
         where: {loancard_id: path[2]}
@@ -19,7 +42,6 @@ function getLoancard() {
         set_innerText('loancard_createdAt',     print_date(loancard.createdAt, true));
         set_innerText('loancard_date_due',      print_date(loancard.date_due));
         set_innerText('loancard_updatedAt',     print_date(loancard.updatedAt, true));
-        set_innerText('loancard_status',        statuses[loancard.status]);
         set_innerText('loancard_filename',      loancard.filename || '')
         set_href('loancard_user_loancard_link', `/users/${loancard.user_id_loancard}`);
         set_href('loancard_user_link',          `/users/${loancard.user_id}`);
@@ -36,6 +58,8 @@ function getLoancard() {
             set_attribute('form_loancard_file_download', 'method');
             set_attribute('form_loancard_file_download', 'action');
         };
+
+        set_status_badges(loancard.status);
         return loancard.status;
     })
     .then(status => {

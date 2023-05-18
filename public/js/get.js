@@ -78,8 +78,8 @@ function get(options) {
     return new Promise((resolve, reject) => {
         show_spinner(options.spinner || options.table || '');
         const XHR = new XMLHttpRequest();
-        XHR.addEventListener("loadend", (event) => {hide_spinner(options.spinner || options.table || '')});
-        XHR.addEventListener("error", function () {reject()});
+        XHR.addEventListener("loadend", (event) => hide_spinner(options.spinner || options.table || ''));
+        XHR.addEventListener("error",   (event) => reject());
 
         if (options.streamAction) {
             XHR.addEventListener("load", get_stream(options.streamAction));

@@ -1,5 +1,4 @@
 window.addEventListener( "load", function () {
-    setDeleteButton();
     addFormListener(
         'delete',
         'DELETE',
@@ -12,13 +11,3 @@ window.addEventListener( "load", function () {
         }
     );
 });
-function setDeleteButton() {
-    get({
-        table: 'demand',
-        where: {demand_id: path[2]}
-    })
-    .then(function([demand, options]) {
-        if ([1, 2].includes(demand.status)) enable_button('delete')
-        else                                disable_button('delete');
-    });
-};

@@ -251,9 +251,9 @@ function add_page_links(count, limit, offset, table, func) {
             func();
         };
         if (!offset) offset = 0;
-        limit = Number(limit || 0);
+        limit  = Number(limit  || 0);
         offset = Number(offset || 0);
-        count = Number(count);
+        count  = Number(count);
         let max = limit * (Number(offset) + 1);
         if (max > count) max = count;
         set_innerText(`${table}_page_low`, (limit * offset) + 1);
@@ -387,8 +387,11 @@ function div_details(id, index) {
         data: [{field: 'index', value: index}]
     }).e;
 };
+function redirect_on_error(err, path) {
+    alert(err);
+    window.location.assign(path);
+};
 window.addEventListener('load', function() {
-
     let headers = [];
     if (path[1]) headers.push(toProperCase(path[1]));
     headers.push('1801 (Alnwick) Sqn ATC');

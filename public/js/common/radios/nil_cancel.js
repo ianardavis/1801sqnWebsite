@@ -1,8 +1,4 @@
 function nil_radio(id, index){
-    function clear_details() {
-        let div_details = document.querySelector(`#details_${id}`);
-        if (div_details) div_details.innerHTML = '';
-    };
     return new Radio({
         id:      `nil_${id}`,
         classes: ['radio_nil'],
@@ -15,7 +11,7 @@ function nil_radio(id, index){
             {field: 'data-id', value: id},
             {field: 'checked', value: true}
         ],
-        listener: {event: 'input', func: clear_details}
+        listener: {event: 'input', func: function () {clear(`details_${id}`)}}
     }).e;
 };
 function cancel_radio(id, index, func = null, value = '0') {

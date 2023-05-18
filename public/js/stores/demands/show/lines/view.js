@@ -1,69 +1,72 @@
-let line_statuses = {'0': 'Cancelled', '1': 'Pending', '2': 'Open', '3': 'Closed'};
-function getLines() {
+let line_statuses = {'0': 'Cancelled', '1': 'Pending', '2': 'Open', '3': 'Received'};
+function get_lines() {
+    function line_query() {
+        let where = {demand_id: path[2]};
+        const statuses = getSelectedOptions('sel_lines_statuses');
+        if (statuses.length > 0) where.status = statuses;
+        return where;
+    };
+    function add_row(tbl_lines, line, index) {
+        try {
+            let row = tbl_lines.insertRow(-1);
+            const qty = sum_order_qtys(line.orders);
+            add_cell(row, {text: line.size.item.description});
+            add_cell(row, {
+                text: print_size(line.size),
+                append: [new Hidden_Input({
+                    attributes:[
+                        {field: 'name',  value: `lines[][${index}][demand_line_id]`},
+                        {field: 'value', value: line.demand_line_id},
+                    ]
+                }).e]
+            });
+            add_cell(row, {text: qty});
+            add_cell(row, {text: line_statuses[line.status] || 'Unknown'});
+
+            let radios = [];
+            const args = [line.demand_line_id, index, receive_options];
+
+            if ([0, 1, 2].includes(Number(line.status))) radios.push(nil_radio(    ...args));
+            if ([1, 2]   .includes(Number(line.status))) radios.push(cancel_radio( ...args));
+            if (line.status === 2)                       radios.push(receive_radio(...args));
+            radios.push(new Div({attributes: [{field: 'id', value: `details_${line.demand_line_id}`}]}).e);
+
+            add_cell(row, {append: radios});
+
+            add_cell(row, {append: 
+                new Modal_Button(
+                    _search(),
+                    'line_view',
+                    [{field: 'id', value: line.demand_line_id}]
+                ).e
+            });
+
+        } catch (error) {
+            console.error(`Error loading line ${index} (${line.demand_line_id}):`)
+            console.error(error);
+            
+        };
+    };
     clear('tbl_lines')
     .then(tbl_lines => {
-        let where = {demand_id: path[2]},
-            statuses = getSelectedOptions('sel_lines_statuses');
-        if (statuses.length > 0) where.status = statuses;
         get({
             table: 'demand_lines',
-            where: where,
-            func: getLines
+            where: line_query(),
+            func: get_lines
         })
         .then(function ([result, options]) {
-            let row_index = 0;
+            let row_index = 1;
             set_count('line', result.count);
             result.lines.forEach(line => {
-                try {
-                    let row = tbl_lines.insertRow(-1);
-                    let qty = sum_order_qtys(line.orders);
-                    add_cell(row, {text: line.size.item.description});
-                    add_cell(row, {
-                        text: print_size(line.size),
-                        append: [new Hidden_Input({
-                            attributes:[
-                                {field: 'name',  value: `lines[][${row_index}][demand_line_id]`},
-                                {field: 'value', value: line.demand_line_id},
-                            ]
-                        }).e]
-                    });
-                    add_cell(row, {text: qty});
-                    add_cell(row, {text: line_statuses[line.status] || 'Unknown'});
-                    let radios = [], args = [line.demand_line_id, row_index, receive_options];
-                    if (line.status === 0 || line.status === 1 || line.status === 2) {
-                        if (typeof nil_radio     === 'function') radios.push(nil_radio(    ...args));
-                    };
-                    if (line.status === 1 || line.status === 2) {
-                        if (typeof cancel_radio  === 'function') radios.push(cancel_radio( ...args));
-                    };
-                    if (line.status === 2) {
-                        if (typeof receive_radio === 'function') radios.push(receive_radio(...args));
-                    };
-                    radios.push(new Div({attributes: [{field: 'id', value: `${line.demand_line_id}_details`}]}).e);
-                    add_cell(row, {append: radios});
-                    add_cell(row, {append: 
-                        new Modal_Button(
-                            _search(),
-                            'line_view',
-                            [{field: 'id', value: line.demand_line_id}]
-                        ).e
-                    });
-                } catch (error) {
-                    console.error(`Error loading line ${line.demand_line_id}:`)
-                    console.error(error);
-                };
+                add_row(tbl_lines, line, row_index);
                 row_index++
             });
         });
     });
 };
 
-function showLine(demand_line_id) {
-    get({
-        table: 'demand_line',
-        where: {demand_line_id: demand_line_id}
-    })
-    .then(function ([line, options]) {
+function show_line(demand_line_id) {
+    function display_details([line, options]) {
         set_innerText('demand_line_id', line.demand_line_id);
         set_innerText('line_item',      line.size.item.description);
         set_innerText('line_size',      print_size(line.size));
@@ -71,11 +74,22 @@ function showLine(demand_line_id) {
         set_innerText('line_user',      print_user(line.user));
         set_innerText('line_createdAt', print_date(line.createdAt, true));
         set_innerText('line_updatedAt', print_date(line.updatedAt, true));
+        return line;
+    };
+    function set_links(line) {
         set_href('btn_line_link',  `/demand_lines/${line.demand_line_id}`);
         set_href('line_item_link', `/items/${line.size.item_id}`);
         set_href('line_size_link', `/sizes/${line.size_id}`);
         set_href('line_user_link', `/users/${line.user_id}`);
-    });
+        return line;
+    };
+
+    get({
+        table: 'demand_line',
+        where: {demand_line_id: demand_line_id}
+    })
+    .then(display_details)
+    .then(set_links);
 };
 
 function sum_order_qtys(orders) {
@@ -89,20 +103,19 @@ function sum_order_qtys(orders) {
 };
 
 window.addEventListener('load', function () {
-    add_listener('reload', getLines);
-    
-    add_listener('sel_lines_statuses', getLines, 'input');
+    modalOnShow('line_view', function (event) {show_line(event.relatedTarget.dataset.id)});
 
-    modalOnShow('line_view', function (event) {showLine(event.relatedTarget.dataset.id)});
+    add_listener('reload',             get_lines);
+    add_listener('sel_lines_statuses', get_lines, 'input');
     
     addFormListener(
         'lines',
         'PUT',
         '/demand_lines',
         {
-            onComplete: getLines
+            onComplete: get_lines
         }
     );
-    add_sort_listeners('demand_lines', getLines);
-    getLines();
+    add_sort_listeners('demand_lines', get_lines);
+    get_lines();
 });

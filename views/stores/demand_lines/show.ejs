@@ -5,6 +5,11 @@
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/head/components/close`) %>
 <section class='container'>
+    <div class="row mb-1">
+        <span class="badge text-bg-secondary w-33" id="bdg_status_1">Pending</span>
+        <span class="badge text-bg-secondary w-33" id="bdg_status_2">Open</span>
+        <span class="badge text-bg-secondary w-34" id="bdg_status_3">Received</span>
+    </div>
 	<ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
         <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'demand_line'}) %>
         <%- include(`${partials}/tab_head`, {id: 'orders',  title: 'Orders',  spinner: 'orders',  count_id: 'order'}) %>
@@ -17,7 +22,6 @@
 			<%- include(`${partials}/inputs/display`, {id: 'line_size',  	 title: 'Size', 	link: true}) %>
 			<%- include(`${partials}/inputs/display`, {id: 'line_qty',  	 title: 'Quantity'}) %>
 			<%- include(`${partials}/inputs/display`, {id: 'line_user',		 title: 'Added By', link: true}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'line_status',    title: 'Status'}) %>
 			<%- include(`${partials}/inputs/display`, {id: 'line_createdAt', title: 'Created'}) %>
 			<%- include(`${partials}/inputs/display`, {id: 'line_updatedAt', title: 'Last Updated'}) %>
 		</div>

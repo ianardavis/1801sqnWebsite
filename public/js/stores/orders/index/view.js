@@ -47,7 +47,7 @@ function getOrders() {
                 if (order.status === 1) {
                     if (typeof receive_radio === 'function') radios.push(receive_radio(...args));
                 };
-                radios.push(new Div({attributes: [{field: 'id', value: `${order.order_id}_details`}]}).e);
+                radios.push(new Div({attributes: [{field: 'id', value: `details_${order.order_id}`}]}).e);
                 add_cell(row, {
                     id: `${order.order_id}_row`,
                     append: radios
