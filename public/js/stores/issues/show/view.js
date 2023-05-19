@@ -9,6 +9,7 @@ const statuses = {
 };
 function getIssue() {
     function disable_all_buttons() {
+        disable_button('delete');
         disable_button('mark_as');
         for (let i=0; i<=5 ; i++) {
             disable_button(`mark_${i}`);
@@ -80,6 +81,10 @@ function getIssue() {
     };
     function set_button_states(issue) {
         if (typeof set_mark_as_options === 'function') set_mark_as_options(issue.status);
+        if (
+            typeof enable_delete_button === 'function' &&
+            [1, 2, 3].includes(Number(issue.status))
+        ) enable_delete_button();
         return issue;
     };
 
