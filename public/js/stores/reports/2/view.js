@@ -23,7 +23,7 @@ function getLines() {
                         ? {
                             classes: ['actions'],
                             data: [
-                                {field: 'id',    value: line.loancard_line_id},
+                                {field: 'id',    value: line.line_id},
                                 {field: 'index', value: row_index}
                             ]
                         }

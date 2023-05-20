@@ -47,7 +47,7 @@ module.exports = function (m) {
         m.issues, 
         {
             through: m.issue_loancard_lines,
-            foreignKey:'loancard_line_id'
+            foreignKey:'line_id'
         }
     );
 

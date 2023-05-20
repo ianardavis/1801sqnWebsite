@@ -15,8 +15,8 @@ function get_lines() {
                 text: print_size(line.size),
                 append: [new Hidden_Input({
                     attributes:[
-                        {field: 'name',  value: `lines[][${index}][demand_line_id]`},
-                        {field: 'value', value: line.demand_line_id},
+                        {field: 'name',  value: `lines[][${index}][line_id]`},
+                        {field: 'value', value: line.line_id},
                     ]
                 }).e]
             });
@@ -24,12 +24,12 @@ function get_lines() {
             add_cell(row, {text: line_statuses[line.status] || 'Unknown'});
 
             let radios = [];
-            const args = [line.demand_line_id, index, receive_options];
+            const args = [line.line_id, index, receive_options];
 
             if ([0, 1, 2].includes(Number(line.status))) radios.push(nil_radio(    ...args));
             if ([1, 2]   .includes(Number(line.status))) radios.push(cancel_radio( ...args));
             if (line.status === 2)                       radios.push(receive_radio(...args));
-            radios.push(new Div({attributes: [{field: 'id', value: `details_${line.demand_line_id}`}]}).e);
+            radios.push(new Div({attributes: [{field: 'id', value: `details_${line.line_id}`}]}).e);
 
             add_cell(row, {append: radios});
 
@@ -37,12 +37,12 @@ function get_lines() {
                 new Modal_Button(
                     _search(),
                     'line_view',
-                    [{field: 'id', value: line.demand_line_id}]
+                    [{field: 'id', value: line.line_id}]
                 ).e
             });
 
         } catch (error) {
-            console.error(`Error loading line ${index} (${line.demand_line_id}):`)
+            console.error(`Error loading line ${index} (${line.line_id}):`)
             console.error(error);
             
         };
@@ -65,9 +65,9 @@ function get_lines() {
     });
 };
 
-function show_line(demand_line_id) {
+function show_line(line_id) {
     function display_details([line, options]) {
-        set_innerText('demand_line_id', line.demand_line_id);
+        set_innerText('line_id',        line.line_id);
         set_innerText('line_item',      line.size.item.description);
         set_innerText('line_size',      print_size(line.size));
         set_innerText('line_qty',       sum_order_qtys(line.orders));
@@ -77,7 +77,7 @@ function show_line(demand_line_id) {
         return line;
     };
     function set_links(line) {
-        set_href('btn_line_link',  `/demand_lines/${line.demand_line_id}`);
+        set_href('btn_line_link',  `/demand_lines/${line.line_id}`);
         set_href('line_item_link', `/items/${line.size.item_id}`);
         set_href('line_size_link', `/sizes/${line.size_id}`);
         set_href('line_user_link', `/users/${line.user_id}`);
@@ -86,7 +86,7 @@ function show_line(demand_line_id) {
 
     get({
         table: 'demand_line',
-        where: {demand_line_id: demand_line_id}
+        where: {line_id: line_id}
     })
     .then(display_details)
     .then(set_links);

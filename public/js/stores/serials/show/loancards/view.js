@@ -16,20 +16,20 @@ function getLoancards() {
                 add_cell(row, {append: new Modal_Button(
                     _search(),
                     'loancard_view',
-                    [{field: 'id', value: line.loancard_line_id}]
+                    [{field: 'id', value: line.line_id}]
                 ).e});
             });
         })
     });
 };
-function viewLoancard(loancard_line_id) {
+function viewLoancard(line_id) {
     get({
         table: 'loancard_line',
-        where: {loancard_line_id: loancard_line_id}
+        where: {line_id: line_id}
     })
     .then(function ([line, options]) {
         set_innerText('loancard_id',             line.loancard_id);
-        set_innerText('loancard_line_id',        line.loancard_line_id);
+        set_innerText('line_id',                 line.line_id);
         set_innerText('loancard_user_to',        print_user(line.loancard.user_loancard));
         set_innerText('loancard_user_by',        print_user(line.loancard.user));
         set_innerText('loancard_status',         line.loancard.status);

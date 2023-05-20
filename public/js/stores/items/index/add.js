@@ -1,4 +1,4 @@
-let getGendersAdd = listGenders({
+const getGendersAdd = listGenders({
         blank:   {text: 'None'},
         select:  'sel_genders_add',
         spinner: 'genders_add'
@@ -12,6 +12,6 @@ window.addEventListener( "load", function () {
         'item_add',
         'POST',
         '/items',
-        {onComplete: getItems}
+        {onComplete: get_items}
     );
 });

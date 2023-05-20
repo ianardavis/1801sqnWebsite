@@ -1,23 +1,21 @@
-<% if (!locals.permission || permissions[permission]) { %>
-    <div id='mdl_line_view' class="modal fade" tabindex="-1" role="dialog">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title"><%= table %> Line</h5>
-                    <a id="btn_line_link" class='btn btn-primary float-end'><i class="fas fa-search"></i></a>
-                </div>
-                <div class="modal-body">
-                    <%- include(`${partials}/inputs/display`, {id: 'line_item',      title: 'Item', 	 link: true}) %>
-                    <%- include(`${partials}/inputs/display`, {id: 'line_size',      title: 'Size', 	 link: true}) %>
-                    <%- include(`${partials}/inputs/display`, {id: 'line_qty',       title: 'Quantity'}) %>
-                    <%- include(`${partials}/inputs/display`, {id: 'line_user',      title: 'Raised by', link: true}) %>
-                    <%- include(`${partials}/inputs/display`, {id: 'line_createdAt', title: 'Created'}) %>
-                    <%- include(`${partials}/inputs/display`, {id: 'line_updatedAt', title: 'Updated'}) %>
-                </div>
-                <div class="modal-footer">
-                    <p class='me-auto'>ID: <span id='<%= table.toLowerCase() %>_line_id'></span></p>
-                </div>
+<div id='mdl_line_view' class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><%= table %> Line</h5>
+                <a id="btn_line_link" class='btn btn-primary float-end'><i class="fas fa-search"></i></a>
+            </div>
+            <div class="modal-body">
+                <%- include(`${partials}/inputs/display`, {id: 'line_item',      title: 'Item', 	 link: true}) %>
+                <%- include(`${partials}/inputs/display`, {id: 'line_size',      title: 'Size', 	 link: true}) %>
+                <%- include(`${partials}/inputs/display`, {id: 'line_qty',       title: 'Quantity'}) %>
+                <%- include(`${partials}/inputs/display`, {id: 'line_user',      title: 'Raised by', link: true}) %>
+                <%- include(`${partials}/inputs/display`, {id: 'line_createdAt', title: 'Created'}) %>
+                <%- include(`${partials}/inputs/display`, {id: 'line_updatedAt', title: 'Updated'}) %>
+            </div>
+            <div class="modal-footer">
+                <p class='me-auto'>ID: <span id='line_id'></span></p>
             </div>
         </div>
     </div>
-<% } %>
+</div>

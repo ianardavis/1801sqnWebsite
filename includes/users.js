@@ -5,7 +5,8 @@ module.exports = (m, fn) => {
             model:      m.users,
             include:    [fn.inc.users.rank()],
             attributes: options.attributes || ['user_id', 'full_name'],
-            as:         options.as || 'user'
+            as:         options.as || 'user',
+            ...(options.where ? {where: options.where} : {})
         };
     };
     fn.inc.users.rank = () => {

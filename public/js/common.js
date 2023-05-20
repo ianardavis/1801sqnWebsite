@@ -227,20 +227,6 @@ function get_stock(size_id) {
         });
     });
 };
-// function checked_statuses() {
-//     let selected = null,
-//         statuses = document.querySelectorAll(".status:checked") || [];
-//     if (statuses && statuses.length > 0) {
-//         selected = []
-//         statuses.forEach(e => selected.push(e.value));
-//     };
-//     return selected
-// };
-// function selected_user(id = 'sel_users') {
-//     let sel_users = document.querySelector(`#${id}`);
-//     if (sel_users && sel_users.value !== '') return sel_users.value;
-//     else return null
-// };
 function add_page_links(count, limit, offset, table, func) {
     clear(`page_buttons_${table}`)
     .then(page_buttons => {

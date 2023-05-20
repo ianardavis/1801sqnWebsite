@@ -53,7 +53,7 @@ function getDemandLine() {
 
     get({
         table: 'demand_line',
-        where: {demand_line_id: path[2]}
+        where: {line_id: path[2]}
     })
     .then(display_details)
     .then(set_links)

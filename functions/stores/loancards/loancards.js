@@ -9,11 +9,38 @@ module.exports = function (m, fn) {
             ].concat(include)
         );
     };
-    fn.loancards.get_all = function (where, pagination) {
+    fn.loancards.get_all = function (allowed, query, user_id) {
+        function issuer_allowed(issuer_permission, user_id_loancard, user_id) {
+            return new Promise(resolve => {
+                if (issuer_permission) {
+                    if (user_id_loancard && user_id_loancard !== '') {
+                        resolve({where: {user_id: user_id_loancard}});
+    
+                    } else {
+                        resolve({});
+    
+                    };
+    
+                } else {
+                    if (!user_id_loancard || user_id_loancard === user_id) {
+                        resolve({where: {user_id: user_id_loancard}});
+    
+                    } else {
+                        reject(new Error('Permission denied'));
+    
+                    };
+    
+                };
+            });
+        };
         return new Promise((resolve, reject) => {
-            m.loancards.findAndCountAll({
-                where: where,
-                include: [
+            if (!query.where) query.where = {};
+            issuer_allowed(allowed, query.where.user_id_loancard, user_id)
+            .then(user_filter => {
+                if (!query.offset || isNaN(query.offset)) query.offset = 0;
+                if ( query.limit  && isNaN(query.limit))  delete query.limit;
+
+                const include = [
                     {
                         model: m.loancard_lines,
                         as:    'lines',
@@ -21,11 +48,17 @@ module.exports = function (m, fn) {
                         required: false
                     },
                     fn.inc.users.user(),
-                    fn.inc.users.user({as: 'user_loancard'})
-                ],
-                ...pagination
+                    fn.inc.users.user({as: 'user_loancard', ...user_filter})
+                ];
+
+                m.loancards.findAndCountAll({
+                    where: fn.build_query(query),
+                    include: include,
+                    ...fn.pagination(query)
+                })
+                .then(results => resolve(results))
+                .catch(reject);
             })
-            .then(results => resolve(results))
             .catch(reject);
         });
     };

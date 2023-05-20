@@ -30,39 +30,30 @@ function return_options() {
         div_details.appendChild(div_switch);
         add_location_input(div_location, index);
     };
-    function add_qty_input(div_details, line, index) {
-        let qty = 0;
-        line.issues.forEach(issue => {
-            if (Number(issue.status) === 4) qty += issue.qty;
-        });
-        div_details.appendChild(new Number_Input({
-            attributes: [
-                {field: 'min',         value: '1'},
-                {field: 'max',         value: qty},
-                {field: 'placeholder', value: 'Quantity'},
-                {field: 'name',        value: `lines[][${index}][qty]`},
-                {field: 'required',    value: true},
-                {field: 'value',       value: qty}
-            ]
-        }).e);
-    };
+    
     clear(`details_${this.dataset.id}`)
     .then(div_details => {
         if (this.value === '3') {
             get({
                 table: 'loancard_line',
-                where: {loancard_line_id: this.dataset.id},
+                where: {line_id: this.dataset.id},
                 index: this.dataset.index
             })
             .then(function ([line, options]) {
                 if (line.status === 2) {
                     let div_location = new Div({
-                        attributes: [{field: 'id', value: `location_${line.loancard_line_id}`}]
+                        attributes: [{field: 'id', value: `location_${line.line_id}`}]
                     }).e;
                     add_scrap_switch(div_details, options.index, div_location);
                     div_details.appendChild(div_location);
                     add_location_list(div_details, (line.serial_id), line.size_id, options.index);
-                    if (!line.serial_id) add_qty_input(div_details, line, options.index);
+                    if (!line.serial_id) {
+                        let qty = 0;
+                        line.issues.forEach(issue => {
+                            if (Number(issue.status) === 4) qty += issue.qty;
+                        });
+                        add_qty_input(div_details, options.index, qty);
+                    };
                 };
             });
         };
@@ -75,7 +66,7 @@ function cancel_options() {
         if (this.value === '0') {
             get({
                 table: 'loancard_line',
-                where: {loancard_line_id: this.dataset.id},
+                where: {line_id: this.dataset.id},
                 index: this.dataset.index
             })
             .then(function ([line, options]) {
@@ -108,14 +99,15 @@ function cancel_options() {
         };
     });
 };
+const enable_action_button = function () {enable_button('action')};
 window.addEventListener( "load", function () {
     addFormListener(
         'actions',
         'PUT',
         '/loancard_lines',
         {onComplete: [
-            getLines,
-            function () {if (typeof getLoancard === 'function') getLoancard()}
+            get_lines,
+            get_loancard
         ]}
     );
 });

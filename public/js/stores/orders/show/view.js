@@ -35,7 +35,7 @@ function getOrder() {
                 let row = tbl_order_demand_lines.insertRow(-1);
                 add_cell(row, {text: print_date(line.createdAt)});
                 add_cell(row, {text: demand_line_statuses[line.status]});
-                add_cell(row, {append: new Link(`/demand_lines/${line.demand_line_id}`).e});
+                add_cell(row, {append: new Link(`/demand_lines/${line.line_id}`).e});
             });
         });
 

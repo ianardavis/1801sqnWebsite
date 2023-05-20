@@ -27,9 +27,8 @@ module.exports = (app, fn) => {
         .then(loancard => res.send({success: true,  result: loancard}))
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/loancards',          fn.loggedIn(), fn.permissions.check('access_stores', true), (req, res) => {
-        if (!req.allowed) req.query.user_id_loancard = req.user.user_id;
-        fn.loancards.get_all(req.query.where, fn.pagination(req.query))
+    app.get('/get/loancards',          fn.loggedIn(), fn.permissions.check('issuer',        true), (req, res) => {
+        fn.loancards.get_all(req.allowed, req.query, req.user.user_id)
         .then(results => fn.send_res('loancards', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });

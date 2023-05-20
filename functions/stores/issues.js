@@ -41,9 +41,9 @@ module.exports = function (m, fn) {
     };
 
     fn.issues.get_all = function (allowed, query, user_id) {
-        function issues_allowed(issuer, user_id_issue, user_id) {
+        function issuer_allowed(issuer_permission, user_id_issue, user_id) {
             return new Promise(resolve => {
-                if (issuer) {
+                if (issuer_permission) {
                     if (user_id_issue && user_id_issue !== '') {
                         resolve({where: {user_id: user_id_issue}});
     
@@ -53,29 +53,28 @@ module.exports = function (m, fn) {
                     };
     
                 } else {
-                    resolve({where: {user_id: user_id}});
+                    if (!user_id_issue || user_id_issue === user_id) {
+                        resolve({where: {user_id: user_id_issue}});
+    
+                    } else {
+                        reject(new Error('Permission denied'));
+    
+                    };
     
                 };
             });
         };
         return new Promise((resolve, reject) => {
             if (!query.where) query.where = {};
-
-            issues_allowed(allowed, query.where.user_id_issue, user_id)
+            issuer_allowed(allowed, query.where.user_id_issue, user_id)
             .then(user_filter => {
                 if (!query.offset || isNaN(query.offset)) query.offset = 0;
-
-                if (isNaN(query.limit)) delete query.limit;
+                if ( query.limit  && isNaN(query.limit))  delete query.limit;
 
                 const include = [
-                        fn.inc.stores.size_filter(query),
-                        {
-                            model:   m.users,
-                            as:      'user_issue',
-                            include: [m.ranks],
-                            ...user_filter
-                        }
-                    ];
+                    fn.inc.stores.size_filter(query),
+                    fn.inc.users.user({as: 'user_issue', ...user_filter})
+                ];
 
                 m.issues.findAndCountAll({
                     where: fn.build_query(query),
@@ -84,7 +83,8 @@ module.exports = function (m, fn) {
                 })
                 .then(results => resolve(results))
                 .catch(reject);
-            });
+            })
+            .catch(reject);
         });
     };
 

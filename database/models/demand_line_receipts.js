@@ -9,7 +9,7 @@ module.exports = function(sequelize, DataTypes) {
       comment: "null",
       primaryKey: true
     },
-    'demand_line_id': {
+    'line_id': {
       type: DataTypes.UUIDV4,
       allowNull: false,
       comment: "null"

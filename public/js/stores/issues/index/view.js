@@ -34,11 +34,9 @@ function getIssues() {
                     }).e
                 });
 
-                let radios = row_radios(issue, issue.status, row_index);
-
                 add_cell(row, {
                     id: `row_${issue.issue_id}`,
-                    append: radios
+                    append: row_radios(issue, row_index)
                 });
                 add_cell(row, {append: new Link(`/issues/${issue.issue_id}`).e});
                 row_index ++;
@@ -47,26 +45,26 @@ function getIssues() {
         });
     });
 };
-function row_radios(issue, status, index) {
+function row_radios(issue, index) {
     let radios = [];
     const args = [issue.issue_id, index, issue_options];
-    if ([0, 1, 2, 3].includes(status)) {
+    if ([0, 1, 2, 3].includes(issue.status)) {
         if (typeof     nil_radio === 'function') radios.push(nil_radio(    ...args));
     };
-    if (status === 0) {
+    if (issue.status === 0) {
         if (typeof restore_radio === 'function') radios.push(restore_radio(...args));
     };
-    if (status === 1) {
+    if (issue.status === 1) {
         if (typeof decline_radio === 'function') radios.push(decline_radio(...args));
         if (typeof approve_radio === 'function') radios.push(approve_radio(...args));
     };
-    if (status === 2 || status === 3) {
-        if (typeof cancel_radio  === 'function') radios.push(cancel_radio( ...args, '-'+status));
+    if (issue.status === 2 || issue.status === 3) {
+        if (typeof cancel_radio  === 'function') radios.push(cancel_radio( ...args, '-'+issue.status));
     };
-    if (issue.size.orderable && status === 2) {
+    if (issue.size.orderable && issue.status === 2) {
         if (typeof order_radio   === 'function') radios.push(order_radio(  ...args));
     };
-    if (issue.size.issueable && status === 2 || status   === 3) {
+    if (issue.size.issueable && issue.status === 2 || issue.status   === 3) {
         if (typeof issue_radio   === 'function') radios.push(issue_radio(  ...args));
     };
     radios.push(new Div({attributes: [{field: 'id', value: `details_${issue.issue_id}`}]}).e);

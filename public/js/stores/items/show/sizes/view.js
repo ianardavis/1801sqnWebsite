@@ -1,10 +1,10 @@
-function getSizes() {
+function get_sizes() {
     clear('tbl_sizes')
     .then(tbl_sizes => {
         get({
             table: 'sizes',
             where: {item_id: path[2]},
-            func: getSizes
+            func: get_sizes
         })
         .then(function ([result, options]) {
             set_count('size', result.count);
@@ -19,7 +19,7 @@ function getSizes() {
     });
 };
 window.addEventListener('load', function () {
-    add_listener('reload', getSizes);
-    add_sort_listeners('sizes', getSizes);
-    getSizes();
+    add_listener('reload', get_sizes);
+    add_sort_listeners('sizes', get_sizes);
+    get_sizes();
 });

@@ -69,11 +69,11 @@ function getSaleLines() {
                         add_cell(row, {text: line.qty});
                         add_cell(row, {text: `£${Number(line.qty * line.price).toFixed(2)}`});
                         let form = document.createElement('form');
-                        form.setAttribute('id', `form_${line.sale_line_id}_minus`)
+                        form.setAttribute('id', `form_${line.line_id}_minus`)
                         form.appendChild(new Hidden_Input({
                             attributes: [
-                                {field: 'name', value: 'line[sale_line_id]'},
-                                {field: 'value', value: line.sale_line_id}
+                                {field: 'name', value: 'line[line_id]'},
+                                {field: 'value', value: line.line_id}
                             ]}).e
                         );
                         form.appendChild(new Hidden_Input({
@@ -85,7 +85,7 @@ function getSaleLines() {
                         form.appendChild(new Button({html: '<i class="fas fa-minus"></i>', small: true, noType: true}).e);
                         add_cell(row, {append: form});
                         addFormListener(
-                            `${line.sale_line_id}_minus`,
+                            `${line.line_id}_minus`,
                             'PUT',
                             `/sale_lines`,
                             {noConfirm: true, onComplete: getSaleLines}

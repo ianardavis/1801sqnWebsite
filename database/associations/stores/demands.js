@@ -55,15 +55,15 @@ module.exports = function (m) {
         m.orders, 
         {
             through: m.order_demand_lines,
-            foreignKey:'demand_line_id'
+            foreignKey:'line_id'
         }
     );
     
     m.demand_lines.hasMany(
         m.demand_line_receipts,
         {
-            foreignKey: 'demand_line_id',
-            targetKey:  'demand_line_id',
+            foreignKey: 'line_id',
+            targetKey:  'line_id',
             as: 'receipts'
         }
     );
@@ -107,8 +107,8 @@ module.exports = function (m) {
     m.demand_line_receipts.belongsTo(
         m.demand_lines,
         {
-            foreignKey: 'demand_line_id',
-            sourceKey: 'demand_line_id',
+            foreignKey: 'line_id',
+            sourceKey: 'line_id',
             as: 'line'
         }
     );

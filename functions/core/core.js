@@ -85,6 +85,8 @@ module.exports = function (m, fn) {
     };
     fn.build_query = function (query) {
         let where = {};
+        
+        // so that following tests dont fail when trying to access keys of query.where
         if (!query.where) query.where = {};
         
         if (query.where.status && query.where.status.length > 0) {

@@ -46,8 +46,8 @@ function getIssue() {
         .then(tbl_issue_loancard_lines => {
             issue.loancard_lines.forEach(line => {
                 let row = tbl_issue_loancard_lines.insertRow(-1);
-                add_cell(row, {text: line.loancard_line_id});
-                add_cell(row, {append: new Link(`/loancard_lines/${line.loancard_line_id}`).e});
+                add_cell(row, {text: line.line_id});
+                add_cell(row, {append: new Link(`/loancard_lines/${line.line_id}`).e});
             });
             return issue;
         });

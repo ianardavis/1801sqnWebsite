@@ -11,7 +11,7 @@
 	</div>
 	<%- include(`${partials}/sidebar/open`, {id: 'filter', text: 'Filter'}) %>
 			<%- include(`${partials}/button/modal/open`, {id: 'issue_add', text: 'New Issue', type: 'success'}) %>
-			<%- include(`${partials}/filter/user`, {append: '_issue', table: 'issue'}) %>
+			<%- include(`${partials}/filter/user`, {table: 'issue'}) %>
 			<div class="input-group mb-1">
 				<span class="input-group-text w-30">Status</span>
 				<select id="filter_issue_statuses" class="form-select" multiple size="8">
@@ -63,6 +63,7 @@
 	<script src="/js/common/radios/issue_loancard.js"></script>
 
 	<script src='/js/stores/issues/options.js'></script>
+	<script src='/js/common/add_qty_input.js'></script>
 	<% if (permissions.stores_stock_admin) { %>
 		<script src="/js/common/radios/order.js"></script>
 	<% } %>

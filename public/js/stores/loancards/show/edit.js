@@ -1,6 +1,3 @@
-function setCompleteButton(status) {
-    if (status === 1) enable_button('loancard_complete');
-};
 function returnDate(_date) {
     let date = new Date(_date);
     return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
@@ -27,6 +24,7 @@ function completeLoancardDueDate() {
     set_attribute('date_due_complete', 'value', dateToday(7));
     set_attribute('date_due_complete', 'min',   dateToday());
 };
+const enable_complete_button = function () {enable_button('loancard_complete')};
 window.addEventListener( "load", function () {
     modalOnShow('due_edit',          editLoancardDueDate);
     modalOnShow('loancard_complete', completeLoancardDueDate);
@@ -36,7 +34,7 @@ window.addEventListener( "load", function () {
         `/loancards/${path[2]}`,
         {
             onComplete: [
-                getLoancard,
+                get_loancard,
                 function () {modalHide('due_edit')}
             ]
         }
@@ -47,8 +45,8 @@ window.addEventListener( "load", function () {
         `/loancards/${path[2]}/complete`,
         {
             onComplete: [
-                getLoancard,
-                function () {if (typeof getLines === 'function') getLines()}
+                get_loancard,
+                get_lines
             ]
         }
     );
@@ -56,6 +54,6 @@ window.addEventListener( "load", function () {
         'loancard_file_delete',
         'DELETE',
         `/loancards/${path[2]}/file`,
-        {onComplete: [getLoancard]}
+        {onComplete: [get_loancard]}
     );
 });
