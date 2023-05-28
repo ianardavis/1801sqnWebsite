@@ -9,15 +9,15 @@ module.exports = function (m, fn) {
             ].concat(include)
         );
     };
-    fn.sizes.get_all = function (where, pagination) {
+    fn.sizes.get_all = function (query) {
         return new Promise((resolve, reject) => {
             m.sizes.findAndCountAll({
-                where: where,
+                where: query.where,
                 include: [
                     fn.inc.stores.item(),
                     fn.inc.stores.supplier()
                 ],
-                ...pagination
+                ...fn.pagination(query)
             })
             .then(sizes => resolve(sizes))
             .catch(reject);

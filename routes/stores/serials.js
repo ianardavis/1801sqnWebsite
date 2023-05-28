@@ -1,7 +1,7 @@
 module.exports = (app, fn) => {
     app.get('/serials/:id',          fn.loggedIn(), fn.permissions.get(  'access_stores'),      (req, res) => res.render('stores/serials/show'));
     app.get('/get/serials',          fn.loggedIn(), fn.permissions.check('access_stores'),      (req, res) => {
-        fn.serials.get_all(req.query.where, fn.pagination(req.query))
+        fn.serials.get_all(req.query)
         .then(results => fn.send_res('serials', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });
@@ -9,7 +9,7 @@ module.exports = (app, fn) => {
         if (!req.query.where) req.query.where = {};
         req.query.where.location_id = {[fn.op.not]: null};
         req.query.where.issue_id    = null;
-        fn.serials.get_all(req.query.where, fn.pagination(req.query))
+        fn.serials.get_all(req.query)
         .then(results => fn.send_res('serials', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });

@@ -6,11 +6,11 @@ module.exports = function (m, fn) {
             where
         );
     };
-    fn.canteen_items.get_all = function (where, pagination) {
+    fn.canteen_items.get_all = function (query) {
         return new Promise((resolve, reject) => {
             m.canteen_items.findAndCountAll({
-                where: where,
-                ...pagination
+                where: query.where,
+                ...fn.pagination(query)
             })
             .then(results => resolve(results))
             .catch(reject);

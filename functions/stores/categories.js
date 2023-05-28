@@ -7,12 +7,12 @@ module.exports = function (m, fn) {
             [fn.inc.stores.categories({as: 'parent'})]
         );
     };
-    fn.categories.get_all = function (where, pagination) {
+    fn.categories.get_all = function (query) {
         return new Promise((resolve, reject) => {
             m.categories.findAndCountAll({
-                where:   where || {},
+                where:   query.where || {},
                 include: [fn.inc.stores.categories({as: 'parent'})],
-                ...pagination
+                ...fn.pagination(query)
             })
             .then(results => resolve(results))
             .catch(reject);

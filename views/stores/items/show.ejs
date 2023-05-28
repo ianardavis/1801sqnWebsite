@@ -16,8 +16,8 @@
     </div>
     <ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
         <%- include(`${partials}/tab_head`, {id: 'details',    title: 'Details',    spinner: 'item'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'categories', title: 'Categories', spinner: 'categories', count_id: 'category'}) %>
         <%- include(`${partials}/tab_head`, {id: 'sizes',      title: 'Sizes',      spinner: 'sizes',      count_id: 'size'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'categories', title: 'Categories', spinner: 'categories', count_id: 'category'}) %>
         <%- include(`${partials}/common/notes/tab_head`) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
@@ -28,21 +28,16 @@
             <%- include(`${partials}/inputs/display`, {id: 'item_size_text3',  title: 'Size Text 3'}) %>
             <%- include(`${partials}/inputs/display`, {id: 'item_gender',      title: 'Gender'}) %>
         </div>
-        <div class="tab-pane fade" id="categories" role="tabpanel" aria-labelledby="categories-tab">
-            <div class="row">
-                <div class="col-12 col-lg-5 mx-auto">
-	                <table class='table table-sm table-hover w-100'>
-                        <thead class='thead-dark' id='tbl_item_categories_head'>
-                            <th class='w-100' data-column='["category","category"]' data-dir="ASC">Category</th>
-                            <th><i class='fas fa-search'></i></th>
-                        </thead>
-                        <tbody id='tbl_categories'></tbody>
-                    </table>
-                    <%- include(`${partials}/limit`, {table: 'item_categories'}) %>
+        <div class="tab-pane fade" id="sizes" role="tabpanel" aria-labelledby="sizes-tab">
+            <div class="row justify-content-between">
+                <div class="col-12 col-md-4 mb-1">
+                    <%- include(`${partials}/sidebar/button`, {id: 'sizes', text: 'Filter'}) %>
                 </div>
             </div>
-        </div>
-        <div class="tab-pane fade" id="sizes" role="tabpanel" aria-labelledby="sizes-tab">
+            <%- include(`${partials}/sidebar/open`, {id: 'notes', text: 'Filter Sizes'}) %>
+			        <%- include(`${partials}/filter/item`, {table: 'size'}) %>
+                </div>
+            </div>
             <div class="row">
                 <div class="col-12 col-lg-6 mx-auto">
 	                <table class='table table-sm table-hover w-100'>
@@ -55,6 +50,20 @@
                         <tbody id='tbl_sizes'></tbody>
                     </table>
                     <%- include(`${partials}/limit`, {table: 'sizes'}) %>
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="categories" role="tabpanel" aria-labelledby="categories-tab">
+            <div class="row">
+                <div class="col-12 col-lg-5 mx-auto">
+	                <table class='table table-sm table-hover w-100'>
+                        <thead class='thead-dark' id='tbl_item_categories_head'>
+                            <th class='w-100' data-column='["category","category"]' data-dir="ASC">Category</th>
+                            <th><i class='fas fa-search'></i></th>
+                        </thead>
+                        <tbody id='tbl_categories'></tbody>
+                    </table>
+                    <%- include(`${partials}/limit`, {table: 'item_categories'}) %>
                 </div>
             </div>
         </div>
@@ -76,7 +85,7 @@
                     </div>
                     <div class="modal-body">
                         <%- include(`${partials}/inputs/display`, {id: 'category_category',  title: 'Category'}) %>
-                        <%- include(`${partials}/inputs/display`, {id: 'category_createdAt', title: 'Created'}) %>
+                        <%- include(`${partials}/inputs/display`, {id: 'category_createdAt', title: 'Added'}) %>
                     </div>
                     <div class="modal-footer">
                         <p class='me-auto text-start'>

@@ -6,12 +6,12 @@ module.exports = function (m, fn) {
             [m.categories]
         );
     };
-    fn.items.categories.get_all = function (where, pagination) {
+    fn.items.categories.get_all = function (query) {
         return new Promise((resolve, reject) => {
             m.item_categories.findAndCountAll({
-                where:   where,
+                where:   query.where,
                 include: [fn.inc.stores.category()],
-                ...pagination
+                ...fn.pagination(query)
             })
             .then(categories => resolve(categories))
             .catch(reject);

@@ -1,6 +1,6 @@
 module.exports = (app, fn) => {
     app.get('/get/eans',    fn.loggedIn(), fn.permissions.check('access_canteen'),      (req, res) => {
-        fn.eans.get_all(req.query.where, fn.pagination(req.query))
+        fn.eans.get_all(req.query)
         .then(results => fn.send_res('items', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });

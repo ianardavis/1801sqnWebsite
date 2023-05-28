@@ -6,11 +6,11 @@ module.exports = function (m, fn) {
             where
         );
     };
-	fn.holdings.get_all = function (where, pagination) {
+	fn.holdings.get_all = function (query) {
 		return new Promise((resolve, reject) => {
 			m.holdings.findAndCountAll({
-				where: where,
-				...pagination
+				where: query.where,
+				...fn.pagination(query)
 			})
 			.then(results => resolve(results))
 			.catch(reject);

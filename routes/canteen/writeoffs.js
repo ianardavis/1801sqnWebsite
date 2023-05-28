@@ -3,7 +3,7 @@ module.exports = (app, fn) => {
     app.get('/writeoffs/:id', fn.loggedIn(), fn.permissions.get('canteen_stock_admin'),   (req, res) => res.render('canteen/writeoffs/show'));
     
     app.get('/get/writeoffs', fn.loggedIn(), fn.permissions.check('canteen_stock_admin'), (req, res) => {
-        fn.writeoffs.get_all(req.query.where, fn.pagination(req.query))
+        fn.writeoffs.get_all(req.query)
         .then(results => fn.send_res('writeoffs', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });

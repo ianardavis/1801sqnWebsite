@@ -84,15 +84,15 @@ module.exports = function (m, fn) {
         )
     };
 
-    fn.stocks.get_all = function (where, pagination) {
+    fn.stocks.get_all = function (query) {
         return new Promise((resolve, reject) => {
             m.stocks.findAndCountAll({
-                where: where,
+                where: query.where,
                 include: [
                     fn.inc.stores.size(),
                     fn.inc.stores.location()
                 ],
-                ...pagination
+                ...fn.pagination(query)
             })
             .then(results => resolve(results))
             .catch(reject);

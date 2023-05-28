@@ -3,7 +3,7 @@ module.exports = (app, fn) => {
     app.get('/holdings/:id',        fn.loggedIn(), fn.permissions.get('cash_admin'),   (req, res) => res.render('canteen/holdings/show'));
     
     app.get('/get/holdings',        fn.loggedIn(), fn.permissions.check('cash_admin'), (req, res) => {
-        fn.holdings.get_all(req.query.where, fn.pagination(req.query))
+        fn.holdings.get_all(req.query)
         .then(results => fn.send_res('holdings', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });
@@ -12,8 +12,9 @@ module.exports = (app, fn) => {
         .then(holding => res.send({success: true, result: holding}))
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/holdings_except', fn.loggedIn(), fn.permissions.check('cash_admin'), (req, res) => { 
-        fn.holdings.get_all({holding_id: {[fn.op.ne]: req.query.where.holding_id}}, fn.pagination(req.query))
+    app.get('/get/holdings_except', fn.loggedIn(), fn.permissions.check('cash_admin'), (req, res) => {
+        req.query.where.holding_id = {[fn.op.ne]: req.query.where.holding_id};
+        fn.holdings.get_all(req.query)
         .then(results => fn.send_res('holdings', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });

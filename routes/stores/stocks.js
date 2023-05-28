@@ -1,12 +1,10 @@
 module.exports = (app, fn) => {
     app.get('/stocks/:id',          fn.loggedIn(), fn.permissions.get(  'access_stores'),      (req, res) => res.render('stores/stocks/show'));
     app.get('/get/stocks',          fn.loggedIn(), fn.permissions.check('access_stores'),      (req, res) => {
-        let where = req.query.where || {};
-        if (req.query.gt) where[req.query.gt.column] = {[fn.op.gt]: req.query.gt.value};
-        if (req.query.lt) where[req.query.lt.column] = {[fn.op.lt]: req.query.lt.value};
-        fn.stocks.get_all(
-            where,
-            fn.pagination(req.query))
+        if (!req.query.where) req.query.where = {};
+        if (req.query.gt) req.query.where[req.query.gt.column] = {[fn.op.gt]: req.query.gt.value};
+        if (req.query.lt) req.query.where[req.query.lt.column] = {[fn.op.lt]: req.query.lt.value};
+        fn.stocks.get_all(req.query)
         .then(results => fn.send_res('stocks', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });

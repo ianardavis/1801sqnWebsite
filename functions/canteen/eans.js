@@ -34,11 +34,11 @@ module.exports = function (m, fn) {
             .catch(reject);
         });
     };
-    fn.eans.get_all = function (where, pagination) {
+    fn.eans.get_all = function (query) {
         return new Promise((resolve, reject) => {
             m.eans.findAndCountAll({
-                where: where,
-                ...pagination
+                where: query.where,
+                ...fn.pagination(query)
             })
             .then(results => resolve(results))
             .catch(reject);

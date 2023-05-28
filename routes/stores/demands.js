@@ -37,10 +37,9 @@ module.exports = (app, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/demands',          fn.loggedIn(), fn.permissions.check('authorised_demander'), (req, res) => {
-        fn.demands.get_all(
-            fn.build_query(req.query),
-            fn.pagination(req.query)
-        )
+        fn.demands.get_all({
+            where: fn.build_query(req.query)
+        })
         .then(results => fn.send_res('demands', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });

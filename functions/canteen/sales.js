@@ -11,15 +11,15 @@ module.exports = function (m, fn) {
             ]
         );
     };
-    fn.sales.get_all = function (where, pagination) {
+    fn.sales.get_all = function (query) {
         return new Promise((resolve, reject) => {
             m.sales.findAndCountAll({
-                where: where,
+                where: query.where,
                 include: [
                     fn.inc.canteen.sale_lines({item: true}),
                     fn.inc.users.user()
                 ],
-                ...pagination
+                ...fn.pagination(query)
             })
             .then(results => resolve(results))
             .catch(reject);
@@ -59,12 +59,12 @@ module.exports = function (m, fn) {
             .catch(reject);
         });
     };
-    fn.sales.lines.get_all = function (where, pagination) {
+    fn.sales.lines.get_all = function (query) {
         return new Promise((resolve, reject) => {
             m.sale_lines.findAndCountAll({
-                where:   where,
+                where:   query.where,
                 include: [fn.inc.canteen.item()],
-                ...pagination
+                ...fn.pagination(query)
             })
             .then(results => resolve(results))
             .catch(reject);

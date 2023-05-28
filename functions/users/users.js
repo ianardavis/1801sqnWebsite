@@ -19,13 +19,13 @@ module.exports = function (m, fn) {
             .catch(reject);
         });
     };
-    fn.users.get_all = function (where, pagination, status_include = fn.inc.users.status()) {
+    fn.users.get_all = function (query, status_include = fn.inc.users.status()) {
         return new Promise((resolve, reject) => {
             m.users.findAndCountAll({
-                where:      where,
+                where:      query.where,
                 include:    [fn.inc.users.rank(), status_include],
                 attributes: default_attributes,
-                ...pagination
+                ...fn.pagination(query)
             })
             .then(results => resolve(results))
             .catch(reject);

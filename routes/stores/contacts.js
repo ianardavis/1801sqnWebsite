@@ -1,6 +1,6 @@
 module.exports = (app, fn) => {
     app.get('/get/contacts',    fn.loggedIn(), fn.permissions.check('access_stores'),  (req, res) => {
-        fn.suppliers.contacts.get_all(req.query.where, fn.pagination(req.query))
+        fn.suppliers.contacts.get_all(req.query)
         .then(results => fn.send_res('contacts', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });

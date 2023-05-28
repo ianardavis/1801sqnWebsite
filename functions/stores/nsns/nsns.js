@@ -21,17 +21,17 @@ module.exports = function (m, fn) {
             .catch(err => fn.send_error(res, err));
         });
     };
-    fn.nsns.get_all = function (where, pagination) {
+    fn.nsns.get_all = function (query) {
         return new Promise((resolve, reject) => {
             m.nsns.findAndCountAll({
-                where: where,
+                where: query.where,
                 include: [
                     fn.inc.stores.nsn_group(),
                     fn.inc.stores.nsn_class(),
                     fn.inc.stores.nsn_country(),
                     fn.inc.stores.size()
                 ],
-                ...pagination
+                ...fn.pagination(query)
             })
             .then(results => resolve(results))
             .catch(reject);

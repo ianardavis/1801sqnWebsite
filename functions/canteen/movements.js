@@ -12,16 +12,16 @@ module.exports = function (m, fn) {
             ]
         );
     };
-    fn.movements.get_all = function (where, pagination) {
+    fn.movements.get_all = function (query) {
         return new Promise((resolve, reject) => {
             m.movements.findAndCountAll({
-                where: where,
+                where: query.where,
                 include: [
                     fn.inc.canteen.session(),
                     fn.inc.canteen.holding({as: 'holding_to'}),
                     fn.inc.canteen.holding({as: 'holding_from'})
                 ],
-                ...pagination
+                ...fn.pagination(query)
             })
             .then(results => resolve(results))
             .catch(reject);

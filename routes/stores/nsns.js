@@ -1,7 +1,7 @@
 module.exports = (app, fn) => {
     app.get('/nsns/:id',          fn.loggedIn(), fn.permissions.get('access_stores'),        (req, res) => res.render('stores/nsns/show'));
     app.get('/get/nsns',          fn.loggedIn(), fn.permissions.check('access_stores'),      (req, res) => {
-        fn.nsns.get_all(req.query.where, fn.pagination(req.query))
+        fn.nsns.get_all(req.query)
         .then(nsns => fn.send_res('nsns', res, nsns, req.query))
         .catch(err => fn.send_error(res, err));
     });
@@ -11,17 +11,17 @@ module.exports = (app, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/nsn_groups',    fn.loggedIn(), fn.permissions.check('access_stores'),      (req, res) => {
-        fn.nsns.groups.get_all(req.query.where, fn.pagination(req.query))
+        fn.nsns.groups.get_all(req.query)
         .then(results => fn.send_res('nsn_groups', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/nsn_classes',   fn.loggedIn(), fn.permissions.check('access_stores'),      (req, res) => {
-        fn.nsns.classes.get_all(req.query.where, fn.pagination(req.query))
+        fn.nsns.classes.get_all(req.query)
         .then(results => fn.send_res('nsn_classes', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/nsn_countries', fn.loggedIn(), fn.permissions.check('access_stores'),      (req, res) => {
-        fn.nsns.countries.get_all(req.query.where, fn.pagination(req.query))
+        fn.nsns.countries.get_all(req.query)
         .then(results => fn.send_res('nsn_countries', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });

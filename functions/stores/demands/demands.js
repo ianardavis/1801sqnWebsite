@@ -10,15 +10,15 @@ module.exports = function (m, fn) {
             include
         );
     };
-    fn.demands.get_all = function (where, pagination) {
+    fn.demands.get_all = function (query) {
         return new Promise((resolve, reject) => {
             m.demands.findAndCountAll({
-                where: where,
+                where: query.where,
                 include: [
                     fn.inc.users.user(),
                     fn.inc.stores.supplier()
                 ],
-                ...pagination
+                ...fn.pagination(query)
             })
             .then(results => resolve(results))
             .catch(reject);

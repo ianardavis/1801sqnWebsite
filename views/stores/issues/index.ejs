@@ -26,6 +26,7 @@
 				</select>
 			</div>
 			<%- include(`${partials}/filter/date`, {table: 'issue', field: 'createdAt'}) %>
+			<%- include(`${partials}/filter/item`, {table: 'issue'}) %>
 			<%- include(`${partials}/filter/size`, {table: 'issue'}) %>
 
 			<button class="btn btn-success w-100 mt-auto" form="form_issue_edit">

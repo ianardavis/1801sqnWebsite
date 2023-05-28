@@ -3,8 +3,7 @@ module.exports = (app, fn) => {
         fn.users.permissions.get_all(
             req.user.user_id,
             req.allowed,
-            req.query.where,
-            fn.pagination(req.query)
+            req.query
         )
         .then(results => {
             fn.send_res('permissions', res, results, req.query);

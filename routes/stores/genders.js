@@ -1,6 +1,6 @@
 module.exports = (app, fn) => {
     app.get('/get/genders',    fn.loggedIn(),                                             (req, res) => {
-        fn.genders.get_all(req.query.where, fn.pagination(req.query))
+        fn.genders.get_all(req.query)
         .then(results => fn.send_res('genders', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });

@@ -10,15 +10,15 @@ module.exports = function (m, fn) {
             ]
         );
     };
-    fn.sessions.get_all = function (where, pagination) {
+    fn.sessions.get_all = function (query) {
         return new Promise((resolve, reject) => {
             m.sessions.findAndCountAll({
-                where: where,
+                where: query.where,
                 include: [
                     fn.inc.users.user({as: 'user_open'}),
                     fn.inc.users.user({as: 'user_close'}),
                 ],
-                ...pagination
+                ...fn.pagination(query)
             })
             .then(results => resolve(results))
             .catch(reject);

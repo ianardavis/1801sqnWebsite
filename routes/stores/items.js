@@ -26,7 +26,7 @@ module.exports = (app, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/item_categories',    fn.loggedIn(), fn.permissions.check('access_stores'),      (req, res) => {
-        fn.items.categories.get_all(req.query.where, fn.pagination(req.query))
+        fn.items.categories.get_all(req.query)
         .then(categories => fn.send_res('categories', res, categories, req.query))
         .catch(err => fn.send_error(res, err));
     });

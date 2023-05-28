@@ -8,7 +8,7 @@ module.exports = (app, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/paid_in_outs',    fn.loggedIn(), fn.permissions.check('pay_in_out'), (req, res) => {
-        fn.paid_in_outs.get_all(req.query.where, fn.pagination(req.query))
+        fn.paid_in_outs.get_all(req.query)
         .then(results => fn.send_res('paid_ins', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });

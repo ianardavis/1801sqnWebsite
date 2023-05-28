@@ -7,12 +7,12 @@ module.exports = function (m, fn) {
             [fn.inc.users.user()]
         )
     };
-    fn.accounts.get_all = function (where, pagination) {
+    fn.accounts.get_all = function (query) {
         return new Promise((resolve, reject) => {
             m.accounts.findAndCountAll({
-                where:   where,
+                where:   query.where,
                 include: [fn.inc.users.user()],
-                ...pagination
+                ...fn.pagination(query)
             })
             .then(results => resolve(results))
             .catch(reject);

@@ -269,18 +269,18 @@ function add_page_links(count, limit, offset, table, func) {
     });
 };
 function build_filter_query(table, where = {}) {
-    let like  = {},
-        gt    = null,
-        lt    = null,
-        statuses  = getSelectedOptions(     `filter_${table}_statuses`),
-        date_from = document.querySelector(`#filter_${table}_createdAt_from`) || {value: ''},
-        date_to   = document.querySelector(`#filter_${table}_createdAt_to`)   || {value: ''},
-        user_id   = document.querySelector(`#filter_${table}_user`)           || {value: ''},
-        item      = document.querySelector(`#filter_${table}_item`)           || {value: ''},
-        size1     = document.querySelector(`#filter_${table}_size_1`)         || {value: ''},
-        size2     = document.querySelector(`#filter_${table}_size_2`)         || {value: ''},
-        size3     = document.querySelector(`#filter_${table}_size_3`)         || {value: ''},
-        supplier  = document.querySelector(`#filter_${table}_supplier`)       || {value: ''};
+    let like = {};
+    let gt   = null;
+    let lt   = null;
+    const statuses  = getSelectedOptions(     `filter_${table}_statuses`);
+    const date_from = document.querySelector(`#filter_${table}_createdAt_from`) || {value: ''};
+    const date_to   = document.querySelector(`#filter_${table}_createdAt_to`)   || {value: ''};
+    const user_id   = document.querySelector(`#filter_${table}_user`)           || {value: ''};
+    const item      = document.querySelector(`#filter_${table}_item`)           || {value: ''};
+    const size1     = document.querySelector(`#filter_${table}_size_1`)         || {value: ''};
+    const size2     = document.querySelector(`#filter_${table}_size_2`)         || {value: ''};
+    const size3     = document.querySelector(`#filter_${table}_size_3`)         || {value: ''};
+    const supplier  = document.querySelector(`#filter_${table}_supplier`)       || {value: ''};
     if (item   .value)       like.item  = item.value;
     if (size1  .value)       like.size1 = size1.value;
     if (size2  .value)       like.size2 = size2.value;

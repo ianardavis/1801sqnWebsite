@@ -11,16 +11,16 @@ module.exports = function (m, fn) {
             ]
         )
     };
-    fn.serials.get_all = function (where, pagination) {
+    fn.serials.get_all = function (query) {
         return new Promise((resolve, reject) => {
             m.serials.findAndCountAll({
-                where:   where,
+                where: query.where,
                 include: [
                     fn.inc.stores.location(),
                     fn.inc.stores.issue(),
                     fn.inc.stores.size()
                 ],
-                ...pagination
+                ...fn.pagination(query)
             })
             .then(results => resolve(results))
             .catch(reject);

@@ -22,6 +22,7 @@
 				</select>
 			</div>
 			<%- include(`${partials}/filter/date`, {table: 'order', field: 'createdAt'}) %>
+			<%- include(`${partials}/filter/item`, {table: 'order'}) %>
 			<%- include(`${partials}/filter/size`, {table: 'order'}) %>
 
 			<button class="btn btn-success w-100 mt-auto" form="form_order_edit">

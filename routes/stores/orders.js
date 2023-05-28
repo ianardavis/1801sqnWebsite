@@ -14,10 +14,7 @@ module.exports = (app, fn) => {
     });
 
     app.get('/get/orders',      fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
-        fn.orders.get_all(
-            req.query.where,
-            fn.pagination(req.query)
-        )
+        fn.orders.get_all(req.query)
         .then(results => fn.send_res('orders', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });

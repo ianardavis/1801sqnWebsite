@@ -5,7 +5,7 @@ module.exports = (app, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/details',    fn.loggedIn(), fn.permissions.check('access_stores'), (req, res) => {
-        fn.sizes.details.get_all(req.query.where, fn.pagination(req.query))
+        fn.sizes.details.get_all(req.query)
         .then(details => fn.send_res('details', res, details, req.query))
         .catch(err =>    fn.send_error(res, err));
     });

@@ -3,14 +3,11 @@ module.exports = (app, fn) => {
     app.get('/suppliers/:id',         fn.loggedIn(), fn.permissions.get('supplier_admin'),   (req, res) => res.render('stores/suppliers/show'));
 
     app.get('/get/suppliers',         fn.loggedIn(), fn.permissions.check('supplier_admin'), (req, res) => {
-        let where = req.query.where || {};
+        if (!req.query.where) req.query.where = {};
         if (req.query.like && req.query.like.name) {
-            where.name = {[fn.op.substring]: req.query.like.name}
+            req.query.where.name = {[fn.op.substring]: req.query.like.name}
         }
-        fn.suppliers.get_all(
-            where,
-            fn.pagination(req.query)
-        )
+        fn.suppliers.get_all(req.query)
         .then(results => fn.send_res('suppliers', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });

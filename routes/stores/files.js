@@ -10,10 +10,7 @@ module.exports = (app, fn) => {
         );
     });
     app.get('/get/files',           fn.loggedIn(), fn.permissions.check('supplier_admin'),  (req, res) => {
-        fn.files.get_all(
-            req.query.where,
-            fn.pagination(req.query)
-        )
+        fn.files.get_all(req.query)
         .then(results => fn.send_res('files', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });
@@ -23,10 +20,7 @@ module.exports = (app, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/file_details',    fn.loggedIn(), fn.permissions.check('supplier_admin'),  (req, res) => {
-        fn.files.details.get_all(
-            req.query.where,
-            fn.pagination(req.query)
-        )
+        fn.files.details.get_all(req.query)
         .then(results => fn.send_res('details', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });

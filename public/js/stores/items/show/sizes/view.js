@@ -3,7 +3,7 @@ function get_sizes() {
     .then(tbl_sizes => {
         get({
             table: 'sizes',
-            where: {item_id: path[2]},
+            ...build_filter_query('size', {item_id: path[2]}),
             func: get_sizes
         })
         .then(function ([result, options]) {

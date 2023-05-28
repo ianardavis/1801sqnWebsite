@@ -2,7 +2,7 @@ module.exports = (app, fn) => {
     app.get('/movements',             fn.loggedIn(), fn.permissions.get('cash_admin'),   (req, res) => res.render('canteen/movements/index'));
     app.get('/movements/:id',         fn.loggedIn(), fn.permissions.get('cash_admin'),   (req, res) => res.render('canteen/movements/show'));
     app.get('/get/movements',         fn.loggedIn(), fn.permissions.check('cash_admin'), (req, res) => {
-        fn.movements.get_all(req.query.where, fn.pagination(req.query))
+        fn.movements.get_all(req.query)
         .then(results => fn.send_res('movements', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });
@@ -14,12 +14,13 @@ module.exports = (app, fn) => {
     app.get('/get/movements_holding', fn.loggedIn(), fn.permissions.check('cash_admin'), (req, res) => {
         fn.movements.get_all(
             {
-                [fn.op.or]: [
-                    {holding_id_to:   req.query.where.holding_id},
-                    {holding_id_from: req.query.where.holding_id}
-                ]
-            },
-            fn.pagination(req.query)
+                where: {
+                    [fn.op.or]: [
+                        {holding_id_to:   req.query.where.holding_id},
+                        {holding_id_from: req.query.where.holding_id}
+                    ]
+                }
+            }
         )
         .then(results => fn.send_res('movements', res, results, req.query))
         .catch(err => fn.send_error(res, err));

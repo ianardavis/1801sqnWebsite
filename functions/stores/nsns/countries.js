@@ -5,11 +5,11 @@ module.exports = function (m, fn) {
             where
         );
     };
-    fn.nsns.countries.get_all = function (where, pagination) {
+    fn.nsns.countries.get_all = function (query) {
         return new Promise((resolve, reject) => {
             m.nsn_countries.findAndCountAll({
-                where: where,
-                ...pagination
+                where: query.where,
+                ...fn.pagination(query)
             })
             .then(results => resolve(results))
             .catch(reject);

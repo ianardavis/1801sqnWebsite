@@ -12,15 +12,15 @@ module.exports = function (m, fn) {
             ]
         );
     };
-    fn.paid_in_outs.get_all = function (where, pagination) {
+    fn.paid_in_outs.get_all = function (query) {
         return new Promise((resolve, reject) => {
             m.paid_in_outs.findAndCountAll({
-                where: where,
+                where: query.where,
                 include: [
                     fn.inc.users.user({as: 'user_paid_in_out'}),
                     fn.inc.canteen.holding()
                 ],
-                ...pagination
+                ...fn.pagination(query)
             })
             .then(results => resolve(results))
             .catch(reject);

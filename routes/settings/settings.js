@@ -2,7 +2,7 @@ module.exports = (app, fn) => {
     app.get('/settings',        fn.loggedIn(), fn.permissions.get('access_settings'),   (req, res) => res.render('settings/show'));
 
     app.get('/get/resource_links',    fn.loggedIn(), fn.permissions.check('access_settings'), (req, res) => {
-        fn.site.links.get_all(req.query.where, fn.pagination(req.query))
+        fn.site.links.get_all(req.query)
         .then(links => res.send({success: true, result: links}))
         .catch(err => fn.send_error(res, err));
     });
@@ -13,7 +13,7 @@ module.exports = (app, fn) => {
     });
 
     app.get('/get/settings',    fn.loggedIn(), fn.permissions.check('access_settings'), (req, res) => {
-        fn.settings.get_all(req.query.where, fn.pagination(req.query))
+        fn.settings.get_all(req.query)
         .then(settings => res.send({success: true, result: settings}))
         .catch(err => fn.send_error(res, err));
     });

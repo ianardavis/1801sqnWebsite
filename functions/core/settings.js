@@ -23,12 +23,12 @@ module.exports = function (m, fn) {
             .catch(reject);
         });
     };
-    fn.settings.get_all = function (where, pagination) {
+    fn.settings.get_all = function (query) {
         return new Promise((resolve, reject) => {
             m.settings.findAll({
-                where:      where,
+                where:      query.where,
                 attributes: ['setting_id','name', 'value'],
-                ...pagination
+                ...fn.pagination(query)
             })
             .then(settings => resolve(settings))
             .catch(reject);

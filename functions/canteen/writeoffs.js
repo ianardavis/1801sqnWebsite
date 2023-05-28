@@ -10,15 +10,15 @@ module.exports = function (m, fn) {
             ]
         );
     };
-    fn.writeoffs.get_all = function (where, pagination) {
+    fn.writeoffs.get_all = function (query) {
         return new Promise((resolve, reject) => {
             m.writeoffs.findAndCountAll({
-                where: where,
+                where: query.where,
                 include: [
                     fn.inc.users.user(),
                     fn.inc.canteen.item()
                 ],
-                ...pagination
+                ...fn.pagination(query)
             })
             .then(results => resolve(results))
             .catch(reject);

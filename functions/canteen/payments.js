@@ -6,15 +6,15 @@ module.exports = function (m, fn) {
             where
         );
     };
-    fn.payments.get_all = function (where, pagination) {
+    fn.payments.get_all = function (query) {
         return new Promise((resolve, reject) => {
             m.payments.findAndCountAll({
-                where: where,
+                where: query.where,
                 include: [
                     fn.inc.canteen.sale(),
                     fn.inc.users.user()
                 ],
-                ...pagination
+                ...fn.pagination(query)
             })
             .then(results => resolve(results))
             .catch(reject);

@@ -14,13 +14,13 @@ module.exports = function (m, fn) {
             .catch(reject);
         });
     };
-    fn.users.permissions.get_all = function (user_id, allowed, where, pagination) {
+    fn.users.permissions.get_all = function (user_id, allowed, query, pagination) {
         return new Promise((resolve, reject) => {
             permissions_allowed(user_id, allowed)
             .then(allowed => {
                 m.permissions.findAndCountAll({
-                    where: where,
-                    ...pagination
+                    where: query.where,
+                    ...fn.pagination(query)
                 })
                 .then(results => resolve(results))
                 .catch(reject);

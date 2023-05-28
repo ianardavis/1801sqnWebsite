@@ -1,9 +1,9 @@
 module.exports = function (m, fn) {
-    fn.users.ranks.get_all = function (where, pagination) {
+    fn.users.ranks.get_all = function (query) {
         return new Promise((resolve, reject) => {
             m.ranks.findAndCountAll({
-                where: where,
-                ...pagination
+                where: query.where,
+                ...fn.pagination(query)
             })
             .then(results => resolve(results))
             .catch(reject);

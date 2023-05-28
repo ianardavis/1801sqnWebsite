@@ -6,11 +6,11 @@ module.exports = function (m, fn) {
             [fn.inc.users.user()]
         );
     };
-    fn.files.get_all   = function (where, pagination) {
+    fn.files.get_all   = function (query) {
         return new Promise((resolve, reject) => {
             m.files.findAndCountAll({
-                where: where,
-                ...pagination
+                where: query.where,
+                ...fn.pagination(query)
             })
             .then(results => resolve(results))
             .catch(reject);
