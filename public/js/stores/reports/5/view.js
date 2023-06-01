@@ -8,7 +8,28 @@ function getItems() {
 function getSizes() {
     clear('tbl_sizes')
     .then(tbl_sizes => {
-        let item_id = document.querySelector('#sel_items') || {value: ''};
+        function add_line(size, index) {
+            let row = tbl_sizes.insertRow(-1);
+            add_cell(row, {
+                text: size.size1,
+                append: [
+                    new Hidden_Input({
+                        attributes: [
+                            {field: 'name',  value: `sizes[][${index}][size_id]`},
+                            {field: 'value', value: size.size_id}
+                        ]
+                    }).e
+                ]
+            });
+            add_cell(row, {text: size.size2});
+            add_cell(row, {text: size.size3});
+            add_cell(row, {id: `${size.size_id}_page`});
+            add_cell(row, {id: `${size.size_id}_cell`});
+            add_cell(row, {append: new Link(`/sizes/${size.size_id}`).e});
+            addInput(size.size_id, 'Page', index);
+            addInput(size.size_id, 'Cell', index);
+        };
+        const item_id = document.querySelector('#sel_items') || {value: ''};
         if (item_id.value) {
             get({
                 table: 'sizes',
@@ -20,25 +41,7 @@ function getSizes() {
             .then(function ([result, options]) {
                 let index = 0;
                 result.sizes.forEach(size => {
-                    let row = tbl_sizes.insertRow(-1);
-                    add_cell(row, {
-                        text: size.size1,
-                        append: [
-                            new Hidden_Input({
-                                attributes: [
-                                    {field: 'name',  value: `sizes[][${index}][size_id]`},
-                                    {field: 'value', value: size.size_id}
-                                ]
-                            }).e
-                        ]
-                    });
-                    add_cell(row, {text: size.size2});
-                    add_cell(row, {text: size.size3});
-                    add_cell(row, {id: `${size.size_id}_page`});
-                    add_cell(row, {id: `${size.size_id}_cell`});
-                    add_cell(row, {append: new Link(`/sizes/${size.size_id}`).e});
-                    addInput(size.size_id, 'Page', index);
-                    addInput(size.size_id, 'Cell', index);
+                    add_line(size, index);
                     index++;
                 })
             });

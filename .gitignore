@@ -1,8 +1,8 @@
-node_modules
+node_modules/
 .env*
 .vscode
 .vs
-public/lib/icons
-public/img/favicon
-public/res
-public/uploads
+public/lib/icons/
+public/img/favicon/
+public/res/
+public/uploads/

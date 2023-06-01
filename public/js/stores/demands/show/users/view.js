@@ -1,6 +1,12 @@
 function get_users() {
     clear('tbl_users')
     .then(tbl_users => {
+        function add_line(user) {
+            let row = tbl_users.insertRow(-1);
+            add_cell(row, {text: user.surname});
+            add_cell(row, {text: user.first_name});
+            add_cell(row, {append: new Link(`/users/${user.user_id}`).e});
+        };
         get({
             table: 'users',
             location: 'demand/users',
@@ -10,10 +16,7 @@ function get_users() {
         .then(function ([results, options]) {
             set_count('user', results.length);
             results.forEach(user => {
-                let row = tbl_users.insertRow(-1);
-                add_cell(row, {text: user.surname});
-                add_cell(row, {text: user.first_name});
-                add_cell(row, {append: new Link(`/users/${user.user_id}`).e});
+                add_line(user);
             });
         });
     });

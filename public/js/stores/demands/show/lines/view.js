@@ -6,60 +6,60 @@ function get_lines() {
         if (statuses.length > 0) where.status = statuses;
         return where;
     };
-    function add_row(tbl_lines, line, index) {
-        try {
-            let row = tbl_lines.insertRow(-1);
-            const qty = sum_order_qtys(line.orders);
-            add_cell(row, {text: line.size.item.description});
-            add_cell(row, {
-                text: print_size(line.size),
-                append: [new Hidden_Input({
-                    attributes:[
-                        {field: 'name',  value: `lines[][${index}][line_id]`},
-                        {field: 'value', value: line.line_id},
-                    ]
-                }).e]
-            });
-            add_cell(row, {text: qty});
-            add_cell(row, {text: line_statuses[line.status] || 'Unknown'});
-
-            let radios = [];
-            const args = [line.line_id, index, receive_options];
-
-            if ([0, 1, 2].includes(Number(line.status))) radios.push(nil_radio(    ...args));
-            if ([1, 2]   .includes(Number(line.status))) radios.push(cancel_radio( ...args));
-            if (line.status === 2)                       radios.push(receive_radio(...args));
-            radios.push(new Div({attributes: [{field: 'id', value: `details_${line.line_id}`}]}).e);
-
-            add_cell(row, {append: radios});
-
-            add_cell(row, {append: 
-                new Modal_Button(
-                    _search(),
-                    'line_view',
-                    [{field: 'id', value: line.line_id}]
-                ).e
-            });
-
-        } catch (error) {
-            console.error(`Error loading line ${index} (${line.line_id}):`)
-            console.error(error);
-            
-        };
-    };
     clear('tbl_lines')
     .then(tbl_lines => {
+        function add_line(line, index) {
+            try {
+                let row = tbl_lines.insertRow(-1);
+                const qty = sum_order_qtys(line.orders);
+                add_cell(row, {text: line.size.item.description});
+                add_cell(row, {
+                    text: print_size(line.size),
+                    append: [new Hidden_Input({
+                        attributes:[
+                            {field: 'name',  value: `lines[][${index}][line_id]`},
+                            {field: 'value', value: line.line_id},
+                        ]
+                    }).e]
+                });
+                add_cell(row, {text: qty});
+                add_cell(row, {text: line_statuses[line.status] || 'Unknown'});
+    
+                let radios = [];
+                const args = [line.line_id, index, receive_options];
+    
+                if ([0, 1, 2].includes(Number(line.status))) radios.push(nil_radio(    ...args));
+                if ([   1, 2].includes(Number(line.status))) radios.push(cancel_radio( ...args));
+                if (line.status === 2)                       radios.push(receive_radio(...args));
+                radios.push(new Div({attributes: [{field: 'id', value: `details_${line.line_id}`}]}).e);
+    
+                add_cell(row, {append: radios});
+    
+                add_cell(row, {append: 
+                    new Modal_Button(
+                        _search(),
+                        'line_view',
+                        [{field: 'id', value: line.line_id}]
+                    ).e
+                });
+    
+            } catch (error) {
+                console.error(`Error loading line ${index} (${line.line_id}):`)
+                console.error(error);
+                
+            };
+        };
         get({
             table: 'demand_lines',
             where: line_query(),
             func: get_lines
         })
         .then(function ([result, options]) {
-            let row_index = 1;
+            let index = 1;
             set_count('line', result.count);
             result.lines.forEach(line => {
-                add_row(tbl_lines, line, row_index);
-                row_index++
+                add_line(line, index);
+                index++;
             });
         });
     });

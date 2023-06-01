@@ -6,39 +6,45 @@ function getItems() {
     });
 };
 function getSizes() {
+    function display_size_texts([item, options]) {
+        set_innerText('size_text1', item.size_text1);
+        set_innerText('size_text2', item.size_text2);
+        set_innerText('size_text3', item.size_text3);
+        return item;
+    };
+
     clear('tbl_sizes')
     .then(tbl_sizes => {
-        let sel_items = document.querySelector('#sel_items') || {value: ''};
+        function show_sizes(item) {
+            get({
+                table: 'sizes',
+                where: {item_id: item.item_id}
+            })
+            .then(function ([result, options]) {
+                result.sizes.forEach(size => {
+                    get_stock(size.size_id)
+                    .then(stock => {
+                        let row = tbl_sizes.insertRow(-1);
+                        add_cell(row, {append: new Checkbox({
+                            small: true,
+                            attributes: [{field: 'data-id', value: size.size_id}]}).e
+                        });
+                        add_cell(row, {text: size.size1});
+                        add_cell(row, (size.size2 ? {text: size.size2} : {}));
+                        add_cell(row, (size.size3 ? {text: size.size3} : {}));
+                        add_cell(row, {text: stock || '0'});
+                    });
+                });
+            });
+        };
+        const sel_items = document.querySelector('#sel_items') || {value: ''};
         if (sel_items.value) {
             get({
                 table: 'item',
                 where: {item_id: sel_items.value}
             })
-            .then(function ([item, options]) {
-                set_innerText('size_text1', item.size_text1);
-                set_innerText('size_text2', item.size_text2);
-                set_innerText('size_text3', item.size_text3);
-                get({
-                    table: 'sizes',
-                    where: {item_id: sel_items.value}
-                })
-                .then(function ([result, options]) {
-                    result.sizes.forEach(size => {
-                        get_stock(size.size_id)
-                        .then(stock => {
-                            let row = tbl_sizes.insertRow(-1);
-                            add_cell(row, {append: new Checkbox({
-                                small: true,
-                                attributes: [{field: 'data-id', value: size.size_id}]}).e
-                            });
-                            add_cell(row, {text: size.size1});
-                            add_cell(row, (size.size2 ? {text: size.size2} : {}));
-                            add_cell(row, (size.size3 ? {text: size.size3} : {}));
-                            add_cell(row, {text: stock || '0'});
-                        });
-                    });
-                });
-            });
+            .then(display_size_texts)
+            .then(show_sizes);
         };
     });
 };
@@ -58,6 +64,5 @@ window.addEventListener('load', function () {
     add_listener('sel_items',    getSizes, 'input');
     add_listener('filter_items', getItems, 'input');
     add_sort_listeners('sizes', getSizes);
-    // add_sort_listeners('items', getItems);
     getItems();
 });

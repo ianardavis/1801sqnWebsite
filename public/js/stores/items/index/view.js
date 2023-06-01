@@ -14,6 +14,11 @@ function get_items() {
     };
     clear('tbl_items')
     .then(tbl_items => {
+        function add_line(item) {
+            let row = tbl_items.insertRow(-1);
+            add_cell(row, {text: item.description});
+            add_cell(row, {append: new Link(`/items/${item.item_id}`).e});
+        };
         get({
             table: 'items',
             ...item_query(),
@@ -21,9 +26,7 @@ function get_items() {
         })
         .then(function ([result, options]) {
             result.items.forEach(item => {
-                let row = tbl_items.insertRow(-1);
-                add_cell(row, {text: item.description});
-                add_cell(row, {append: new Link(`/items/${item.item_id}`).e});
+                add_line(item);
             });
         });
     });

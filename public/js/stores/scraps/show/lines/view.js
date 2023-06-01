@@ -1,7 +1,38 @@
-let line_statuses = {'0': 'Cancelled', '1': 'Pending', '2': 'Closed'};
+const line_statuses = {
+    '0': 'Cancelled',
+    '1': 'Pending',
+    '2': 'Closed'
+};
 function getLines() {
     clear('tbl_lines')
     .then(tbl_lines => {
+        function add_line(line, index) {
+            let row = tbl_lines.insertRow(-1);
+            add_cell(row, {text: line.size.item.description});
+            add_cell(row, {text: print_size(line.size)});
+            add_cell(row, {text: print_nsn( line.nsn)});
+            add_cell(row, {text: line.qty});
+            add_cell(row, {
+                text: line_statuses[line.status],
+                append: new Hidden_Input({
+                    attributes: [
+                        {field: 'name',  value: `lines[][${index}][line_id]`},
+                        {field: 'value', value: line.line_id}
+                    ]
+                }).e
+            });
+            add_action_radios(row, line, index);
+            add_cell(row, {append: 
+                new Modal_Button(
+                    _search(),
+                    'line_view',
+                    [{
+                        field: 'id',
+                        value: line.line_id
+                    }]
+                ).e
+            });
+        };
         get({
             table: 'scrap_lines',
             ...build_filter_query('scrap_line', {scrap_id: path[2]}),
@@ -9,34 +40,10 @@ function getLines() {
         })
         .then(function ([result, options]) {
             set_count('line', result.count);
-            let row_index = 0;
+            let index = 0;
             result.lines.forEach(line => {
-                let row = tbl_lines.insertRow(-1);
-                add_cell(row, {text: line.size.item.description});
-                add_cell(row, {text: print_size(line.size)});
-                add_cell(row, {text: print_nsn( line.nsn)});
-                add_cell(row, {text: line.qty});
-                add_cell(row, {
-                    text: line_statuses[line.status],
-                    append: new Hidden_Input({
-                        attributes: [
-                            {field: 'name',  value: `lines[][${row_index}][line_id]`},
-                            {field: 'value', value: line.line_id}
-                        ]
-                    }).e
-                });
-                add_action_radios(row, line, row_index);
-                add_cell(row, {append: 
-                    new Modal_Button(
-                        _search(),
-                        'line_view',
-                        [{
-                            field: 'id',
-                            value: line.line_id
-                        }]
-                    ).e
-                });
-                row_index++
+                add_line(line, index);
+                index++
             });
         });
     });

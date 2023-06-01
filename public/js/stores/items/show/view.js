@@ -17,7 +17,10 @@ function get_item() {
     function set_button_states(item) {
         if (typeof enable_edit_button   === 'function') enable_edit_button();
         if (typeof enable_delete_button === 'function') enable_delete_button();
-        enable_delete_button
+        return item;
+    };
+    function set_item_id_values(item) {
+        document.querySelectorAll('.item_id').forEach(e => e.setAttribute('value', item.item_id));
         return item;
     };
 
@@ -28,9 +31,7 @@ function get_item() {
     })
     .then(display_details)
     .then(set_button_states)
-    .then(item => {
-        document.querySelectorAll('.item_id').forEach(e => e.setAttribute('value', item.item_id));
-    })
+    .then(set_item_id_values)
     .catch(err => redirect_on_error(err, '/items'));
 };
 window.addEventListener('load', function () {

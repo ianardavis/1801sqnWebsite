@@ -7,6 +7,14 @@ const loancard_statuses = {
 function get_loancards() {
     clear('tbl_loancards')
     .then(tbl_loancards => {
+        function add_line(loancard) {
+            let row = tbl_loancards.insertRow(-1);
+            add_cell(row, table_date(loancard.createdAt));
+            add_cell(row, {text: print_user(loancard.user_loancard)});
+            add_cell(row, {text: loancard.lines.length || '0'});
+            add_cell(row, {text: loancard_statuses[loancard.status]});
+            add_cell(row, {append: new Link(`/loancards/${loancard.loancard_id}`).e});
+        };
         get({
             table: 'loancards',
             ...build_filter_query(),
@@ -14,12 +22,7 @@ function get_loancards() {
         })
         .then(function ([results, options]) {
             results.loancards.forEach(loancard => {
-                let row = tbl_loancards.insertRow(-1);
-                add_cell(row, table_date(loancard.createdAt));
-                add_cell(row, {text: print_user(loancard.user_loancard)});
-                add_cell(row, {text: loancard.lines.length || '0'});
-                add_cell(row, {text: loancard_statuses[loancard.status]});
-                add_cell(row, {append: new Link(`/loancards/${loancard.loancard_id}`).e});
+                add_line(loancard);
             });
         })
     });

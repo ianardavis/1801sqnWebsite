@@ -16,13 +16,7 @@ function show_sizes() {
     };
     clear('tbl_sizes')
     .then(tbl_sizes => {
-        get({
-            table: 'issue',
-            where: {issue_id: path[2]}
-        })
-        .then(check_issue_status)
-        .then(get_sizes)
-        .then(sizes => {
+        function display_sizes(sizes) {
             sizes.forEach(size => {
                 let row = tbl_sizes.insertRow(-1);
                 add_cell(row, {text: size.size1});
@@ -35,7 +29,14 @@ function show_sizes() {
                     ]
                 }).e});
             });
+        };
+        get({
+            table: 'issue',
+            where: {issue_id: path[2]}
         })
+        .then(check_issue_status)
+        .then(get_sizes)
+        .then(display_sizes)
         .catch(err => {
             modalHide('size_edit');
             alert_toast(err.message);

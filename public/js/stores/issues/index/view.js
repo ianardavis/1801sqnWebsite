@@ -10,36 +10,39 @@ const statuses = {
 function getIssues() {
     clear('tbl_issues')
     .then(tbl_issues => {
+        function add_line(issue, index) {
+            let row = tbl_issues.insertRow(-1);
+            add_cell(row, table_date(issue.createdAt));
+            add_cell(row, {text: print_user(issue.user_issue)});
+            add_cell(row, {text: (issue.size && issue.size.item ? issue.size.item.description : '')});
+            add_cell(row, {text: print_size(issue.size)});
+            add_cell(row, {text: issue.qty});
+            add_cell(row, {
+                text: statuses[issue.status] || 'Unknown',
+                append: new Hidden_Input({
+                    attributes: [
+                        {field: 'name',  value: `lines[][${index}][issue_id]`},
+                        {field: 'value', value: issue.issue_id}
+                    ]
+                }).e
+            });
+    
+            add_cell(row, {
+                id: `row_${issue.issue_id}`,
+                append: row_radios(issue, index)
+            });
+            add_cell(row, {append: new Link(`/issues/${issue.issue_id}`).e});
+        };
         get({
             table: 'issues',
             func:  getIssues,
             ...build_filter_query('issue')
         })
         .then(function ([result, options]) {
-            let row_index = 0;
+            let index = 0;
             result.issues.forEach(issue => {
-                let row = tbl_issues.insertRow(-1);
-                add_cell(row, table_date(issue.createdAt));
-                add_cell(row, {text: print_user(issue.user_issue)});
-                add_cell(row, {text: (issue.size && issue.size.item ? issue.size.item.description : '')});
-                add_cell(row, {text: print_size(issue.size)});
-                add_cell(row, {text: issue.qty});
-                add_cell(row, {
-                    text: statuses[issue.status] || 'Unknown',
-                    append: new Hidden_Input({
-                        attributes: [
-                            {field: 'name',  value: `lines[][${row_index}][issue_id]`},
-                            {field: 'value', value: issue.issue_id}
-                        ]
-                    }).e
-                });
-
-                add_cell(row, {
-                    id: `row_${issue.issue_id}`,
-                    append: row_radios(issue, row_index)
-                });
-                add_cell(row, {append: new Link(`/issues/${issue.issue_id}`).e});
-                row_index ++;
+                add_line(issue, index);
+                index ++;
             });
             hide_spinner('issues');
         });
@@ -70,7 +73,7 @@ function row_radios(issue, index) {
     radios.push(new Div({attributes: [{field: 'id', value: `details_${issue.issue_id}`}]}).e);
     return radios;
 };
-function getUsers() {
+function get_users() {
     return listCurrentUsers({
         select: 'filter_issue_user',
         blank:  {text: 'All'}
@@ -78,10 +81,10 @@ function getUsers() {
 };
 window.addEventListener('load', function () {
     add_listener('reload', getIssues);
-    getUsers();
-    sidebarOnShow('IssuesFilter', getUsers);
+    get_users();
+    sidebarOnShow('IssuesFilter', get_users);
     modalOnShow('issue_add', () => {sidebarClose('IssuesFilter')});
-    add_listener('btn_users_reload',            getUsers);
+    add_listener('btn_users_reload',            get_users);
     add_listener('filter_issue_user',           getIssues, 'input');
     add_listener('filter_issue_statuses',       getIssues, 'input');
     add_listener('filter_issue_createdAt_from', getIssues, 'input');

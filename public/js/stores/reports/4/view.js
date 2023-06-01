@@ -14,6 +14,29 @@ function getLocations() {
 function getStocks(location_id) {
     clear('tbl_stocks')
     .then(tbl_stocks => {
+        function add_line(stock, index) {
+            let row = tbl_stocks.insertRow(-1);
+            add_cell(row, {text: stock.size.item.description});
+            add_cell(row, {text: stock.size.size1});
+            add_cell(row, {text: stock.size.size2});
+            add_cell(row, {text: stock.size.size3});
+            add_cell(row, {text: stock.qty || '0'});
+            add_cell(row, {append: [
+                new Number_Input({
+                    attributes: [
+                        {field: 'name', value: `counts[][${index}][qty]`},
+                        {field: 'min',  value: '0'}
+                    ]
+                }).e,
+                new Hidden_Input({
+                    attributes: [
+                        {field: 'name',  value: `counts[][${index}][stock_id]`},
+                        {field: 'value', value: stock.stock_id}
+                    ]
+                }).e
+            ]});
+            add_cell(row, {append: new Link(`/stocks/${stock.stock_id}`).e});
+        };
         set_value('location_id', location_id)
         if (location_id) {
             get({
@@ -21,30 +44,10 @@ function getStocks(location_id) {
                 where: {location_id: location_id}
             })
             .then(function ([result, options]) {
-                let row_index = 0;
+                let index = 0;
                 result.stocks.forEach(stock => {
-                    let row = tbl_stocks.insertRow(-1);
-                    add_cell(row, {text: stock.size.item.description});
-                    add_cell(row, {text: stock.size.size1});
-                    add_cell(row, {text: stock.size.size2});
-                    add_cell(row, {text: stock.size.size3});
-                    add_cell(row, {text: stock.qty || '0'});
-                    add_cell(row, {append: [
-                        new Number_Input({
-                            attributes: [
-                                {field: 'name', value: `counts[][${row_index}][qty]`},
-                                {field: 'min',  value: '0'}
-                            ]
-                        }).e,
-                        new Hidden_Input({
-                            attributes: [
-                                {field: 'name',  value: `counts[][${row_index}][stock_id]`},
-                                {field: 'value', value: stock.stock_id}
-                            ]
-                        }).e
-                    ]});
-                    add_cell(row, {append: new Link(`/stocks/${stock.stock_id}`).e});
-                    row_index++;
+                    add_line(stock, index);
+                    index++;
                 });
             });
         };
