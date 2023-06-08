@@ -5,25 +5,6 @@
 <%- include(`${partials}/head/components/close`) %>
 <section class='container'>
     <%- include(`${partials}/sidebar/button`, {id: 'actions', text: 'Actions', float: true}) %>
-	<%- include(`${partials}/sidebar/open`, {id: 'actions', text: 'Actions'}) %>
-			<form id="form_scrap_complete">
-				<button id='btn_scrap_complete' class="btn btn-success w-100 mb-1" disabled>Complete</button>
-			</form>
-			<form id="form_scrap_file_download">
-				<button id='btn_scrap_file_download' class="btn btn-success w-100 mb-1" disabled>Download File</button>
-			</form>
-			<form id="form_scrap_file_print">
-				<button id='btn_scrap_file_print' class="btn btn-primary w-100 mb-1" disabled>Print File</button>
-			</form>
-			<form id="form_scrap_file_delete">
-				<button id='btn_scrap_file_delete' class="btn btn-danger w-100 mb-1" disabled>Delete File</button>
-			</form>
-			<button class='btn btn-success mb-1 w-100' id='btn_lines_action' disabled>Action Lines</button>
-			<form id="form_delete" class="mt-auto">
-				<button id='btn_delete' type='button' class="btn btn-danger w-100" disabled>Cancel</button>
-			</form>
-		</div>
-	</div>
     <div class="row mb-1">
         <span class="badge text-bg-secondary w-50" id="bdg_status_1">Draft</span>
         <span class="badge text-bg-secondary w-50" id="bdg_status_2">Closed</span>
@@ -51,19 +32,6 @@
 					<%- include(`${partials}/sidebar/button`, {id: 'lines_filter', text: 'Filter'}) %>
 				</div>
 			</div>
-			<%- include(`${partials}/sidebar/open`, {id: 'lines_filter', text: 'Filter Lines'}) %>
-					<div class="input-group mb-1">
-						<span class="input-group-text w-30">Status</span>
-						<select id="filter_scrap_line_statuses" class="form-select" multiple size="3">
-							<option value="0"		  >Cancelled</option>
-							<option value="1" selected>Pending	</option>
-							<option value="2" selected>Closed	</option>
-						</select>
-					</div>
-					<%- include(`${partials}/filter/item`, {table: 'scrap_line'}) %>
-					<%- include(`${partials}/filter/size`, {table: 'scrap_line'}) %>
-				</div>
-			</div>
 			<form id='form_actions'>
 				<table class='table table-sm table-hover'>
 					<thead class='thead-dark' id="tbl_scrap_lines_head">
@@ -83,7 +51,47 @@
         <%- include(`${partials}/common/actions/tab_body`) %>
         <%- include(`${partials}/common/notes/tab_body`) %>
 	</div>
-	<div id="div_modals">
+
+	<div id="sidebars">
+		<div class="offcanvas offcanvas-start" tabindex="-1" id="sdb_actions" aria-labelledby="sdb_actions_label">
+			<%- include(`${partials}/sidebar/header`, {id: 'actions', text: 'Actions'}) %>
+			<div class="offcanvas-body d-flex flex-column">
+				<form id="form_scrap_complete">
+					<button id='btn_scrap_complete' class="btn btn-success w-100 mb-1" disabled>Complete</button>
+				</form>
+				<form id="form_scrap_file_download">
+					<button id='btn_scrap_file_download' class="btn btn-success w-100 mb-1" disabled>Download File</button>
+				</form>
+				<form id="form_scrap_file_print">
+					<button id='btn_scrap_file_print' class="btn btn-primary w-100 mb-1" disabled>Print File</button>
+				</form>
+				<form id="form_scrap_file_delete">
+					<button id='btn_scrap_file_delete' class="btn btn-danger w-100 mb-1" disabled>Delete File</button>
+				</form>
+				<button class='btn btn-success mb-1 w-100' id='btn_lines_action' disabled>Action Lines</button>
+				<form id="form_delete" class="mt-auto">
+					<button id='btn_delete' type='button' class="btn btn-danger w-100" disabled>Cancel</button>
+				</form>
+			</div>
+		</div>
+		<div class="offcanvas offcanvas-start" tabindex="-1" id="sdb_lines_filter" aria-labelledby="sdb_lines_filter_label">
+			<%- include(`${partials}/sidebar/header`, {id: 'lines_filter', text: 'Filter Lines'}) %>
+			<div class="offcanvas-body d-flex flex-column">
+				<div class="input-group mb-1">
+					<span class="input-group-text w-30">Status</span>
+					<select id="filter_scrap_line_statuses" class="form-select" multiple size="3">
+						<option value="0"		  >Cancelled</option>
+						<option value="1" selected>Pending	</option>
+						<option value="2" selected>Closed	</option>
+					</select>
+				</div>
+				<%- include(`${partials}/filter/item`, {table: 'scrap_line'}) %>
+				<%- include(`${partials}/filter/size`, {table: 'scrap_line'}) %>
+			</div>
+		</div>
+		<%- include(`${partials}/common/notes/sidebar`) %>
+	</div>
+	<div id="modals">
         <%- include(`${partials}/common/notes/modals`) %>
         <%- include(`${partials}/common/actions/modals`) %>
 		<%- include(`${partials}/modals/stores/mdl_line_view`, {table: 'Scrap'}) %>

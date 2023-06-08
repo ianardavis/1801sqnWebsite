@@ -64,10 +64,7 @@ function get_demand() {
     .then(set_links)
     .then(set_status_badges)
     .then(set_button_states)
-    .catch(err => {
-        alert(err);
-        window.location.assign('/demands');
-    });
+    .catch(err => redirect_on_error(err, '/demands'));
 };
 window.addEventListener('load', function () {
     set_attribute('form_download', 'action', `/demands/${path[2]}/download`);
@@ -78,7 +75,7 @@ window.addEventListener('load', function () {
         {
             onComplete: [
                 get_demand,
-                function () {if (typeof get_lines === 'function') get_lines()}
+                get_lines
             ]
         }
     );
@@ -89,7 +86,7 @@ window.addEventListener('load', function () {
         {
             onComplete: [
                 get_demand,
-                function () {if (typeof get_lines === 'function') get_lines()}
+                get_lines
             ]
         }
     );

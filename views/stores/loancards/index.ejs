@@ -9,23 +9,6 @@
 			<%- include(`${partials}/sidebar/button`, {id: 'filter', text: 'Filter'}) %>
 		</div>
 	</div>
-	<%- include(`${partials}/sidebar/open`, {id: 'filter', text: 'Filter'}) %>
-			<button class="btn btn-success w-100 mb-1" type="button" data-bs-toggle="modal" data-bs-target="#mdl_loancard_open">
-				View Loancard
-			</button>
-			<%- include(`${partials}/filter/user`, {table: 'loancard'}) %>
-			<div class="input-group mb-1">
-				<span class="input-group-text w-30">Status</span>
-				<select id="filter_loancard_statuses" class="form-select" multiple size="4">
-					<option value="0"		  >Cancelled</option>
-					<option value="1" selected>Draft</option>
-					<option value="2" selected>Complete</option>
-					<option value="3"		  >Closed  </option>
-				</select>
-			</div>
-			<%- include(`${partials}/filter/date`, {table: 'loancard', field: 'createdAt'}) %>
-		</div>
-	</div>
 	<table class="table table-sm table-hover">
 		<thead class="thead-dark" id="tbl_loancards_head">
 			<th class='w-35' data-column='["createdAt"]' data-dir="DESC">Date</th>
@@ -37,7 +20,29 @@
 		<tbody id="tbl_loancards"></tbody>
 	</table>
 	<%- include(`${partials}/limit`, {table: 'loancards'}) %>
-	<div id="div_modals">
+
+	<div id="sidebars">
+		<div class="offcanvas offcanvas-start" tabindex="-1" id="sdb_filter" aria-labelledby="sdb_filter_label">
+			<%- include(`${partials}/sidebar/header`, {id: 'filter', text: 'Filter'}) %>
+			<div class="offcanvas-body d-flex flex-column">
+				<button class="btn btn-success w-100 mb-1" type="button" data-bs-toggle="modal" data-bs-target="#mdl_loancard_open">
+					View Loancard
+				</button>
+				<div class="input-group mb-1">
+					<span class="input-group-text w-30">Status</span>
+					<select id="filter_loancard_statuses" class="form-select" multiple size="4">
+						<option value="0"		  >Cancelled</option>
+						<option value="1" selected>Draft</option>
+						<option value="2" selected>Complete</option>
+						<option value="3"		  >Closed  </option>
+					</select>
+				</div>
+				<%- include(`${partials}/filter/user`, {table: 'loancard'}) %>
+				<%- include(`${partials}/filter/date`, {table: 'loancard'}) %>
+			</div>
+		</div>
+	</div>
+	<div id="modals">
 		<div id='mdl_loancard_open' class="modal fade" tabindex="-1" role="dialog">
 			<div class="modal-dialog modal-lg" role="document">
 				<div class="modal-content">

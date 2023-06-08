@@ -1,3 +1,4 @@
+const enable_delete = enable_button('delete');
 window.addEventListener( "load", function () {
     enable_button('delete');
     addFormListener(

@@ -1,3 +1,4 @@
+const enable_add_detail = enable_button('detail_add');
 function getDetailOptions() {
     clear('list_detail_options')
     .then(list => {

@@ -4,23 +4,6 @@
 <%- include(`${partials}/head/components/close`) %>
 <section class="container">
     <%- include(`${partials}/sidebar/button`, {id: 'actions', text: 'Actions', float: true}) %>
-    <%- include(`${partials}/sidebar/open`, {id: 'actions', text: 'Actions'}) %>
-            <%- include(`${partials}/button/modal/open`, {id: 'user_edit',         text: 'Edit User',                type: 'warning'}) %>
-            <%- include(`${partials}/button/modal/open`, {id: 'permissions_edit',  text: 'Edit Permissions',         type: 'warning'}) %>
-            <%- include(`${partials}/button/modal/open`, {id: 'user_password',     text: 'Change Password',          type: 'warning'}) %>
-            <%- include(`${partials}/button/modal/open`, {id: 'issue_add',         text: 'New Issue',                type: 'success'}) %>
-            <%- include(`${partials}/button/modal/open`, {id: 'issue_measurement', text: 'New Issue (Measurements)', type: 'success'}) %>
-            <%- include(`${partials}/button/modal/open`, {id: 'issues_action',     text: 'Action Lines',             type: 'warning'}) %>
-            <form id="form_password_reset">
-                <button class='btn btn-success w-100' id='btn_password_reset' disabled>
-                    Toggle Change Password
-                </button>
-            </form>
-            <form id="form_delete" class="mt-auto">
-                <button id='btn_delete' type='button' class="btn btn-danger w-100" disabled>Delete</button>
-            </form>
-        </div>
-    </div>
     <ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
         <%- include(`${partials}/tab_head`, {id: 'details',     spinner: 'user',        title: 'Details'}) %>
         <%- include(`${partials}/tab_head`, {id: 'permissions', spinner: 'permissions', title: 'Permissions', count_id: 'permission', permission: 'user_admin'}) %>
@@ -82,40 +65,6 @@
                     <%- include(`${partials}/sidebar/button`, {id: 'issues_filter', text: 'Filter'}) %>
                 </div>
             </div>
-            <%- include(`${partials}/sidebar/open`, {id: 'issues_filter', text: 'Filter Issues'}) %>
-                    <div class="input-group mb-1">
-                        <span class="input-group-text w-30">Status</span>
-                        <select id="sel_issue_statuses" class="form-select" multiple size="6">
-                            <option value="0">Cancelled</option>
-                            <option value="1" selected>Requested</option>
-                            <option value="2" selected>Approved </option>
-                            <option value="3" selected>Ordered  </option>
-                            <option value="4" selected>Issued   </option>
-                            <option value="5">Returned </option>
-                        </select>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <h5 class='text-start'>Date From:</h5>
-                            <input type="date" class='form-control' id='issue_createdAt_from'>
-                        </div>
-                        <div class="col-sm-6">
-                            <h5 class='text-start'>Date To:</h5>
-                            <input type="date" class='form-control' id='issue_createdAt_to'>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-12">
-                            <h5 class='text-start'>Item:</h5>
-                            <input type="text" class='form-control' id='item'>
-                        </div>
-                        <div class="col-sm-12">
-                            <h5 class='text-start'>Size:</h5>
-                            <input type="text" class='form-control' id='size'>
-                        </div>
-                    </div>
-                </div>
-            </div>
             <% if (permissions.issuer) { %><form id='form_issue_edit'><% } %>
 	        <table class='table table-sm table-hover'>
                 <thead class="thead-dark" id="tbl_issues_head">
@@ -147,28 +96,6 @@
                     <%- include(`${partials}/sidebar/button`, {id: 'loancards_filter', text: 'Filter'}) %>
                 </div>
             </div>
-            <%- include(`${partials}/sidebar/open`, {id: 'loancards_filter', text: 'Filter Loancards'}) %>
-                    <div class="input-group mb-1">
-                        <span class="input-group-text w-30">Status</span>
-                        <select id="sel_loancard_statuses" class="form-select" multiple size="4">
-                            <option value="0">Cancelled</option>
-                            <option value="1" selected>Draft</option>
-                            <option value="2" selected>Open </option>
-                            <option value="3">Closed  </option>
-                        </select>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <h5 class='text-start'>Date From:</h5>
-                            <input type="date" class='form-control' id='loancard_createdAt_from'>
-                        </div>
-                        <div class="col-sm-6">
-                            <h5 class='text-start'>Date To:</h5>
-                            <input type="date" class='form-control' id='loancard_createdAt_to'>
-                        </div>
-                    </div>
-                </div>
-            </div>
 	        <table class='table table-sm table-hover'>
                 <thead class="thead-dark" id="tbl_loancards_head">
                     <th class="w-40" data-column='["createdAt"]' data-dir="DESC">Date</th>
@@ -182,7 +109,90 @@
         </div>
         <%- include(`${partials}/common/notes/tab_body`) %>
     </div>
-    <div id="div_modals">
+
+    <div id="sidebars">
+        <div class="offcanvas offcanvas-start" tabindex="-1" id="sdb_actions" aria-labelledby="sdb_actions_label">
+            <%- include(`${partials}/sidebar/header`, {id: 'actions', text: 'Actions'}) %>
+            <div class="offcanvas-body d-flex flex-column">
+                <%- include(`${partials}/button/modal`, {id: 'user_edit',         text: 'Edit User',                type: 'warning'}) %>
+                <%- include(`${partials}/button/modal`, {id: 'permissions_edit',  text: 'Edit Permissions',         type: 'warning'}) %>
+                <%- include(`${partials}/button/modal`, {id: 'user_password',     text: 'Change Password',          type: 'warning'}) %>
+                <%- include(`${partials}/button/modal`, {id: 'issue_add',         text: 'New Issue',                type: 'success'}) %>
+                <%- include(`${partials}/button/modal`, {id: 'issue_measurement', text: 'New Issue (Measurements)', type: 'success'}) %>
+                <%- include(`${partials}/button/modal`, {id: 'issues_action',     text: 'Action Lines',             type: 'warning'}) %>
+                <form id="form_password_reset">
+                    <button class='btn btn-success w-100' id='btn_password_reset' disabled>
+                        Toggle Change Password
+                    </button>
+                </form>
+                <form id="form_delete" class="mt-auto">
+                    <button id='btn_delete' type='button' class="btn btn-danger w-100" disabled>Delete</button>
+                </form>
+            </div>
+        </div>
+        <div class="offcanvas offcanvas-start" tabindex="-1" id="sdb_issues_filter" aria-labelledby="sdb_issues_filter_label">
+            <%- include(`${partials}/sidebar/header`, {id: 'issues_filter', text: 'Filter Issues'}) %>
+            <div class="offcanvas-body d-flex flex-column">
+                <div class="input-group mb-1">
+                    <span class="input-group-text w-30">Status</span>
+                    <select id="sel_issue_statuses" class="form-select" multiple size="6">
+                        <option value="0">Cancelled</option>
+                        <option value="1" selected>Requested</option>
+                        <option value="2" selected>Approved </option>
+                        <option value="3" selected>Ordered  </option>
+                        <option value="4" selected>Issued   </option>
+                        <option value="5">Returned </option>
+                    </select>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <h5 class='text-start'>Date From:</h5>
+                        <input type="date" class='form-control' id='issue_createdAt_from'>
+                    </div>
+                    <div class="col-sm-6">
+                        <h5 class='text-start'>Date To:</h5>
+                        <input type="date" class='form-control' id='issue_createdAt_to'>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <h5 class='text-start'>Item:</h5>
+                        <input type="text" class='form-control' id='item'>
+                    </div>
+                    <div class="col-sm-12">
+                        <h5 class='text-start'>Size:</h5>
+                        <input type="text" class='form-control' id='size'>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="offcanvas offcanvas-start" tabindex="-1" id="sdb_loancards_filter" aria-labelledby="sdb_loancards_filter_label">
+            <%- include(`${partials}/sidebar/header`, {id: 'loancards_filter', text: 'Filter Loancards'}) %>
+            <div class="offcanvas-body d-flex flex-column">
+                <div class="input-group mb-1">
+                    <span class="input-group-text w-30">Status</span>
+                    <select id="sel_loancard_statuses" class="form-select" multiple size="4">
+                        <option value="0">Cancelled</option>
+                        <option value="1" selected>Draft</option>
+                        <option value="2" selected>Open </option>
+                        <option value="3">Closed  </option>
+                    </select>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <h5 class='text-start'>Date From:</h5>
+                        <input type="date" class='form-control' id='loancard_createdAt_from'>
+                    </div>
+                    <div class="col-sm-6">
+                        <h5 class='text-start'>Date To:</h5>
+                        <input type="date" class='form-control' id='loancard_createdAt_to'>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <%- include(`${partials}/common/notes/sidebar`) %>
+    </div>
+    <div id="modals">
         <%- include(`${partials}/common/notes/modals`) %>
         <% if (permissions.user_admin) { %>
             <div id='mdl_user_edit' class="modal fade" tabindex="-1" role="dialog">

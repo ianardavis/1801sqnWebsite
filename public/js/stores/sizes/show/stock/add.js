@@ -1,3 +1,4 @@
+const enable_add_stock = enable_button('stock_add');
 function getReceiptStocks() {
     clear('receipt_stock')
     .then(receipt_qty => {

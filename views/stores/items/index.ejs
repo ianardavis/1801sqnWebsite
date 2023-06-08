@@ -5,14 +5,6 @@
 <%- include(`${partials}/head/components/close`) %>
 <section class='container'>
     <%- include(`${partials}/sidebar/button`, {id: 'menu', text: 'Menu', float: true}) %>
-    <%- include(`${partials}/sidebar/open`, {id: 'menu', text: 'Menu'}) %>
-			<h5>Filter</h5>
-			<%- include(`${partials}/inputs/select`, {id: 'sel_genders', 	  title: 'Genders', spinner_id: 'genders', reload_id: 'reload_genders', multiple: true, size: '3'}) %>
-			<%- include(`${partials}/inputs/text`,   {id: 'item_description', title: 'Description'}) %>
-			<h5>Actions</h5>
-			<%- include(`${partials}/button/modal/open`, {id: 'item_add', text: 'New Item', type: 'success'}) %>
-		</div>
-	</div>
 
 	<div class='row'>
 		<div class='col-12 col-lg-5 mx-auto'>
@@ -27,7 +19,19 @@
 		</div>
 	</div>
 
-	<div id='div_modals'>
+	<div id="sidebars">
+		<div class="offcanvas offcanvas-start" tabindex="-1" id="sdb_menu" aria-labelledby="sdb_menu_label">
+			<%- include(`${partials}/sidebar/header`, {id: 'menu', text: 'Menu'}) %>
+			<div class="offcanvas-body d-flex flex-column">
+				<h5>Filter</h5>
+				<%- include(`${partials}/inputs/select`, {id: 'sel_genders', 	  title: 'Genders', spinner_id: 'genders', reload_id: 'reload_genders', multiple: true, size: '3'}) %>
+				<%- include(`${partials}/inputs/text`,   {id: 'item_description', title: 'Description'}) %>
+				<h5>Actions</h5>
+				<%- include(`${partials}/button/modal`, {id: 'item_add', text: 'New Item', type: 'success'}) %>
+			</div>
+		</div>
+	</div>
+	<div id='modals'>
 		<% if (permissions.stores_stock_admin) { %>
 			<div id='mdl_item_add' class='modal fade' tabindex='-1' role='dialog'>
 				<div class='modal-dialog' role='document'>

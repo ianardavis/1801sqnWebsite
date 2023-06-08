@@ -6,20 +6,6 @@
 <%- include(`${partials}/head/components/close`) %>
 <section class='container'>
     <%- include(`${partials}/sidebar/button`, {id: 'menu', text: 'Menu', float: true}) %>
-    <%- include(`${partials}/sidebar/open`,   {id: 'menu', text: 'Menu'}) %>
-            <%- include(`${partials}/button/modal/open`, {id: 'size_edit',   text: 'Edit',               type: 'warning'}) %>
-            <%- include(`${partials}/button/modal/open`, {id: 'detail_add',  text: 'Add Detail',         type: 'success'}) %>
-            <%- include(`${partials}/button/modal/open`, {id: 'nsn_add',     text: 'New NSN',            type: 'success', classes: ['has_nsns_element']}) %>
-            <%- include(`${partials}/button/modal/open`, {id: 'serial_add',  text: 'New Serial',         type: 'success', classes: ['serial_element']}) %>
-            <%- include(`${partials}/button/modal/open`, {id: 'stock_add',   text: 'New Stock Location', type: 'success', classes: ['stock_element']}) %>
-            <%- include(`${partials}/button/modal/open`, {id: 'receipt_add', text: 'Receive Stock',      type: 'success'}) %>
-            <%- include(`${partials}/button/modal/open`, {id: 'order_add',   text: 'New Order',          type: 'success', classes: ['orderable_element']}) %>
-            <%- include(`${partials}/button/modal/open`, {id: 'issue_add',   text: 'New Issue',          type: 'success', classes: ['issueable_element']}) %>
-            <form id="form_delete" class="mt-auto">
-                <button id='btn_delete' type='button' class="btn btn-danger w-100" disabled>Delete</button>
-            </form>
-        </div>
-    </div>
 
     <ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
         <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'size'}) %>
@@ -31,7 +17,7 @@
         <%- include(`${partials}/common/notes/tab_head`) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
-        <div     id="details" role="tabpanel" aria-labelledby="details-tab" class="tab-pane fade">
+        <div id="details" role="tabpanel" aria-labelledby="details-tab" class="tab-pane fade">
             <%- include(`${partials}/inputs/display`, {id: 'issueable',   title: 'Issueable'}) %>
             <%- include(`${partials}/inputs/display`, {id: 'orderable',   title: 'Orderable'}) %>
             <%- include(`${partials}/inputs/display`, {id: 'has_serials', title: 'Has Serials'}) %>
@@ -49,7 +35,7 @@
                 <%- include(`${partials}/limit`, {table: 'details'}) %>
             </div>
         </div>
-        <div     id="nsns"    role="tabpanel" aria-labelledby="nsns-tab"    class="tab-pane fade">
+        <div id="nsns"    role="tabpanel" aria-labelledby="nsns-tab"    class="tab-pane fade">
 	        <% if (permissions.stores_stock_admin) { %><form id='form_nsn_default'><% } %>
             <table class='table table-sm table-hover'>
                 <thead class='thead-dark' id="tbl_nsns_head">
@@ -62,7 +48,7 @@
             <%- include(`${partials}/limit`, {table: 'nsns'}) %>
             <% if (permissions.stores_stock_admin) { %></form><% } %>
         </div>
-        <div     id="serials" role="tabpanel" aria-labelledby="serials-tab" class="tab-pane fade">
+        <div id="serials" role="tabpanel" aria-labelledby="serials-tab" class="tab-pane fade">
 	        <table class='table table-sm table-hover'>
                 <thead class='thead-dark' id="tbl_serials_head">
 					<th class='w-50' data-column='["serial"]'>Serial #</th>
@@ -73,7 +59,7 @@
             </table>
             <%- include(`${partials}/limit`, {table: 'serials'}) %>
         </div>
-        <div     id="stocks"  role="tabpanel" aria-labelledby="stocks-tab"  class="tab-pane fade">
+        <div id="stocks"  role="tabpanel" aria-labelledby="stocks-tab"  class="tab-pane fade">
 	        <table class='table table-sm table-hover'>
                 <thead class='thead-dark' id="tbl_stocks_head">
 					<th class='w-80' data-column='["location","location"]' data-dir="ASC">Location</th>
@@ -85,22 +71,10 @@
             <%- include(`${partials}/limit`, {table: 'stocks'}) %>
         </div>
         <% if (permissions.stores_stock_admin) { %>
-            <div id="orders"  role="tabpanel" aria-labelledby="orders-tab"  class="tab-pane fade">
+            <div id="orders" role="tabpanel" aria-labelledby="orders-tab" class="tab-pane fade">
                 <div class="row justify-content-between">
                     <div class="col-12 col-md-4 mb-1">
-                        <%- include(`${partials}/sidebar/button`, {id: 'orders_filter', text: 'Filter'}) %>
-                    </div>
-                </div>
-                <%- include(`${partials}/sidebar/open`, {id: 'orders_filter', text: 'Filter Orders'}) %>
-                        <div class="input-group mb-1">
-                            <span class="input-group-text w-30">Status</span>
-                            <select id="sel_order_statuses" class="form-select" multiple size="4">
-                                <option value="0">Cancelled</option>
-                                <option value="1" selected>Placed</option>
-                                <option value="2" selected>Demanded</option>
-                                <option value="3">Received</option>
-                            </select>
-                        </div>
+                        <%- include(`${partials}/sidebar/button`, {id: 'orders', text: 'Filter'}) %>
                     </div>
                 </div>
                 <table class='table table-sm table-hover'>
@@ -115,24 +89,12 @@
                 <%- include(`${partials}/limit`, {table: 'orders'}) %>
             </div>
         <% } %>
-        <div     id="issues"  role="tabpanel" aria-labelledby="issues-tab"  class="tab-pane fade">
+        <div id="issues"  role="tabpanel" aria-labelledby="issues-tab"  class="tab-pane fade">
             <div class="row justify-content-between">
                 <div class="col-12 col-md-4 mb-1">
-                    <%- include(`${partials}/sidebar/button`, {id: 'issues_filter', text: 'Filter'}) %>
-                </div>
-            </div>
-            <%- include(`${partials}/sidebar/open`, {id: 'issues_filter', text: 'Filter Issues'}) %>
-                    <div class="input-group mb-1">
-                        <span class="input-group-text w-30">Status</span>
-                        <select id="sel_issue_statuses" class="form-select" multiple size="6">
-                            <option value="0">Cancelled</option>
-                            <option value="1" selected>Requested</option>
-                            <option value="2" selected>Approved </option>
-                            <option value="3" selected>Ordered  </option>
-                            <option value="4" selected>Issued   </option>
-                            <option value="5">Returned </option>
-                        </select>
-                    </div>
+                    <button class="btn btn-sm btn-primary w-100" type="button" data-bs-toggle="offcanvas" data-bs-target="#sdb_issues" aria-controls="sdb_issues">
+                        Issue Menu
+                    </button>
                 </div>
             </div>
             <table class='table table-sm table-hover'>
@@ -149,7 +111,57 @@
         </div>
         <%- include(`${partials}/common/notes/tab_body`) %>
     </div>
-    <div id="div_modals">
+
+    <div id="sidebars">
+        <div class="offcanvas offcanvas-start" tabindex="-1" id="sdb_menu"   aria-labelledby="sdb_menu_label">
+            <%- include(`${partials}/sidebar/header`, {id: 'menu', text: 'Menu'}) %>
+            <div class="offcanvas-body d-flex flex-column">
+                <%- include(`${partials}/button/modal`, {id: 'size_edit',   text: 'Edit',               type: 'warning'}) %>
+                <%- include(`${partials}/button/modal`, {id: 'detail_add',  text: 'Add Detail',         type: 'success'}) %>
+                <%- include(`${partials}/button/modal`, {id: 'nsn_add',     text: 'New NSN',            type: 'success'}) %>
+                <%- include(`${partials}/button/modal`, {id: 'serial_add',  text: 'New Serial',         type: 'success'}) %>
+                <%- include(`${partials}/button/modal`, {id: 'stock_add',   text: 'New Stock Location', type: 'success'}) %>
+                <%- include(`${partials}/button/modal`, {id: 'receipt_add', text: 'Receive Stock',      type: 'success'}) %>
+                <%- include(`${partials}/button/modal`, {id: 'order_add',   text: 'New Order',          type: 'success'}) %>
+                <%- include(`${partials}/button/modal`, {id: 'issue_add',   text: 'New Issue',          type: 'success'}) %>
+                <form id="form_delete" class="mt-auto">
+                    <button id='btn_delete' type='button' class="btn btn-danger w-100" disabled>Delete</button>
+                </form>
+            </div>
+        </div>
+        <div class="offcanvas offcanvas-start" tabindex="-1" id="sdb_orders" aria-labelledby="sdb_orders_label">
+            <%- include(`${partials}/sidebar/header`, {id: 'orders', text: 'Filter Orders'}) %>
+            <div class="offcanvas-body d-flex flex-column">
+                <div class="input-group mb-1">
+                    <span class="input-group-text w-30">Status</span>
+                    <select id="sel_order_statuses" class="form-select" multiple size="4">
+                        <option value="0">Cancelled</option>
+                        <option value="1" selected>Placed</option>
+                        <option value="2" selected>Demanded</option>
+                        <option value="3">Received</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="offcanvas offcanvas-start" tabindex="-1" id="sdb_issues" aria-labelledby="sdb_issues_label">
+            <%- include(`${partials}/sidebar/header`, {id: 'issues', text: 'Filter Issues'}) %>
+            <div class="offcanvas-body d-flex flex-column">
+                <div class="input-group mb-1">
+                    <span class="input-group-text w-30">Status</span>
+                    <select id="sel_issue_statuses" class="form-select" multiple size="6">
+                        <option value="0">Cancelled</option>
+                        <option value="1" selected>Requested</option>
+                        <option value="2" selected>Approved </option>
+                        <option value="3" selected>Ordered  </option>
+                        <option value="4" selected>Issued   </option>
+                        <option value="5">Returned </option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <%- include(`${partials}/common/notes/sidebar`) %>
+    </div>
+    <div id="modals">
         <%- include(`${partials}/common/notes/modals`) %>
         <div     id='mdl_detail_view' class="modal fade" tabindex="-1" role="dialog">
             <div class="modal-dialog modal-lg" role="document">

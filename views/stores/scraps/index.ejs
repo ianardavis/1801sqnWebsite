@@ -9,19 +9,6 @@
 			<%- include(`${partials}/sidebar/button`, {id: 'filter', text: 'Filter'}) %>
 		</div>
 	</div>
-	<%- include(`${partials}/sidebar/open`, {id: 'filter', text: 'Filter'}) %>
-			<%- include(`${partials}/inputs/select`, {title: 'Filter By Supplier', id: 'filter_scrap_suppliers', spinner_id: 'suppliers', reload_id: 'reload_suppliers'}) %>
-			<div class="input-group mb-1">
-				<span class="input-group-text w-30">Status</span>
-				<select id="sel_scrap_statuses" class="form-select" multiple size="3">
-					<option value="0"		  >Cancelled</option>
-					<option value="1" selected>Draft	</option>
-					<option value="2"		  >Closed	</option>
-				</select>
-			</div>
-			<%- include(`${partials}/filter/date`, {table: 'scrap', field: 'createdAt'}) %>
-		</div>
-	</div>
 	<table class="table table-sm table-hover">
 		<thead class="thead-dark" id="tbl_scraps_head">
 			<th class='w-35' data-column='["createdAt"]' data-dir="DESC">Date</th>
@@ -33,7 +20,25 @@
 		<tbody id="tbl_scraps"></tbody>
 	</table>
 	<%- include(`${partials}/limit`, {table: 'scraps'}) %>
-	<div id="div_modals"></div>
+	
+	<div id="sidebars">
+		<div class="offcanvas offcanvas-start" tabindex="-1" id="sdb_filter" aria-labelledby="sdb_filter_label">
+			<%- include(`${partials}/sidebar/header`, {id: 'filter', text: 'Filter'}) %>
+			<div class="offcanvas-body d-flex flex-column">
+				<%- include(`${partials}/inputs/select`, {title: 'Filter By Supplier', id: 'filter_scrap_suppliers', spinner_id: 'suppliers', reload_id: 'reload_suppliers'}) %>
+				<div class="input-group mb-1">
+					<span class="input-group-text w-30">Status</span>
+					<select id="sel_scrap_statuses" class="form-select" multiple size="3">
+						<option value="0"		  >Cancelled</option>
+						<option value="1" selected>Draft	</option>
+						<option value="2"		  >Closed	</option>
+					</select>
+				</div>
+				<%- include(`${partials}/filter/date`, {table: 'scrap'}) %>
+			</div>
+		</div>
+	</div>
+	<div id="modals"></div>
 </section>
 <%- include(`${partials}/foot/app`) %>
 <script src='/js/stores/scraps/index/view.js'></script>

@@ -272,7 +272,7 @@ function build_filter_query(table, where = {}) {
     let like = {};
     let gt   = null;
     let lt   = null;
-    const statuses  = getSelectedOptions(     `filter_${table}_statuses`);
+    const statuses  = getSelectedOptions(     `filter_${table}_status`);
     const date_from = document.querySelector(`#filter_${table}_createdAt_from`) || {value: ''};
     const date_to   = document.querySelector(`#filter_${table}_createdAt_to`)   || {value: ''};
     const user_id   = document.querySelector(`#filter_${table}_user`)           || {value: ''};
@@ -306,11 +306,43 @@ function toProperCase(str) {
       }
     );
 };
+
+function set_status_filter_options(id, options) {
+    let select = document.querySelector(`#filter_${id}_status`);
+    options.forEach(option => {
+        let opt = document.createElement('option');
+        opt.setAttribute('value', option.value);
+        opt.innerText = option.text;
+        if (option.selected) opt.setAttribute('selected', true);
+        select.appendChild(opt);
+    });
+    select.setAttribute('size', options.length)
+};
 function getSelectedOptions(id) {
     let e = document.querySelector(`#${id}`);
     if (e && e.selectedOptions) {
         return Array.from(e.selectedOptions).map(({ value }) => value)
     } else return [];
+};
+function filter_status(id) {
+    const statuses = getSelectedOptions(`filter_${id}_status`);
+    if (statuses.length > 0) return {status: statuses}
+    else return {};
+};
+function filter_supplier(id) {
+    const supplier = document.querySelector(`#filter_${id}_supplier`);
+    if (supplier && supplier .value !== '') return {supplier_id: supplier.value}
+    else return {};
+};
+function filter_date_from(id) {
+    const date_from = document.querySelector(`#filter_${id}_createdAt_from`);
+    if (date_from && date_from.value !== '') return {column: 'createdAt', value: date_from.value}
+    else return null;
+};
+function filter_date_to(id) {
+    const date_to = document.querySelector(`#filter_${id}_createdAt_to`);
+    if (date_to && date_to.value !== '') return {column: 'createdAt', value: date_to.value}
+    else return null;
 };
 function sort(tr, func) {
     if (!tr.dataset.dir) {

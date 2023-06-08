@@ -68,7 +68,10 @@
         </div>
         <%- include(`${partials}/common/notes/tab_body`) %>
     </div>
-    <div id="div_modals">
+    <div id="sidebars">
+        <%- include(`${partials}/common/notes/sidebar`) %>
+    </div>
+    <div id="modals">
         <%- include(`${partials}/common/notes/modals`) %>
         <% if (permissions.pos_supervisor) { %>
             <div id='mdl_session_close' class="modal" tabindex="-1" role="dialog">

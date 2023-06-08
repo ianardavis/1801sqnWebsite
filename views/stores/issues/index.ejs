@@ -9,31 +9,6 @@
 			<%- include(`${partials}/sidebar/button`, {id: 'filter', text: 'Filter/Actions'}) %>
 		</div>
 	</div>
-	<%- include(`${partials}/sidebar/open`, {id: 'filter', text: 'Filter'}) %>
-			<%- include(`${partials}/button/modal/open`, {id: 'issue_add', text: 'New Issue', type: 'success'}) %>
-			<%- include(`${partials}/filter/user`, {table: 'issue'}) %>
-			<div class="input-group mb-1">
-				<span class="input-group-text w-30">Status</span>
-				<select id="filter_issue_statuses" class="form-select" multiple size="8">
-					<option value="-3"	  	  >Cancelled (Ordered)</option>
-					<option value="-2"	  	  >Cancelled (Approved)</option>
-					<option value="-1"		  >Declined</option>
-					<option value="1" selected>Requested</option>
-					<option value="2" selected>Approved</option>
-					<option value="3" selected>Ordered</option>
-					<option value="4"		  >Added to Loancard</option>
-					<option value="5"		  >Returned</option>
-				</select>
-			</div>
-			<%- include(`${partials}/filter/date`, {table: 'issue', field: 'createdAt'}) %>
-			<%- include(`${partials}/filter/item`, {table: 'issue'}) %>
-			<%- include(`${partials}/filter/size`, {table: 'issue'}) %>
-
-			<button class="btn btn-success w-100 mt-auto" form="form_issue_edit">
-				Action Selected Issues
-			</button>
-		</div>
-	</div>
 
 	<% if (permissions.issuer) { %><form id='form_issue_edit'><% } %>
 		<table class="table table-sm table-hover">
@@ -51,7 +26,37 @@
 		</table>
 	<% if (permissions.issuer) { %></form><% } %>
 	<%- include(`${partials}/limit`, {table: 'issues'}) %>
-	<div id="div_modals">
+
+	<div id="sidebars">
+		<div class="offcanvas offcanvas-start" tabindex="-1" id="sdb_filter" aria-labelledby="sdb_filter_label">
+			<%- include(`${partials}/sidebar/header`, {id: 'filter', text: 'Filter'}) %>
+			<div class="offcanvas-body d-flex flex-column">
+				<%- include(`${partials}/button/modal`, {id: 'issue_add', text: 'New Issue', type: 'success'}) %>
+				<div class="input-group mb-1">
+					<span class="input-group-text w-30">Status</span>
+					<select id="filter_issue_statuses" class="form-select" multiple size="8">
+						<option value="-3"	  	  >Cancelled (Ordered)</option>
+						<option value="-2"	  	  >Cancelled (Approved)</option>
+						<option value="-1"		  >Declined</option>
+						<option value="1" selected>Requested</option>
+						<option value="2" selected>Approved</option>
+						<option value="3" selected>Ordered</option>
+						<option value="4"		  >Added to Loancard</option>
+						<option value="5"		  >Returned</option>
+					</select>
+				</div>
+				<%- include(`${partials}/filter/user`, {table: 'issue'}) %>
+				<%- include(`${partials}/filter/date`, {table: 'issue'}) %>
+				<%- include(`${partials}/filter/item`, {table: 'issue'}) %>
+				<%- include(`${partials}/filter/size`, {table: 'issue'}) %>
+	
+				<button class="btn btn-success w-100 mt-auto" form="form_issue_edit">
+					Action Selected Issues
+				</button>
+			</div>
+		</div>
+	</div>
+	<div id="modals">
 		<%- include(`${partials}/modals/stores/issue_add`) %>
 	</div>
 </section>

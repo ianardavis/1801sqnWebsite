@@ -5,26 +5,6 @@
             <%- include(`${partials}/sidebar/button`, {id: 'notes', text: 'Filter'}) %>
         </div>
     </div>
-    <%- include(`${partials}/sidebar/open`, {id: 'notes', text: 'Filter Notes'}) %>
-            <div class="input-group mb-1">
-                <span class="input-group-text w-30">Include</span>
-                <select id="sel_system" class="form-select" multiple size="2">
-                    <option value="0" selected>Non-System Notes</option>
-                    <option value="1">System Notes</option>
-                </select>
-            </div>
-            <div class="row">
-                <div class="col-sm-6">
-                    <h5 class='text-start'>Date From:</h5>
-                    <input type="date" class='form-control' id='note_createdAt_from'>
-                </div>
-                <div class="col-sm-6">
-                    <h5 class='text-start'>Date To:</h5>
-                    <input type="date" class='form-control' id='note_createdAt_to'>
-                </div>
-            </div>
-        </div>
-    </div>
     
 	<table class="table table-sm table-hover">
         <thead class="thead-dark" id="tbl_notes_head">
@@ -35,4 +15,5 @@
         <tbody id="tbl_notes"></tbody>
     </table>
     <%- include(`${partials}/limit`, {table: 'notes'}) %>
+    
 </div>

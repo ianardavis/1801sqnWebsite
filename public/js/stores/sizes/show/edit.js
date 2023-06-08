@@ -1,3 +1,4 @@
+const enable_edit_size = enable_button('size_edit');
 function viewSizeEdit() {
     get({
         table: 'size',

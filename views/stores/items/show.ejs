@@ -5,15 +5,6 @@
 <%- include(`${partials}/head/components/close`) %>
 <section class='container'>
     <%- include(`${partials}/sidebar/button`, {id: 'menu', text: 'Menu', float: true}) %>
-    <%- include(`${partials}/sidebar/open`, {id: 'menu', text: 'Menu'}) %>
-            <%- include(`${partials}/button/modal/open`, {id: 'item_edit',    text: 'Edit',         type: 'warning'}) %>
-            <%- include(`${partials}/button/modal/open`, {id: 'category_add', text: 'New Category', type: 'success'}) %>
-            <%- include(`${partials}/button/modal/open`, {id: 'size_add',     text: 'New Size',     type: 'success'}) %>
-            <form id="form_delete" class="mt-auto">
-                <button id='btn_delete' type='button' class="btn btn-danger w-100" disabled>Delete</button>
-            </form>
-        </div>
-    </div>
     <ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
         <%- include(`${partials}/tab_head`, {id: 'details',    title: 'Details',    spinner: 'item'}) %>
         <%- include(`${partials}/tab_head`, {id: 'sizes',      title: 'Sizes',      spinner: 'sizes',      count_id: 'size'}) %>
@@ -32,10 +23,6 @@
             <div class="row justify-content-between">
                 <div class="col-12 col-md-4 mb-1">
                     <%- include(`${partials}/sidebar/button`, {id: 'sizes', text: 'Filter'}) %>
-                </div>
-            </div>
-            <%- include(`${partials}/sidebar/open`, {id: 'notes', text: 'Filter Sizes'}) %>
-			        <%- include(`${partials}/filter/item`, {table: 'size'}) %>
                 </div>
             </div>
             <div class="row">
@@ -69,7 +56,28 @@
         </div>
         <%- include(`${partials}/common/notes/tab_body`) %>
     </div>
-    <div id="div_modals">
+
+    <div id="sidebars">
+        <div class="offcanvas offcanvas-start" tabindex="-1" id="sdb_menu" aria-labelledby="sdb_menu_label">
+            <%- include(`${partials}/sidebar/header`, {id: 'menu', text: 'Menu'}) %>
+            <div class="offcanvas-body d-flex flex-column">
+                <%- include(`${partials}/button/modal`, {id: 'item_edit',    text: 'Edit',         type: 'warning'}) %>
+                <%- include(`${partials}/button/modal`, {id: 'category_add', text: 'New Category', type: 'success'}) %>
+                <%- include(`${partials}/button/modal`, {id: 'size_add',     text: 'New Size',     type: 'success'}) %>
+                <form id="form_delete" class="mt-auto">
+                    <button id='btn_delete' type='button' class="btn btn-danger w-100" disabled>Delete</button>
+                </form>
+            </div>
+        </div>
+        <div class="offcanvas offcanvas-start" tabindex="-1" id="sdb_sizes" aria-labelledby="sdb_sizes_label">
+            <%- include(`${partials}/sidebar/header`, {id: 'sizes', text: 'Filter Sizes'}) %>
+            <div class="offcanvas-body d-flex flex-column">
+                <%- include(`${partials}/filter/item`, {table: 'size'}) %>
+            </div>
+        </div>
+        <%- include(`${partials}/common/notes/sidebar`) %>
+    </div>
+    <div id="modals">
         <%- include(`${partials}/common/notes/modals`) %>
         <div id='mdl_category_view' class="modal fade" tabindex="-1" role="dialog">
             <div class="modal-dialog modal-lg" role="document">

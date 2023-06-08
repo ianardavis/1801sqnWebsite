@@ -21,7 +21,7 @@
         <tbody id="tbl_items"></tbody>
     </table>
 	<%- include(`${partials}/limit`, {table: 'canteen_items'}) %>
-    <div id="div_modals">
+    <div id="modals">
         <% if (permissions.canteen_stock_admin) { %>
             <div id='mdl_item_add' class="modal" tabindex="-1" role="dialog">
                 <div class="modal-dialog" role="document">

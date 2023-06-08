@@ -8,12 +8,6 @@
 			<%- include(`${partials}/sidebar/button`, {id: 'filter', text: 'Filter/Actions'}) %>
 		</div>
 	</div>
-	<%- include(`${partials}/sidebar/open`, {id: 'filter', text: 'Filter Users'}) %>
-			<%- include(`${partials}/button/modal/open`, {id: 'user_add', text: 'New User', type: 'success'}) %>
-			<%- include(`${partials}/inputs/select`, 	 {id: 'sel_statuses', title: 'Statuses', spinner_id: 'statuses', reload_id: 'reload_statuses', multiple: true, size: 4}) %>
-			<%- include(`${partials}/inputs/select`, 	 {id: 'sel_ranks',    title: 'Ranks', 	 spinner_id: 'ranks', 	 reload_id: 'reload_ranks',    multiple: true, size: 10}) %>
-		</div>
-	</div>
 	<table class="table table-sm table-hover">
 		<thead class="thead-dark" id="tbl_users_head">
 			<th class='w-20' data-column='["service_number"]'		 >Bader/Service #</th>
@@ -25,7 +19,18 @@
 		<tbody id="tbl_users"></tbody>
 	</table>
 	<%- include(`${partials}/limit`, {table: 'users'}) %>
-	<div id="div_modals">
+
+	<div id="sidebars">
+		<div class="offcanvas offcanvas-start" tabindex="-1" id="sdb_filter" aria-labelledby="sdb_filter_label">
+			<%- include(`${partials}/sidebar/header`, {id: 'filter', text: 'Filter Users'}) %>
+			<div class="offcanvas-body d-flex flex-column">
+				<%- include(`${partials}/button/modal`, {id: 'user_add', text: 'New User', type: 'success'}) %>
+				<%- include(`${partials}/inputs/select`, 	 {id: 'sel_statuses', title: 'Statuses', spinner_id: 'statuses', reload_id: 'reload_statuses', multiple: true, size: 4}) %>
+				<%- include(`${partials}/inputs/select`, 	 {id: 'sel_ranks',    title: 'Ranks', 	 spinner_id: 'ranks', 	 reload_id: 'reload_ranks',    multiple: true, size: 10}) %>
+			</div>
+		</div>
+	</div>
+	<div id="modals">
 		<% if (permissions.user_admin) { %>
 			<div id='mdl_user_add' class="modal fade" tabindex="-1" role="dialog">
 				<div class="modal-dialog" role="document">

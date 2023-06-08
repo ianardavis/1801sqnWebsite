@@ -7,17 +7,6 @@
 <%- include(`${partials}/head/components/close`) %>
 <section class='container'>
     <%- include(`${partials}/sidebar/button`, {id: 'actions', text: 'Actions', float: true}) %>
-    <%- include(`${partials}/sidebar/open`, {id: 'actions', text: 'Actions'}) %>
-            <%- include(`${partials}/button/modal/open`, {id: 'transfer_add', text: 'Transfer',      type: 'success'}) %>
-            <%- include(`${partials}/button/modal/open`, {id: 'stock_edit',   text: 'Edit',          type: 'warning'}) %>
-            <%- include(`${partials}/button/modal/open`, {id: 'receipt_add',  text: 'Receive Stock', type: 'success'}) %>
-            <%- include(`${partials}/button/modal/open`, {id: 'count_add',    text: 'Count',         type: 'warning'}) %>
-            <%- include(`${partials}/button/modal/open`, {id: 'scrap_add',    text: 'Scrap',         type: 'danger'}) %>
-            <form id="form_delete" class="mt-auto">
-                <button id='btn_delete' type='button' class="btn btn-danger w-100" disabled>Delete</button>
-            </form>
-        </div>
-    </div>
     <ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
         <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'stock'}) %>
         <%- include(`${partials}/common/actions/tab_head`) %>
@@ -33,7 +22,24 @@
         <%- include(`${partials}/common/actions/tab_body`) %>
         <%- include(`${partials}/common/notes/tab_body`) %>
     </div>
-    <div id="div_modals">
+
+    <div id="sidebars">
+        <div class="offcanvas offcanvas-start" tabindex="-1" id="sdb_actions" aria-labelledby="sdb_actions_label">
+            <%- include(`${partials}/sidebar/header`, {id: 'actions', text: 'Actions'}) %>
+            <div class="offcanvas-body d-flex flex-column">
+                <%- include(`${partials}/button/modal`, {id: 'transfer_add', text: 'Transfer',      type: 'success'}) %>
+                <%- include(`${partials}/button/modal`, {id: 'stock_edit',   text: 'Edit',          type: 'warning'}) %>
+                <%- include(`${partials}/button/modal`, {id: 'receipt_add',  text: 'Receive Stock', type: 'success'}) %>
+                <%- include(`${partials}/button/modal`, {id: 'count_add',    text: 'Count',         type: 'warning'}) %>
+                <%- include(`${partials}/button/modal`, {id: 'scrap_add',    text: 'Scrap',         type: 'danger'}) %>
+                <form id="form_delete" class="mt-auto">
+                    <button id='btn_delete' type='button' class="btn btn-danger w-100" disabled>Delete</button>
+                </form>
+            </div>
+        </div>
+        <%- include(`${partials}/common/notes/sidebar`) %>
+    </div>
+    <div id="modals">
         <datalist id="locations_list"></datalist>
         <%- include(`${partials}/common/notes/modals`) %>
         <%- include(`${partials}/common/actions/modals`) %>
