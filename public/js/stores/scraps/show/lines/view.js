@@ -35,7 +35,14 @@ function getLines() {
         };
         get({
             table: 'scrap_lines',
-            ...build_filter_query('scrap_line', {scrap_id: path[2]}),
+            where: {
+                scrap_id: path[2],
+                ...filter_status('scrap_line')
+            },
+            like: {
+                ...filter_item('scrap_line'),
+                ...filter_size('scrap_line')
+            },
             func: getLines
         })
         .then(function ([result, options]) {
@@ -106,6 +113,11 @@ function viewLine(line_id) {
     });
 };
 window.addEventListener('load', function () {
+    set_status_filter_options('scrap_line', [
+        {value: '0', text: 'Cancelled'},
+        {value: '1', text: 'Pending', selected: true},
+        {value: '2', text: 'Closed', selected: true}
+    ]);
     addFormListener(
         'actions',
         'PUT',

@@ -28,15 +28,7 @@
 				<button class="btn btn-success w-100 mb-1" type="button" data-bs-toggle="modal" data-bs-target="#mdl_loancard_open">
 					View Loancard
 				</button>
-				<div class="input-group mb-1">
-					<span class="input-group-text w-30">Status</span>
-					<select id="filter_loancard_statuses" class="form-select" multiple size="4">
-						<option value="0"		  >Cancelled</option>
-						<option value="1" selected>Draft</option>
-						<option value="2" selected>Complete</option>
-						<option value="3"		  >Closed  </option>
-					</select>
-				</div>
+				<%- include(`${partials}/filter/status`, {table: 'loancard'}) %>
 				<%- include(`${partials}/filter/user`, {table: 'loancard'}) %>
 				<%- include(`${partials}/filter/date`, {table: 'loancard'}) %>
 			</div>

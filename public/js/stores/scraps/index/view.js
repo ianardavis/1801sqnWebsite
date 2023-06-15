@@ -1,5 +1,5 @@
 let scrap_statuses   = {"0": "Cancelled", "1": "Draft", "3":"Closed"};
-function getScraps() {
+function get_scraps() {
     clear('tbl_scraps')
     .then(tbl_scraps => {
         function add_line(scrap) {
@@ -11,16 +11,15 @@ function getScraps() {
             add_cell(row, {append: new Link(`/scraps/${scrap.scrap_id}`).e});
         };
 
-        const sel_suppliers = document.querySelector('#filter_scrap_suppliers') || {value: ''};
-        let where     = {};
-        const statuses  = getSelectedOptions('sel_scrap_statuses');
-        if (statuses.length > 0) where.status = statuses;
-        if (sel_suppliers && sel_suppliers.value !== "") where.supplier_id = sel_suppliers.value;
         get({
             table: 'scraps',
-            ...build_filter_query('scrap'),
-            // where: where,
-            func:  getScraps
+            where: {
+                ...filter_status('scrap'),
+                ...filter_supplier('scrap')
+            },
+            gt: filter_date_from('scrap'),
+            lt: filter_date_to('scrap'),
+            func:  get_scraps
         })
         .then(function ([results, options]) {
             results.scraps.forEach(scrap => {
@@ -36,13 +35,18 @@ function getSuppliers() {
     })  
 };
 window.addEventListener('load', function () {
-    add_listener('reload', getScraps);
+    set_status_filter_options('scrap', [
+        {value: '0', text: 'Cancelled'},
+        {value: '1', text: 'Draft', selected: true},
+        {value: '2', text: 'Closed'}
+    ]);
+    add_listener('reload', get_scraps);
     getSuppliers();
     add_listener('reload_users', getSuppliers);
-    add_listener('filter_scrap_statuses', getScraps, 'change');
-    add_listener('filter_scrap_suppliers', getScraps, 'change');
-    add_listener('createdAt_from',     getScraps, 'change');
-    add_listener('createdAt_to',       getScraps, 'change');
-    add_sort_listeners('scraps', getScraps);
-    getScraps();
+    add_listener('filter_scrap_statuses', get_scraps, 'change');
+    add_listener('filter_scrap_suppliers', get_scraps, 'change');
+    add_listener('createdAt_from',     get_scraps, 'change');
+    add_listener('createdAt_to',       get_scraps, 'change');
+    add_sort_listeners('scraps', get_scraps);
+    get_scraps();
 });

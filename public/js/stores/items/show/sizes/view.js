@@ -10,7 +10,10 @@ function get_sizes() {
         };
         get({
             table: 'sizes',
-            ...build_filter_query('size', {item_id: path[2]}),
+            where: {item_id: path[2]},
+            like: {
+                ...filter_size('size')
+            },
             func: get_sizes
         })
         .then(function ([result, options]) {

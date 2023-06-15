@@ -132,31 +132,13 @@
         <div class="offcanvas offcanvas-start" tabindex="-1" id="sdb_orders" aria-labelledby="sdb_orders_label">
             <%- include(`${partials}/sidebar/header`, {id: 'orders', text: 'Filter Orders'}) %>
             <div class="offcanvas-body d-flex flex-column">
-                <div class="input-group mb-1">
-                    <span class="input-group-text w-30">Status</span>
-                    <select id="sel_order_statuses" class="form-select" multiple size="4">
-                        <option value="0">Cancelled</option>
-                        <option value="1" selected>Placed</option>
-                        <option value="2" selected>Demanded</option>
-                        <option value="3">Received</option>
-                    </select>
-                </div>
+				<%- include(`${partials}/filter/status`, {table: 'order'}) %>
             </div>
         </div>
         <div class="offcanvas offcanvas-start" tabindex="-1" id="sdb_issues" aria-labelledby="sdb_issues_label">
             <%- include(`${partials}/sidebar/header`, {id: 'issues', text: 'Filter Issues'}) %>
             <div class="offcanvas-body d-flex flex-column">
-                <div class="input-group mb-1">
-                    <span class="input-group-text w-30">Status</span>
-                    <select id="sel_issue_statuses" class="form-select" multiple size="6">
-                        <option value="0">Cancelled</option>
-                        <option value="1" selected>Requested</option>
-                        <option value="2" selected>Approved </option>
-                        <option value="3" selected>Ordered  </option>
-                        <option value="4" selected>Issued   </option>
-                        <option value="5">Returned </option>
-                    </select>
-                </div>
+				<%- include(`${partials}/filter/status`, {table: 'issue'}) %>
             </div>
         </div>
         <%- include(`${partials}/common/notes/sidebar`) %>

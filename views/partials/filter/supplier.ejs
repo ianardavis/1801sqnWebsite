@@ -1,4 +1,1 @@
-<div class="input-group mb-1">
-	<span class="input-group-text w-30">Supplier</span>
-    <select class="form-select" id='filter_<%= table %>_supplier'></select>
-</div>
+<%- include(`${partials}/inputs/select`, {title: 'Filter By Supplier', id: `filter_${table}_suppliers`, spinner_id: 'suppliers', reload_id: 'reload_suppliers'}) %>

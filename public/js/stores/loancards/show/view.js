@@ -1,4 +1,9 @@
-const statuses = {"0": "Cancelled", "1": "Draft", "2": "Complete", "3": "Closed"};
+const statuses = {
+    "0": "Cancelled", 
+    "1": "Draft", 
+    "2": "Complete", 
+    "3": "Closed"
+};
 function get_loancard() {
     function disable_all_buttons() {
         [

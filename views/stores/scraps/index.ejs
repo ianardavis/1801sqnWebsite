@@ -25,16 +25,9 @@
 		<div class="offcanvas offcanvas-start" tabindex="-1" id="sdb_filter" aria-labelledby="sdb_filter_label">
 			<%- include(`${partials}/sidebar/header`, {id: 'filter', text: 'Filter'}) %>
 			<div class="offcanvas-body d-flex flex-column">
-				<%- include(`${partials}/inputs/select`, {title: 'Filter By Supplier', id: 'filter_scrap_suppliers', spinner_id: 'suppliers', reload_id: 'reload_suppliers'}) %>
-				<div class="input-group mb-1">
-					<span class="input-group-text w-30">Status</span>
-					<select id="sel_scrap_statuses" class="form-select" multiple size="3">
-						<option value="0"		  >Cancelled</option>
-						<option value="1" selected>Draft	</option>
-						<option value="2"		  >Closed	</option>
-					</select>
-				</div>
-				<%- include(`${partials}/filter/date`, {table: 'scrap'}) %>
+				<%- include(`${partials}/filter/supplier`, {table: 'scrap'}) %>
+				<%- include(`${partials}/filter/status`,   {table: 'scrap'}) %>
+				<%- include(`${partials}/filter/date`, 	   {table: 'scrap'}) %>
 			</div>
 		</div>
 	</div>

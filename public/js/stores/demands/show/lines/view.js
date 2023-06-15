@@ -1,11 +1,5 @@
 let line_statuses = {'0': 'Cancelled', '1': 'Pending', '2': 'Open', '3': 'Received'};
 function get_lines() {
-    function line_query() {
-        let where = {demand_id: path[2]};
-        const statuses = getSelectedOptions('sel_lines_statuses');
-        if (statuses.length > 0) where.status = statuses;
-        return where;
-    };
     clear('tbl_lines')
     .then(tbl_lines => {
         function add_line(line, index) {
@@ -51,7 +45,10 @@ function get_lines() {
         };
         get({
             table: 'demand_lines',
-            where: line_query(),
+            where: {
+                demand_id: path[2],
+                ...filter_status('demand_lines')
+            },
             func: get_lines
         })
         .then(function ([result, options]) {
@@ -94,9 +91,9 @@ function show_line(line_id) {
 
 function sum_order_qtys(orders) {
     let qty = 0;
-    orders.forEach(o => {
-        if (o.status > 0) {
-            qty += o.qty;
+    orders.forEach(order => {
+        if (order.status > 0) {
+            qty += order.qty;
         };
     });
     return qty;
@@ -106,7 +103,7 @@ window.addEventListener('load', function () {
     modalOnShow('line_view', function (event) {show_line(event.relatedTarget.dataset.id)});
 
     add_listener('reload',             get_lines);
-    add_listener('sel_lines_statuses', get_lines, 'input');
+    add_listener('filter_demand_lines_status', get_lines, 'input');
     
     addFormListener(
         'lines',

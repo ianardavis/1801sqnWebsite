@@ -29,7 +29,8 @@
 			<%- include(`${partials}/inputs/display`, {id: 'loancard_user', title: 'Raised By', link: true}) %>
 		</div>
 		<div class="tab-pane fade" id="lines" 	role="tabpanel" aria-labelledby="lines-tab">
-			<%- include(`${partials}/inputs/select`, {title: 'Status', id: 'sel_status', options: [{value: '', text: 'All', selected: true}, {value: '"status":0', text: 'Cancelled'}, {value: '"status":1', text: 'Pending'}, {value: '"status":2', text: 'Open'}, {value: '"status":3', text: 'Returned'}]}) %>
+			<%- include(`${partials}/sidebar/button`, {id: 'lines', text: 'Filter'}) %>
+
 			<% if (permissions.issuer) { %><form id='form_actions'><% } %>
 			<button class='btn btn-success mb-1 w-100' id='btn_action'>Action Lines</button>
 	        <table class='table table-sm table-hover'>
@@ -68,6 +69,12 @@
 				<form id="form_delete" class="mt-auto">
 					<button id='btn_delete' type='button' class="btn btn-danger w-100 mb-1" disabled>Cancel</button>
 				</form>
+			</div>
+		</div>
+		<div class="offcanvas offcanvas-start" tabindex="-1" id="sdb_lines" aria-labelledby="sdb_lines_label">
+			<%- include(`${partials}/sidebar/header`, {id: 'lines', text: 'Filter Lines'}) %>
+			<div class="offcanvas-body d-flex flex-column">
+				<%- include(`${partials}/filter/status`, {table: 'loancard_lines'}) %>
 			</div>
 		</div>
 		<%- include(`${partials}/common/notes/sidebar`) %>

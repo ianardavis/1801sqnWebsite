@@ -17,7 +17,12 @@ function get_loancards() {
         };
         get({
             table: 'loancards',
-            ...build_filter_query(),
+            where: {
+                ...filter_status('loancard'),
+                ...filter_user('loancard')
+            },
+            gt: filter_date_from('loancard'),
+            lt: filter_date_to('loancard'),
             func: get_loancards
         })
         .then(function ([results, options]) {
@@ -41,6 +46,13 @@ function GoToEnter(input) {
     if(event.key === 'Enter') gotoLoancard(input.value);
 };
 window.addEventListener('load', function () {
+    set_status_filter_options('loancard', [
+        {value: '0', text: 'Cancelled'},
+        {value: '1', text: 'Draft',    selected: true},
+        {value: '2', text: 'Complete', selected: true},
+        {value: '3', text: 'Closed'}
+    ]);
+
     add_listener('reload', get_loancards);
     add_listener('goto_loancard_id', );
     modalOnShow('loancard_open', function () {StartScanning(gotoLoancard)});

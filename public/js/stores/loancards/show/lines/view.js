@@ -66,12 +66,12 @@ function get_lines() {
                 console.error(error);
             };
         };
-        let sel_status = document.querySelector('#sel_status') || {value: ''},
-            where = {loancard_id: path[2]};
-        if (sel_status.value !== '') where.status = sel_status.value;
         get({
             table: 'loancard_lines',
-            where: where,
+            where: {
+                loancard_id: path[2],
+                ...filter_status('loancard_lines')
+            },
             func: get_lines
         })
         .then(function ([result, options]) {
@@ -111,6 +111,12 @@ function view_line(line_id) {
     .then(set_links);
 };
 window.addEventListener('load', function () {
+    set_status_filter_options('loancard_lines', [
+        {value: '0', text: 'Cancelled', selected: true},
+        {value: '1', text: 'Pending',   selected: true},
+        {value: '2', text: 'Open',      selected: true},
+        {value: '3', text: 'Returned',  selected: true}
+    ]);
     add_listener('reload', get_lines);
     add_listener('sel_status', get_lines, 'change');
     modalOnShow('line_view', function (event) {view_line(event.relatedTarget.dataset.id)});

@@ -129,6 +129,7 @@
         <div class="offcanvas offcanvas-start" tabindex="-1" id="sdb_demands_filter" aria-labelledby="sdb_demands_filter_label">
             <%- include(`${partials}/sidebar/header`, {id: 'demands_filter', text: 'Filter Demands'}) %>
             <div class="offcanvas-body d-flex flex-column">
+                <%- include(`${partials}/filter/status`, {table: 'demand'}) %>
                 <div class="input-group mb-1">
                     <span class="input-group-text w-30">Status</span>
                     <select class='form-select' id='sel_demand_status' multiple size="4">

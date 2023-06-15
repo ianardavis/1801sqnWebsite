@@ -58,7 +58,7 @@
     </div>
 
     <div id="sidebars">
-        <div class="offcanvas offcanvas-start" tabindex="-1" id="sdb_menu" aria-labelledby="sdb_menu_label">
+        <div class="offcanvas offcanvas-start" tabindex="-1" id="sdb_menu"  aria-labelledby="sdb_menu_label">
             <%- include(`${partials}/sidebar/header`, {id: 'menu', text: 'Menu'}) %>
             <div class="offcanvas-body d-flex flex-column">
                 <%- include(`${partials}/button/modal`, {id: 'item_edit',    text: 'Edit',         type: 'warning'}) %>
@@ -72,7 +72,7 @@
         <div class="offcanvas offcanvas-start" tabindex="-1" id="sdb_sizes" aria-labelledby="sdb_sizes_label">
             <%- include(`${partials}/sidebar/header`, {id: 'sizes', text: 'Filter Sizes'}) %>
             <div class="offcanvas-body d-flex flex-column">
-                <%- include(`${partials}/filter/item`, {table: 'size'}) %>
+                <%- include(`${partials}/filter/size`, {table: 'size'}) %>
             </div>
         </div>
         <%- include(`${partials}/common/notes/sidebar`) %>

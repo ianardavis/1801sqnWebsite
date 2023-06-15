@@ -1,17 +1,5 @@
 const get_genders = listGenders();
 function get_items() {
-    function item_query() {
-        const item_description = document.querySelector('#item_description') || {value: ''};
-        const genders = getSelectedOptions('sel_genders');
-        let where = null;
-        let like  = null;
-        if (genders.length > 0) where = {gender_id: genders};
-        if (item_description.value !== '') like = {description: item_description.value};
-        return {
-            where: where,
-            like:  like
-        }
-    };
     clear('tbl_items')
     .then(tbl_items => {
         function add_line(item) {
@@ -21,7 +9,12 @@ function get_items() {
         };
         get({
             table: 'items',
-            ...item_query(),
+            where: {
+                ...filter_gender('item')
+            },
+            like: {
+                ...filter_item('item')
+            },
             func: get_items
         })
         .then(function ([result, options]) {

@@ -49,7 +49,12 @@ function getOrders() {
         };
         get({
             table: 'orders',
-            ...build_filter_query('order'),
+            like: {
+                ...filter_item('order'),
+                ...filter_size('order')
+            },
+            gt: filter_date_from('order'),
+            lt: filter_date_to('order'),
             func: getOrders
         })
         .then(function ([result, options]) {
@@ -62,6 +67,12 @@ function getOrders() {
     });
 };
 window.addEventListener('load', function () {
+    set_status_filter_options('order', [
+        {value: '0', text: 'Cancelled'},
+        {value: '1', text: 'Placed',          selected: true},
+        {value: '2', text: 'Added to Demand', selected: true},
+        {value: '3', text: 'Received'}
+    ]);
     add_listener('reload', getOrders);
     add_listener('filter_order_statuses',       getOrders, 'input');
     add_listener('filter_order_createdAt_from', getOrders, 'input');

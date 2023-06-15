@@ -61,7 +61,7 @@ window.addEventListener('load', function () {
         {value: '1', text: 'Draft', selected: true},
         {value: '2', text: 'Complete', selected: true},
         {value: '3', text: 'Closed'}
-    ])
+    ]);
     add_listener('reload', get_demands);
     add_listener('reload_suppliers', get_suppliers);
     add_listener('filter_demands_supplier',       get_demands, 'input');

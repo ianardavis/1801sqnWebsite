@@ -1,10 +1,10 @@
-function getDetails() {
+function get_details() {
     clear('tbl_details')
     .then(tbl_details => {
         get({
             table: 'details',
             where: {size_id: path[2]},
-            func: getDetails
+            func: get_details
         })
         .then(function ([result, options]) {
             result.details.forEach(detail => {
@@ -35,12 +35,12 @@ function viewDetail(detail_id) {
     });
 };
 window.addEventListener('load', function () {
-    add_listener('reload', getDetails);
+    add_listener('reload', get_details);
     modalOnShow('detail_view', function (event) {
         if (event.relatedTarget.dataset.id) {
             viewDetail(event.relatedTarget.dataset.id)
         } else modalHide('detail_view');
     });
-    add_sort_listeners('details', getDetails);
-    getDetails();
+    add_sort_listeners('details', get_details);
+    get_details();
 });

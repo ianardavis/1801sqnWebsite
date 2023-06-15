@@ -31,18 +31,11 @@
 			<%- include(`${partials}/sidebar/header`, {id: 'filter', text: 'Filter'}) %>
 			<div class="offcanvas-body d-flex flex-column">
 				<%- include(`${partials}/button/modal`, {id: 'order_add', text: 'New Order', type: 'success'}) %>
-				<div class="input-group mb-1">
-					<span class="input-group-text w-30">Status</span>
-					<select id="filter_order_statuses" class="form-select" multiple size="4">
-						<option value="0"		  >Cancelled	  </option>
-						<option value="1" selected>Placed		  </option>
-						<option value="2" selected>Added to Demand</option>
-						<option value="3"		  >Received		  </option>
-					</select>
-				</div>
-				<%- include(`${partials}/filter/date`, {table: 'order'}) %>
-				<%- include(`${partials}/filter/item`, {table: 'order'}) %>
-				<%- include(`${partials}/filter/size`, {table: 'order'}) %>
+				
+				<%- include(`${partials}/filter/status`, {table: 'order'}) %>
+				<%- include(`${partials}/filter/date`, 	 {table: 'order'}) %>
+				<%- include(`${partials}/filter/item`, 	 {table: 'order'}) %>
+				<%- include(`${partials}/filter/size`, 	 {table: 'order'}) %>
 	
 				<button class="btn btn-success w-100 mt-auto" form="form_order_edit">
 					Action Selected Orders

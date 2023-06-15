@@ -13,12 +13,12 @@
 	<% if (permissions.issuer) { %><form id='form_issue_edit'><% } %>
 		<table class="table table-sm table-hover">
 			<thead class="thead-dark" id="tbl_issues_head">
-				<th class='w-15' data-column='["createdAt"]' data-dir='DESC'>Date		</th>
-				<th class='w-20' data-column='["user_issue","surname"]'		>User		</th>
+				<th class='w-15' data-column='["createdAt"]' data-dir='DESC'>Date</th>
+				<th class='w-20' data-column='["user_issue","surname"]'		>User</th>
 				<th class='w-20' data-column='["size","item","description"]'>Description</th>
-				<th class='w-10' data-column='["size","size1"]'				>Size		</th>
-				<th class='w-10' data-column='["qty"]'						>Qty		</th>
-				<th class='w-10' data-column='["status"]'					>Status		</th>
+				<th class='w-10' data-column='["size","size1"]'				>Size</th>
+				<th class='w-10' data-column='["qty"]'						>Qty</th>
+				<th class='w-10' data-column='["status"]'					>Status</th>
 				<th class='w-15'>Actions</th>
 				<th><i class="fas fa-search"></i></th>
 			</thead>
@@ -32,23 +32,12 @@
 			<%- include(`${partials}/sidebar/header`, {id: 'filter', text: 'Filter'}) %>
 			<div class="offcanvas-body d-flex flex-column">
 				<%- include(`${partials}/button/modal`, {id: 'issue_add', text: 'New Issue', type: 'success'}) %>
-				<div class="input-group mb-1">
-					<span class="input-group-text w-30">Status</span>
-					<select id="filter_issue_statuses" class="form-select" multiple size="8">
-						<option value="-3"	  	  >Cancelled (Ordered)</option>
-						<option value="-2"	  	  >Cancelled (Approved)</option>
-						<option value="-1"		  >Declined</option>
-						<option value="1" selected>Requested</option>
-						<option value="2" selected>Approved</option>
-						<option value="3" selected>Ordered</option>
-						<option value="4"		  >Added to Loancard</option>
-						<option value="5"		  >Returned</option>
-					</select>
-				</div>
-				<%- include(`${partials}/filter/user`, {table: 'issue'}) %>
-				<%- include(`${partials}/filter/date`, {table: 'issue'}) %>
-				<%- include(`${partials}/filter/item`, {table: 'issue'}) %>
-				<%- include(`${partials}/filter/size`, {table: 'issue'}) %>
+				
+				<%- include(`${partials}/filter/status`, {table: 'issue'}) %>
+				<%- include(`${partials}/filter/user`, 	 {table: 'issue'}) %>
+				<%- include(`${partials}/filter/date`, 	 {table: 'issue'}) %>
+				<%- include(`${partials}/filter/item`, 	 {table: 'issue'}) %>
+				<%- include(`${partials}/filter/size`, 	 {table: 'issue'}) %>
 	
 				<button class="btn btn-success w-100 mt-auto" form="form_issue_edit">
 					Action Selected Issues

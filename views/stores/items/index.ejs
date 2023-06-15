@@ -24,8 +24,8 @@
 			<%- include(`${partials}/sidebar/header`, {id: 'menu', text: 'Menu'}) %>
 			<div class="offcanvas-body d-flex flex-column">
 				<h5>Filter</h5>
-				<%- include(`${partials}/inputs/select`, {id: 'sel_genders', 	  title: 'Genders', spinner_id: 'genders', reload_id: 'reload_genders', multiple: true, size: '3'}) %>
-				<%- include(`${partials}/inputs/text`,   {id: 'item_description', title: 'Description'}) %>
+				<%- include(`${partials}/filter/gender`, {table: 'item'}) %>
+				<%- include(`${partials}/filter/item`,   {table: 'item'}) %>
 				<h5>Actions</h5>
 				<%- include(`${partials}/button/modal`, {id: 'item_add', text: 'New Item', type: 'success'}) %>
 			</div>

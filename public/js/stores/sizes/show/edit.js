@@ -5,7 +5,7 @@ function viewSizeEdit() {
         where: {size_id: path[2]}
     })
     .then(function ([size, options]) {
-        getSuppliers(size.supplier_id);
+        get_suppliers(size.supplier_id);
         set_value('sel_issueable', (size.issueable   ? '1' : '0'));
         set_value('sel_orderable', (size.orderable   ? '1' : '0'));
         set_value('sel_serials',   (size.has_serials ? '1' : '0'));
@@ -15,7 +15,7 @@ function viewSizeEdit() {
         set_value('size3_edit',    size.size3);
     });
 };
-function getSuppliers(selected = null) {
+function get_suppliers(selected = null) {
     listSuppliers({
         blank:    true,
         id_only:  true,
@@ -43,5 +43,5 @@ window.addEventListener('load', function () {
         {onComplete: getNSNs}
     );
     modalOnShow('size_edit', viewSizeEdit);
-    add_listener('reload_suppliers', function () {getSuppliers()});
+    add_listener('reload_suppliers', get_suppliers);
 });

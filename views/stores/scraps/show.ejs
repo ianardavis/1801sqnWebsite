@@ -77,16 +77,9 @@
 		<div class="offcanvas offcanvas-start" tabindex="-1" id="sdb_lines_filter" aria-labelledby="sdb_lines_filter_label">
 			<%- include(`${partials}/sidebar/header`, {id: 'lines_filter', text: 'Filter Lines'}) %>
 			<div class="offcanvas-body d-flex flex-column">
-				<div class="input-group mb-1">
-					<span class="input-group-text w-30">Status</span>
-					<select id="filter_scrap_line_statuses" class="form-select" multiple size="3">
-						<option value="0"		  >Cancelled</option>
-						<option value="1" selected>Pending	</option>
-						<option value="2" selected>Closed	</option>
-					</select>
-				</div>
-				<%- include(`${partials}/filter/item`, {table: 'scrap_line'}) %>
-				<%- include(`${partials}/filter/size`, {table: 'scrap_line'}) %>
+				<%- include(`${partials}/filter/status`, {table: 'scrap_line'}) %>
+				<%- include(`${partials}/filter/item`, 	 {table: 'scrap_line'}) %>
+				<%- include(`${partials}/filter/size`, 	 {table: 'scrap_line'}) %>
 			</div>
 		</div>
 		<%- include(`${partials}/common/notes/sidebar`) %>

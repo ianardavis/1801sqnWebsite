@@ -5,18 +5,6 @@ function removeID(id) {
         if (e) e.remove();
     } else id.remove();
 };
-function get_element(id) {
-    return new Promise((resolve, reject) => {
-        const e = document.querySelector(`#${id}`);
-        if (e) {
-            resolve(e);
-
-        } else {
-            reject(new Error('Element not found'));
-
-        };
-    });
-};
 function yesno(boolean) {
     if (boolean) return 'Yes'
     else return 'No'
@@ -268,36 +256,6 @@ function add_page_links(count, limit, offset, table, func) {
         );
     });
 };
-function build_filter_query(table, where = {}) {
-    let like = {};
-    let gt   = null;
-    let lt   = null;
-    const statuses  = getSelectedOptions(     `filter_${table}_status`);
-    const date_from = document.querySelector(`#filter_${table}_createdAt_from`) || {value: ''};
-    const date_to   = document.querySelector(`#filter_${table}_createdAt_to`)   || {value: ''};
-    const user_id   = document.querySelector(`#filter_${table}_user`)           || {value: ''};
-    const item      = document.querySelector(`#filter_${table}_item`)           || {value: ''};
-    const size1     = document.querySelector(`#filter_${table}_size_1`)         || {value: ''};
-    const size2     = document.querySelector(`#filter_${table}_size_2`)         || {value: ''};
-    const size3     = document.querySelector(`#filter_${table}_size_3`)         || {value: ''};
-    const supplier  = document.querySelector(`#filter_${table}_supplier`)       || {value: ''};
-    if (item   .value)       like.item  = item.value;
-    if (size1  .value)       like.size1 = size1.value;
-    if (size2  .value)       like.size2 = size2.value;
-    if (size3  .value)       like.size3 = size3.value;
-    if (user_id.value)       where[`user_id_${table}`] = user_id.value;
-    if (statuses.length > 0) where.status = statuses;
-    if (date_from && date_from.value !== '') gt = {column: 'createdAt', value: date_from.value};
-    if (date_to   && date_to.value   !== '') lt = {column: 'createdAt', value: date_to  .value};
-    if (supplier.value) where.supplier_id = supplier.value;
-
-    return {
-        where: where,
-        like:  like,
-        gt:    gt,
-        lt:    lt
-    };
-};
 function toProperCase(str) {
     return str.replace(
       /\w\S*/g,
@@ -324,9 +282,25 @@ function getSelectedOptions(id) {
         return Array.from(e.selectedOptions).map(({ value }) => value)
     } else return [];
 };
+function filter_item(id) {
+    const item = document.querySelector(`#filter_${id}_description`);
+    if (item && item.value) return {description: item.value}
+    else return {};
+};
+function filter_size(id) {
+    const size1 = document.querySelector(`#filter_${id}_size_1`);
+    const size2 = document.querySelector(`#filter_${id}_size_2`);
+    const size3 = document.querySelector(`#filter_${id}_size_3`);
+    let like = {};
+    if (size1 && size1.value) like.size1 = size1.value;
+    if (size2 && size2.value) like.size2 = size2.value;
+    if (size3 && size3.value) like.size3 = size3.value;
+    return like;
+
+};
 function filter_status(id) {
     const statuses = getSelectedOptions(`filter_${id}_status`);
-    if (statuses.length > 0) return {status: statuses}
+    if (statuses && statuses.length > 0) return {status: statuses}
     else return {};
 };
 function filter_supplier(id) {
@@ -344,33 +318,45 @@ function filter_date_to(id) {
     if (date_to && date_to.value !== '') return {column: 'createdAt', value: date_to.value}
     else return null;
 };
-function sort(tr, func) {
-    if (!tr.dataset.dir) {
-        (tr.parentNode.querySelectorAll("[data-dir]")).forEach(e => {
-            delete e.dataset.dir;
-            e.querySelectorAll('.fas').forEach(e => {
-                 e.classList.remove('fa-arrow-up');
-                 e.classList.remove('fa-arrow-down');
-            });
-        });
-    };
-    let i = tr.querySelector('.fas');
-    if (!tr.dataset.dir || tr.dataset.dir === 'DESC') {
-        tr.dataset.dir = 'ASC';
-        if (i) {
-            i.classList.remove('fa-arrow-down')
-            i.classList.add(   'fa-arrow-up');
-        };
-    } else {
-        tr.dataset.dir = 'DESC';
-        if (i) {
-            i.classList.remove('fa-arrow-up')
-            i.classList.add(   'fa-arrow-down');
-        };
-    };
-    func();
+function filter_user(id) {
+    const user = document.querySelector(`#filter_${id}_user`);
+    let where = {};
+    if (user && user.value) where[`user_id_${id}`] = user.value;
+    return where;
 };
+function filter_gender(id) {
+    const genders = getSelectedOptions(`filter_${id}_gender`);
+    if (genders && genders.length > 0) return {gender_id: genders}
+    else return {};
+};
+
 function add_sort_listeners(table, func) {
+    function sort(tr, func) {
+        if (!tr.dataset.dir) {
+            (tr.parentNode.querySelectorAll("[data-dir]")).forEach(e => {
+                delete e.dataset.dir;
+                e.querySelectorAll('.fas').forEach(e => {
+                     e.classList.remove('fa-arrow-up');
+                     e.classList.remove('fa-arrow-down');
+                });
+            });
+        };
+        let i = tr.querySelector('.fas');
+        if (!tr.dataset.dir || tr.dataset.dir === 'DESC') {
+            tr.dataset.dir = 'ASC';
+            if (i) {
+                i.classList.remove('fa-arrow-down')
+                i.classList.add(   'fa-arrow-up');
+            };
+        } else {
+            tr.dataset.dir = 'DESC';
+            if (i) {
+                i.classList.remove('fa-arrow-up')
+                i.classList.add(   'fa-arrow-down');
+            };
+        };
+        func();
+    };
     let limit_func = function (e) {
         let limit = document.querySelector(`.limit_${table} .active`);
         if (limit) {
