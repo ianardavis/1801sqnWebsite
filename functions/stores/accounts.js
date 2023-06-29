@@ -5,22 +5,18 @@ module.exports = function (m, fn) {
             m.accounts,
             where,
             [fn.inc.users.user()]
-        )
+        );
     };
     fn.accounts.get_all = function (query) {
-        return new Promise((resolve, reject) => {
-            m.accounts.findAndCountAll({
-                where:   query.where,
-                include: [fn.inc.users.user()],
-                ...fn.pagination(query)
-            })
-            .then(results => resolve(results))
-            .catch(reject);
+        return m.accounts.findAndCountAll({
+            where:   query.where,
+            include: [fn.inc.users.user()],
+            ...fn.pagination(query)
         });
     };
 
     fn.accounts.create = function (details) {
-        function check() {
+        function check_account_details() {
             return new Promise((resolve, reject) => {
                 if (!details.name) {
                     reject(new Error('No account name'));
@@ -37,9 +33,9 @@ module.exports = function (m, fn) {
             });
         };
         return new Promise((resolve, reject) => {
-            check()
+            check_account_details()
             .then(m.accounts.create)
-            .then(new_account => resolve(new_account))
+            .then(resolve)
             .catch(reject);
         });
     };
@@ -51,7 +47,7 @@ module.exports = function (m, fn) {
         return new Promise((resolve, reject) => {
             fn.accounts.get({account_id: account_id})
             .then(update_account)
-            .then(result => resolve(true))
+            .then(resolve)
             .catch(reject);
         });
     };
@@ -60,7 +56,7 @@ module.exports = function (m, fn) {
         function check_for_linked_data(account) {
             return new Promise((resolve, reject) => {
                 Promise.allSettled([
-                    fn.suppliers.get({account_id: account.account_id})
+                    fn.demands.get({account_id: account.account_id})
                 ])
                 .then(results => {
                     if (results.filter(e => e.status === 'fulfilled').length > 0) {
@@ -107,7 +103,7 @@ module.exports = function (m, fn) {
             .then(check_for_linked_data)
             .then(delete_account)
             .then(remove_from_supplier_records)
-            .then(then => resolve(true))
+            .then(resolve)
             .catch(reject);
         });
     };

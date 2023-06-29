@@ -12,18 +12,14 @@ module.exports = function (m, fn) {
         )
     };
     fn.serials.get_all = function (query) {
-        return new Promise((resolve, reject) => {
-            m.serials.findAndCountAll({
-                where: query.where,
-                include: [
-                    fn.inc.stores.location(),
-                    fn.inc.stores.issue(),
-                    fn.inc.stores.size()
-                ],
-                ...fn.pagination(query)
-            })
-            .then(results => resolve(results))
-            .catch(reject);
+        return m.serials.findAndCountAll({
+            where: query.where,
+            include: [
+                fn.inc.stores.location(),
+                fn.inc.stores.issue(),
+                fn.inc.stores.size()
+            ],
+            ...fn.pagination(query)
         });
     };
 

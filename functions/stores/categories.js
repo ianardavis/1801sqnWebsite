@@ -8,14 +8,10 @@ module.exports = function (m, fn) {
         );
     };
     fn.categories.get_all = function (query) {
-        return new Promise((resolve, reject) => {
-            m.categories.findAndCountAll({
-                where:   query.where || {},
-                include: [fn.inc.stores.categories({as: 'parent'})],
-                ...fn.pagination(query)
-            })
-            .then(results => resolve(results))
-            .catch(reject);
+        return m.categories.findAndCountAll({
+            where:   query.where || {},
+            include: [fn.inc.stores.categories({as: 'parent'})],
+            ...fn.pagination(query)
         });
     };
     fn.categories.edit = function (category_id, details) {

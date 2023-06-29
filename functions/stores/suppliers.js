@@ -9,13 +9,9 @@ module.exports = function (m, fn) {
         );
     };
     fn.suppliers.get_all = function (query) {
-        return new Promise((resolve, reject) => {
-            m.suppliers.findAndCountAll({
-                where: query.where,
-                ...fn.pagination(query)
-            })
-            .then(results => resolve(results))
-            .catch(reject);
+        return m.suppliers.findAndCountAll({
+            where: query.where,
+            ...fn.pagination(query)
         });
     };
     fn.suppliers.edit = function (supplier_id, details) {
@@ -23,7 +19,7 @@ module.exports = function (m, fn) {
             fn.suppliers.get({supplier_id: supplier_id})
             .then(supplier => {
                 fn.update(supplier, details)
-                .then(result => resolve(true))
+                .then(resolve)
                 .catch(reject);
             })
             .catch(reject);

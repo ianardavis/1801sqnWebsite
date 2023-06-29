@@ -1,5 +1,10 @@
 module.exports = function (m, fn) {
-    const line_status = {0: "Cancelled", 1: "Pending", 2: "Open", 3: "Closed"};
+    const line_status = {
+        0: "Cancelled", 
+        1: "Pending", 
+        2: "Open", 
+        3: "Closed"
+    };
     
     fn.demands.count = function (where) { return m.demands.count({where: where}) };
     
@@ -11,49 +16,41 @@ module.exports = function (m, fn) {
         );
     };
     fn.demands.get_all = function (query) {
-        return new Promise((resolve, reject) => {
-            m.demands.findAndCountAll({
-                where: query.where,
-                include: [
-                    fn.inc.users.user(),
-                    fn.inc.stores.supplier()
-                ],
-                ...fn.pagination(query)
-            })
-            .then(results => resolve(results))
-            .catch(reject);
+        return m.demands.findAndCountAll({
+            where: query.where,
+            include: [
+                fn.inc.users.user(),
+                fn.inc.stores.supplier()
+            ],
+            ...fn.pagination(query)
         });
     };
     fn.demands.get_users = function (demand_id) {
-        return new Promise((resolve, reject) => {
-            m.users.findAll({
-                order:      [['surname', 'ASC']],
-                attributes: ["user_id", "full_name", "surname", "first_name"],
-                include:    [
-                    fn.inc.users.rank(),
-                    {
-                        model:    m.issues,
+        return m.users.findAll({
+            order:      [['surname', 'ASC']],
+            attributes: ["user_id", "full_name", "surname", "first_name"],
+            include:    [
+                fn.inc.users.rank(),
+                {
+                    model:    m.issues,
+                    required: true,
+                    include:  [{
+                        model:    m.orders,
+                        where:    {status: 2},
                         required: true,
                         include:  [{
-                            model:    m.orders,
+                            model:    m.demand_lines,
                             where:    {status: 2},
                             required: true,
                             include:  [{
-                                model:    m.demand_lines,
-                                where:    {status: 2},
-                                required: true,
-                                include:  [{
-                                    model:    m.demands,
-                                    where:    {demand_id: demand_id},
-                                    required: true
-                                }]
+                                model:    m.demands,
+                                where:    {demand_id: demand_id},
+                                required: true
                             }]
-                        }] 
-                    }
-                ]
-            })
-            .then(users => resolve(users))
-            .catch(reject);
+                        }]
+                    }] 
+                }
+            ]
         });
     };
     

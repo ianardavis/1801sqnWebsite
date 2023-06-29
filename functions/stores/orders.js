@@ -9,20 +9,16 @@ module.exports = function (m, fn) {
                 fn.inc.stores.size({supplier: true}),
                 fn.inc.stores.issues()
             ].concat(include)
-        )
+        );
     };
     fn.orders.get_all = function (query) {
-        return new Promise((resolve, reject) => {
-            m.orders.findAndCountAll({
-                where: query.where,
-                include: [
-                    fn.inc.stores.size(),
-                    fn.inc.users.user()
-                ],
-                ...fn.pagination(query)
-            })
-            .then(results => resolve(results))
-            .catch(reject);
+        return m.orders.findAndCountAll({
+            where: query.where,
+            include: [
+                fn.inc.stores.size(),
+                fn.inc.users.user()
+            ],
+            ...fn.pagination(query)
         });
     };
     fn.orders.count   = function (where) {return m.orders.count({where: where})};

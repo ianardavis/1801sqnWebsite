@@ -42,6 +42,15 @@ module.exports = function (m) {
         }
     );
 
+    m.demands.hasOne(
+        m.accounts,
+        {
+            foreignKey: 'account_id',
+            sourceKey:  'account_id',
+            constraints: false
+        }
+    );
+
     m.demand_lines.hasOne(
         m.users,
         {

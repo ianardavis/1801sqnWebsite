@@ -32,13 +32,9 @@ module.exports = function (m, fn) {
         });
     };
     fn.locations.get_all = function (query) {
-        return new Promise((resolve, reject) => {
-            m.locations.findAndCountAll({
-                where: query.where,
-                ...fn.pagination(query)
-            })
-            .then(results => resolve(results))
-            .catch(reject);
+        return m.locations.findAndCountAll({
+            where: query.where,
+            ...fn.pagination(query)
         });
     };
     fn.locations.get = function (search) {
@@ -57,9 +53,9 @@ module.exports = function (m, fn) {
     fn.locations.find_or_create = function (location) {
         if (location) {
             return new Promise((resolve, reject) => {
-                    m.locations.findOrCreate({where: {location: location}})
-                    .then(([new_location, created]) => resolve(new_location))
-                    .catch(reject);
+                m.locations.findOrCreate({where: {location: location}})
+                .then(([new_location, created]) => resolve(new_location))
+                .catch(reject);
             });
 
         } else {

@@ -7,30 +7,20 @@ module.exports = function (m, fn) {
         );
     };
     fn.genders.get_all = function (query) {
-        return new Promise((resolve, reject) => {
-            m.genders.findAndCountAll({
-                where: query.where,
-                ...fn.pagination(query)
-            })
-            .then(results => resolve(results))
-            .catch(reject);
+        return m.genders.findAndCountAll({
+            where: query.where,
+            ...fn.pagination(query)
         });
     };
 
-    fn.genders.create = function (gender) {
-        return new Promise((resolve, reject) => {
-            m.genders.create(gender)
-            .then(new_gender => resolve(new_gender))
-            .catch(reject);
-        });
-    };
+    fn.genders.create = function (gender) {return m.genders.create(gender)};
 
     fn.genders.edit = function (gender_id, details) {
         return new Promise((resolve, reject) => {
             fn.genders.get({gender_id: gender_id})
             .then(gender => {
                 fn.update(gender, details)
-                .then(result => resolve(true))
+                .then(resolve)
                 .catch(reject);
             })
             .catch(reject);

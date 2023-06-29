@@ -85,17 +85,13 @@ module.exports = function (m, fn) {
     };
 
     fn.stocks.get_all = function (query) {
-        return new Promise((resolve, reject) => {
-            m.stocks.findAndCountAll({
-                where: query.where,
-                include: [
-                    fn.inc.stores.size(),
-                    fn.inc.stores.location()
-                ],
-                ...fn.pagination(query)
-            })
-            .then(results => resolve(results))
-            .catch(reject);
+        return m.stocks.findAndCountAll({
+            where: query.where,
+            include: [
+                fn.inc.stores.size(),
+                fn.inc.stores.location()
+            ],
+            ...fn.pagination(query)
         });
     };
     fn.stocks.sum = function (where) {return m.stocks.sum('qty', {where: where})};

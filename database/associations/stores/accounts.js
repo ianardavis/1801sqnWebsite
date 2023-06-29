@@ -6,6 +6,13 @@ module.exports = function (m) {
             targetKey:  'account_id'
         }
     );
+    m.accounts.belongsTo(
+        m.demands, 
+        {
+            foreignKey: 'account_id',
+            targetKey:  'account_id'
+        }
+    );
     
     m.accounts.hasOne(
         m.users,

@@ -237,7 +237,7 @@ module.exports = function (m, fn) {
                     .then(write_items)
                     .then(workbook => {
                         workbook.xlsx.writeFile(path)
-                        .then(() => resolve({filename: filename}))
+                        .then(() => resolve({filename: filename, account_id: account.account_id}))
                         .catch(reject);
                     })
                     .catch(reject);
