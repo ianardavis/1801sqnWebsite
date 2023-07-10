@@ -32,7 +32,7 @@ window.addEventListener('load', function () {
         {
             onComplete: [,
                 reset_add_detail,
-                getDetails,
+                get_details,
                 function () {
                     set_value('inp_detail_name',);
                     set_value('inp_detail_value');

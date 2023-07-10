@@ -41,7 +41,7 @@ window.addEventListener('load', function() {
         `/detail`,
         {
             onComplete: [
-                getDetails,
+                get_details,
                 function () {modalHide('detail_edit')}
             ]
         }

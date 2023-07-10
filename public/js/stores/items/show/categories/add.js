@@ -62,7 +62,7 @@ window.addEventListener('load', function () {
         'POST',
         '/item_categories',
         {onComplete: [
-            getCategories,
+            get_categories,
             reset_categories_add
         ]}
     );

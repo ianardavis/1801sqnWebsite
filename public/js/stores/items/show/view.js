@@ -36,4 +36,5 @@ function get_item() {
 };
 window.addEventListener('load', function () {
     add_listener('reload', get_item);
+    get_item();
 });

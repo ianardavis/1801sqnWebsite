@@ -101,7 +101,7 @@ window.addEventListener('load', function () {
         '/issues',
         {
             onComplete: [
-                getIssues,
+                get_issues,
                 function () {modalHide('issue_add')}
             ]
         }
