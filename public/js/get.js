@@ -68,7 +68,7 @@ function get_stream(streamAction) {
         try {
             streamAction(event.target.responseText);
         } catch (error) {
-            print_error(`Error with stream request`, response.message || error);
+            // print_error(`Error with stream request`, response.message || error);
             reject(error);
             
         };
@@ -101,7 +101,7 @@ function get(options) {
                         resolve([response.result, options]);
 
                     } else {
-                        print_error(`Error getting ${options.table}`, response.message || response);
+                        // print_error(`Error getting ${options.table}`, response.message || response);
                         reject(new Error(response.message));
 
                     };

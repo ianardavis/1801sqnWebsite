@@ -5,7 +5,7 @@ window.addEventListener( "load", function () {
         `/demands/${path[2]}`,
         {
             onComplete: [
-                getDemand,
+                get_demand,
                 function () {if (typeof getLines === 'function') getLines()}
             ]
         }

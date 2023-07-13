@@ -1,9 +1,14 @@
-let loancard_statuses = {'0': 'Cancelled', '1':'Draft', '2': 'Open', '3': 'Closed'};
+const loancard_statuses = {
+    '0': 'Cancelled',
+    '1': 'Draft',
+    '2': 'Open',
+    '3': 'Closed'
+};
 function getLoancards () {
     clear('tbl_loancards')
     .then(tbl_loancards => {
-        let where = {user_id_loancard: path[2]},
-            statuses = getSelectedOptions('sel_loancard_statuses');
+        let where = {user_id_loancard: path[2]};
+        const statuses = getSelectedOptions('sel_loancard_statuses');
         if (statuses.length > 0) where.status = statuses;
         get({
             table: 'loancards',

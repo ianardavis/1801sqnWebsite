@@ -1,5 +1,5 @@
 let issue_statuses = {'0': 'Cancelled', '1': 'Requested', '2': 'Approved', '3': 'Ordered', '4': 'Issued', '5': 'Returned'};
-function getIssues () {
+function get_issues () {
     clear('tbl_issues')
     .then(tbl_issues => {
         let where = {user_id_issue: path[2]},
@@ -8,7 +8,7 @@ function getIssues () {
         get({
             table: 'issues',
             where: where,
-            func: getIssues
+            func: get_issues
         })
         .then(function ([result, options]) {
             let row_index = 0;
@@ -59,12 +59,12 @@ function filter(tbl_issues) {
     });
 };
 window.addEventListener('load', function () {
-    add_listener('reload', getIssues);
-    add_listener('sel_issue_statuses', getIssues, 'change');
+    add_listener('reload', get_issues);
+    add_listener('sel_issue_statuses', get_issues, 'change');
     add_listener('issue_createdAt_from', function (){filter()}, 'change');
     add_listener('issue_createdAt_to',   function (){filter()}, 'change');
     add_listener('item',           function (){filter()}, 'input');
     add_listener('size',           function (){filter()}, 'input');
-    add_sort_listeners('issues', getIssues);
-    getIssues();
+    add_sort_listeners('issues', get_issues);
+    get_issues();
 });

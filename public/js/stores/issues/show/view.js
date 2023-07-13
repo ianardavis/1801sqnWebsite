@@ -49,8 +49,8 @@ function getIssue() {
                 add_cell(row, {text: line.line_id});
                 add_cell(row, {append: new Link(`/loancard_lines/${line.line_id}`).e});
             });
-            return issue;
         });
+        return issue;
     };
     function set_status_badges(issue) {
         clear_statuses(5, statuses);

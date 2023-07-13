@@ -1,4 +1,9 @@
-let line_statuses = {"0": "Cancelled", "1": "Pending", "2": "Complete", "3": "Closed"};
+const statuses = {
+    "0": "Cancelled", 
+    "1": "Pending", 
+    "2": "Complete", 
+    "3": "Closed"
+};
 function getLoancardLine() {
     function display_details([line, options]) {
         set_breadcrumb(`${line.size.item.description} | ${line.size.item.size_text || 'Size'}: ${print_size(line.size)}`);

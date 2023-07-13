@@ -1,5 +1,18 @@
 module.exports = (m, fn) => {
     fn.inc.stores = {};
+    fn.inc.stores.account = () => {
+        return {
+            model:   m.accounts,
+            include: [fn.inc.users.user()],
+            as:      'account'
+        };
+    };
+    fn.inc.stores.address = () => {
+        return {
+            model: m.addresses,
+            as:    'address'
+        };
+    };
     fn.inc.stores.actions = (options = {}) => {
         return {
             where:    options.where || null,
@@ -17,74 +30,24 @@ module.exports = (m, fn) => {
             required: true
         };
     };
-    fn.inc.stores.order = () => {
+    fn.inc.stores.category = () => {
         return {
-            model: m.orders,
-            as:    'order'
+            model: m.categories,
+            as:    'category'
         };
     };
-    fn.inc.stores.orders = () => {
+    fn.inc.stores.categories = (options = {}) => {
         return {
-            model: m.orders,
-            as:    'orders'
-        };
-    };
-    fn.inc.stores.item = () => {
-        return {
-            model: m.items,
-            as:    'item'
-        };
-    };
-    fn.inc.stores.size = (options = {}) => {
-        let includes = [fn.inc.stores.item()];
-        if (options.details)  includes.push(fn.inc.stores.details());
-        if (options.supplier) includes.push(fn.inc.stores.supplier());
-        if (options.nsn)      includes.push(fn.inc.stores.nsn());
-        return {
-            model:   m.sizes,
-            include: includes,
-            as:      'size'
-        };
-    };
-    fn.inc.stores.sizes = () => {
-        return {
-            model:   m.sizes,
-            include: [fn.inc.users.item()]
-        };
-    };
-    fn.inc.stores.files = (options = {}) => {
-        return {
-            model: m.files,
-            where: options.where || null,
-            required: false,
-            include: (options.details ? [fn.inc.stores.file_details()] : [])
-        };
-    };
-    fn.inc.stores.file_details = () => {
-        return {
-            model: m.file_details,
-            as: 'details'
-        };
-    };
-    fn.inc.stores.details = (options = {}) => {
-        return {
-            model: m.details,
-            where: options.where || null
-        };
-    };
-    fn.inc.stores.loancard_lines = () => {
-        return {
-            model: m.loancard_lines,
-            as:    'lines'
-        };
-    };
-    fn.inc.stores.loancard = (options = {}) => {
-        return {
-            model:    m.loancards,
-            include:  options.include  || [],
-            as:       'loancard',
+            model:    m.categories,
+            required: options.required || false,
             where:    options.where    || null,
-            required: options.required || false
+            as:       options.as       || 'categories'
+        };
+    };
+    fn.inc.stores.contact = () => {
+        return {
+            model: m.contacts,
+            as:    'contact'
         };
     };
     fn.inc.stores.demand = () => {
@@ -102,6 +65,32 @@ module.exports = (m, fn) => {
             model: m.demand_lines,
             include: [fn.inc.stores.size()],
             as: as,
+        };
+    };
+    fn.inc.stores.details = (options = {}) => {
+        return {
+            model: m.details,
+            where: options.where || null
+        };
+    };
+    fn.inc.stores.files = (options = {}) => {
+        return {
+            model: m.files,
+            where: options.where || null,
+            required: false,
+            include: (options.details ? [fn.inc.stores.file_details()] : [])
+        };
+    };
+    fn.inc.stores.file_details = () => {
+        return {
+            model: m.file_details,
+            as: 'details'
+        };
+    };
+    fn.inc.stores.gender = () => {
+        return {
+            model: m.genders,
+            as:    'gender'
         };
     };
     fn.inc.stores.issue = () => {
@@ -125,17 +114,31 @@ module.exports = (m, fn) => {
             as:      'issues'
         };
     };
+    fn.inc.stores.item = () => {
+        return {
+            model: m.items,
+            as:    'item'
+        };
+    };
+    fn.inc.stores.loancard_lines = () => {
+        return {
+            model: m.loancard_lines,
+            as:    'lines'
+        };
+    };
+    fn.inc.stores.loancard = (options = {}) => {
+        return {
+            model:    m.loancards,
+            include:  options.include  || [],
+            as:       'loancard',
+            where:    options.where    || null,
+            required: options.required || false
+        };
+    };
     fn.inc.stores.location = () => {
         return {
             model: m.locations,
             as:    'location'
-        };
-    };
-    fn.inc.stores.stock = () => {
-        return {
-            model:   m.stocks,
-            as:      'stock',
-            include: [fn.inc.stores.location()]
         };
     };
     fn.inc.stores.nsn = () => {
@@ -167,17 +170,16 @@ module.exports = (m, fn) => {
             as:    'nsn_group'
         };
     };
-    fn.inc.stores.account = () => {
+    fn.inc.stores.order = () => {
         return {
-            model:   m.accounts,
-            include: [fn.inc.users.user()],
-            as:      'account'
+            model: m.orders,
+            as:    'order'
         };
     };
-    fn.inc.stores.supplier = () => {
+    fn.inc.stores.orders = () => {
         return {
-            model: m.suppliers,
-            as:    'supplier'
+            model: m.orders,
+            as:    'orders'
         };
     };
     fn.inc.stores.scrap = () => {
@@ -195,10 +197,21 @@ module.exports = (m, fn) => {
             required: required
         };
     };
-    fn.inc.stores.address = () => {
+    fn.inc.stores.size = (options = {}) => {
+        let includes = [fn.inc.stores.item()];
+        if (options.details)  includes.push(fn.inc.stores.details());
+        if (options.supplier) includes.push(fn.inc.stores.supplier());
+        if (options.nsn)      includes.push(fn.inc.stores.nsn());
         return {
-            model: m.addresses,
-            as:    'address'
+            model:   m.sizes,
+            include: includes,
+            as:      'size'
+        };
+    };
+    fn.inc.stores.sizes = () => {
+        return {
+            model:   m.sizes,
+            include: [fn.inc.users.item()]
         };
     };
     fn.inc.stores.size_filter = (query) => {
@@ -215,30 +228,17 @@ module.exports = (m, fn) => {
             }]
         }
     }
-    fn.inc.stores.contact = () => {
+    fn.inc.stores.stock = () => {
         return {
-            model: m.contacts,
-            as:    'contact'
+            model:   m.stocks,
+            as:      'stock',
+            include: [fn.inc.stores.location()]
         };
     };
-    fn.inc.stores.gender = () => {
+    fn.inc.stores.supplier = () => {
         return {
-            model: m.genders,
-            as:    'gender'
-        };
-    };
-    fn.inc.stores.category = () => {
-        return {
-            model: m.categories,
-            as:    'category'
-        };
-    };
-    fn.inc.stores.categories = (options = {}) => {
-        return {
-            model:    m.categories,
-            required: options.required || false,
-            where:    options.where    || null,
-            as:       options.as       || 'categories'
+            model: m.suppliers,
+            as:    'supplier'
         };
     };
     fn.inc.stores.serial = () => {

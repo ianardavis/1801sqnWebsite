@@ -46,7 +46,7 @@ window.addEventListener("load", function () {
 		getStatuses(),
 		getRanks()
 	])
-	.then(results => getUsers())
+	.then(getUsers)
 	.catch(err => {
 		console.error(err);
 		getUsers();

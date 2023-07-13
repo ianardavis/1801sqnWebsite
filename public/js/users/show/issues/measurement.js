@@ -135,7 +135,7 @@ window.addEventListener( "load", function () {
         'issue_measurement',
         'POST',
         '/issues',
-        {onComplete: getIssues}
+        {onComplete: get_issues}
     );
     add_sort_listeners('sizes', get_sizes);
 });

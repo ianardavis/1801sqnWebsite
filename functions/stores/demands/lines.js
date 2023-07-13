@@ -21,7 +21,7 @@ module.exports = function (m, fn) {
             m.demand_lines,
             where,
             [
-                m.demands, 
+                fn.inc.stores.demand(), 
                 fn.inc.stores.size()
             ].concat(include)
         );

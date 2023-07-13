@@ -1,5 +1,4 @@
-function getGiftaids()
-{
+function getGiftaids() {
     clear('tbl_giftaid')
     .then(tbl_giftaid => {
         get({
@@ -7,16 +6,18 @@ function getGiftaids()
             where: {user_id: path[2]}
         })
         .then(function ([results, options]) {
-            results.giftaid.forEach(giftaid => {
-                let row = tbl_giftaid.insertRow(-1);
-                add_cell(row, table_date(giftaid.startDate));
-                add_cell(row, table_date(giftaid.endDate));
-                add_cell(row, {append: new Modal_Button(
-                    _search(),
-                    'giftaid_view',
-                    [{field: 'id', value: giftaid.giftaid_id}]
-                ).e});
-            })
+            if (results.giftaid && results.giftaid.count > 0) {
+                results.giftaid.forEach(giftaid => {
+                    let row = tbl_giftaid.insertRow(-1);
+                    add_cell(row, table_date(giftaid.startDate));
+                    add_cell(row, table_date(giftaid.endDate));
+                    add_cell(row, {append: new Modal_Button(
+                        _search(),
+                        'giftaid_view',
+                        [{field: 'id', value: giftaid.giftaid_id}]
+                    ).e});
+                });
+            };
         });
     });
 };

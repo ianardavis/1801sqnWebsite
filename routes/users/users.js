@@ -46,7 +46,7 @@ module.exports = (app, fn) => {
     });
     app.get('/get/users',         fn.loggedIn(), fn.permissions.check('access_users', true), (req, res) => {
         if (!req.allowed) req.query.where.user_id = req.user.user_id;
-        fn.users.get_all(req.query)
+        fn.users.get_all(req.query, {extra_attributes: ['service_number']})
         .then(results => fn.send_res('users', res, results, req.query))
         .catch(err => fn.send_error(res, err));
     });
@@ -55,7 +55,7 @@ module.exports = (app, fn) => {
         if (!req.allowed)     req.query.where.user_id = req.user.user_id;
         fn.users.get_all(
             req.query,
-            fn.inc.users.status({current: true})
+            {status_include: fn.inc.users.status({current: true})}
         )
         .then(results => fn.send_res('users', res, results, req.query))
         .catch(err => fn.send_error(res, err));

@@ -19,12 +19,12 @@ module.exports = function (m, fn) {
             .catch(reject);
         });
     };
-    fn.users.get_all = function (query, status_include = fn.inc.users.status()) {
+    fn.users.get_all = function (query, options = {}) {
         return new Promise((resolve, reject) => {
             m.users.findAndCountAll({
                 where:      query.where,
-                include:    [fn.inc.users.rank(), status_include],
-                attributes: default_attributes,
+                include:    [fn.inc.users.rank(), options.status_include || fn.inc.users.status()],
+                attributes: options.attributes || default_attributes.concat(options.extra_attributes || []),
                 ...fn.pagination(query)
             })
             .then(results => resolve(results))
