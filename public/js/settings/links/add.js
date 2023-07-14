@@ -1,5 +1,5 @@
 window.addEventListener('load', function () {
-    listHeadings('link_heading_add');
+    modalOnShow('link_add', function (event) {listHeadings({select: 'link_heading_add'})});
     enable_button('link_add');
     addFormListener(
         'link_add',

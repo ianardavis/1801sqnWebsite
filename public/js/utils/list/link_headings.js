@@ -1,13 +1,12 @@
 function listHeadings(options = {}) {
 	return new Promise(resolve => {
-		clear(options.select || 'sel_headings')
+		clear(options.select)
 		.then(sel_headings => {
 			get({
-                table: 'settings',
-                where: {name: 'link_heading'},
+                table: 'resource_link_headings',
                 ...options
             })
-			.then(function ([result, options]) {
+			.then(function ([headings, options]) {
 				if (options.blank) {
 					sel_headings.appendChild(
 						new Option({
@@ -16,15 +15,17 @@ function listHeadings(options = {}) {
 						}).e
 					);
 				};
-				result.settings.forEach(heading => {
-					sel_headings.appendChild(
-						new Option({
-							selected: (options.selected === heading.value),
-							text:  heading.value,
-							value: heading.heading
-						}).e
-					);
-				});
+				if (headings && headings.length > 0) {
+					headings.forEach(heading => {
+						sel_headings.appendChild(
+							new Option({
+								selected: (options.selected === heading.value),
+								text:  heading.value,
+								value: heading.value
+							}).e
+						);
+					});
+				};
 				resolve(true);
 			});
 		})

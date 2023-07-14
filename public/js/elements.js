@@ -380,12 +380,19 @@ function Link_Section(title) {
     a.classList.add('my-3');
     a.setAttribute('data-bs-toggle', 'collapse');
     a.setAttribute('href', `#collapse${title}`);
-    a.setAttribute('rolse', 'button');
+    a.setAttribute('role', 'button');
     a.setAttribute('aria-expanded', 'false');
     a.setAttribute('aria-controls', `collapse${title}`);
+    a.innerText = title;
     this.e.appendChild(a);
 
     let div = document.createElement('div');
     div.classList.add('collapse', 'show', 'mb-3', 'menu', 'row'); //menu and row here or in sub div?
+    div.setAttribute('id', `collapse${title}`);
+    // let card = document.createElement('div');
+    // card.classList.add('card', 'card-body');
+    // card.setAttribute('id', `row${title}`);
+    
+    // div.appendChild(card);
     this.e.appendChild(div);
 };

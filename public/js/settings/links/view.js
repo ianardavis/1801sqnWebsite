@@ -4,23 +4,25 @@ function getLinks() {
         get({
             table: 'resource_links'
         })
-        .then(function ([results, options]) {
-            results.links.forEach(link => {
-                let row = tbl_links.insertRow(-1);
-                add_cell(row, {text: link.heading});
-                add_cell(row, {text: link.title});
-                add_cell(row, {text: link.text});
-                add_cell(row, {append:
-                    new Modal_Button(
-                        _search(),
-                        'link_view',
-                        [{
-                            field: 'id',
-                            value: link.resource_link_id
-                        }]
-                    ).e
-                })
-            });
+        .then(function ([links, options]) {
+            if (links && links.length > 0) {
+                links.forEach(link => {
+                    let row = tbl_links.insertRow(-1);
+                    add_cell(row, {text: link.heading});
+                    add_cell(row, {text: link.title});
+                    add_cell(row, {text: link.text});
+                    add_cell(row, {append:
+                        new Modal_Button(
+                            _search(),
+                            'link_view',
+                            [{
+                                field: 'id',
+                                value: link.resource_link_id
+                            }]
+                        ).e
+                    })
+                });
+            };
             if (typeof linksEditBtns === 'function') linksEditBtns();
         });
     });
@@ -32,6 +34,7 @@ function viewLink(resource_link_id) {
     })
     .then(function([link, options]) {
         set_innerText('resource_link_id', link.resource_link_id);
+        set_innerText('link_heading', link.heading);
         set_innerText('link_title', link.title);
         set_innerText('link_text',  link.text);
         set_innerText('link_href',  link.href);

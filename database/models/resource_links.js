@@ -41,6 +41,6 @@ module.exports = function(sequelize, DataTypes) {
     }
   }, {
     tableName: 'resource_links',
-    schema: 'core'
+    schema: 'site'
   });
 };

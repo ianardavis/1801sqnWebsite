@@ -4,6 +4,18 @@ module.exports = (app, fn) => {
         .then(links => res.send({success: true, result: links}))
         .catch(err => fn.send_error(res, err));
     });
+    
+    app.get('/get/resource_link', (req, res) => {
+        fn.site.links.get(req.query.where)
+        .then(link => res.send({success: true, result: link}))
+        .catch(err => fn.send_error(res, err));
+    });
+    
+    app.get('/get/resource_link_headings', (req, res) => {
+        fn.settings.get_all({where: {name: 'link_heading'}})
+        .then(settings => res.send({success: true, result: settings}))
+        .catch(err => fn.send_error(res, err));
+    });
 
     app.put('/resource_links/:id',    fn.loggedIn(), fn.permissions.check('site_admin'), (req, res) => {
         fn.site.links.edit(req.params.id, req.body.link)

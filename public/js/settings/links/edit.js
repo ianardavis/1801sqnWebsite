@@ -27,7 +27,6 @@ function viewLinkEdit(resource_link_id) {
     });
 };
 window.addEventListener('load', function () {
-    listHeadings('link_heading_edit');
     addFormListener(
         'link_edit',
         'PUT',
@@ -39,6 +38,9 @@ window.addEventListener('load', function () {
             ]
         }
     );
-    modalOnShow('link_edit', function (event) {viewLinkEdit(event.relatedTarget.dataset.id)});
-    modalOnShow('link_view', function (event) {LinkEditBtn(event.relatedTarget.dataset.id)});
+    modalOnShow('link_edit', function (event) {
+        listHeadings({select: 'link_heading_edit'})
+        .then(viewLinkEdit(event.relatedTarget.dataset.id));
+    });
+    modalOnShow('link_view', function (event) {linkEditBtn(event.relatedTarget.dataset.id)});
 });

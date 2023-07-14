@@ -1,17 +1,6 @@
 module.exports = (app, fn) => {
     app.get('/settings',        fn.loggedIn(), fn.permissions.get('access_settings'),   (req, res) => res.render('settings/show'));
 
-    app.get('/get/resource_links',    fn.loggedIn(), fn.permissions.check('access_settings'), (req, res) => {
-        fn.site.links.get_all(req.query)
-        .then(links => res.send({success: true, result: links}))
-        .catch(err => fn.send_error(res, err));
-    });
-    app.get('/get/resource_link',     fn.loggedIn(), fn.permissions.check('access_settings'), (req, res) => {
-        fn.site.links.get(req.query.where)
-        .then(link => res.send({success: true, result: link}))
-        .catch(err => fn.send_error(res, err));
-    });
-
     app.get('/get/settings',    fn.loggedIn(), fn.permissions.check('access_settings'), (req, res) => {
         fn.settings.get_all(req.query)
         .then(settings => res.send({success: true, result: settings}))
@@ -36,18 +25,6 @@ module.exports = (app, fn) => {
     app.put('/settings',        fn.loggedIn(), fn.permissions.check('access_settings'), (req, res) => {
         fn.settings.edit(req.body.setting_id, req.body.setting)
         .then(result => res.send({success: result, message: `Setting ${(result ? '' : 'not ')}updated`}))
-        .catch(err => fn.send_error(res, err));
-    });
-    
-    app.put('/resource_links/:id', fn.loggedIn(), fn.permissions.check('access_settings'), (req, res) => {
-        fn.site.links.edit(req.params.id, req.body.link)
-        .then(result => res.send({success: result, message: `Link ${(result ? '' : 'not ')}updated`}))
-        .catch(err => fn.send_error(res, err));
-    });   
-
-    app.post('/resource_links', fn.loggedIn(), fn.permissions.check('access_settings'), (req, res) => {
-        fn.site.links.create(req.body.link)
-        .then(setting => res.send({success: true, message: 'Link created'}))
         .catch(err => fn.send_error(res, err));
     });
     app.post('/settings',       fn.loggedIn(), fn.permissions.check('access_settings'), (req, res) => {
@@ -84,11 +61,6 @@ module.exports = (app, fn) => {
     app.delete('/settings/:id', fn.loggedIn(), fn.permissions.check('access_settings'), (req, res) => {
         fn.settings.delete(req.params.id)
         .then(result => res.send({success: true,  message: 'Setting deleted'}))
-        .catch(err => fn.send_error(res, err));
-    });
-    app.delete('/resource_links/:id', fn.loggedIn(), fn.permissions.check('access_settings'), (req, res) => {
-        fn.site.links.delete(req.params.id)
-        .then(result => res.send({success: true,  message: 'Link deleted'}))
         .catch(err => fn.send_error(res, err));
     });
 };
