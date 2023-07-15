@@ -1,11 +1,12 @@
 module.exports = function (m, fn) {
     fn.site = {links: {}};
-    fn.site.links.get_all = function (where) {
+    fn.site.links.get_all = function (query) {
         return new Promise((resolve, reject) => {
-            m.resource_links.findAll({
-                where: where
+            m.resource_links.findAndCountAll({
+                where: query.where,
+                ...fn.pagination(query)
             })
-            .then(links => resolve(links))
+            .then(resolve)
             .catch(reject);
         });
     };
@@ -19,7 +20,7 @@ module.exports = function (m, fn) {
     fn.site.links.create = function (link) {
         return new Promise((resolve, reject) => {
             m.resource_links.create(link)
-            .then(link => resolve(link))
+            .then(resolve)
             .catch(reject);
         });
     };
@@ -28,7 +29,7 @@ module.exports = function (m, fn) {
         return new Promise((resolve, reject) => {
             fn.site.links.get({ resource_link_id: resource_link_id })
             .then(update_link)
-            .then(result => resolve(true))
+            .then(resolve)
             .catch(reject);
         });
     };

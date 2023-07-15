@@ -109,14 +109,15 @@
         <% } %>
         <div class="tab-pane fade" id="links" role="tabpanel" aria-labelledby="links-tab">
             <table class="table table-sm table-hover">
-                <thead class="thead-dark" id="tbl_links_head">
+                <thead class="thead-dark" id="tbl_resource_links_head">
                     <th class='w-30' data-column='["heading"]' data-dir="ASC">Heading</th>
                     <th class='w-30' data-column='["title"]'>Title</th>
                     <th class='w-40' data-column='["text"]' >Text</th>
                     <th><i class='fas fa-search'></i></th>
                 </thead>
-                <tbody id='tbl_links'></tbody>
+                <tbody id='tbl_resource_links'></tbody>
             </table>
+			<%- include(`${partials}/limit`, {table: 'resource_links'}) %>
         </div>
         <div class="tab-pane fade" id="settings" role="tabpanel" aria-labelledby="settings-tab">
 	        <table class="table table-sm table-hover">
@@ -237,7 +238,7 @@
                         <h5 class="modal-title">Link</h5>
                     </div>
                     <div class="modal-body">
-                        <input type="hidden" name='link[resource_link_id]' id='resource_link_id_edit'>
+                        <input type="hidden" name='resource_link_id' id='resource_link_id_edit'>
                         <%- include(`${partials}/inputs/select`, {title: 'Heading', id: 'link_heading_edit', name: 'link[heading]', required: true}) %>
                         <%- include(`${partials}/inputs/text`,   {title: 'Title',   id: 'link_title_edit',   name: 'link[title]',   required: true}) %>
                         <%- include(`${partials}/inputs/text`,   {title: 'Text',    id: 'link_text_edit',    name: 'link[text]'}) %>

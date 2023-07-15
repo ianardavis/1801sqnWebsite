@@ -90,9 +90,7 @@ module.exports = function (m, fn) {
                 {permission: 'pay_in_out'},
                 {permission: 'cash_admin'}
             ]},
-            {permission: 'site_functions', children: [
-                {permission: 'site_admin'}
-            ]},
+            {permission: 'site_admin'},
         ];
     };
 };

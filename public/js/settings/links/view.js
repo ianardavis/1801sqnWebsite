@@ -1,12 +1,13 @@
 function getLinks() {
-    clear('tbl_links')
+    clear('tbl_resource_links')
     .then(tbl_links => {
         get({
-            table: 'resource_links'
+            table: 'resource_links',
+            func: getLinks
         })
-        .then(function ([links, options]) {
-            if (links && links.length > 0) {
-                links.forEach(link => {
+        .then(function ([results, options]) {
+            if (results.resource_links && results.resource_links.length > 0) {
+                results.resource_links.forEach(link => {
                     let row = tbl_links.insertRow(-1);
                     add_cell(row, {text: link.heading});
                     add_cell(row, {text: link.title});
@@ -44,6 +45,7 @@ function viewLink(resource_link_id) {
 };
 window.addEventListener('load', function () {
     add_listener('reload', getLinks);
+    add_sort_listeners('resource_links', getLinks);
     modalOnShow('link_view', function (event) {viewLink(event.relatedTarget.dataset.id)});
     add_sort_listeners('links', getLinks);
     getLinks();

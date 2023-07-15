@@ -1,7 +1,7 @@
 module.exports = (app, fn) => {
     app.get('/get/resource_links', (req, res) => {
-        fn.site.links.get_all(req.query.where)
-        .then(links => res.send({success: true, result: links}))
+        fn.site.links.get_all(req.query)
+        .then(links => fn.send_res('resource_links', res, links, req.query))
         .catch(err => fn.send_error(res, err));
     });
     
@@ -17,8 +17,9 @@ module.exports = (app, fn) => {
         .catch(err => fn.send_error(res, err));
     });
 
-    app.put('/resource_links/:id',    fn.loggedIn(), fn.permissions.check('site_admin'), (req, res) => {
-        fn.site.links.edit(req.params.id, req.body.link)
+    app.put('/resource_links',    fn.loggedIn(), fn.permissions.check('site_admin'), (req, res) => {
+        console.log(req.body);
+        fn.site.links.edit(req.body.resource_link_id, req.body.link)
         .then(result => res.send({success: true, message: 'Link saved'}))
         .catch(err => fn.send_error(res, err));
     });

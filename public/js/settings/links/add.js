@@ -4,7 +4,7 @@ window.addEventListener('load', function () {
     addFormListener(
         'link_add',
         'POST',
-        '/links',
+        '/resource_links',
         {
             onComplete: [
                 getLinks,
