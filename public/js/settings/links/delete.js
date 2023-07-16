@@ -7,7 +7,7 @@ function linkDeleteBtn(resource_link_id) {
                 path:       `/resource_links/${resource_link_id}`,
                 options: {
                     onComplete: [
-                        getLinks,
+                        get_links,
                         function () {modalHide('link_view')}
                     ]
                 }

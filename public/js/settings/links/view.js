@@ -1,9 +1,9 @@
-function getLinks() {
+function get_links() {
     clear('tbl_resource_links')
     .then(tbl_links => {
         get({
             table: 'resource_links',
-            func: getLinks
+            func: get_links
         })
         .then(function ([results, options]) {
             if (results.resource_links && results.resource_links.length > 0) {
@@ -35,18 +35,17 @@ function viewLink(resource_link_id) {
     })
     .then(function([link, options]) {
         set_innerText('resource_link_id', link.resource_link_id);
-        set_innerText('link_heading', link.heading);
-        set_innerText('link_title', link.title);
-        set_innerText('link_text',  link.text);
-        set_innerText('link_href',  link.href);
+        set_innerText('link_heading',     link.heading);
+        set_innerText('link_title',       link.title);
+        set_innerText('link_text',        link.text);
+        set_innerText('link_href',        link.href);
         set_innerText('link_createdAt', print_date(link.createdAt, true));
         set_innerText('link_updatedAt', print_date(link.updatedAt, true));
     });
 };
 window.addEventListener('load', function () {
-    add_listener('reload', getLinks);
-    add_sort_listeners('resource_links', getLinks);
+    add_listener('reload', get_links);
+    add_sort_listeners('resource_links', get_links);
     modalOnShow('link_view', function (event) {viewLink(event.relatedTarget.dataset.id)});
-    add_sort_listeners('links', getLinks);
-    getLinks();
+    get_links();
 });

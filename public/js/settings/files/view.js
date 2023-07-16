@@ -1,4 +1,4 @@
-function getFiles() {
+function get_files() {
     clear('tbl_files')
     .then(tbl_files => {
         get({
@@ -32,7 +32,7 @@ function getFiles() {
     });
 };
 window.addEventListener('load', function () {
-    add_listener('reload', getFiles);
-    add_sort_listeners('files', getFiles);
-    getFiles();
+    add_listener('reload', get_files);
+    add_sort_listeners('files', get_files);
+    get_files();
 });

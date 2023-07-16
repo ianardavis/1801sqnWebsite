@@ -33,7 +33,7 @@ window.addEventListener('load', function () {
         '/resource_links',
         {
             onComplete: [
-                getLinks,
+                get_links,
                 function () {modalHide('link_edit')}
             ]
         }
