@@ -8,11 +8,11 @@ function create_sections() {
                     link_headings.appendChild(new Link_Section(heading.value).e);
                     get_links(heading.value)
                     .then(result => console.log(`${heading.value} loaded successfully`))
-                    .catch(err => console.error(err));
+                    .catch(console.error);
                 });
             };
         })
-        .catch(console.log);
+        .catch(console.error);
     });
 };
 function get_links(heading) {
@@ -24,16 +24,15 @@ function get_links(heading) {
                 where: {heading: heading}
             })
             .then(function ([result, options]) {
-                console.log(result);
-                result.forEach(link => {
+                result.resource_links.forEach(link => {
                     row.appendChild(new Card({
                         href:  link.href,
                         title: link.title,
                         text:  link.text || ''
-                    }).e)
+                    }).e);
                 });
             })
-            .catch(console.log);
+            .catch(console.error);
             resolve(true);
         })
         .catch(reject);
@@ -41,8 +40,4 @@ function get_links(heading) {
 };
 window.addEventListener('load', function () {
     create_sections();
-    // get_links('Links');
-    // get_links('Videos');
-    // get_links('Publications');
-    // get_links('Forms');
 });
