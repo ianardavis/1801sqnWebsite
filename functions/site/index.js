@@ -1,4 +1,9 @@
 module.exports = function (fs, m, fn) {
+    fn.site = {
+        links: {
+            headings: {}
+        }
+    };
     fs
     .readdirSync(__dirname)
     .forEach(file => {

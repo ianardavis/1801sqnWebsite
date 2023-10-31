@@ -1,30 +1,15 @@
 /* jshint indent: 2 */
 
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('resource_links', {
-    'resource_link_id': {
+  return sequelize.define('resource_link_headings', {
+    'resource_link_heading_id': {
       type: DataTypes.UUIDV4,
       allowNull: false,
       defaultValue: sequelize.fn('stores.uuid_generate_v1'),
       comment: "null",
       primaryKey: true
     },
-    'resource_link_heading_id': {
-      type: DataTypes.UUIDV4,
-      allowNull: false,
-      comment: "null"
-    },
-    'title': {
-      type: DataTypes.TEXT,
-      allowNull: false,
-      comment: "null"
-    },
-    'text': {
-      type: DataTypes.TEXT,
-      allowNull: true,
-      comment: "null"
-    },
-    'href': {
+    'heading': {
       type: DataTypes.TEXT,
       allowNull: false,
       comment: "null"
@@ -40,7 +25,7 @@ module.exports = function(sequelize, DataTypes) {
       comment: "null"
     }
   }, {
-    tableName: 'resource_links',
+    tableName: 'resource_link_headings',
     schema: 'site'
   });
 };

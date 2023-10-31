@@ -22,9 +22,10 @@ function cancel_radio(id, index, func = null, value = '0') {
         html:    '<i class="fas fa-trash-alt"></i>',
         tip:     'Cancel',
         attributes: [
-            {field: 'name',    value: `lines[][${index}][status]`},
-            {field: 'value',   value: value},
-            {field: 'data-id', value: id}
+            {field: 'name',       value: `lines[][${index}][status]`},
+            {field: 'value',      value: value},
+            {field: 'data-id',    value: id},
+            {field: 'data-index', value: index}
         ],
         ...(typeof func === 'function' ? {listener: {event: 'input', func: func}} : {})
     }).e;

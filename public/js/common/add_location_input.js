@@ -1,4 +1,5 @@
 function add_location_input(div_details, index) {
+    console.log(index);
     div_details.appendChild(new Text_Input({
         classes: ['mb-1'],
         attributes: [

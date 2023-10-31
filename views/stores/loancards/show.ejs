@@ -52,7 +52,7 @@
         <%- include(`${partials}/common/notes/tab_body`) %>
 	</div>
 	<div id="sidebars">
-		<div class="offcanvas offcanvas-start" tabindex="-1" id="sdb_actions" aria-labelledby="sdb_actions_label">
+		<div id="sdb_actions" class="offcanvas offcanvas-start" tabindex="-1" aria-labelledby="sdb_actions_label">
 			<%- include(`${partials}/sidebar/header`, {id: 'actions', text: 'Actions'}) %>
 			<div class="offcanvas-body d-flex flex-column">
 				<%- include(`${partials}/button/modal`, {id: 'loancard_complete', text: 'Complete',	  	 type: 'success'}) %>
@@ -71,7 +71,7 @@
 				</form>
 			</div>
 		</div>
-		<div class="offcanvas offcanvas-start" tabindex="-1" id="sdb_lines" aria-labelledby="sdb_lines_label">
+		<div id="sdb_lines"   class="offcanvas offcanvas-start" tabindex="-1" aria-labelledby="sdb_lines_label">
 			<%- include(`${partials}/sidebar/header`, {id: 'lines', text: 'Filter Lines'}) %>
 			<div class="offcanvas-body d-flex flex-column">
 				<%- include(`${partials}/filter/status`, {table: 'loancard_lines'}) %>
@@ -99,7 +99,7 @@
 					</form>
 				</div>
 			</div>
-			<div id='mdl_due_edit' class="modal fade" tabindex="-1" role="dialog">
+			<div id='mdl_due_edit' 			class="modal fade" tabindex="-1" role="dialog">
 				<div class="modal-dialog modal-lg" role="document">
 					<form id='form_due_edit' class="modal-content">
 						<div class="modal-header">

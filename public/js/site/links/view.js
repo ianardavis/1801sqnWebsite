@@ -2,9 +2,9 @@ function create_sections() {
     clear('link_headings')
     .then(link_headings => {
         get({table: 'resource_link_headings'})
-        .then(function ([headings, options]) {
-            if (headings && headings.length > 0){
-                headings.forEach(heading => {
+        .then(function ([result, options]) {
+            if (result.resource_link_headings && result.resource_link_headings.length > 0){
+                result.resource_link_headings.forEach(heading => {
                     link_headings.appendChild(new Link_Section(heading.value).e);
                     get_links(heading.value)
                     .then(result => console.log(`${heading.value} loaded successfully`))

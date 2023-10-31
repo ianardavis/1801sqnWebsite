@@ -1,3 +1,22 @@
+function get_headings() {
+    clear('tbl_resource_link_headings')
+    .then(tbl_link_headings => {
+        get({
+            table: 'resource_link_headings',
+            func: get_headings
+        })
+        .then(function ([results, options]) {
+            if (results.resource_link_headings && results.resource_link_headings.length > 0) {
+                results.resource_link_headings.forEach(link => {
+                    let row = tbl_link_headings.insertRow(-1);
+                    add_cell(row, {text: heading.heading});
+                    add_cell(row)
+                });
+            };
+            if (typeof linksEditBtns === 'function') linkHeadingsEditBtns();
+        });
+    });
+};
 function get_links() {
     clear('tbl_resource_links')
     .then(tbl_links => {
@@ -9,7 +28,6 @@ function get_links() {
             if (results.resource_links && results.resource_links.length > 0) {
                 results.resource_links.forEach(link => {
                     let row = tbl_links.insertRow(-1);
-                    add_cell(row, {text: link.heading});
                     add_cell(row, {text: link.title});
                     add_cell(row, {text: link.text});
                     add_cell(row, {append:
@@ -46,6 +64,7 @@ function viewLink(resource_link_id) {
 window.addEventListener('load', function () {
     add_listener('reload', get_links);
     add_sort_listeners('resource_links', get_links);
+    add_sort_listeners('resource_link_headings', get_headings);
     modalOnShow('link_view', function (event) {viewLink(event.relatedTarget.dataset.id)});
-    get_links();
+    get_headings();
 });

@@ -120,5 +120,6 @@ window.addEventListener('load', function () {
     add_listener('reload', get_lines);
     add_listener('sel_status', get_lines, 'change');
     modalOnShow('line_view', function (event) {view_line(event.relatedTarget.dataset.id)});
+    add_sort_listeners('loancard_lines', get_lines);
     get_lines();
 });

@@ -1,5 +1,5 @@
 module.exports = (app, fn) => {
-    app.get('/locations/:id', fn.loggedIn(),                                             (req, res) => res.render('stores/locations/show'));
+    app.get('/locations/:id', fn.loggedIn(), fn.permissions.get('access_stores'),        (req, res) => res.render('stores/locations/show'));
     app.get('/get/location',  fn.loggedIn(),                                             (req, res) => {
         fn.locations.get(req.query.where)
         .then(location => res.send({success: true, result: location}))

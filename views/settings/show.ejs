@@ -108,16 +108,37 @@
         </div>
 <% } %>
         <div class="tab-pane fade" id="links"      role="tabpanel" aria-labelledby="links-tab">
-            <table class="table table-sm table-hover">
-                <thead class="thead-dark" id="tbl_resource_links_head">
-                    <th class='w-30' data-column='["heading"]' data-dir="ASC">Heading</th>
-                    <th class='w-30' data-column='["title"]'>Title</th>
-                    <th class='w-40' data-column='["text"]' >Text</th>
-                    <th><i class='fas fa-search'></i></th>
-                </thead>
-                <tbody id='tbl_resource_links'></tbody>
-            </table>
-			<%- include(`${partials}/limit`, {table: 'resource_links'}) %>
+            <div class="row">
+                <div class="col-12 col-md-4">
+                    <table class="table table-sm table-hover">
+                        <thead class="thead-dark" id="tbl_resource_link_headings_head">
+                            <th class='w-100' data-column='["heading"]' data-dir="ASC">Heading</th>
+                            <th><i class='fas fa-search'></i></th>
+                        </thead>
+                        <form id="form_link_heading_add">
+                            <tbody>
+                                <tr>
+                                    <td><input class="form-control form-control-sm" name='heading' type="text" id=""></td>
+                                    <td><input type="button" text="Save"></td>
+                                </tr>
+                            </tbody>
+                        </form>
+                        <tbody id='tbl_resource_link_headings'></tbody>
+                    </table>
+                    <%- include(`${partials}/limit`, {table: 'resource_link_headings'}) %>
+                </div>
+                <div class="col-12 col-md-8">
+                    <table class="table table-sm table-hover">
+                        <thead class="thead-dark" id="tbl_resource_links_head">
+                            <th class='w-50' data-column='["title"]' data-dir="ASC">Title</th>
+                            <th class='w-50' data-column='["text"]' >Text</th>
+                            <th><i class='fas fa-search'></i></th>
+                        </thead>
+                        <tbody id='tbl_resource_links'></tbody>
+                    </table>
+                    <%- include(`${partials}/limit`, {table: 'resource_links'}) %>
+                </div>
+            </div>
         </div>
         <div class="tab-pane fade" id="settings"   role="tabpanel" aria-labelledby="settings-tab">
 	        <table class="table table-sm table-hover">

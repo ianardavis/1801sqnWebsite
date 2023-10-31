@@ -33,7 +33,7 @@ function get_loancards() {
     });
 };
 function get_users() {
-    listUsers({
+    listCurrentUsers({
         select: 'filter_loancard_user',
         blank: {text: 'All'}
     })  
@@ -61,7 +61,7 @@ window.addEventListener('load', function () {
     get_users();
     add_listener('reload_users', get_users);
     add_listener('sel_loancard_statuses', get_loancards, 'input');
-    add_listener('sel_users',    get_loancards, 'change');
+    add_listener('filter_loancard_user', get_loancards, 'change');
     add_listener('createdAt_from', function (){filter()}, 'change');
     add_listener('createdAt_to',   function (){filter()}, 'change');
     add_sort_listeners('loancards', get_loancards);
