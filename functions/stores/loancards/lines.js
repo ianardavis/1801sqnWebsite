@@ -75,7 +75,7 @@ module.exports = function (m, fn) {
                                 fn.actions.create([
                                     'LOANCARD LINE | CLOSED',
                                     user_id,
-                                    [{_table: 'loancard_lines', id: line.loancard_line_id}]
+                                    [{_table: 'loancard_lines', id: line.line_id}]
                                 ])
                                 .then(resolve);
                             })
@@ -86,7 +86,6 @@ module.exports = function (m, fn) {
                     return new Promise((resolve, reject) => {
                         let actions = [];
                         lines.forEach(line => {
-                            console.log(line.issues);
                             if (!line.issues || line.issues.length === 0) {
                                 actions.push(close_loancard_line(line));
                             };
@@ -179,7 +178,7 @@ module.exports = function (m, fn) {
         function check(line_id) {
             return new Promise((resolve, reject) => {
                 fn.loancards.lines.get(
-                    {loancard_line_id: line_id},
+                    {line_id: line_id},
                     [m.issues, m.sizes, m.loancards]
                 )
                 .then(line => {
@@ -209,13 +208,13 @@ module.exports = function (m, fn) {
                 .catch(reject);
             });
         };
-        function update_issues_and_destroy_links(issues) {
+        function update_issues_and_destroy_links(line) {
             return new Promise((resolve, reject) => {
                 let actions = [];
                 let links = [];
-                issues.forEach(issue => {
+                line.issues.forEach(issue => {
                     actions.push(new Promise((resolve, reject) => {
-                        issue.issue_loancard_line.destroy()
+                        issue.issue_loancard_lines.destroy() // this line!!!
                         .then(result => {
                             if (result) {
                                 fn.update(issue, {status: 2})
@@ -234,55 +233,45 @@ module.exports = function (m, fn) {
                     }));
                 });
                 Promise.all(actions)
-                .then(resolved_issues => resolve([resolved_issues, links]))
+                .then(resolved_issues => resolve([line, resolved_issues, links]))
                 .catch(reject);
             });
         };
-        function return_to_location(serial_id, location, issues, size_id) {
-            if (serial_id) {
-                return fn.serials.return(serial_id, location);
-    
-            } else {
-                return new Promise((resolve, reject) => {
+        function return_to_location([line, issues, links]) {
+            return new Promise((resolve, reject) => {
+                if (line.serial_id) {
+                    fn.serials.return(line.serial_id, return_line.location)
+                    .then(link => resolve([line, links, link]))
+                    .catch(reject);
+        
+                } else {
                     const qty = issues.reduce((prev, curr) => prev.qty + curr.qty, 0);
-                    fn.stocks.find({size_id: size_id, location: location})
+                    fn.stocks.find({size_id: line.size_id, location: return_line.location})
                     .then(stock => {
                         fn.stocks.return(stock.stock_id, qty)
-                        .then(link => resolve(link))
+                        .then(link => resolve([line, links, link]))
                         .catch(reject);
                     })
                     .catch(reject);
-                });
-    
-            };
+                };
+            });
         };
         return new Promise((resolve, reject) => {
-            check(return_line.loancard_line_id)
-            .then(line => {
-                update_issues_and_destroy_links(line.issues)
-                .then(([issues, links]) => {
-                    return_to_location(
-                        line.serial_id,
-                        return_line.location,
-                        issues,
-                        line.size_id
-                    )
-                    .then(link => {
-                        fn.update(line, {status: 0})
-                        .then(result => {
-                            fn.actions.create([
-                                'LOANCARD LINE | CANCELLED',
-                                user_id,
-                                [
-                                    {_table: 'loancard_lines', id: line.loancard_line_id},
-                                    link
-                                ].concat(links)
-                            ])
-                            .then(result => resolve(line.loancard_id));
-                        })
-                        .catch(reject);
-                    })
-                    .catch(reject);
+            check(return_line.line_id)
+            .then(update_issues_and_destroy_links)
+            .then(return_to_location)
+            .then(([line, links, link]) => {
+                fn.update(line, {status: 0})
+                .then(result => {
+                    fn.actions.create([
+                        'LOANCARD LINE | CANCELLED',
+                        user_id,
+                        [
+                            {_table: 'loancard_lines', id: line.line_id},
+                            link
+                        ].concat(links)
+                    ])
+                    .then(result => resolve(line.loancard_id));
                 })
                 .catch(reject);
             })
@@ -345,10 +334,8 @@ module.exports = function (m, fn) {
                 });
             };
             return new Promise((resolve, reject) => {
-                console.log(size_id, nsn_id, loancard_id, user_id, line);
                 let actions = [];
                 line.serials.forEach(serial => {
-                    console.log(serial);
                     actions.push(new Promise((resolve, reject) => {
                         check_serial(size_id, serial.serial_id)
                         .then(serial => {
@@ -361,13 +348,11 @@ module.exports = function (m, fn) {
                                 user_id:     user_id
                             })
                             .then(loancard_line => {
-                                console.log("loancard line id", loancard_line.loancard_line_id);
                                 m.issue_loancard_lines.create({
                                     issue_id: issue.issue_id,
-                                    loancard_line_id: loancard_line.loancard_line_id
+                                    line_id: loancard_line.line_id
                                 })
                                 .then(link_line => {
-                                    console.log("link id", link_line.issue_loancard_line_id);
                                     Promise.all([
                                         fn.update(
                                             serial,
@@ -379,12 +364,11 @@ module.exports = function (m, fn) {
                                         fn.update(issue, {status: 4})
                                     ])
                                     .then(([result1, result2]) => {
-                                        console.log("Results", result1, result2);
                                         fn.actions.create([
                                             'LOANCARD LINE | CREATED',
                                             user_id,
                                             [
-                                                {_table: 'loancard_lines', id: loancard_line.loancard_line_id},
+                                                {_table: 'loancard_lines', id: loancard_line.line_id},
                                                 {_table: 'serials',        id: serial.serial_id},
                                                 {_table: 'issues',         id: issue.issue_id}
                                             ]
@@ -405,7 +389,6 @@ module.exports = function (m, fn) {
                 });
                 Promise.allSettled(actions)
                 .then(results => {
-                    console.log(results);
                     resolve(true);
                     // let resolve_obj = [];
                     // results.filter(e => e.status === 'fulfilled').forEach(r => resolve_obj.concat(r.value));
@@ -452,7 +435,7 @@ module.exports = function (m, fn) {
                         .then(result => {
                             m.issue_loancard_lines.create({
                                 issue_id: issue.issue_id,
-                                loancard_line_id: loancard_line.loancard_line_id
+                                line_id: loancard_line.line_id
                             })
                             .then(link_line => {
                                 fn.update(issue, {status: 4})
@@ -463,7 +446,7 @@ module.exports = function (m, fn) {
                                         [
                                             {_table: 'stocks',         id: stock.stock_id},
                                             {_table: 'issues',         id: issue.issue_id},
-                                            {_table: 'loancard_lines', id: loancard_line.loancard_line_id}
+                                            {_table: 'loancard_lines', id: loancard_line.line_id}
                                         ]
                                     ])
                                     .then(action => resolve(true));
@@ -502,7 +485,7 @@ module.exports = function (m, fn) {
         function check_loancard_line() {
             return new Promise((resolve, reject) => {
                 fn.loancards.lines.get(
-                    {loancard_line_id: options.loancard_line_id},
+                    {line_id: options.line_id},
                     [
                         m.sizes, m.serials, m.loancards, 
                         {
@@ -664,7 +647,6 @@ module.exports = function (m, fn) {
                         actions.push(create_issue_for_remainder);
                         
                     };
-                    console.log(issue_record);
                     actions.push(fn.update(issue, issue_record))
                     Promise.all(actions)
                     .then(results => resolve({_table: 'issues', id: issue.issue_id}))
@@ -675,7 +657,6 @@ module.exports = function (m, fn) {
             return new Promise((resolve, reject) => {
                 let actions = [];
                 loancard_line.issues.forEach(issue => {
-                    console.log(`Remaining qty: ${remaining_qty}`);
                     if (remaining_qty > 0) {
                         actions.push(update_issue(issue, remaining_qty));
                         remaining_qty -= issue.qty;
@@ -687,7 +668,7 @@ module.exports = function (m, fn) {
                         'ISSUES | RETURNED',
                         user_id,
                         [
-                            {_table: 'loancard_lines', id: loancard_line.loancard_line_id},
+                            {_table: 'loancard_lines', id: loancard_line.line_id},
                             destination_link
                         ].concat(links),
                         loancard_line.loancard_id

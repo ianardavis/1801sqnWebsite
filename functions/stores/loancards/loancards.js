@@ -176,7 +176,7 @@ module.exports = function (m, fn) {
                 lines.forEach(line => {
                     actions.push(new Promise((resolve, reject) => {
                         fn.update(line, {status: 2})
-                        .then(result => resolve({_table: 'loancard_lines', id: line.loancard_line_id}))
+                        .then(result => resolve({_table: 'loancard_lines', id: line.line_id}))
                         .catch(reject);
                     }));
                 });
