@@ -1,8 +1,8 @@
 const statuses = {0: 'cancelled', 1: 'placed', 2: 'demanded', 3: 'received'};
 module.exports = function (m, fn) {
     fn.orders = {};
-    fn.orders.get     = function (where, include = []) {
-        return fn.get(
+    fn.orders.find     = function (where, include = []) {
+        return fn.find(
             m.orders,
             where,
             [
@@ -11,7 +11,7 @@ module.exports = function (m, fn) {
             ].concat(include)
         );
     };
-    fn.orders.get_all = function (query) {
+    fn.orders.findAll = function (query) {
         return m.orders.findAndCountAll({
             where: query.where,
             include: [
@@ -24,7 +24,7 @@ module.exports = function (m, fn) {
     fn.orders.count   = function (where) {return m.orders.count({where: where})};
     fn.orders.sum     = function (where) {return m.orders.sum('qty', {where: where})};
     
-    function update_order_status([order, status, user_id, action, links = []]) {
+    function updateOrderStatus([order, status, user_id, action, links = []]) {
         return new Promise((resolve, reject) => {
             fn.update(order, {status: status})
             .then(result => {
@@ -47,11 +47,11 @@ module.exports = function (m, fn) {
         });
     };
     
-    fn.orders.mark_as     = function (order_id, status, user_id) {
+    fn.orders.markAs     = function (order_id, status, user_id) {
         function check() {
             if (status in statuses) {
                 return new Promise((resolve, reject) => {
-                    fn.orders.get({order_id: order_id})
+                    fn.orders.find({order_id: order_id})
                     .then(order => {
                         if (order.status === Number(status)) {
                             reject(new Error('Status has not changed'));
@@ -76,18 +76,18 @@ module.exports = function (m, fn) {
         };
         return new Promise((resolve, reject) => {
             check()
-            .then(update_order_status)
+            .then(updateOrderStatus)
             .then(order => resolve(`Order marked as ${statuses[status]}`))
             .catch(reject);
         });
     };
 
-    fn.orders.create_bulk = function (orders, user_id) {
+    fn.orders.createBulk = function (orders, user_id) {
         if (!orders || orders.length === 0) {
             return Promise.reject(new Error('No orders'));
 
         } else {
-            function check_for_duplicate_lines() {
+            function checkForDuplicateLines() {
                 return new Promise(resolve => {
                     let sizes = [];
                     orders.forEach(line => {
@@ -109,7 +109,7 @@ module.exports = function (m, fn) {
                 });
             };
             return new Promise((resolve, reject) => {
-                check_for_duplicate_lines()
+                checkForDuplicateLines()
                 .then(sizes => {
                     let order_actions = [];
                     sizes.forEach(size => {
@@ -127,7 +127,7 @@ module.exports = function (m, fn) {
     };
 
     fn.orders.create      = function (size_id, qty, user_id, issues = []) {
-        function create_or_increment_order(size_id) {
+        function createOrIncrementOrder(size_id) {
             return new Promise((resolve, reject) => {
                 m.orders.findOrCreate({
                     where: {
@@ -162,13 +162,13 @@ module.exports = function (m, fn) {
             });
         };
         return new Promise((resolve, reject) => {
-            fn.sizes.get({size_id: size_id})
+            fn.sizes.find({size_id: size_id})
             .then(size => {
                 if (!size.orderable) {
                     reject(new Error('This size can not ordered'));
 
                 } else {
-                    create_or_increment_order(size.size_id)
+                    createOrIncrementOrder(size.size_id)
                     .then(order => {
                         let links = [];
                         issues.forEach(issue => {links.push({_table: 'issues', id: issue.issue_id})});
@@ -188,7 +188,7 @@ module.exports = function (m, fn) {
     };
 
     fn.orders.update      = function (lines, user_id) {
-        function sort_orders([orders, submitted]) {
+        function sortOrders([orders, submitted]) {
             return new Promise((resolve, reject) => {
                 let actions = [];
                 orders.filter(e => e.status === '-3').forEach(order => {
@@ -218,8 +218,8 @@ module.exports = function (m, fn) {
             });
         };
         return new Promise((resolve, reject) => {
-            fn.check_for_valid_lines_to_update(lines)
-            .then(sort_orders)
+            fn.checkForValidLinesToUpdate(lines)
+            .then(sortOrders)
             .then(([actions, submitted]) => {
                 Promise.allSettled(actions)
                 .then(results => {
@@ -236,7 +236,7 @@ module.exports = function (m, fn) {
     fn.orders.cancel      = function (order_id, user_id) {
         function check() {
             return new Promise((resolve, reject) => {
-                fn.orders.get({order_id: order_id})
+                fn.orders.find({order_id: order_id})
                 .then(order => {
                     if (order.status === 0) {
                         reject(new Error('Order has already been cancelled'));
@@ -255,7 +255,7 @@ module.exports = function (m, fn) {
                 .catch(reject);
             });
         };
-        function update_issues(issues) {
+        function updateIssues(issues) {
             return new Promise((resolve, reject) => {
                 let actions = [];
                 issues.forEach(issue => {
@@ -275,9 +275,9 @@ module.exports = function (m, fn) {
         };
         return new Promise((resolve, reject) => {
             check()
-            .then(update_order_status)
+            .then(updateOrderStatus)
             .then(order => {
-                update_issues(order.issues)
+                updateIssues(order.issues)
                 .then(links => {
                     fn.actions.create([
                         'ORDER | CANCELLED',
@@ -295,7 +295,7 @@ module.exports = function (m, fn) {
     fn.orders.restore     = function (order_id, user_id) {
         function check() {
             return new Promise((resolve, reject) => {
-                fn.orders.get({order_id: order_id})
+                fn.orders.find({order_id: order_id})
                 .then(order => {
                     if (order.status !== 0) {
                         reject(new Error('Order is not cancelled'));
@@ -310,7 +310,7 @@ module.exports = function (m, fn) {
         };
         return new Promise((resolve, reject) => {
             check()
-            .then(update_order_status)
+            .then(updateOrderStatus)
             .then(order => {
                 fn.actions.create([
                     'ORDER | RESTORED',
@@ -324,9 +324,9 @@ module.exports = function (m, fn) {
     };
 
     fn.orders.demand      = function (orders, user_id) {
-        function sort_orders_by_supplier(orders) {
-            function get_orders() {
-                function check_order(order) {
+        function sortOrdersBySupplier(orders) {
+            function getOrders() {
+                function checkOrder(order) {
                     return new Promise((resolve, reject) => {
                         if (order.status !== 1) {
                             reject(new Error('Only placed orders can be demanded'));
@@ -350,19 +350,19 @@ module.exports = function (m, fn) {
                     let actions = [];
                     orders.forEach(order => {
                         actions.push(new Promise((resolve, reject) => {
-                            fn.orders.get({order_id: order.order_id})
-                            .then(check_order)
+                            fn.orders.find({order_id: order.order_id})
+                            .then(checkOrder)
                             .then(resolve)
                             .catch(reject);
                         }));
                     });
                     Promise.allSettled(actions)
-                    .then(fn.check_results)
+                    .then(fn.checkResults)
                     .then(resolve)
                     .catch(reject);
                 });
             };
-            function sort_orders(orders) {
+            function sortOrders(orders) {
                 let suppliers = [];
                 orders.forEach(order => {
                     let index = suppliers.findIndex(e => e.supplier_id === order.size.supplier_id);
@@ -393,14 +393,14 @@ module.exports = function (m, fn) {
                 return suppliers;
             };
             return new Promise((resolve, reject) => {
-                get_orders()
-                .then(sort_orders)
+                getOrders()
+                .then(sortOrders)
                 .then(resolve)
                 .catch(reject);
             });
         };
-        function demand_sizes(suppliers) {
-            function add_sizes_to_demand([demand, supplier]) {
+        function demandSizes(suppliers) {
+            function addSizesToDemand([demand, supplier]) {
                 return new Promise((resolve, reject) => {
                     let actions = [];
                     supplier.sizes.forEach(size => {
@@ -411,11 +411,11 @@ module.exports = function (m, fn) {
                                 user_id,
                                 size.orders
                             )
-                            .then(demand_line_id => {
+                            .then(line_id => {
                                 let order_updates = [];
-                                size.orders.forEach(e => order_updates.push(update_order_status([e, 2, user_id])));
+                                size.orders.forEach(e => order_updates.push(updateOrderStatus([e, 2, user_id])));
                                 Promise.all(order_updates)
-                                .then(results => resolve(demand_line_id))
+                                .then(results => resolve(line_id))
                                 .catch(reject);
                             })
                             .catch(reject);
@@ -435,7 +435,7 @@ module.exports = function (m, fn) {
                             user_id,
                             [supplier]
                         )
-                        .then(add_sizes_to_demand)
+                        .then(addSizesToDemand)
                         .then(resolve)
                         .catch(reject);
                     }));
@@ -448,8 +448,8 @@ module.exports = function (m, fn) {
         return new Promise((resolve, reject) => {
             fn.allowed(user_id, 'authorised_demander')
             .then(result => {
-                sort_orders_by_supplier(orders)
-                .then(demand_sizes)
+                sortOrdersBySupplier(orders)
+                .then(demandSizes)
                 .then(result => resolve(true))
                 .catch(reject);
             })
@@ -458,9 +458,9 @@ module.exports = function (m, fn) {
     };
 
     fn.orders.receive     = function (order_id, receipt, user_id, links = []) {
-        function check_order(allowed) {
+        function checkOrder(allowed) {
             return new Promise((resolve, reject) => {
-                fn.orders.get({order_id: order_id})
+                fn.orders.find({order_id: order_id})
                 .then(order => {
                     if (!order.size) {
                         reject(new Error('Could not find size'));
@@ -481,7 +481,7 @@ module.exports = function (m, fn) {
                 .catch(reject);
             });
         };
-        function check_links(order) {
+        function checkLinks(order) {
             return new Promise((resolve, reject) => {
                 if (order.status === 1) {
                     resolve(order);
@@ -494,8 +494,8 @@ module.exports = function (m, fn) {
                 };
             });
         };
-        function receive_order(order) {
-            function receive_serials() {
+        function receiveOrder(order) {
+            function receiveSerials() {
                 return new Promise((resolve, reject) => {
                     let actions = [];
                     receipt.serials.forEach(serial => {
@@ -532,7 +532,7 @@ module.exports = function (m, fn) {
                     .catch(reject);
                 });
             };
-            function receive_stock() {
+            function receiveStock() {
                 return new Promise((resolve, reject) => {
                     fn.stocks.receive({
                         qty:          receipt.qty,
@@ -547,7 +547,7 @@ module.exports = function (m, fn) {
                     .catch(reject);
                 });
             };
-            function check_variance(qty, links) {
+            function checkVariance(qty, links) {
                 return new Promise((resolve, reject) => {
                     let qty_original = order.qty;
                     if (qty > qty_original) {
@@ -603,25 +603,25 @@ module.exports = function (m, fn) {
             return new Promise((resolve, reject) => {
                 let action = null;
                 if (order.size.has_serials) {
-                    action = receive_serials;
+                    action = receiveSerials;
 
                 } else {
-                    action = receive_stock;
+                    action = receiveStock;
                     
                 };
                 action(order)
-                .then(check_variance)
+                .then(checkVariance)
                 .then(resolve)
                 .catch(reject);
             });
         };
         return new Promise((resolve, reject) => {
             fn.allowed(user_id, 'stores_stock_admin')
-            .then(check_order)
-            .then(check_links)
-            .then(receive_order)
+            .then(checkOrder)
+            .then(checkLinks)
+            .then(receiveOrder)
             .then(([order, receive_links, qty]) => {
-                update_order_status([
+                updateOrderStatus([
                     order,
                     3,
                     user_id,
@@ -636,9 +636,9 @@ module.exports = function (m, fn) {
         .catch(reject);
     };
     
-    function change_check(order_id) {
+    function changeCheck(order_id) {
         return new Promise((resolve, reject) => {
-            fn.orders.get({order_id: order_id})
+            fn.orders.find({order_id: order_id})
             .then(order => {
                 if (!order.size) {
                     reject(new Error('Error getting order size'));
@@ -654,11 +654,11 @@ module.exports = function (m, fn) {
             .catch(reject);
         });
     };
-    fn.orders.change_size = function (order_id, size_id, user_id) {
+    fn.orders.changeSize = function (order_id, size_id, user_id) {
         return new Promise((resolve, reject) => {
-            change_check(order_id)
+            changeCheck(order_id)
             .then(order => {
-                fn.sizes.get({size_id: size_id})
+                fn.sizes.find({size_id: size_id})
                 .then(size => {
                     if (size.item_id !== order.size.item_id) {
                         reject(new Error('New size is for a different item'));
@@ -668,7 +668,7 @@ module.exports = function (m, fn) {
                         fn.update(order, {size_id: size.size_id})
                         .then(result => {
                             fn.actions.create([
-                                `ORDER | UPDATED | Size changed From: ${fn.print_size(original_size)} to: ${fn.print_size(size)}`,
+                                `ORDER | UPDATED | Size changed From: ${fn.printSize(original_size)} to: ${fn.printSize(size)}`,
                                 user_id,
                                 [{_table: 'orders', id: order.order_id}]
                             ])
@@ -682,14 +682,14 @@ module.exports = function (m, fn) {
             .catch(reject);
         });
     };
-    fn.orders.change_qty  = function (order_id, qty, user_id) {
+    fn.orders.changeQty  = function (order_id, qty, user_id) {
         return new Promise((resolve, reject) => {
             qty = Number(qty);
             if (!qty || !Number.isInteger(qty) || qty < 1) {
                 reject(new Error('Invalid qty'));
 
             } else {
-                change_check(order_id)
+                changeCheck(order_id)
                 .then(order => {
                     let original_qty = order.qty;
                     fn.update(order, {qty: qty})

@@ -19,14 +19,14 @@ module.exports = function (m, fn) {
         });
     };
 
-    fn.items.get = function (where) {
-        return fn.get(
+    fn.items.find = function (where) {
+        return fn.find(
             m.items,
             where,
             [m.genders]
         );
     };
-    fn.items.get_all = function (query) {
+    fn.items.findAll = function (query) {
         return new Promise((resolve, reject) => {
             let where = query.where || {};
             if (query.like) where.description = {[fn.op.substring]: query.like.description || ''};
@@ -40,7 +40,7 @@ module.exports = function (m, fn) {
         });
     };
 
-    fn.items.get_uniform = function (pagination) {
+    fn.items.findUniform = function (pagination) {
         return new Promise((resolve, reject) => {
             m.items.findAndCountAll({
                 include: [{
@@ -58,7 +58,7 @@ module.exports = function (m, fn) {
         });
     };
 
-    fn.items.get_for_supplier = function (where, pagination) {
+    fn.items.findForSupplier = function (where, pagination) {
         return new Promise((resolve, reject) => {
             m.items.findAndCountAll({
                 distinct: true,
@@ -76,7 +76,7 @@ module.exports = function (m, fn) {
 
     fn.items.edit = function (item_id, details) {
         return new Promise((resolve, reject) => {
-            fn.items.get({item_id: item_id})
+            fn.items.find({item_id: item_id})
             .then(item => {
                 fn.update(item, details)
                 .then(result => resolve(true))

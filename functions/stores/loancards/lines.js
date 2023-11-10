@@ -1,12 +1,12 @@
 module.exports = function (m, fn) {
-    fn.loancards.lines.get = function (where, include = []) {
-        return fn.get(
+    fn.loancards.lines.find = function (where, include = []) {
+        return fn.find(
             m.loancard_lines,
             where,
             include
         );
     };
-    fn.loancards.lines.get_all = function (where, options) {
+    fn.loancards.lines.findAll = function (where, options) {
         return new Promise((resolve, reject) => {
             m.loancard_lines.findAndCountAll({
                 where: where,
@@ -47,7 +47,7 @@ module.exports = function (m, fn) {
                 });
     
                 Promise.allSettled(actions)
-                .then(fn.check_results)
+                .then(fn.checkResults)
                 .then(resolve)
                 .catch(reject);
             });
@@ -160,7 +160,7 @@ module.exports = function (m, fn) {
                     }));
                 });
                 Promise.allSettled(actions)
-                .then(fn.check_results)
+                .then(fn.checkResults)
                 .then(results => resolve(true))
                 .catch(reject);
             });
@@ -174,117 +174,12 @@ module.exports = function (m, fn) {
         });
     };
 
-    fn.loancards.lines.cancel = function (return_line, user_id) {
-        function check(line_id) {
-            return new Promise((resolve, reject) => {
-                fn.loancards.lines.get(
-                    {line_id: line_id},
-                    [m.issues, m.sizes, m.loancards]
-                )
-                .then(line => {
-                    if (line.status === 0) {
-                        reject(new Error('This line has already been cancelled'));
-    
-                    } else if (line.status === 1) {
-                        if (line.size) {
-                            resolve(line);
-    
-                        } else {
-                            reject(new Error('Size not found'));
-    
-                        };
-                        
-                    } else if (line.status === 2) {
-                        reject(new Error('This line has already been completed'));
-    
-                    } else if (line.status === 3) {
-                        reject(new Error('This line has already been returned'));
-    
-                    } else {
-                        reject(new Error('Unknown line status'));
-    
-                    };
-                })
-                .catch(reject);
-            });
-        };
-        function update_issues_and_destroy_links(line) {
-            return new Promise((resolve, reject) => {
-                let actions = [];
-                let links = [];
-                line.issues.forEach(issue => {
-                    actions.push(new Promise((resolve, reject) => {
-                        issue.issue_loancard_lines.destroy() // this line!!!
-                        .then(result => {
-                            if (result) {
-                                fn.update(issue, {status: 2})
-                                .then(result => {
-                                    links.push({_table: 'issues', id: issue.issue_id});
-                                    resolve(issue);
-                                })
-                                .catch(reject);
-    
-                            } else {
-                                reject(new Error('Link not destroyed'));
-    
-                            };
-                        })
-                        .catch(reject);
-                    }));
-                });
-                Promise.all(actions)
-                .then(resolved_issues => resolve([line, resolved_issues, links]))
-                .catch(reject);
-            });
-        };
-        function return_to_location([line, issues, links]) {
-            return new Promise((resolve, reject) => {
-                if (line.serial_id) {
-                    fn.serials.return(line.serial_id, return_line.location)
-                    .then(link => resolve([line, links, link]))
-                    .catch(reject);
-        
-                } else {
-                    const qty = issues.reduce((prev, curr) => prev.qty + curr.qty, 0);
-                    fn.stocks.find({size_id: line.size_id, location: return_line.location})
-                    .then(stock => {
-                        fn.stocks.return(stock.stock_id, qty)
-                        .then(link => resolve([line, links, link]))
-                        .catch(reject);
-                    })
-                    .catch(reject);
-                };
-            });
-        };
-        return new Promise((resolve, reject) => {
-            check(return_line.line_id)
-            .then(update_issues_and_destroy_links)
-            .then(return_to_location)
-            .then(([line, links, link]) => {
-                fn.update(line, {status: 0})
-                .then(result => {
-                    fn.actions.create([
-                        'LOANCARD LINE | CANCELLED',
-                        user_id,
-                        [
-                            {_table: 'loancard_lines', id: line.line_id},
-                            link
-                        ].concat(links)
-                    ])
-                    .then(result => resolve(line.loancard_id));
-                })
-                .catch(reject);
-            })
-            .catch(reject);
-        });
-    };
-
     fn.loancards.lines.create = function(loancard_id, issue, user_id, line) {
         function check_nsn(size) {
             return new Promise((resolve, reject) => {
                 if (size.has_nsns) {
                     if (line.nsn_id) {
-                        fn.nsns.get({nsn_id: line.nsn_id})
+                        fn.nsns.find({nsn_id: line.nsn_id})
                         .then(nsn => {
                             if (nsn.size_id !== size.size_id) {
                                 reject(new Error('NSN is not for this size'));
@@ -313,7 +208,7 @@ module.exports = function (m, fn) {
                         reject(new Error('No Serial ID submitted'));
         
                     } else {
-                        fn.serials.get({serial_id: serial_id})
+                        fn.serials.find({serial_id: serial_id})
                         .then(serial => {
                             if (serial.size_id !== size_id) {
                                 reject(new Error('Serial # is not for this size'));
@@ -404,7 +299,7 @@ module.exports = function (m, fn) {
                         reject(new Error('No stock ID submitted'));
         
                     } else {
-                        fn.stocks.get_by_ID(options.stock_id)
+                        fn.stocks.findByID(options.stock_id)
                         .then(stock => {
                             if (stock.size_id !== size_id) {
                                 reject(new Error('Stock record is not for this size'));
@@ -464,7 +359,7 @@ module.exports = function (m, fn) {
         };
         return new Promise((resolve, reject) => {
             Promise.all([
-                fn.loancards.get({loancard_id: loancard_id}),
+                fn.loancards.find({loancard_id: loancard_id}),
                 fn.sizes    .get({size_id:     issue.size_id})
             ])
             .then(([loancard, size]) => {
@@ -481,10 +376,127 @@ module.exports = function (m, fn) {
         })
     };
 
-    fn.loancards.lines.return = function (options, user_id) {
-        function check_loancard_line() {
+    function loancardLineQty(issues) {
+        return issues.reduce((a, b) => a.qty + b.qty, 0);
+    };
+    fn.loancards.lines.cancel = function (return_line, user_id) {
+        function checkLoancardLine(line_id) {
             return new Promise((resolve, reject) => {
-                fn.loancards.lines.get(
+                fn.loancards.lines.find(
+                    {line_id: line_id},
+                    [m.issues, m.sizes, m.loancards]
+                )
+                .then(line => {
+                    switch (line.status) {
+                        case 0:
+                            reject(new Error('This line has already been cancelled'));
+                            break;
+                        
+                        case 1:
+                            if (line.size) {
+                                resolve(line);
+        
+                            } else {
+                                reject(new Error('Size not found'));
+        
+                            };
+                            break;
+
+                        case 2:
+                            reject(new Error('This line has already been completed'));
+                            break;
+
+                        case 3:
+                            reject(new Error('This line has already been returned'));
+                            break;
+                    
+                        default:
+                            reject(new Error('Unknown line status'));
+                            break;
+                    };
+                })
+                .catch(reject);
+            });
+        };
+        function returnStockToLocation(line) {
+            return new Promise((resolve, reject) => {
+                if (line.serial_id) {
+                    if (line.issues.length > 1) {
+                        reject(new Error('Loancard line for serialised item has multiple issues assigned'));
+
+                    } else {
+                        fn.serials.return(line.serial_id, return_line.location)
+                        .then(link => resolve([line, link]))
+                        .catch(reject);
+
+                    };
+        
+                } else {
+                    fn.stocks.find({size_id: line.size_id, location: return_line.location})
+                    .then(stock => {
+                        fn.stocks.return(stock.stock_id, loancardLineQty(line.issues))
+                        .then(link => resolve([line, link]))
+                        .catch(reject);
+                    })
+                    .catch(reject);
+                };
+            });
+        };
+        function updateIssuesAndDestroyLink([line, stockReturnLink]) {
+            return new Promise((resolve, reject) => {
+                let actions = [];
+                line.issues.forEach(issue => {
+                    actions.push(new Promise((resolve, reject) => {
+                        issue.issue_loancard_lines.destroy()
+                        .then(result => {
+                            if (result) {
+                                fn.update(issue, {status: 2})
+                                .then(result => resolve({_table: 'issues', id: issue.issue_id}))
+                                .catch(reject);
+
+                            } else {
+                                reject(new Error('Link not destroyed'));
+
+                            };
+                        })
+                        .catch(reject);
+                    }));
+                });
+                Promise.all(actions)
+                .then(issueLinks => resolve([line, issueLinks.concat(stockReturnLink)]))
+                .catch(reject);
+            });
+        };
+        function updateLine([line, links]) {
+            return new Promise((resolve, reject) => {
+                fn.update(line, {status: 0})
+                .then(result => resolve([
+                    'LOANCARD LINE | CANCELLED',
+                    user_id,
+                    [
+                        {_table: 'loancard_lines', id: line.line_id}
+                    ].concat(links),
+                    line.loancard_id
+                ]))
+                .catch(reject);
+            });
+        };
+
+        return new Promise((resolve, reject) => {
+            checkLoancardLine(return_line.line_id)
+            .then(returnStockToLocation)
+            .then(updateIssuesAndDestroyLink)
+            .then(updateLine)
+            .then(fn.actions.create)
+            .then(resolve)
+            .catch(reject);
+        });
+    };
+
+    fn.loancards.lines.return = function (options, user_id) {
+        function checkLoancardLine() {
+            return new Promise((resolve, reject) => {
+                fn.loancards.lines.find(
                     {line_id: options.line_id},
                     [
                         m.sizes, m.serials, m.loancards, 
@@ -496,61 +508,70 @@ module.exports = function (m, fn) {
                         }
                     ]
                 )
-                .then(loancard_line => {
-                    if (!loancard_line.issues || loancard_line.issues.length === 0) {
+                .then(line => {
+                    if (!line.issues || line.issues.length === 0) {
                         reject(new Error('No open issues for this loancard line'));
 
                     } else {
-                        let qty = 0;
-                        loancard_line.issues.forEach(i => {qty += Number(i.qty)});
+                        let qty = loancardLineQty(line.issues);
                         if (qty === 0) {
                             reject(new Error('Open quantity is 0'));
 
-                        } else if (loancard_line.status === 0) {
-                            reject(new Error('This line has already been cancelled'));
-        
-                        } else if (loancard_line.status === 1) {
-                            reject(new Error('This line is still pending'));
-        
-                        } else if (loancard_line.status === 2) {
-                            if (options.qty > qty) {
-                                reject(new Error('Return quantity is greater than open quantity'));
-        
-                            } else if (loancard_line.size) {
-                                resolve(loancard_line);
-        
-                            } else {
-                                reject(new Error('Size not found'));
-        
-                            };
-                        } else if (loancard_line.status === 3) {
-                            reject(new Error('This line has already been returned'));
-        
                         } else {
-                            reject(new Error('Unknown line status'));
-        
+                            switch (line.status) {
+                                case 0:
+                                    reject(new Error('This line has already been cancelled'));
+                                    break;
+                            
+                                case 1:
+                                    reject(new Error('This line is still pending'));
+                                    break;
+                            
+                                case 2:
+                                    if (options.qty > qty) {
+                                        reject(new Error('Return quantity is greater than open quantity'));
+                
+                                    } else if (line.size) {
+                                        resolve(line);
+                
+                                    } else {
+                                        reject(new Error('Size not found'));
+                
+                                    };
+                                    break;
+                            
+                                case 3:
+                                    reject(new Error('This line has already been returned'));
+                                    break;
+                            
+                                default:
+                                    reject(new Error('Unknown line status'));
+                                    break;
+
+                            };
                         };
+
                     };
                 })
                 .catch(reject);
             });
         };
-        function check_return_destination(loancard_line) {
+        function checkReturnDestination(line) {
             return new Promise((resolve, reject) => {
                 if (options.scrap && options.scrap === '1') {
-                    fn.scraps.get_or_create(loancard_line.size.supplier_id)
-                    .then(scrap => resolve([loancard_line, {scrap: scrap}]))
+                    fn.scraps.findOrCreate(line.size.supplier_id)
+                    .then(scrap => resolve([line, {scrap: scrap}]))
                     .catch(reject);
                     
                 } else if (options.location) {
-                    if (loancard_line.size.has_serials) {
-                        if (loancard_line.serial) {
-                            fn.locations.find_or_create(options.location)
+                    if (line.size.has_serials) {
+                        if (line.serial) {
+                            fn.locations.findOrCreate(options.location)
                             .then(location => resolve([
-                                loancard_line, 
+                                line, 
                                 {
                                     serial: {
-                                        serial:      loancard_line.serial,
+                                        serial:      line.serial,
                                         location_id: location.location_id
                                     }
                                 }
@@ -563,8 +584,8 @@ module.exports = function (m, fn) {
                         };
                 
                     } else {
-                        fn.stocks.find({size_id: loancard_line.size_id, location: options.location})
-                        .then(stock => resolve([loancard_line, {stock: stock}]))
+                        fn.stocks.find({size_id: line.size_id, location: options.location})
+                        .then(stock => resolve([line, {stock: stock}]))
                         .catch(reject);
     
                     };
@@ -575,22 +596,16 @@ module.exports = function (m, fn) {
                 };
             });
         };
-        function return_stock([loancard_line, destination]) {
-            return new Promise((resolve, reject) => {
-                if (destination.scrap) {
-                    fn.scraps.lines.create(
-                        destination.scrap.scrap_id,
-                        loancard_line.size_id,
-                        {
-                            serial_id: loancard_line.serial_id,
-                            nsn_id:    loancard_line.nsn_id,
-                            qty:       options.qty
-                        }
-                    )
-                    .then(scrap_line_id => resolve([loancard_line, {_table: 'scrap_lines', id: scrap_line_id}]))
+        function returnStock([loancard_line, destination]) {
+            function returnToStock() {
+                return new Promise((resolve, reject) => {
+                    fn.stocks.return(destination.stock.stock_id, options.qty)
+                    .then(link => resolve([loancard_line, link]))
                     .catch(reject);
-    
-                } else if (destination.serial) {
+                });
+            };
+            function returnSerial() {
+                return new Promise((resolve, reject) => {
                     fn.update(
                         destination.serial.serial,
                         {
@@ -600,19 +615,38 @@ module.exports = function (m, fn) {
                     )
                     .then(result => resolve([loancard_line, {_table: 'serials', id: destination.serial.serial.serial_id}]))
                     .catch(reject);
-    
-                } else {
-                    fn.stocks.return(destination.stock.stock_id, options.qty)
-                    .then(link => resolve([loancard_line, link]))
+                });
+            };
+            function returnToScrap() {
+                return new Promise((resolve, reject) => {
+                    fn.scraps.lines.create(
+                        destination.scrap.scrap_id,
+                        loancard_line.size_id,
+                        {
+                            serial_id: loancard_line.serial_id,
+                            nsn_id:    loancard_line.nsn_id,
+                            qty:       options.qty
+                        }
+                    )
+                    .then(line_id => resolve([loancard_line, {_table: 'scrap_lines', id: line_id}]))
                     .catch(reject);
-    
-                };
-            });
+                });
+            };
+            if (destination.scrap) {
+                return returnToScrap();
+
+            } else if (destination.serial) {
+                return returnSerial();
+
+            } else {
+                return returnToStock();
+
+            };
         };
-        function update_issues([loancard_line, destination_link]) {
+        function updateIssues([loancard_line, destination_link]) {
             let remaining_qty = options.qty;
-            function update_issue(issue, remaining_qty) {
-                function create_issue_for_remainder() {
+            function updateIssue(issue, remaining_qty) {
+                function createIssueForRemainder() {
                     return new Promise((resolve, reject) => {
                         loancard_line.createIssue({
                             user_id_issue: issue.user_id_issue,
@@ -644,7 +678,7 @@ module.exports = function (m, fn) {
         
                     if (remaining_qty < issue.qty) {
                         issue_record.qty = remaining_qty;
-                        actions.push(create_issue_for_remainder);
+                        actions.push(createIssueForRemainder);
                         
                     };
                     actions.push(fn.update(issue, issue_record))
@@ -658,7 +692,7 @@ module.exports = function (m, fn) {
                 let actions = [];
                 loancard_line.issues.forEach(issue => {
                     if (remaining_qty > 0) {
-                        actions.push(update_issue(issue, remaining_qty));
+                        actions.push(updateIssue(issue, remaining_qty));
                         remaining_qty -= issue.qty;
                     };
                 });
@@ -679,10 +713,10 @@ module.exports = function (m, fn) {
         };
 
         return new Promise((resolve, reject) => {
-            check_loancard_line()
-            .then(check_return_destination)
-            .then(return_stock)
-            .then(update_issues)
+            checkLoancardLine()
+            .then(checkReturnDestination)
+            .then(returnStock)
+            .then(updateIssues)
             .then(fn.actions.create)
             .then(resolve)
             .catch(reject);

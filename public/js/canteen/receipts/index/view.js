@@ -15,8 +15,8 @@ function getReceipts() {
                     add_cell(row, {text: `£${receipt.cost}`});
                     add_cell(row, {append: new Link(`/receipts/${receipt.receipt_id}`).e});
                 } catch (error) {
-                    console.error(receipt);
-                    console.error(error);
+                    console.error(`canteen/receipts/index/view.js | getReceipts | ${receipt}`);
+                    console.error(`canteen/receipts/index/view.js | getReceipts | ${error}`);
                 };
             });
         });

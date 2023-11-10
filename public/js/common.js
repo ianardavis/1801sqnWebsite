@@ -140,7 +140,7 @@ function clear(id) {
             e.innerHTML = '';
             resolve(e);
         } else {
-            console.error(`Element not found: ${id}`);
+            console.error(`common.js | clear | Element not found: ${id}`);
             reject(new Error('Element not found'));
         };
     })
@@ -210,7 +210,7 @@ function get_stock(size_id) {
         })
         .then(([stock, options]) => resolve(stock))
         .catch(err => {
-            console.error('Error getting stock:', err);
+            console.error('common.js | get_stock | Error getting stock:', err);
             resolve('?');
         });
     });

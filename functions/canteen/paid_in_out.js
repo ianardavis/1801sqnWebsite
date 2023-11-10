@@ -1,8 +1,8 @@
 module.exports = function (m, fn) {
     fn.paid_in_outs = {};
     
-    fn.paid_in_outs.get = function (where) {
-        return fn.get(
+    fn.paid_in_outs.find = function (where) {
+        return fn.find(
             m.paid_in_outs,
             where,
             [
@@ -12,7 +12,7 @@ module.exports = function (m, fn) {
             ]
         );
     };
-    fn.paid_in_outs.get_all = function (query) {
+    fn.paid_in_outs.findAll = function (query) {
         return new Promise((resolve, reject) => {
             m.paid_in_outs.findAndCountAll({
                 where: query.where,
@@ -26,7 +26,7 @@ module.exports = function (m, fn) {
             .catch(reject);
         });
     };
-    function create_action(paid_in_out_id, action, user_id, links = []) {
+    function createAction(paid_in_out_id, action, user_id, links = []) {
         return new Promise(resolve => {
             fn.actions.create([
                 `PAID OUT | ${action}`,
@@ -36,21 +36,21 @@ module.exports = function (m, fn) {
             .then(action => resolve(true));
         });
     };
-    function mark_complete(paid_in_out, user_id, holding_id) {
+    function markComplete(paid_in_out, user_id, holding_id) {
         return new Promise((resolve, reject) => {
             fn.update(paid_in_out, {status: 2})
             .then(result => {
-                create_action(paid_in_out.paid_in_out_id, 'COMPLETED', user_id, [{_table: 'holdings', id: holding_id}])
+                createAction(paid_in_out.paid_in_out_id, 'COMPLETED', user_id, [{_table: 'holdings', id: holding_id}])
                 .then(result => resolve(result));
             })
             .catch(reject);
         });
     };
-    function mark_cancelled(paid_in_out, user_id) {
+    function markCancelled(paid_in_out, user_id) {
         return new Promise((resolve, reject) => {
             fn.update(paid_in_out, {status: 0})
             .then(result => {
-                create_action(paid_in_out.paid_in_out_id, 'CANCELLED', user_id)
+                createAction(paid_in_out.paid_in_out_id, 'CANCELLED', user_id)
                 .then(result => resolve(result));
             })
             .catch(reject);
@@ -84,24 +84,24 @@ module.exports = function (m, fn) {
                 };
             });
         };
-        function get_holding_check_user(holding_id, user_id) {
+        function getHoldingCheckUser(holding_id, user_id) {
             return new Promise((resolve, reject) => {
                 Promise.all([
-                    fn.holdings.get({holding_id: holding_id}),
-                    fn.users.get({user_id: user_id})
+                    fn.holdings.find({holding_id: holding_id}),
+                    fn.users.find({user_id: user_id})
                 ])
                 .then(results => resolve(results[0]))
                 .catch(reject);
             });
         };
-        function create_paid_in_out(paid_in_out, user_id) {
+        function createPaidInOut(paid_in_out, user_id) {
             return new Promise((resolve, reject) => {
                 m.paid_in_outs.create({
                     ...paid_in_out,
                     user_id: user_id
                 })
                 .then(paid_in_out => {
-                    create_action(paid_in_out.paid_in_out_id, 'CREATED', user_id)
+                    createAction(paid_in_out.paid_in_out_id, 'CREATED', user_id)
                     .then(result => resolve(paid_in_out));
                 })
                 .catch(reject);
@@ -111,14 +111,14 @@ module.exports = function (m, fn) {
             if (paid_in_out) {
                 check(paid_in_out)
                 .then(result => {
-                    get_holding_check_user(paid_in_out.holding_id, paid_in_out.user_id_paid_in_out)
+                    getHoldingCheckUser(paid_in_out.holding_id, paid_in_out.user_id_paid_in_out)
                     .then(holding => {
-                        create_paid_in_out(paid_in_out, user_id)
+                        createPaidInOut(paid_in_out, user_id)
                         .then(paid_in_out => {
                             if (paid_in_out.paid_in === '1') {
                                 holding.increment('cash', {by: paid_in_out.amount})
                                 .then(result => {
-                                    mark_complete(paid_in_out, user_id, holding.holding_id)
+                                    markComplete(paid_in_out, user_id, holding.holding_id)
                                     .then(result => resolve(true));
                                 })
                                 .catch(reject);
@@ -141,7 +141,7 @@ module.exports = function (m, fn) {
     };
 
     fn.paid_in_outs.complete = function (paid_in_out_id, user_id) {
-        function complete_check(paid_in_out) {
+        function check(paid_in_out) {
             return new Promise((resolve, reject) => {
                 if (paid_in_out.paid_in) {
                     reject(new Error('This is a pay in'));
@@ -170,13 +170,13 @@ module.exports = function (m, fn) {
             });
         };
         return new Promise((resolve, reject) => {
-            fn.paid_in_outs.get({paid_in_out_id: paid_in_out_id})
+            fn.paid_in_outs.find({paid_in_out_id: paid_in_out_id})
             .then(paid_in_out => {
-                complete_check(paid_in_out)
+                check(paid_in_out)
                 .then(result => {
                     paid_in_out.holding.decrement('cash', {by: paid_in_out.amount})
                     .then(result => {
-                        mark_complete(paid_in_out, user_id)
+                        markComplete(paid_in_out, user_id)
                         .then(result => resolve(result))
                         .catch(reject);
                     })
@@ -189,7 +189,7 @@ module.exports = function (m, fn) {
     };
     
     fn.paid_in_outs.cancel = function (paid_in_out_id, user_id) {
-        function cancel_check(paid_in_out) {
+        function check(paid_in_out) {
             return new Promise((resolve, reject) => {
                 if (paid_in_out.paid_in) {
                     reject(new Error('This is a pay in'));
@@ -210,11 +210,11 @@ module.exports = function (m, fn) {
             });
         };
         return new Promise((resolve, reject) => {
-            fn.paid_in_outs.get({paid_in_out_id: paid_in_out_id})
+            fn.paid_in_outs.find({paid_in_out_id: paid_in_out_id})
             .then(paid_in_out => {
-                cancel_check(paid_in_out)
+                check(paid_in_out)
                 .then(result => {
-                    mark_cancelled(paid_in_out.paid_in_out_id, user_id)
+                    markCancelled(paid_in_out.paid_in_out_id, user_id)
                     .then(result => resolve(true))
                     .catch(reject);
                 })

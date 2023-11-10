@@ -1,11 +1,11 @@
 module.exports = function (m, fn) {
-    fn.files.details.get = function (where) {
-        return fn.get(
+    fn.files.details.find = function (where) {
+        return fn.find(
             m.file_details,
             where
         );
     };
-    fn.files.details.get_all = function (query) {
+    fn.files.details.findAll = function (query) {
         return new Promise((resolve, reject) => {
             m.file_details.findAndCountAll({
                 where: query.where,
@@ -18,7 +18,7 @@ module.exports = function (m, fn) {
 
     fn.files.details.create = function (details, user_id) {
         return new Promise((resolve, reject) => {
-            fn.files.get({file_id: details.file_id})
+            fn.files.find({file_id: details.file_id})
             .then(file => {
                 m.file_details.findOrCreate({
                     where: {
@@ -55,7 +55,7 @@ module.exports = function (m, fn) {
 
     fn.files.details.edit = function (file_detail_id, details) {
         return new Promise((resolve, reject) => {
-            fn.files.details.get({file_detail_id: file_detail_id})
+            fn.files.details.find({file_detail_id: file_detail_id})
             .then(file_detail => {
                 fn.update(file_detail, details)
                 .then(result => resolve(result))

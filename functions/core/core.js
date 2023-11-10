@@ -1,11 +1,11 @@
 const execSync = require('child_process').execSync;
 module.exports = function (m, fn) {
     fn.op = require('sequelize').Op;
-    fn.send_error = function (res, err) {
+    fn.sendError = function (res, err) {
         if (err.message) console.error(err);
         res.send({success: false, message: err.message || err});
     };
-    fn.send_res = function (table, res, result, query, inc = []) {
+    fn.sendRes = function (table, res, result, query, inc = []) {
         let _return = {
             success: true,
             result: {
@@ -53,21 +53,21 @@ module.exports = function (m, fn) {
         };
         return record;
     };
-    fn.print_size = function (size) {
+    fn.printSize = function (size) {
         let text = [];
         ['1', '2', '3'].forEach(s => {
             if (size[`size${s}`]) text.push(size[`size${s}`]);
         });
         return text.join('/');
     };
-    fn.print_size_text = function (item) {
+    fn.printSizeText = function (item) {
         let text = [];
         ['1', '2', '3'].forEach(s => {
             if (item[`size_text${s}`]) text.push(item[`size_text${s}`]);
         });
         return text.join('/');
     };
-    fn.print_nsn = function (nsn, separator = '-') {
+    fn.printNSN = function (nsn, separator = '-') {
         if (nsn) {
             const nsn_group = String(nsn.nsn_group.code).padStart(2, '0');
             const nsn_class = String(nsn.nsn_class.code).padStart(2, '0');
@@ -83,7 +83,7 @@ module.exports = function (m, fn) {
         if (query.offset) pagination.offset = query.offset * query.limit || 0;
         return pagination;
     };
-    fn.build_query = function (query) {
+    fn.buildQuery = function (query) {
         let where = {};
         
         // so that following tests dont fail when trying to access keys of query.where
@@ -122,16 +122,16 @@ module.exports = function (m, fn) {
         };
         return where;
     };
-    fn.public_file = function (folder, file) {
+    fn.publicFile = function (folder, file) {
         return `${process.env.ROOT}/public/res/${folder}/${file}`;
     };
-    fn.public_folder = function (folder) {
+    fn.publicFolder = function (folder) {
         return `${process.env.ROOT}/public/res/${folder}`;
     };
-    fn.run_cmd = function (cmd) {
+    fn.runCommand = function (cmd) {
         return execSync(cmd, { encoding: 'utf-8' });
     };
-    fn.check_for_valid_lines_to_update = function (lines) {
+    fn.checkForValidLinesToUpdate = function (lines) {
         return new Promise((resolve, reject) => {
             if (!lines) {
                 reject(new Error('No lines submitted'));
@@ -147,11 +147,11 @@ module.exports = function (m, fn) {
             };
         });
     };
-    fn.log_rejects = function (results) {
+    fn.logRejects = function (results) {
         results.filter(e => e.status === 'rejected').forEach(e => console.error(e));
         return results;
     };
-    fn.get = function(table, where, include = []) {
+    fn.find = function(table, where, include = []) {
         return new Promise((resolve, reject) => {
             table.findOne({
                 where: where,
@@ -199,7 +199,7 @@ module.exports = function (m, fn) {
             .catch(reject);
         });
     };
-    fn.check_results = function (results) {
+    fn.checkResults = function (results) {
         let return_result = [];
         results.forEach(result => {
             if (result.status === 'fulfilled') {

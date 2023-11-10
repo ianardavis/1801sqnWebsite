@@ -1,6 +1,6 @@
 module.exports = function (m, fn) {
-    fn.loancards.get = function (where, include = []) {
-        return fn.get(
+    fn.loancards.find = function (where, include = []) {
+        return fn.find(
             m.loancards,
             where,
             [
@@ -9,8 +9,8 @@ module.exports = function (m, fn) {
             ].concat(include)
         );
     };
-    fn.loancards.get_all = function (allowed, query, user_id) {
-        function issuer_allowed(issuer_permission, user_id_loancard, user_id) {
+    fn.loancards.findAll = function (allowed, query, user_id) {
+        function issuerAllowed(issuer_permission, user_id_loancard, user_id) {
             return new Promise(resolve => {
                 if (issuer_permission) {
                     if (user_id_loancard && user_id_loancard !== '') {
@@ -35,7 +35,7 @@ module.exports = function (m, fn) {
         };
         return new Promise((resolve, reject) => {
             if (!query.where) query.where = {};
-            issuer_allowed(allowed, query.where.user_id_loancard, user_id)
+            issuerAllowed(allowed, query.where.user_id_loancard, user_id)
             .then(user_filter => {
                 if (!query.offset || isNaN(query.offset)) query.offset = 0;
                 if ( query.limit  && isNaN(query.limit))  delete query.limit;
@@ -52,7 +52,7 @@ module.exports = function (m, fn) {
                 ];
 
                 m.loancards.findAndCountAll({
-                    where: fn.build_query(query),
+                    where: fn.buildQuery(query),
                     include: include,
                     ...fn.pagination(query)
                 })
@@ -64,7 +64,7 @@ module.exports = function (m, fn) {
     };
     fn.loancards.edit = function (loancard_id, details) {
         return new Promise((resolve, reject) => {
-            fn.loancards.get({loancard_id: loancard_id})
+            fn.loancards.find({loancard_id: loancard_id})
             .then(loancard => {
                 fn.update(loancard, details)
                 .then(result => resolve(true))
@@ -78,7 +78,7 @@ module.exports = function (m, fn) {
     fn.loancards.cancel = function (options = {}) {
         function check(loancard_id) {
             return new Promise((resolve, reject) => {
-                fn.loancards.get(
+                fn.loancards.find(
                     {loancard_id: loancard_id},
                     [{
                         model: m.loancard_lines,
@@ -146,7 +146,7 @@ module.exports = function (m, fn) {
     fn.loancards.complete = function (options = {}) {
         function check(loancard_id) {
             return new Promise((resolve, reject) => {
-                fn.loancards.get(
+                fn.loancards.find(
                     {loancard_id: loancard_id},
                     [{
                         model: m.loancard_lines,
@@ -170,7 +170,7 @@ module.exports = function (m, fn) {
                 .catch(reject);
             });
         };
-        function update_lines(lines) {
+        function updateLines(lines) {
             return new Promise((resolve, reject) => {
                 let actions = [];
                 lines.forEach(line => {
@@ -188,7 +188,7 @@ module.exports = function (m, fn) {
         return new Promise((resolve, reject) => {
             check(options.loancard_id)
             .then(loancard => {
-                update_lines(loancard.lines)
+                updateLines(loancard.lines)
                 .then(line_links => {
                     fn.update(
                         loancard,
@@ -213,9 +213,9 @@ module.exports = function (m, fn) {
         });
     };
 
-    function get_filename(loancard_id) {
+    function getFilename(loancard_id) {
         return new Promise((resolve, reject) => {
-            fn.loancards.get({loancard_id: loancard_id})
+            fn.loancards.find({loancard_id: loancard_id})
             .then(loancard => {
                 if (!loancard.filename) {
                     fn.loancards.pdf.create(loancard.loancard_id)
@@ -232,7 +232,7 @@ module.exports = function (m, fn) {
     };
     fn.loancards.download = function (loancard_id, res) {
         return new Promise((resolve, reject) => {
-            get_filename(loancard_id)
+            getFilename(loancard_id)
             .then(filename => {
                 fn.fs.download('loancards', filename, res)
                 .catch(reject);
@@ -243,7 +243,7 @@ module.exports = function (m, fn) {
     
     fn.loancards.print = function (loancard_id) {
         return new Promise((resolve, reject) => {
-            get_filename(loancard_id)
+            getFilename(loancard_id)
             .then(filename => {
                 fn.pdfs.print('loancards', filename)
                 .then(result => resolve(true))
@@ -256,7 +256,7 @@ module.exports = function (m, fn) {
     fn.loancards.close = function (options = {}) {
         function check(loancard_id) {
             return new Promise((resolve, reject) => {
-                fn.loancards.get(
+                fn.loancards.find(
                     {loancard_id: loancard_id},
                     [{
                         model: m.loancard_lines,

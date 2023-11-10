@@ -7,14 +7,14 @@ module.exports = (app, fn) => {
         if (req.query.like && req.query.like.name) {
             req.query.where.name = {[fn.op.substring]: req.query.like.name}
         }
-        fn.suppliers.get_all(req.query)
-        .then(results => fn.send_res('suppliers', res, results, req.query))
-        .catch(err => fn.send_error(res, err));
+        fn.suppliers.findAll(req.query)
+        .then(results => fn.sendRes('suppliers', res, results, req.query))
+        .catch(err => fn.sendError(res, err));
     });
     app.get('/get/supplier',          fn.loggedIn(), fn.permissions.check('supplier_admin'), (req, res) => {
-        fn.suppliers.get(req.query.where)
+        fn.suppliers.find(req.query.where)
         .then(supplier => res.send({success: true,  result: supplier}))
-        .catch(err => fn.send_error(res, err));
+        .catch(err => fn.sendError(res, err));
     });
 
     app.post('/suppliers',            fn.loggedIn(), fn.permissions.check('supplier_admin'), (req, res) => {
@@ -36,6 +36,6 @@ module.exports = (app, fn) => {
     app.delete('/suppliers/:id',      fn.loggedIn(), fn.permissions.check('supplier_admin'), (req, res) => {
         fn.suppliers.destroy(req.params.id)
         .then(supplier => res.send({success: true, message: 'Supplier deleted'}))
-        .catch(err => fn.send_error(res, err));
+        .catch(err => fn.sendError(res, err));
     });
 };

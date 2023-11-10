@@ -29,7 +29,7 @@ module.exports = function (m, fn) {
                     .catch(reject);
 
                 } else if (options.size_id) {
-                    fn.sizes.get({size_id: options.size_id})
+                    fn.sizes.find({size_id: options.size_id})
                     .then(size => {
                         if (options.location_id) {
                             m.stocks.findOrCreate({
@@ -43,7 +43,7 @@ module.exports = function (m, fn) {
                             .catch(reject);
                             
                         } else if (options.location) {
-                            fn.locations.find_or_create(options.location)
+                            fn.locations.findOrCreate(options.location)
                             .then(location => {
                                 m.stocks.findOrCreate({
                                     where: {
@@ -74,7 +74,7 @@ module.exports = function (m, fn) {
         });
     };
     fn.stocks.get = function (where) {
-        return fn.get(
+        return fn.find(
             m.stocks,
             where,
             [
@@ -84,7 +84,7 @@ module.exports = function (m, fn) {
         )
     };
 
-    fn.stocks.get_all = function (query) {
+    fn.stocks.findAll = function (query) {
         return m.stocks.findAndCountAll({
             where: query.where,
             include: [
@@ -96,7 +96,7 @@ module.exports = function (m, fn) {
     };
     fn.stocks.sum = function (where) {return m.stocks.sum('qty', {where: where})};
 
-    fn.stocks.get_by_ID = function (stock_id) {
+    fn.stocks.findByID = function (stock_id) {
         return new Promise((resolve, reject) => {
             m.stocks.findOne({
                 where: {stock_id: stock_id},
@@ -117,7 +117,7 @@ module.exports = function (m, fn) {
     fn.stocks.create = function (size_id, location) {
         return new Promise((resolve, reject) => {
             Promise.all([
-                fn.sizes.get({size_id: size_id}),
+                fn.sizes.find({size_id: size_id}),
                 m.locations.findOrCreate({where: {location: location}})
             ])
             .then(([size, [location, created]]) => {
@@ -134,7 +134,7 @@ module.exports = function (m, fn) {
         });
     };
     fn.stocks.scrap = function (stock_id, details, user_id) {
-        function check_stock() {
+        function checkStock() {
             return new Promise((resolve, reject) => {
                 m.stocks.findOne({
                     where: {stock_id: stock_id},
@@ -152,9 +152,9 @@ module.exports = function (m, fn) {
                 .catch(reject);
             });
         };
-        function create_scrap_line(stock) {
+        function createScrapLine(stock) {
             return new Promise((resolve, reject) => {
-                fn.scraps.get_or_create(stock.size.supplier_id)
+                fn.scraps.findOrCreate(stock.size.supplier_id)
                 .then(scrap => {
                     fn.scraps.lines.create(
                         scrap.scrap_id,
@@ -168,11 +168,11 @@ module.exports = function (m, fn) {
             });
         };
         return new Promise((resolve, reject) => {
-            check_stock()
+            checkStock()
             .then(stock => {
                 Promise.all([
                     fn.stocks.decrement(stock, details.qty),
-                    create_scrap_line(stock)
+                    createScrapLine(stock)
                 ])
                 
                 .then(([stock_link, scrap_line_link]) => {
@@ -189,7 +189,7 @@ module.exports = function (m, fn) {
         });
     };
     fn.stocks.count = function (stock_id, qty, user_id) {
-        function update_stock(stock) {
+        function updateStock(stock) {
             return new Promise((resolve, reject) => {
                 const variance = qty - stock.qty;
                 fn.update(stock, {qty: qty})
@@ -207,14 +207,14 @@ module.exports = function (m, fn) {
             });
         };
         return new Promise((resolve, reject) => {
-            fn.stocks.get_by_ID(stock_id)
-            .then(update_stock)
+            fn.stocks.findByID(stock_id)
+            .then(updateStock)
             .then(fn.actions.create)
             .then(results => resolve(true))
             .catch(reject);
         });
     };
-    fn.stocks.count_bulk = function (counts, user_id) {
+    fn.stocks.countBulk = function (counts, user_id) {
         if (!counts) {
             return Promise.reject(new Error('No details'));
 
@@ -225,7 +225,7 @@ module.exports = function (m, fn) {
                     actions.push(fn.stocks.count(count.stock_id, count.qty, user_id))
                 })
                 Promise.allSettled(actions)
-                .then(fn.log_rejects)
+                .then(fn.logRejects)
                 .then(results => resolve(true))
                 .catch(reject);
     
@@ -286,7 +286,7 @@ module.exports = function (m, fn) {
     };
     fn.stocks.return = function (stock_id, qty) {
         return new Promise((resolve, reject) => {
-            fn.stocks.get_by_ID(stock_id)
+            fn.stocks.findByID(stock_id)
             .then(stock => {
                 fn.stocks.increment(stock, qty)
                 .then(result => resolve({_table: 'stocks', id: stock_id}))
@@ -297,9 +297,9 @@ module.exports = function (m, fn) {
     };
     
     fn.stocks.transfer = function (stock_id_from, location_to, qty, user_id) {
-        function check_from_stock() {
+        function checkFromStock() {
             return new Promise((resolve, reject) => {
-                fn.stocks.get_by_ID(stock_id_from)
+                fn.stocks.findByID(stock_id_from)
                 .then(stock => {
                     if (qty > stock.qty) {
                         reject(new Error('Transfer quantity is greater than stock quantity'));
@@ -312,7 +312,7 @@ module.exports = function (m, fn) {
                 .catch(reject);
             });
         };
-        function check_to_stock(stock_from) {
+        function checkToStock(stock_from) {
             return new Promise((resolve, reject) => {
                 m.locations.findOrCreate({where: {location: location_to}})
                 .then(([location, created]) => {
@@ -337,7 +337,7 @@ module.exports = function (m, fn) {
                 .catch(reject);
             });
         };
-        function transfer_stock([stock_from, stock_to]) {
+        function transferStock([stock_from, stock_to]) {
             return new Promise((resolve, reject) => {
                 Promise.all([
                     fn.stocks.decrement(stock_from, qty),
@@ -357,9 +357,9 @@ module.exports = function (m, fn) {
             });
         };
         return new Promise((resolve, reject) => {
-            check_from_stock()
-            .then(check_to_stock)
-            .then(transfer_stock)
+            checkFromStock()
+            .then(checkToStock)
+            .then(transferStock)
             .then(fn.actions.create)
             .then(result => resolve(true))
             .catch(reject);

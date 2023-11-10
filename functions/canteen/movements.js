@@ -1,7 +1,7 @@
 module.exports = function (m, fn) {
     fn.movements = {};
-    fn.movements.get = function (where) {
-        return fn.get(
+    fn.movements.find = function (where) {
+        return fn.find(
             m.movements,
             where,
             [
@@ -12,7 +12,7 @@ module.exports = function (m, fn) {
             ]
         );
     };
-    fn.movements.get_all = function (query) {
+    fn.movements.findAll = function (query) {
         return new Promise((resolve, reject) => {
             m.movements.findAndCountAll({
                 where: query.where,
@@ -52,17 +52,17 @@ module.exports = function (m, fn) {
                 };
             });
         };
-        function get_holdings(holding_id_from, holding_id_to) {
+        function getHoldings(holding_id_from, holding_id_to) {
             return new Promise((resolve, reject) => {
                 Promise.all([
-                    fn.holdings.get({holding_id: holding_id_from}),
-                    fn.holdings.get({holding_id: holding_id_to})
+                    fn.holdings.find({holding_id: holding_id_from}),
+                    fn.holdings.find({holding_id: holding_id_to})
                 ])
                 .then(results => resolve([results[0], results[1]]))
                 .catch(reject);
             });
         };
-        function transfer_cash(holding_from, holding_to, amount) {
+        function transferCash(holding_from, holding_to, amount) {
             return new Promise((resolve, reject) => {
                 if (holding_from.cash < Number(amount)) {
                     reject(new Error('Not enough cash in source holding'));
@@ -76,7 +76,7 @@ module.exports = function (m, fn) {
                 };
             });
         };
-        function create_movement_record(movement, user_id) {
+        function createMovementRecord(movement, user_id) {
             return new Promise((resolve, reject) => {
                 m.movements.create({
                     ...movement,
@@ -91,11 +91,11 @@ module.exports = function (m, fn) {
             if (movement) {
                 check(movement)
                 .then(result => {
-                    get_holdings(movement.holding_id_from, movement.holding_id_to)
+                    getHoldings(movement.holding_id_from, movement.holding_id_to)
                     .then(([holding_from, holding_to]) => {
-                        transfer_cash(holding_from, holding_to, movement.amount)
+                        transferCash(holding_from, holding_to, movement.amount)
                         .then(result => {
-                            create_movement_record(movement, user_id)
+                            createMovementRecord(movement, user_id)
                             .then(result => resolve(true))
                             .catch(err => {
                                 console.error(err);

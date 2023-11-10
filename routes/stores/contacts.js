@@ -1,13 +1,13 @@
 module.exports = (app, fn) => {
     app.get('/get/contacts',    fn.loggedIn(), fn.permissions.check('access_stores'),  (req, res) => {
         fn.suppliers.contacts.get_all(req.query)
-        .then(results => fn.send_res('contacts', res, results, req.query))
-        .catch(err => fn.send_error(res, err));
+        .then(results => fn.sendRes('contacts', res, results, req.query))
+        .catch(err => fn.sendError(res, err));
     });
     app.get('/get/contact',     fn.loggedIn(), fn.permissions.check('access_stores'),  (req, res) => {
         fn.suppliers.contacts.get(req.query.where)
         .then(contact => res.send({success: true, result: contact}))
-        .catch(err => fn.send_error(res, err));
+        .catch(err => fn.sendError(res, err));
     });
 
     app.post('/contacts',       fn.loggedIn(), fn.permissions.check('supplier_admin'), (req, res) => {
@@ -17,7 +17,7 @@ module.exports = (app, fn) => {
             req.body.type
         )
         .then(supplier_contact => res.send({success: true, message: 'Contact created'}))
-        .catch(err => fn.send_error(res, err));
+        .catch(err => fn.sendError(res, err));
     });
     app.put('/contacts',        fn.loggedIn(), fn.permissions.check('supplier_admin'), (req, res) => {
         fn.suppliers.contacts.edit(
@@ -26,12 +26,12 @@ module.exports = (app, fn) => {
             req.user.user_id
         )
         .then(result => res.send({success: true, message: 'Contact updated'}))
-        .catch(err => fn.send_error(res, err));
+        .catch(err => fn.sendError(res, err));
     });
     
     app.delete('/contacts/:id', fn.loggedIn(), fn.permissions.check('supplier_admin'), (req, res) => {
         fn.suppliers.contacts.delete(req.params.id)
         .then(result => res.send({success: true, message: 'Contact deleted'}))
-        .catch(err => fn.send_error(res, err));
+        .catch(err => fn.sendError(res, err));
     });
 };

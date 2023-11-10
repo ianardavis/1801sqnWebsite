@@ -1,14 +1,14 @@
 module.exports = function (m, fn) {
     fn.suppliers = {contacts: {}, addresses: {}};
 
-    fn.suppliers.get = function (where, include = []) {
-        return fn.get(
+    fn.suppliers.find = function (where, include = []) {
+        return fn.find(
             m.suppliers,
             where,
             [fn.inc.stores.account()].concat(include)
         );
     };
-    fn.suppliers.get_all = function (query) {
+    fn.suppliers.findAll = function (query) {
         return m.suppliers.findAndCountAll({
             where: query.where,
             ...fn.pagination(query)
@@ -16,7 +16,7 @@ module.exports = function (m, fn) {
     };
     fn.suppliers.edit = function (supplier_id, details) {
         return new Promise((resolve, reject) => {
-            fn.suppliers.get({supplier_id: supplier_id})
+            fn.suppliers.find({supplier_id: supplier_id})
             .then(supplier => {
                 fn.update(supplier, details)
                 .then(resolve)
@@ -36,9 +36,9 @@ module.exports = function (m, fn) {
     };
 
     fn.suppliers.delete = function (supplier_id) {
-        function delete_supplier(supplier_id) {
+        function deleteSupplier(supplier_id) {
             return new Promise((resolve, reject) => {
-                fn.suppliers.get({supplier_id: supplier_id})
+                fn.suppliers.find({supplier_id: supplier_id})
                 .then(supplier => {
                     supplier.destroy()
                     .then(result => {
@@ -55,9 +55,9 @@ module.exports = function (m, fn) {
                 .catch(reject);
             });
         };
-        function delete_default_supplier(supplier_id) {
+        function deleteDefaultSupplier(supplier_id) {
             return new Promise(resolve => {
-                fn.settings.get({
+                fn.settings.find({
                     name: 'default_supplier',
                     value: supplier_id
                 })
@@ -82,14 +82,14 @@ module.exports = function (m, fn) {
             });
         };
         return new Promise((resolve, reject) => {
-            delete_supplier(supplier_id)
-            .then(delete_default_supplier)
-            .then(setting_deleted => resolve(setting_deleted))
+            deleteSupplier(supplier_id)
+            .then(deleteDefaultSupplier)
+            .then(resolve)
             .catch(reject);
         });
     };
 
-    function get(where, table) {
+    function find(where, table) {
         return new Promise((resolve, reject) => {
             m[`supplier_${table.pl}`].findOne({
                 where: where,
@@ -106,7 +106,7 @@ module.exports = function (m, fn) {
             });
         });
     };
-    function get_all(table, query) {
+    function findAll(table, query) {
         return new Promise((resolve, reject) => {
             table.findAndCountAll({
                 include: [{
@@ -121,7 +121,7 @@ module.exports = function (m, fn) {
     };
     function create(supplier_id, record, type, table) {
         return new Promise((resolve, reject) => {
-            fn.suppliers.get({supplier_id: supplier_id})
+            fn.suppliers.find({supplier_id: supplier_id})
             .then(supplier => {
                 m[table.pl].findOrCreate({
                     where:    record,
@@ -180,10 +180,10 @@ module.exports = function (m, fn) {
     };
 
     fn.suppliers.contacts.get = function (where) {
-        return get(where, {pl: 'contacts', si: 'contact'});
+        return find(where, {pl: 'contacts', si: 'contact'});
     };
     fn.suppliers.contacts.get_all = function (query) {
-        return get_all(m.contacts, query);
+        return findAll(m.contacts, query);
     };
     fn.suppliers.contacts.create = function (supplier_id, contact, type) {
         return create(supplier_id, contact, type, {pl: 'contacts', si: 'contact'});
@@ -196,10 +196,10 @@ module.exports = function (m, fn) {
     };
 
     fn.suppliers.addresses.get = function (where) {
-        return get(where, {pl: 'addresses', si: 'address'});
+        return find(where, {pl: 'addresses', si: 'address'});
     };
     fn.suppliers.addresses.get_all = function (query) {
-        return get_all(m.addresses, query);
+        return findAll(m.addresses, query);
     };
     fn.suppliers.addresses.create = function (supplier_id, address, type) {
         return create(supplier_id, address, type, {pl: 'addresses', si: 'address'});

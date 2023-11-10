@@ -4,11 +4,11 @@ module.exports = (app, fn) => {
     
     app.get('/get/receipts', fn.loggedIn(), fn.permissions.check('canteen_stock_admin'), (req, res) => {
         fn.receipts.find_and_count_all(req.query.where, fn.pagination(req.query))
-        .then(results => fn.send_res('receipts', res, results, req.query))
-        .catch(err => fn.send_error(res, err));
+        .then(results => fn.sendRes('receipts', res, results, req.query))
+        .catch(err => fn.sendError(res, err));
     });
     app.get('/get/receipt',  fn.loggedIn(), fn.permissions.check('canteen_stock_admin'), (req, res) => {
-        fn.receipts.get(req.query.where)
+        fn.receipts.find(req.query.where)
         .then(receipt => res.send({success: true, result: receipt}))
         .catch(reject);
     });
@@ -19,6 +19,6 @@ module.exports = (app, fn) => {
             req.user.user_id
         )
         .then(results => res.send({success: true, message: 'Items received'}))
-        .catch(err => fn.send_error(res, err));
+        .catch(err => fn.sendError(res, err));
     });
 };

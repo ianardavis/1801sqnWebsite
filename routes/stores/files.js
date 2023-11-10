@@ -10,67 +10,67 @@ module.exports = (app, fn) => {
         );
     });
     app.get('/get/files',           fn.loggedIn(), fn.permissions.check('supplier_admin'),  (req, res) => {
-        fn.files.get_all(req.query)
-        .then(results => fn.send_res('files', res, results, req.query))
-        .catch(err => fn.send_error(res, err));
+        fn.files.findAll(req.query)
+        .then(results => fn.sendRes('files', res, results, req.query))
+        .catch(err => fn.sendError(res, err));
     });
     app.get('/get/file',            fn.loggedIn(), fn.permissions.check('supplier_admin'),  (req, res) => {
-        fn.files.get(req.query.where)
+        fn.files.find(req.query.where)
         .then(file => res.send({success: true,  result: file}))
-        .catch(err => fn.send_error(res, err));
+        .catch(err => fn.sendError(res, err));
     });
     app.get('/get/file_details',    fn.loggedIn(), fn.permissions.check('supplier_admin'),  (req, res) => {
-        fn.files.details.get_all(req.query)
-        .then(results => fn.send_res('details', res, results, req.query))
-        .catch(err => fn.send_error(res, err));
+        fn.files.details.findAll(req.query)
+        .then(results => fn.sendRes('details', res, results, req.query))
+        .catch(err => fn.sendError(res, err));
     });
     app.get('/get/file_detail',     fn.loggedIn(), fn.permissions.check('supplier_admin'),  (req, res) => {
-        fn.files.details.get(req.query.where)
+        fn.files.details.find(req.query.where)
         .then(detail => res.send({success: true, result: detail}))
-        .catch(err => fn.send_error(res, err));
+        .catch(err => fn.sendError(res, err));
     });
 
     app.get('/files/:id/download',  fn.loggedIn(), fn.permissions.check('supplier_admin'),  (req, res) => {
         fn.files.download(req.params.id, res)
-        .catch(err => fn.send_error(res, err));
+        .catch(err => fn.sendError(res, err));
     });
 
     app.put('/files',               fn.loggedIn(), fn.permissions.check('supplier_admin'),  (req, res) => {
         fn.files.edit(req.body.file_id, req.body.file)
         .then(result => res.send({success: true, message: 'File updated'}))
-        .catch(err => fn.send_error(res, err));
+        .catch(err => fn.sendError(res, err));
     });
     app.put('/file_details',        fn.loggedIn(), fn.permissions.check('supplier_admin'),  (req, res) => {
         fn.files.details.edit(req.body.file_detail_id, req.body.detail)
         .then(detail => res.send({success: true,  message: 'Details updated'}))
-        .catch(err => fn.send_error(res, err));
+        .catch(err => fn.sendError(res, err));
     });
 
     app.post('/files',              fn.loggedIn(), fn.permissions.check('supplier_admin'),  (req, res) => {
         fn.files.create(req.body.file, req.files.uploaded, req.user.user_id)
         .then(result => res.send({success: true, message: 'File uploaded'}))
-        .catch(err => fn.send_error(res, err));
+        .catch(err => fn.sendError(res, err));
     });
     app.post('/file_details',       fn.loggedIn(), fn.permissions.check('supplier_admin'),  (req, res) => {
         fn.files.details.create(req.body.detail, req.user.user_id)
         .then(result => res.send({success: true, message: 'Detail saved'}))
-        .catch(err => fn.send_error(res, err));
+        .catch(err => fn.sendError(res, err));
     });
 
     app.delete('/files/:id',        fn.loggedIn(), fn.permissions.check('supplier_admin'),  (req, res) => {
         fn.files.delete(req.params.id)
         .then(result => res.send({success: true, message: 'File deleted'}))
-        .catch(err => fn.send_error(res, err));
+        .catch(err => fn.sendError(res, err));
     });
     app.delete('/fs_files/:id',     fn.loggedIn(), fn.permissions.check('supplier_admin'),  (req, res) => {
-        const path = fn.public_file('files', req.params.id);
+        const path = fn.publicFile('files', req.params.id);
         fn.rm(path)
         .then(result => res.send({success: true,  message: 'File deleted'}))
-        .catch(err =>   fn.send_error(res, err));
+        .catch(err =>   fn.sendError(res, err));
     });
     app.delete('/file_details/:id', fn.loggedIn(), fn.permissions.check('supplier_admin'),  (req, res) => {
         fn.files.details.delete(req.params.id)
         .then(result => res.send({success: true,  message: 'Detail deleted'}))
-        .catch(err => fn.send_error(res, err));
+        .catch(err => fn.sendError(res, err));
     });
 };

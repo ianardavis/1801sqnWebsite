@@ -10,7 +10,7 @@ module.exports = function (m, fn) {
                 fn.fs.mkdir(folder)
                 .then(result => {
                     const filename = `${id}-${name}.pdf`;
-                    const path = fn.public_file(folder, filename);
+                    const path = fn.publicFile(folder, filename);
                     let docMetadata = {};
                     let writeStream = fs.createWriteStream(path, {flags: 'w'});
                     // writeStream.on('error', err => reject(err));
@@ -31,7 +31,7 @@ module.exports = function (m, fn) {
             };
         });
     };
-    fn.pdfs.new_page = function (doc) {
+    fn.pdfs.newPage = function (doc) {
         let pageMetaData = {};
         pageMetaData.size    = 'A4';
         pageMetaData.margins = 28;
@@ -47,12 +47,12 @@ module.exports = function (m, fn) {
             .text(title,  28, y+40, {width: 539, align: 'center'});
         return 85;
     };
-    fn.pdfs.page_numbers = function (doc, file_id) {
+    fn.pdfs.pageNumbers = function (doc, file_id) {
         const range = doc.bufferedPageRange();
         doc.fontSize(10);
         for (let i = range.start; i < range.count; i++) {
-            const bar = fn.public_file('barcodes',`${file_id}_128.png`)
-            const qr  = fn.public_file('barcodes',`${file_id}_qr.png`)
+            const bar = fn.publicFile('barcodes',`${file_id}_128.png`)
+            const qr  = fn.publicFile('barcodes',`${file_id}_qr.png`)
             doc.switchToPage(i);
             doc
             .text(`Page ${i + 1} of ${range.count}`, 28, 723.89)
@@ -60,12 +60,12 @@ module.exports = function (m, fn) {
             .image(qr,  492, 738.89, {width: 75,  height: 75});
         };
     };
-    fn.pdfs.end_of_page = function (doc, y) {
+    fn.pdfs.endOfPage = function (doc, y) {
         doc.text('END OF PAGE', 28, y, {width: 539, align: 'center'});
-        y = fn.pdfs.new_page(doc);
+        y = fn.pdfs.newPage(doc);
         return y;
     };
-    fn.pdfs.create_barcode = function(text, type, options) {
+    fn.pdfs.createBarcode = function(text, type, options) {
         return new Promise((resolve, reject) => {
             fn.fs.mkdir('barcodes')
             .then(path => {
@@ -79,7 +79,7 @@ module.exports = function (m, fn) {
                     ...options
                 })
                 .then(barcode => {
-                    const file = fn.public_file('barcodes', `${text}_${type}.png`);
+                    const file = fn.publicFile('barcodes', `${text}_${type}.png`);
                     fs.writeFile(file, barcode, () => resolve(file));
                 })
                 .catch(reject);
@@ -87,11 +87,11 @@ module.exports = function (m, fn) {
             .catch(reject);
         });
     };
-    fn.pdfs.create_barcodes = function (text, options = {}) {
+    fn.pdfs.createBarcodes = function (text, options = {}) {
         return new Promise((resolve, reject) => {
             Promise.allSettled([
-                fn.pdfs.create_barcode(text, 'code128', {scale: 3, height: 15, includetext: false, ...options}),
-                fn.pdfs.create_barcode(text, 'qrcode',  {scale: 3, height: 30, includetext: false, ...options})
+                fn.pdfs.createBarcode(text, 'code128', {scale: 3, height: 15, includetext: false, ...options}),
+                fn.pdfs.createBarcode(text, 'qrcode',  {scale: 3, height: 30, includetext: false, ...options})
             ])
             .then(([file_128, file_qr]) => resolve([file_128.value, file_qr.value]))
             .catch(reject);
@@ -99,9 +99,9 @@ module.exports = function (m, fn) {
     };
     fn.pdfs.print = function (folder, file) {
         return new Promise((resolve, reject) => {
-            fn.fs.file_exists(folder, file)
+            fn.fs.fileExists(folder, file)
             .then(path => {
-                fn.settings.get({name: 'printer'})
+                fn.settings.find({name: 'printer'})
                 .then(printer => {
                     const options = ['-o sides=two-sided-long-edge'];
                     ptp

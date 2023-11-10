@@ -1,12 +1,12 @@
 module.exports = function (m, fn) {
     fn.canteen_items = {};
-    fn.canteen_items.get = function (where) {
-        return fn.get(
+    fn.canteen_items.find = function (where) {
+        return fn.find(
             m.canteen_items,
             where
         );
     };
-    fn.canteen_items.get_all = function (query) {
+    fn.canteen_items.findAll = function (query) {
         return new Promise((resolve, reject) => {
             m.canteen_items.findAndCountAll({
                 where: query.where,
@@ -16,7 +16,7 @@ module.exports = function (m, fn) {
             .catch(reject);
         });
     };
-    fn.canteen_items.get_by_EAN = function (ean) {
+    fn.canteen_items.findByEAN = function (ean) {
         return new Promise((resolve, reject) => {
             m.eans.findOne({
                 where: {ean: ean},
@@ -43,7 +43,7 @@ module.exports = function (m, fn) {
 
     fn.canteen_items.edit = function (item_id, details) {
         return new Promise((resolve, reject) => {
-            fn.canteen_items.get({item_id: item_id})
+            fn.canteen_items.find({item_id: item_id})
             .then(item => {
                 fn.update(item, details)
                 .then(result => resolve(result))
@@ -87,7 +87,7 @@ module.exports = function (m, fn) {
             });
         };
         return new Promise((resolve, reject) => {
-            fn.canteen_items.get({item_id: item_id})
+            fn.canteen_items.find({item_id: item_id})
             .then(item => {
                 check_for_linked_data(item.item_id)
                 .then(item.destroy)

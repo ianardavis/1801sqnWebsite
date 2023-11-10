@@ -19,7 +19,7 @@ function getEANs() {
                     }).e});
                     add_cell(row, );
                 } catch (error) {
-                    console.error(error);
+                    console.error(`canteen/items/show/eans/view.js | getEANs | ${error}`);
                 };
             });
         });

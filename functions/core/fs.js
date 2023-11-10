@@ -1,7 +1,7 @@
 const fs = require("fs");
 module.exports = function (m, fn) {
 	fn.fs = {};
-	function path_exists(path, createIfFalse = false) {
+	function pathExists(path, createIfFalse = false) {
 		return new Promise((resolve, reject) => {
 			if (fs.existsSync(path)) {
 				resolve(path);
@@ -20,16 +20,16 @@ module.exports = function (m, fn) {
 			};
 		});
 	};
-	fn.fs.file_exists 	= function (folder, file) {
-		return path_exists(fn.public_file(folder, file));
+	fn.fs.fileExists 	= function (folder, file) {
+		return pathExists(fn.publicFile(folder, file));
 	};
-	fn.fs.folder_exists = function (folder, createIfFalse = false) {
-		return path_exists(fn.public_folder(folder), createIfFalse);
+	fn.fs.folderExists = function (folder, createIfFalse = false) {
+		return pathExists(fn.publicFolder(folder), createIfFalse);
 	};
 	fn.fs.mkdir 		= function (folder) {
 		return new Promise(resolve => {
-			const path = fn.public_folder(folder);
-			fn.fs.folder_exists(folder)
+			const path = fn.publicFolder(folder);
+			fn.fs.folderExists(folder)
 			.then(result => resolve(path))
 			.catch(err => {
 				fs.mkdir(path, {recursive: true}, result => {
@@ -38,9 +38,9 @@ module.exports = function (m, fn) {
 			});
 		});
 	};
-	fn.fs.copy_file 	= function (src, dest) {
+	fn.fs.copyFile 	= function (src, dest) {
 		return new Promise((resolve, reject) => {
-			fn.fs.file_exists(src.folder, src.folder)
+			fn.fs.fileExists(src.folder, src.folder)
 			.then(src => {
 				fs.copyFile(
 					src,
@@ -64,13 +64,13 @@ module.exports = function (m, fn) {
 			.catch(reject);
 		});
 	};
-	fn.fs.upload_file 	= function (options = {}) {
+	fn.fs.uploadFile 	= function (options = {}) {
 		return new Promise((resolve, reject) => {
-			fn.suppliers.get({supplier_id: options.supplier_id})
+			fn.suppliers.find({supplier_id: options.supplier_id})
 			.then(supplier => {
-				fn.fs.copy_file(
+				fn.fs.copyFile(
 					options.file,
-					fn.public_file('files', options.filename)
+					fn.publicFile('files', options.filename)
 				)
 				.then(result => {
 					m.files.findOrCreate({
@@ -99,7 +99,7 @@ module.exports = function (m, fn) {
 	};
 	fn.fs.rmdir 		= function (folder) {
 		return new Promise((resolve, reject) => {
-			fn.fs.file_exists(folder, '')
+			fn.fs.fileExists(folder, '')
 			.then(exists => {
 				fs.rm(
 					folder,
@@ -139,12 +139,12 @@ module.exports = function (m, fn) {
 			});
 		});
 	};
-	fn.fs.delete_file 	= function (options = {}) {
+	fn.fs.deleteFile 	= function (options = {}) {
 		return new Promise((resolve, reject) => {
 			m[options.table].findByPk(options.id)
 			.then(result => {
 				if (result.filename) {
-					fn.fs.file_exists(options.table, result.filename)
+					fn.fs.fileExists(options.table, result.filename)
 					.then(filepath => {
 						fn.rm(filepath)
 						.then(rmresult => {
@@ -173,7 +173,7 @@ module.exports = function (m, fn) {
 	};
 	fn.fs.download 		= function (folder, file, res) {
 		return new Promise((resolve, reject) => {
-			fn.fs.file_exists(folder, file)
+			fn.fs.fileExists(folder, file)
 			.then(path => {
 				res.download(path, file, err => {
 					if (err) {

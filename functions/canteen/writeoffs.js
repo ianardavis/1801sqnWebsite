@@ -1,7 +1,7 @@
 module.exports = function (m, fn) {
     fn.writeoffs = {};
-    fn.writeoffs.get = function (where) {
-        return fn.get(
+    fn.writeoffs.find = function (where) {
+        return fn.find(
             m.writeoffs,
             where,
             [
@@ -10,7 +10,7 @@ module.exports = function (m, fn) {
             ]
         );
     };
-    fn.writeoffs.get_all = function (query) {
+    fn.writeoffs.findAll = function (query) {
         return new Promise((resolve, reject) => {
             m.writeoffs.findAndCountAll({
                 where: query.where,
@@ -46,7 +46,7 @@ module.exports = function (m, fn) {
             if (writeoff) {
                 check(writeoff)
                 .then(result => {
-                    fn.canteen_items.get({item_id: writeoff.item_id})
+                    fn.canteen_items.find({item_id: writeoff.item_id})
                     .then(item => {
                         item.decrement('qty', {by: writeoff.qty})
                         .then(result => {

@@ -1,11 +1,11 @@
 module.exports = function (m, fn) {
-    fn.nsns.countries.get = function (where) {
-        return fn.get(
+    fn.nsns.countries.find = function (where) {
+        return fn.find(
             m.nsn_countries,
             where
         );
     };
-    fn.nsns.countries.get_all = function (query) {
+    fn.nsns.countries.findAll = function (query) {
         return new Promise((resolve, reject) => {
             m.nsn_countries.findAndCountAll({
                 where: query.where,

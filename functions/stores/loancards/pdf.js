@@ -7,7 +7,7 @@ module.exports = function (m, fn) {
     fn.loancards.pdf.create = function (loancard_id) {
         function check(loancard_id) {
             return new Promise((resolve, reject) => {
-                fn.loancards.get(
+                fn.loancards.find(
                     {loancard_id: loancard_id},
                     [{
                         model: m.loancard_lines,
@@ -37,9 +37,9 @@ module.exports = function (m, fn) {
                 .catch(reject);
             });
         };
-        function create_pdf(loancard) {
+        function createPDF(loancard) {
             return new Promise((resolve, reject) => {
-                fn.pdfs.create_barcodes(loancard.loancard_id)
+                fn.pdfs.createBarcodes(loancard.loancard_id)
                 .then(result => {
                     fn.pdfs.create(
                         loancard.loancard_id,
@@ -48,9 +48,9 @@ module.exports = function (m, fn) {
                         loancard.user
                     )
                     .then(([doc, filename, writeStream]) => {
-                        let y = fn.pdfs.new_page(doc);
+                        let y = fn.pdfs.newPage(doc);
                         y += fn.pdfs.logos(doc, y, 'STORES LOAN CARD');
-                        y += add_header(doc, loancard, y);
+                        y += addHeader(doc, loancard, y);
                         resolve([loancard, doc, filename, writeStream, y]);
                     })
                     .catch(reject);
@@ -58,17 +58,17 @@ module.exports = function (m, fn) {
                 .catch(reject);
             });
         };
-        function add_lines([loancard, doc, filename, writeStream, y]) {
-            function add_line(doc, line, y) {
+        function addLines([loancard, doc, filename, writeStream, y]) {
+            function addLine(doc, line, y) {
                 let y_c = 30;
                 let qty = 0;
                 line.issues.forEach(issue => {qty += issue.qty});
                 doc
                     .text(qty,                                                                 320, y)
                     .text(line.size.item.description,                                           28, y)
-                    .text(`${fn.print_size_text(line.size.item)}: ${fn.print_size(line.size)}`, 28, y+15);
+                    .text(`${fn.printSizeText(line.size.item)}: ${fn.printSize(line.size)}`, 28, y+15);
                 if (line.nsn) {
-                    doc.text(`NSN: ${fn.print_nsn(line.nsn)}`,  28, y+y_c);
+                    doc.text(`NSN: ${fn.printNSN(line.nsn)}`,  28, y+y_c);
                     y_c += 15;
                 };
                 if (line.serial) {
@@ -85,17 +85,17 @@ module.exports = function (m, fn) {
             return new Promise(resolve => {
                 loancard.lines.forEach(line => {
                     if (y >= 708-(line.nsn ? 15 : 0)-(line.serial ? 15 : 0)) {
-                        y = fn.pdfs.end_of_page(doc, y);
-                        y += add_header(doc, loancard, y);
+                        y = fn.pdfs.endOfPage(doc, y);
+                        y += addHeader(doc, loancard, y);
                     };
-                    y += add_line(doc, line, y);
+                    y += addLine(doc, line, y);
                 });
                 resolve([loancard, doc, filename, writeStream, y])
             });
         };
-        function finalise_loancard([loancard, doc, filename, writeStream, y]) {
-            function add_declaration(doc, count, y) {
-                if (y >= 640) y = fn.pdfs.end_of_page(doc, y);
+        function finaliseLoancard([loancard, doc, filename, writeStream, y]) {
+            function addDeclaration(doc, count, y) {
+                if (y >= 640) y = fn.pdfs.endOfPage(doc, y);
                 const close_text = `END OF LOANCARD, ${count} LINE(S) ISSUED`;
                 const disclaimer = 'By signing in the box below, I confirm I have received the items listed above. I understand I am responsible for any items issued to me and that I may be liable to pay for items lost or damaged through negligence';
                 doc
@@ -104,8 +104,8 @@ module.exports = function (m, fn) {
                 .rect(197.64, y+50, 200, 100).stroke();
             };
 
-            add_declaration(doc, loancard.lines.length, y);
-            fn.pdfs.page_numbers(doc, loancard.loancard_id);
+            addDeclaration(doc, loancard.lines.length, y);
+            fn.pdfs.pageNumbers(doc, loancard.loancard_id);
             doc.end();
             
             writeStream.on('error', err => reject(err));
@@ -113,16 +113,16 @@ module.exports = function (m, fn) {
                 resolve([loancard, filename]);
             });
         };
-        function update_loancard([loancard, filename]) {
+        function updateLoancard([loancard, filename]) {
             return new Promise((resolve, reject) => {
                 fn.update(loancard, {filename: filename})
                 .then(result => resolve(filename))
                 .catch(reject);
             });
         };
-        function print_loancard(filename) {
+        function printLoancard(filename) {
             return new Promise(resolve => {
-                fn.settings.get({name: 'Print loancard'})
+                fn.settings.find({name: 'Print loancard'})
                 .then(setting => {
                     if (setting.value === '1') {
                         fn.pdfs.print('loancards', filename)
@@ -144,7 +144,7 @@ module.exports = function (m, fn) {
             });
         };
         
-        function add_header(doc, loancard, y) {
+        function addHeader(doc, loancard, y) {
             doc
                 .fontSize(15)
                 .text(`Rank: ${     (loancard.user_loancard.rank ? loancard.user_loancard.rank.rank : "")}`, 28, y)
@@ -170,12 +170,12 @@ module.exports = function (m, fn) {
 
         return new Promise((resolve, reject) => {
             check(loancard_id)
-            .then(create_pdf)
-            .then(add_lines)
-            .then(finalise_loancard)
-            .then(update_loancard)
-            .then(print_loancard)
-            .then(filename => resolve(filename))
+            .then(createPDF)
+            .then(addLines)
+            .then(finaliseLoancard)
+            .then(updateLoancard)
+            .then(printLoancard)
+            .then(resolve)
             .catch(reject);
         })
     };

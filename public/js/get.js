@@ -21,7 +21,7 @@ function build_query(options) {
             if (offset)                                 queries.push(`offset=${JSON.stringify(offset.dataset.value)}`);
 
         } catch (error) {
-            console.error(error);
+            console.error(`get.js | build_query | ${error}`);
 
         }
     };
@@ -58,9 +58,7 @@ function eventParse(event) {
     });
 };
 function print_error(message, error) {
-    console.error(`************ message ************`);
-    console.error(error);
-    console.error('********************************************');
+    console.error(`get.js | print_error | ${error}`);
     alert_toast(message);
 };
 function get_stream(streamAction) {
@@ -121,6 +119,10 @@ function get(options) {
 };
 function addFormListener(form_id, method, location, options = {reload: false}) {
     try {
+        const toast_form = document.getElementById('toast_form');
+        const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toast_form);
+        toastBootstrap.show();
+
         let form = document.querySelector(`#form_${form_id}`);
         if (form) {
             form.addEventListener("submit", function (event) {
@@ -135,15 +137,18 @@ function addFormListener(form_id, method, location, options = {reload: false}) {
             });
             
         } else {
-            console.error(`${form_id} not found`);
+            console.error(`get.js | addFormListener | ${form_id} not found`);
 
         };
     } catch (error) {
-        console.error(`Error on form: ${form_id}: `, error);
+        console.error(`get.js | addFormListener | Error on form: ${form_id}: `, error);
 
     };
 };
 function sendData(form, method, _location, options = {reload: false}) {
+    const toast_form = document.getElementById('toast_form');
+    const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toast_form);
+
     const XHR = new XMLHttpRequest();
     const FD  = new FormData(form);
     XHR.addEventListener("loadend", (event) => {hide_spinner(options.spinner || options.table || '')});
@@ -172,12 +177,13 @@ function sendData(form, method, _location, options = {reload: false}) {
 
                 };
             } else {
-                console.error(response);
+                console.error(`get.js | sendData | ${response}`);
                 alert_toast(response.message || 'Ooooopsie');
 
             };
         })
-        .catch(err => print_error('Error parsing response', err));
+        .catch(err => print_error('Error parsing response', err))
+        .finally(() => toastBootstrap.hide());
     });
     
     send_XHR(XHR, method, _location, {data: FD});

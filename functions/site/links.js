@@ -1,5 +1,5 @@
 module.exports = function (m, fn) {
-    fn.site.links.get_all = function (query) {
+    fn.site.links.findAll = function (query) {
         return new Promise((resolve, reject) => {
             m.resource_links.findAndCountAll({
                 where: query.where,
@@ -10,8 +10,8 @@ module.exports = function (m, fn) {
         });
     };
 
-    fn.site.links.get = function (where) {
-        return fn.get(
+    fn.site.links.find = function (where) {
+        return fn.find(
             m.resource_links,
             where,
         );
@@ -24,17 +24,17 @@ module.exports = function (m, fn) {
         });
     };
     fn.site.links.edit = function (resource_link_id, details) {
-        function update_link(link) { return fn.update(link, details); };
+        function updateLink(link) { return fn.update(link, details); };
         return new Promise((resolve, reject) => {
-            fn.site.links.get({ resource_link_id: resource_link_id })
-            .then(update_link)
+            fn.site.links.find({ resource_link_id: resource_link_id })
+            .then(updateLink)
             .then(resolve)
             .catch(reject);
         });
     };
     fn.site.links.delete = function (resource_link_id) {
         return new Promise((resolve, reject) => {
-            fn.site.links.get({resource_link_id: resource_link_id})
+            fn.site.links.find({resource_link_id: resource_link_id})
             .then(link => {
                 link.destroy()
                 .then(result => {

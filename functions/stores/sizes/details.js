@@ -1,11 +1,11 @@
 module.exports = function (m, fn) {
-    fn.sizes.details.get = function (where) {
-        return fn.get(
+    fn.sizes.details.find = function (where) {
+        return fn.find(
             m.details,
             where
         );
     };
-    fn.sizes.details.get_all = function (query) {
+    fn.sizes.details.findAll = function (query) {
         return new Promise((resolve, reject) => {
             m.details.findAndCountAll({
                 where: query.where,
@@ -48,7 +48,7 @@ module.exports = function (m, fn) {
 
     fn.sizes.details.edit = function (detail_id, details) {
         return new Promise((resolve, reject) => {
-            fn.sizes.details.get(detail_id)
+            fn.sizes.details.find(detail_id)
             .then(detail => {
                 fn.update(detail, details)
                 .then(result => resolve(true))
@@ -57,10 +57,10 @@ module.exports = function (m, fn) {
             .catch(reject);
         });
     };
-    fn.sizes.details.update_bulk = function (details) {
-        function update_detail(size_id, name, value) {
+    fn.sizes.details.updateBulk = function (details) {
+        function updateDetail(size_id, name, value) {
             return new Promise((resolve, reject) => {
-                fn.sizes.details.get({
+                fn.sizes.details.find({
                     size_id: size_id,
                     name: `Demand ${name}`
                 })
@@ -106,11 +106,11 @@ module.exports = function (m, fn) {
         return new Promise((resolve, reject) => {
             let actions = [];
             details.forEach(_detail => {
-                actions.push(update_detail(_detail.size_id, 'Cell', _detail.Cell));
-                actions.push(update_detail(_detail.size_id, 'Page', _detail.Page));
+                actions.push(updateDetail(_detail.size_id, 'Cell', _detail.Cell));
+                actions.push(updateDetail(_detail.size_id, 'Page', _detail.Page));
             });
             Promise.allSettled(actions)
-            .then(fn.log_rejects)
+            .then(fn.logRejects)
             .then(results => {
                 resolve(true);
             })

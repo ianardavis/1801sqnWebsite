@@ -15,7 +15,7 @@ function getSales() {
                     add_cell(row, {text: line.qty});
                     add_cell(row, {append: new Link(`/sales/${line.sale_id}`).e});
                 } catch (error) {
-                    console.error(error);
+                    console.error(`canteen/items/show/sales/view.js | getSales | ${error}`);
                 };
             });
         });

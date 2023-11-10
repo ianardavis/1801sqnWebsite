@@ -1,7 +1,7 @@
 module.exports = function (m, fn) {
     fn.adjustments = {};
-    fn.adjustments.get = function (where) {
-        return fn.get(
+    fn.adjustments.find = function (where) {
+        return fn.find(
             m.adjustments,
             where
         );

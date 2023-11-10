@@ -1,9 +1,9 @@
 module.exports = function (m, fn) {
     const excel = require('exceljs');
     fn.demands.file.create = function ([demand_id, user]) {
-        function check_demand(demand_id) {
+        function check(demand_id) {
             return new Promise((resolve, reject) => {
-                fn.demands.get(
+                fn.demands.find(
                     {demand_id: demand_id},
                     [{
                         model:   m.demand_lines,
@@ -30,10 +30,10 @@ module.exports = function (m, fn) {
                 .catch(reject);
             });
         };
-        function create_file(demand) {
-            function get_demand_template(supplier_id) {
+        function createFile(demand) {
+            function getDemandTemplate(supplier_id) {
                 return new Promise((resolve, reject) => {
-                    fn.suppliers.get(
+                    fn.suppliers.find(
                         {supplier_id: supplier_id},
                         [
                             fn.inc.stores.files({
@@ -62,15 +62,15 @@ module.exports = function (m, fn) {
             };
             return new Promise((resolve, reject) => {
                 Promise.all([
-                    get_demand_template(demand.supplier_id),
-                    fn.fs.folder_exists('demands', true)
+                    getDemandTemplate(demand.supplier_id),
+                    fn.fs.folderExists('demands', true)
                 ])
                 .then(([[file, account], folderPath]) => {
                     if (file.filename) {
                         const filename = `demand_${demand.demand_id}.xlsx`;
-                        fn.fs.copy_file(
-                            fn.public_file('files', file.filename),
-                            fn.public_file('demands', filename)
+                        fn.fs.copyFile(
+                            fn.publicFile('files', file.filename),
+                            fn.publicFile('demands', filename)
                         )
                         .then(result => resolve([filename, file, account, demand]))
                         .catch(reject);
@@ -83,9 +83,9 @@ module.exports = function (m, fn) {
                 .catch(reject);
             });
         };
-        function write_file([filename, file, account, demand]) {
-            function write_cover_sheet(workbook) {
-                function file_detail(details, name) {
+        function writeFile([filename, file, account, demand]) {
+            function writeCoverSheet(workbook) {
+                function fileDetail(details, name) {
                     const detail = details.filter(d => d.name.toLowerCase() === name);
                     if (detail) {
                         return detail[0].value;
@@ -95,7 +95,7 @@ module.exports = function (m, fn) {
             
                     };
                 };
-                function get_cells(file) {
+                function getCells(file) {
                     return new Promise(resolve => {
                         let cells = {};
                         [
@@ -121,11 +121,11 @@ module.exports = function (m, fn) {
                 };
                 return new Promise((resolve, reject) => {
                     Promise.all([
-                        fn.demands.get_users(demand.demand_id),
-                        get_cells(file)
+                        fn.demands.findUsers(demand.demand_id),
+                        getCells(file)
                     ])
                     .then(([users, cells]) => {
-                        const cover_sheet = file_detail(file.details, 'cover sheet');
+                        const cover_sheet = fileDetail(file.details, 'cover sheet');
                         if (cover_sheet) {
                             let worksheet = workbook.getWorksheet(cover_sheet);
                             function set_cell(cell, value) {
@@ -164,8 +164,8 @@ module.exports = function (m, fn) {
                     .catch(reject);
                 });
             };
-            function write_items(workbook) {
-                function get_sizes() {
+            function writeItems(workbook) {
+                function getSizes() {
                     return new Promise((resolve, reject) => {
                         let sizes = [];
                         demand.lines.forEach(line => {
@@ -209,7 +209,7 @@ module.exports = function (m, fn) {
                     });
                 };
                 return new Promise((resolve, reject) => {
-                    get_sizes()
+                    getSizes()
                     .then(sizes => {
                         let fails = [];
                         sizes.forEach(size => {
@@ -229,12 +229,12 @@ module.exports = function (m, fn) {
                 });
             };
             return new Promise((resolve, reject) => {
-                const path   = fn.public_file('demands', filename);
+                const path   = fn.publicFile('demands', filename);
                 let workbook = new excel.Workbook();
                 workbook.xlsx.readFile(path)
                 .then(() => {
-                    write_cover_sheet(workbook)
-                    .then(write_items)
+                    writeCoverSheet(workbook)
+                    .then(writeItems)
                     .then(workbook => {
                         workbook.xlsx.writeFile(path)
                         .then(() => resolve({filename: filename, account_id: account.account_id}))
@@ -247,14 +247,14 @@ module.exports = function (m, fn) {
         };
 
         return new Promise((resolve, reject) => {
-            check_demand(demand_id)
+            check(demand_id)
             .then(demand => {
                 if (demand.filename && demand.filename !== '') {
                     resolve(demand.filename);
 
                 } else {
-                    create_file(demand, user)
-                    .then(write_file)
+                    createFile(demand, user)
+                    .then(writeFile)
                     .then(demand.update)
                     .then(demand.reload)
                     .then(result => resolve(demand.filename))

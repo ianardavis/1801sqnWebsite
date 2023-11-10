@@ -1,7 +1,7 @@
 module.exports = function (m, fn) {
     fn.serials = {};
-    fn.serials.get = function (where) {
-        return fn.get(
+    fn.serials.find = function (where) {
+        return fn.find(
             m.serials,
             where,
             [
@@ -11,7 +11,7 @@ module.exports = function (m, fn) {
             ]
         )
     };
-    fn.serials.get_all = function (query) {
+    fn.serials.findAll = function (query) {
         return m.serials.findAndCountAll({
             where: query.where,
             include: [
@@ -25,7 +25,7 @@ module.exports = function (m, fn) {
 
     fn.serials.edit = function (serial_id, new_serial, user_id) {
         return new Promise((resolve, reject) => {
-            fn.serials.get({serial_id: serial_id})
+            fn.serials.find({serial_id: serial_id})
             .then(serial => {
                 let original_serial = serial.serial;
                 fn.update(serial, {serial: new_serial})
@@ -46,10 +46,10 @@ module.exports = function (m, fn) {
     fn.serials.transfer = function (serial_id, location, user_id) {
         if (location) {
             return new Promise((resolve, reject) => {
-                fn.serials.get({serial_id: serial_id})
+                fn.serials.find({serial_id: serial_id})
                 .then(serial => {
                     let original_location = serial.location.location;
-                    fn.locations.find_or_create(location)
+                    fn.locations.findOrCreate(location)
                     .then(new_location => {
                         if (new_location.location_id !== serial.location_id) {
                             fn.update(
@@ -83,9 +83,9 @@ module.exports = function (m, fn) {
 
     fn.serials.scrap = function (serial_id, details, user_id) {
         if (details) {
-            function check_serial() {
+            function checkSerial() {
                 return new Promise((resolve, reject) => {
-                    fn.serials.get({serial_id: serial_id})
+                    fn.serials.find({serial_id: serial_id})
                     .then(serial => {
                         if (serial.size.has_nsns && !details.nsn_id) {
                             reject(new Error("No valid NSN submitted"));
@@ -108,10 +108,10 @@ module.exports = function (m, fn) {
                 });
             };
             return new Promise((resolve, reject) => {
-                check_serial()
+                checkSerial()
                 .then(serial => {
                     fn.update(serial, {location_id: null}, serial.size.supplier_id)
-                    .then(fn.scraps.get_or_create)
+                    .then(fn.scraps.findOrCreate)
                     .then(scrap => {
                         fn.scraps.lines.create(
                             scrap.scrap_id,
@@ -139,9 +139,9 @@ module.exports = function (m, fn) {
         };
     };
     fn.serials.create = function (serial, size_id, user_id) {
-        function check_size() {
+        function checkSize() {
             return new Promise((resolve, reject) => {
-                fn.sizes.get({size_id: size_id})
+                fn.sizes.find({size_id: size_id})
                 .then(size => {
                     if (!size.has_serials) {
                         reject(new Error('This size does not have serials'));
@@ -154,7 +154,7 @@ module.exports = function (m, fn) {
                 .catch(reject);
             });
         };
-        function create_serial(size_id) {
+        function createSerial(size_id) {
             return new Promise((resolve, reject) => {
                 m.serials.findOrCreate({
                     where: {
@@ -181,8 +181,8 @@ module.exports = function (m, fn) {
         };
         if (serial && size_id) {
             return new Promise((resolve, reject) => {
-                check_size()
-                .then(create_serial)
+                checkSize()
+                .then(createSerial)
                 .then(fn.actions.create)
                 .then(resolve)
                 .catch(reject);
@@ -194,9 +194,9 @@ module.exports = function (m, fn) {
         };
     };
     fn.serials.return = function (serial_id, location) {
-        function check_serial() {
+        function checkSerial() {
             return new Promise((resolve, reject) => {
-                fn.serials.get({serial_id: serial_id})
+                fn.serials.find({serial_id: serial_id})
                 .then(serial => {
                     if (!serial.issue_id) {
                         reject(new Error('Serial # not issued'));
@@ -213,7 +213,7 @@ module.exports = function (m, fn) {
             });
         };
         return new Promise((resolve, reject) => {
-            check_serial()
+            checkSerial()
             .then(serial => {
                 m.locations.findOrCreate({
                     where: {location: location}
@@ -239,7 +239,7 @@ module.exports = function (m, fn) {
             return new Promise((resolve, reject) => {
                 fn.serials.create(serial, size_id, user_id)
                 .then(serial => {
-                    fn.serials.set_location(
+                    fn.serials.setLocation(
                         serial, 
                         location, 
                         user_id, 
@@ -259,9 +259,9 @@ module.exports = function (m, fn) {
 
         };
     };
-    fn.serials.set_location = function (serial, location, user_id, action_append = '') {
+    fn.serials.setLocation = function (serial, location, user_id, action_append = '') {
         return new Promise((resolve, reject) => {
-            fn.locations.find_or_create(location)
+            fn.locations.findOrCreate(location)
             .then(location => {
                 fn.update(
                     serial,
@@ -283,7 +283,7 @@ module.exports = function (m, fn) {
     fn.serials.delete = function (serial_id) {
         return new Promise((resolve, reject) => {
             Promise.all([
-                fn.serials.get({serial_id: serial_id}),
+                fn.serials.find({serial_id: serial_id}),
                 m.actions.findOne({where: {serial_id: serial.serial_id}}),
                 m.loancard_lines.findOne({where: {serial_id: serial.serial_id}})
             ])

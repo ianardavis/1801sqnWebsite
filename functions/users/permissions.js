@@ -1,5 +1,5 @@
 module.exports = function (m, fn) {
-    function permissions_allowed(user_id, allowed) {
+    function permissionsAllowed(user_id, allowed) {
         return new Promise((resolve, reject) => {
             fn.allowed(user_id, 'edit_own_permissions', true)
             .then(edit_own => {
@@ -16,7 +16,7 @@ module.exports = function (m, fn) {
     };
     fn.users.permissions.get_all = function (user_id, allowed, query, pagination) {
         return new Promise((resolve, reject) => {
-            permissions_allowed(user_id, allowed)
+            permissionsAllowed(user_id, allowed)
             .then(allowed => {
                 m.permissions.findAndCountAll({
                     where: query.where,
@@ -30,9 +30,9 @@ module.exports = function (m, fn) {
     };
     fn.users.permissions.update = function (user_id_self, user_id, allowed, submitted_permissions) {
         return new Promise((resolve, reject) => {
-            permissions_allowed(user_id_self, allowed)
+            permissionsAllowed(user_id_self, allowed)
             .then(allowed => {
-                fn.users.get({user_id: user_id})
+                fn.users.find({user_id: user_id})
                 .then(user => {
                     m.permissions.findAll({
                         where:      {user_id: user.user_id},

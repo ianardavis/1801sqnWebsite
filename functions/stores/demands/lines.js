@@ -1,6 +1,6 @@
 module.exports = function (m, fn) {
     const line_status = {0: "Cancelled", 1: "Pending", 2: "Open", 3: "Closed"};
-    function create_line_action(action, line_id, user_id, links = []) {
+    function createLineAction(action, line_id, user_id, links = []) {
         return new Promise(resolve => {
             fn.actions.create([
                 `DEMAND LINE | ${action}`,
@@ -16,8 +16,8 @@ module.exports = function (m, fn) {
     };
     fn.demands.lines.count = function (where) { return m.demand_lines.count({where: where})};
     fn.demands.lines.sum = function (where) { return m.demand_lines.sum('qty', {where: where})};
-    fn.demands.lines.get = function (where, include = []) {
-        return fn.get(
+    fn.demands.lines.find = function (where, include = []) {
+        return fn.find(
             m.demand_lines,
             where,
             [
@@ -26,7 +26,7 @@ module.exports = function (m, fn) {
             ].concat(include)
         );
     };
-    fn.demands.lines.get_and_count_all = function (where, pagination) {
+    fn.demands.lines.findAndCountAll = function (where, pagination) {
         return new Promise((resolve, reject) => {
             m.demand_lines.findAndCountAll({
                 where: where,
@@ -42,7 +42,7 @@ module.exports = function (m, fn) {
             .catch(reject);
         });
     };
-    fn.demands.lines.get_all = function (where = {}, include = [], options = {}) {
+    fn.demands.lines.findAll = function (where = {}, include = [], options = {}) {
         return new Promise((resolve, reject) => {
             m.demand_lines.findAll({
                 where:   where,
@@ -65,9 +65,9 @@ module.exports = function (m, fn) {
     };
 
     fn.demands.lines.create = function (size_id, demand_id, user_id, orders = []) {
-        function check_size(size_id) {
+        function checkSize(size_id) {
             return new Promise((resolve, reject) => {
-                fn.sizes.get(
+                fn.sizes.find(
                     {size_id: size_id},
                     [fn.inc.stores.details({
                         where: {name: {[fn.op.or]:['Demand Page', 'Demand Cell']}}
@@ -91,9 +91,9 @@ module.exports = function (m, fn) {
                 .catch(reject);
             });
         };
-        function check_demand(size) {
+        function checkDemand(size) {
             return new Promise((resolve, reject) => {
-                fn.demands.get({demand_id: demand_id})
+                fn.demands.find({demand_id: demand_id})
                 .then(demand => {
                     if (demand.status !== 1) {
                         reject(new Error('Lines can only be added to draft demands'));
@@ -109,7 +109,7 @@ module.exports = function (m, fn) {
                 .catch(reject);
             });
         };
-        function create_line([demand_id, size_id]) {
+        function createLine([demand_id, size_id]) {
             return new Promise((resolve, reject) => {
                 m.demand_lines.findOrCreate({
                     where: {
@@ -124,8 +124,8 @@ module.exports = function (m, fn) {
                     let actions = [];
                     orders.forEach(order => {
                         actions.push(m.order_demand_lines.create({
-                            order_id:       order.order_id,
-                            demand_line_id: line.demand_line_id
+                            order_id: order.order_id,
+                            line_id:  line.line_id
                         }));
                     });
                     Promise.all(actions)
@@ -135,9 +135,9 @@ module.exports = function (m, fn) {
                         resolve([
                             `DEMAND LINE | ${(created ? 'CREATED' : 'INCREMENTED')}`,
                             user_id,
-                            [{_table: 'demand_lines', id: line.demand_line_id}].concat(links)
-                            [line.demand_line_id, created],
-                            line.demand_line_id
+                            [{_table: 'demand_lines', id: line.line_id}].concat(links)
+                            [line.line_id, created],
+                            line.line_id
                         ]);
                     })
                     .catch(reject);
@@ -146,15 +146,15 @@ module.exports = function (m, fn) {
             });
         };
         return new Promise((resolve, reject) => {
-            check_size(size_id, demand_id, user_id, orders)
-            .then(check_demand)
-            .then(create_line)
+            checkSize(size_id, demand_id, user_id, orders)
+            .then(checkDemand)
+            .then(createLine)
             .then(fn.actions.create)
             .then(line_id => resolve(line_id))
             .catch(reject);
         });
     };
-    fn.demands.lines.create_bulk = function (lines, demand_id, user_id) {
+    fn.demands.lines.createBulk = function (lines, demand_id, user_id) {
         return new Promise((resolve, reject) => {
             if (!lines || lines.length === 0) {
                 reject(new Error('No lines'));
@@ -182,18 +182,18 @@ module.exports = function (m, fn) {
     fn.demands.lines.update = function (lines, user_id) {
         return new Promise((resolve, reject) => {
             if (!lines || lines.length === 0) {
-                fn.send_error(res, 'No lines submitted');
+                fn.sendError(res, 'No lines submitted');
     
             } else {
                 let actions = [];
                 lines.filter(e => e.status === '0').forEach(line => {
                     actions.push(
-                        fn.demands.lines.cancel(line.demand_line_id, user_id)
+                        fn.demands.lines.cancel(line.line_id, user_id)
                     );
                 });
                 // lines.filter(e => e.status === '-1').forEach(line => {
                 //     actions.push(
-                //         fn.demands.lines.restore(line.demand_line_id, user_id)
+                //         fn.demands.lines.restore(line.line_id, user_id)
                 //     );
                 // });
                 lines.filter(e => e.status === '3').forEach(line => {
@@ -209,11 +209,11 @@ module.exports = function (m, fn) {
         });
     };
     
-    fn.demands.lines.cancel = function (demand_line_id, user_id) {
+    fn.demands.lines.cancel = function (line_id, user_id) {
         function check(line_id, user_id) {
             return new Promise((resolve, reject) => {
-                fn.demands.lines.get(
-                    {demand_line_id: line_id},
+                fn.demands.lines.find(
+                    {line_id: line_id},
                     [m.orders]
                 )
                 .then(line => {
@@ -229,14 +229,14 @@ module.exports = function (m, fn) {
                 .catch(reject);
             });
         };
-        function update_line(line, user_id) {
+        function updateLine(line, user_id) {
             return new Promise((resolve, reject) => {
                 fn.update(line, {status: 0})
                 .then(result => resolve(line, user_id))
                 .catch(reject);
             });
         };
-        function update_orders(line, user_id) {
+        function updateOrders(line, user_id) {
             return new Promise((resolve, reject) => {
                 let order_actions = [];
                 line.orders.forEach(order => {
@@ -261,16 +261,16 @@ module.exports = function (m, fn) {
                     resolve([
                         'DEMAND LINE | CANCELLED',
                         user_id,
-                        [{_table: 'demand_lines', id: line.demand_line_id}].concat(links)
+                        [{_table: 'demand_lines', id: line.line_id}].concat(links)
                     ]);
                 })
                 .catch(reject);
             });
         };
         return new Promise ((resolve, reject) => {
-            check(demand_line_id, user_id)
-            .then(update_line)
-            .then(update_orders)
+            check(line_id, user_id)
+            .then(updateLine)
+            .then(updateOrders)
             .then(fn.actions.create)
             .then(result => resolve(true))
             .catch(reject);
@@ -280,8 +280,8 @@ module.exports = function (m, fn) {
     fn.demands.lines.receive = function (line, user_id) {
         function check(details, user_id) {
             return new Promise((resolve, reject) => {
-                fn.demands.lines.get(
-                    {demand_line_id: details.demand_line_id},
+                fn.demands.lines.find(
+                    {line_id: details.line_id},
                     [{
                         model: m.orders,
                         where: {status: 2}
@@ -299,8 +299,8 @@ module.exports = function (m, fn) {
                 .catch(reject);
             });
         };
-        function receive_orders(line, details, user_id) {
-            function receive_serials(line, details, user_id) {
+        function receiveOrders(line, details, user_id) {
+            function receiveSerials(line, details, user_id) {
                 return new Promise((resolve, reject) => {
                     let actions = [];
                     let serials = details.serials
@@ -316,17 +316,17 @@ module.exports = function (m, fn) {
                                 order.order_id,
                                 receipt,
                                 user_id,
-                                [{_table: 'demand_lines', id: line.demand_line_id}]
+                                [{_table: 'demand_lines', id: line.line_id}]
                             )
                         );
                     };
                     Promise.allSettled(actions)
-                    .then(fn.log_rejects)
+                    .then(fn.logRejects)
                     .then(results => resolve([results, serials]))
                     .catch(reject);
                 });
             };
-            function receive_stock(line, details, user_id) {
+            function receiveStock(line, details, user_id) {
                 return new Promise((resolve, reject) => {
                     let qty_left = details.qty || 0;
                     let actions = []
@@ -348,12 +348,12 @@ module.exports = function (m, fn) {
                                 order.order_id,
                                 receipt,
                                 user_id,
-                                [{_table: 'demand_lines', id: line.demand_line_id}]
+                                [{_table: 'demand_lines', id: line.line_id}]
                             )
                         );
                     };
                     Promise.allSettled(actions)
-                    .then(fn.log_rejects)
+                    .then(fn.logRejects)
                     .then(results => resolve([results, qty_left]))
                     .catch(reject);
                 });
@@ -362,10 +362,10 @@ module.exports = function (m, fn) {
                 const has_serials = (line.size.has_serials);
                 let action = null;
                 if (has_serials) {
-                    action = receive_serials;
+                    action = receiveSerials;
     
                 } else {
-                    action = receive_stock;
+                    action = receiveStock;
     
                 };
                 action(line, details, user_id)
@@ -381,7 +381,7 @@ module.exports = function (m, fn) {
                 .catch(reject);
             });
         };
-        function receive_remaining(order_qty, size_id, demand_line_id, user_id, receipt) {
+        function receiveRemaining(order_qty, size_id, line_id, user_id, receipt) {
             return new Promise((resolve, reject) => {
                 if (order_qty > 0) {
                     fn.orders.create(
@@ -394,7 +394,7 @@ module.exports = function (m, fn) {
                             order.order_id,
                             receipt,
                             user_id,
-                            [{_table: 'demand_lines', id: demand_line_id}]
+                            [{_table: 'demand_lines', id: line_id}]
                         )
                         .then(resolve)
                         .catch(reject);
@@ -407,15 +407,15 @@ module.exports = function (m, fn) {
                 };
             });
         };
-        function check_receipt_variance(demand_line, qty, user_id) {
+        function checkReceiptVariance(demand_line, qty, user_id) {
             return new Promise((resolve, reject) => {
                 let qty_original = demand_line.qty;
                 if (qty > qty_original) {
                     fn.update(demand_line, {qty: qty})
                     .then(result => {
-                        create_line_action(
+                        createLineAction(
                             `UPDATED | Qty increased from ${qty_original} to ${qty} on receipt`,
-                            demand_line.demand_line_id,
+                            demand_line.line_id,
                             user_id
                         )
                         .then(action => resolve({demand_line: demand_line}));
@@ -433,11 +433,11 @@ module.exports = function (m, fn) {
                     .then(new_line => {
                         demand_line.decrement('qty', {by: qty})
                         .then(result => {
-                            create_line_action(
+                            createLineAction(
                                 `UPDATED | Partial receipt | New demand line created for receipt qty | Existing demand line qty updated from ${qty_original} to ${qty_original - qty}`,
-                                demand_line.demand_line_id,
+                                demand_line.line_id,
                                 user_id,
-                                [{_table: 'demand_lines', id: new_line.demand_line_id}]
+                                [{_table: 'demand_lines', id: new_line.line_id}]
                             )
                             .then(action => resolve({demand_line: new_line}));
                         })
@@ -454,7 +454,7 @@ module.exports = function (m, fn) {
         // 
         return new Promise((resolve, reject) => {
             check(line, user_id)
-            .then(receive_orders)
+            .then(receiveOrders)
             .then(result => {
                 let order_qty = 0, receipt = {};
                 if (result.demand_line.size.has_serials) {
@@ -467,15 +467,15 @@ module.exports = function (m, fn) {
                     receipt.location = line.location;
                     
                 };
-                receive_remaining(
+                receiveRemaining(
                     order_qty,
                     result.demand_line.size_id,
-                    result.demand_line.demand_line_id,
+                    result.demand_line.line_id,
                     user_id,
                     receipt
                 )
                 .then(received => {
-                    check_receipt_variance(result.demand_line, Number(result.qty) + Number(received), user_id)
+                    checkReceiptVariance(result.demand_line, Number(result.qty) + Number(received), user_id)
                     .then(variance_result => {
                         fn.update(variance_result.demand_line, {status: 3})
                         .then(result => resolve(true))

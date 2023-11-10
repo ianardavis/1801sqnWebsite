@@ -1,5 +1,5 @@
 module.exports = function (m, fn) {
-    fn.nsns.get = function (where, return_null = true) {
+    fn.nsns.find = function (where, return_null = true) {
         return new Promise((resolve, reject) => {
             m.nsns.findOne({
                 where: where,
@@ -18,10 +18,10 @@ module.exports = function (m, fn) {
                     reject(new Error('NSN not found'));
                 };
             })
-            .catch(err => fn.send_error(res, err));
+            .catch(err => fn.sendError(res, err));
         });
     };
-    fn.nsns.get_all = function (query) {
+    fn.nsns.findAll = function (query) {
         return new Promise((resolve, reject) => {
             m.nsns.findAndCountAll({
                 where: query.where,
@@ -41,10 +41,10 @@ module.exports = function (m, fn) {
     fn.nsns.create = function (nsn, isDefault = false) {
         return new Promise((resolve, reject) => {
             Promise.all([
-                fn.sizes.get({size_id: nsn.size_id}),
-                fn.nsns.groups.get({nsn_group_id: nsn.nsn_group_id}),
-                fn.nsns.classes.get({nsn_class_id: nsn.nsn_class_id}),
-                fn.nsns.countries.get({nsn_country_id: nsn.nsn_country_id})
+                fn.sizes.find({size_id: nsn.size_id}),
+                fn.nsns.groups.find({nsn_group_id: nsn.nsn_group_id}),
+                fn.nsns.classes.find({nsn_class_id: nsn.nsn_class_id}),
+                fn.nsns.countries.find({nsn_country_id: nsn.nsn_country_id})
             ])
             .then(([size, nsn_group, nsn_class, nsn_country]) => {
                 m.nsns.findOrCreate({
@@ -84,10 +84,10 @@ module.exports = function (m, fn) {
     fn.nsns.edit = function (nsn_id, details) {
         return new Promise((resolve, reject) => {
             Promise.all([
-                fn.nsns.get({nsn_id: nsn_id}, false),
-                fn.nsns.groups.get({nsn_group_id: details.nsn_group_id}),
-                fn.nsns.classes.get({nsn_class_id: details.nsn_class_id}),
-                fn.nsns.countries.get({nsn_country_id: details.nsn_country_id})
+                fn.nsns.find({nsn_id: nsn_id}, false),
+                fn.nsns.groups.find({nsn_group_id: details.nsn_group_id}),
+                fn.nsns.classes.find({nsn_class_id: details.nsn_class_id}),
+                fn.nsns.countries.find({nsn_country_id: details.nsn_country_id})
             ])
             .then(([nsn, nsn_group, nsn_class, nsn_country]) => {
                 fn.update(
@@ -117,7 +117,7 @@ module.exports = function (m, fn) {
     fn.nsns.delete = function (nsn_id) {
         return new Promise((resolve, reject) => {
             Promise.all([
-                fn.nsns.get({nsn_id: nsn_id}, false),
+                fn.nsns.find({nsn_id: nsn_id}, false),
                 m.action_links.findOne({where: {_table: 'nsns', id: nsn_id}}),
                 m.loancard_lines.findOne({where: {nsn_id: nsn_id}})
             ])

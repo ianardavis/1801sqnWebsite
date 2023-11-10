@@ -1,6 +1,6 @@
 module.exports = function (m, fn) {
-    fn.sizes.get = function (where, include = []) {
-        return fn.get(
+    fn.sizes.find = function (where, include = []) {
+        return fn.find(
             m.sizes,
             where,
             [
@@ -9,7 +9,7 @@ module.exports = function (m, fn) {
             ].concat(include)
         );
     };
-    fn.sizes.get_all = function (query) {
+    fn.sizes.findAll = function (query) {
         return new Promise((resolve, reject) => {
             m.sizes.findAndCountAll({
                 where: query.where,
@@ -52,7 +52,7 @@ module.exports = function (m, fn) {
 
     fn.sizes.edit = function (size_id, details) {
         return new Promise((resolve, reject) => {
-            fn.sizes.get({size_id: size_id})
+            fn.sizes.find({size_id: size_id})
             .then(size => {
                 fn.update(size, details)
                 .then(result => resolve(true))
@@ -65,7 +65,7 @@ module.exports = function (m, fn) {
     fn.sizes.delete = function (size_id) {
         return new Promise((resolve, reject) => {
             const where = {size_id: size_id}
-            fn.sizes.get(where)
+            fn.sizes.find(where)
             .then(size => {
                 Promise.all([
                     m.stocks.findOne({where: where}),

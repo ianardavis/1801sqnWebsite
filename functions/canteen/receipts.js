@@ -1,7 +1,7 @@
 module.exports = function (m, fn) {
     fn.receipts = {};
-    fn.receipts.get = function (where) {
-        return fn.get(
+    fn.receipts.find = function (where) {
+        return fn.find(
             m.receipts,
             where,
             [
@@ -10,7 +10,7 @@ module.exports = function (m, fn) {
             ]
         );
     };
-    fn.receipts.get_all = function (query) {
+    fn.receipts.findAll = function (query) {
         return new Promise((resolve, reject) => {
             m.receipts.findAndCountAll({
                 where: query.where,
@@ -41,7 +41,7 @@ module.exports = function (m, fn) {
                     };
                 });
             };
-            function check_item_qty(item, user_id) {
+            function checkItemQty(item, user_id) {
                 return new Promise((resolve, reject) => {
                     if (item.qty < 0) {
                         fn.update(item, {qty: 0})
@@ -65,8 +65,8 @@ module.exports = function (m, fn) {
                     };
                 });
             };
-            function create_receipt_entry(item, receipt, user_id) {
-                function create_action(action, receipt_id, user_id) {
+            function createReceiptEntry(item, receipt, user_id) {
+                function createAction(action, receipt_id, user_id) {
                     return new Promise(resolve => {
                         fn.actions.create([
                             `RECEIPTS | ${action}`,
@@ -86,7 +86,7 @@ module.exports = function (m, fn) {
                     .then(receipt => {
                         item.increment('qty', {by: Number(receipt.qty)})
                         .then(result => {
-                            create_action('CREATED', receipt.receipt_id, user_id)
+                            createAction('CREATED', receipt.receipt_id, user_id)
                             .then(result => resolve(receipt));
                         })
                         .catch(reject);
@@ -94,7 +94,7 @@ module.exports = function (m, fn) {
                     .catch(reject);
                 });
             };
-            function check_item_cost(original_qty, item, receipt) {
+            function checkItemCost(original_qty, item, receipt) {
                 return new Promise(resolve => {
                     if (item.cost !== receipt.cost) {
                         const stock_value_original = original_qty * item   .cost;
@@ -122,14 +122,14 @@ module.exports = function (m, fn) {
             return new Promise((resolve, reject) => {
                 check(receipt)
                 .then(receipt => {
-                    fn.canteen_items.get({item_id: receipt.item_id})
+                    fn.canteen_items.find({item_id: receipt.item_id})
                     .then(item => {
-                        check_item_qty(item, user_id)
+                        checkItemQty(item, user_id)
                         .then(result => {
                             let qty_original = (item.qty < 0 ? 0 : item.qty);
-                            create_receipt_entry(item, receipt, user_id)
+                            createReceiptEntry(item, receipt, user_id)
                             .then(receipt => {
-                                check_item_cost(qty_original, item, receipt)
+                                checkItemCost(qty_original, item, receipt)
                                 .then(result => resolve(true));
                             })
                             .catch(reject);
@@ -153,7 +153,7 @@ module.exports = function (m, fn) {
                     );
                 });
                 Promise.allSettled(actions)
-                .then(fn.log_rejects)
+                .then(fn.logRejects)
                 .then(results => {
                     const failed_qty = results.filter(e => e.status === 'rejected').length;
                     if (failed_qty > 0) {

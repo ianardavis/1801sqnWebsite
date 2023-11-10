@@ -1,13 +1,13 @@
 module.exports = function (m, fn) {
     fn.notes = {};
-    fn.notes.get = function (where) {
-        return fn.get(
+    fn.notes.find = function (where) {
+        return fn.find(
             m.notes,
             where,
             [fn.inc.users.user()]
         );
     };
-    fn.notes.get_all = function (query) {
+    fn.notes.findAll = function (query) {
         return new Promise((resolve, reject) => {
             m.notes.findAndCountAll({
                 where:   query.where,
@@ -35,7 +35,7 @@ module.exports = function (m, fn) {
 
     fn.notes.edit = function (note_id, note_text) {
         return new Promise((resolve, reject) => {
-            fn.notes.get({note_id: note_id})
+            fn.notes.find({note_id: note_id})
             .then(note => {
                 if (note.system) {
                     reject(new Error('System generated notes can not be edited'));
@@ -52,7 +52,7 @@ module.exports = function (m, fn) {
 
     fn.notes.delete = function (note_id) {
         return new Promise((resolve, reject) => {
-            fn.notes.get({note_id: note_id})
+            fn.notes.find({note_id: note_id})
             .then(note => {
                 if (note.system) {
                     reject(new Error('System generated notes can not be deleted'));

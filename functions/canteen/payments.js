@@ -1,12 +1,12 @@
 module.exports = function (m, fn) {
     fn.payments = {};
-    fn.payments.get = function (where) {
-        return fn.get(
+    fn.payments.find= function (where) {
+        return fn.find(
             m.payments,
             where
         );
     };
-    fn.payments.get_all = function (query) {
+    fn.payments.findAll = function (query) {
         return new Promise((resolve, reject) => {
             m.payments.findAndCountAll({
                 where: query.where,
@@ -20,7 +20,7 @@ module.exports = function (m, fn) {
             .catch(reject);
         });
     };
-    fn.payments.get_all_for_session = function (where, pagination) {
+    fn.payments.findAllForSession = function (where, pagination) {
         return new Promise((resolve, reject) => {
             m.payments.findAndCountAll({
                 include: [

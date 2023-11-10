@@ -1,7 +1,7 @@
 module.exports = (app, fn) => {
     app.get('/pos', fn.loggedIn(), fn.permissions.get('pos_user'), (req, res) => {
-        fn.sessions.get_current()
+        fn.sessions.findCurrent()
         .then(sessions => res.render('canteen/pos/show'))
-        .catch(err => fn.send_error(res, err));
+        .catch(err => fn.sendError(res, err));
     });
 };

@@ -1,5 +1,5 @@
 module.exports = function (m, fn) {
-    const line_status = {
+    const lineStatus = {
         0: "Cancelled", 
         1: "Pending", 
         2: "Open", 
@@ -8,14 +8,14 @@ module.exports = function (m, fn) {
     
     fn.demands.count = function (where) { return m.demands.count({where: where}) };
     
-    fn.demands.get = function (where, include = []) {
-        return fn.get(
+    fn.demands.find = function (where, include = []) {
+        return fn.find(
             m.demands,
             where,
             include
         );
     };
-    fn.demands.get_all = function (query) {
+    fn.demands.findAll = function (query) {
         return m.demands.findAndCountAll({
             where: query.where,
             include: [
@@ -25,7 +25,7 @@ module.exports = function (m, fn) {
             ...fn.pagination(query)
         });
     };
-    fn.demands.get_users = function (demand_id) {
+    fn.demands.findUsers = function (demand_id) {
         return m.users.findAll({
             order:      [['surname', 'ASC']],
             attributes: ["user_id", "full_name", "surname", "first_name"],
@@ -55,7 +55,7 @@ module.exports = function (m, fn) {
     };
     
     fn.demands.create = function (supplier_id, user_id, return_append = []) {
-        function create_demand(supplier) {
+        function createDemand(supplier) {
             return new Promise((resolve, reject) => {
                 m.demands.findOrCreate({
                     where: {
@@ -82,17 +82,17 @@ module.exports = function (m, fn) {
             });
         };
         return new Promise((resolve, reject) => {
-            fn.suppliers.get({supplier_id: supplier_id})
-            .then(create_demand)
+            fn.suppliers.find({supplier_id: supplier_id})
+            .then(createDemand)
             .then(demand => resolve([demand].concat(return_append)))
             .catch(reject);
         });
     };
 
     fn.demands.complete = function (demand_id, user) {
-        function check_demand(demand_id) {
+        function check(demand_id) {
             return new Promise((resolve, reject) => {
-                fn.demands.get(
+                fn.demands.find(
                     {demand_id: demand_id},
                     [{
                         model: m.demand_lines,
@@ -117,7 +117,7 @@ module.exports = function (m, fn) {
                 .catch(reject);
             });
         };
-        function update_demand_and_lines(demand) {
+        function updateDemandAndLines(demand) {
             return new Promise((resolve, reject) => {
                 let actions = [fn.update(demand, {status: 2})];
                 demand.lines.forEach(line => actions.push(fn.update(line, {status: 2})));
@@ -132,8 +132,8 @@ module.exports = function (m, fn) {
             });
         };
         return new Promise((resolve, reject) => {
-            check_demand(demand_id)
-            .then(update_demand_and_lines)
+            check(demand_id)
+            .then(updateDemandAndLines)
             .then(fn.actions.create)
             .then(fn.demands.file.create)
             .then(filename => resolve(`Filename: ${filename}`))
@@ -142,15 +142,15 @@ module.exports = function (m, fn) {
     };
 
     fn.demands.cancel = function (demand_id, user_id) {
-        function check_demand(demand_id) {
+        function check(demand_id) {
             return new Promise((resolve, reject) => {
-                fn.demands.get(
+                fn.demands.find(
                     {demand_id: demand_id},
                     [{model: m.demand_lines, as: 'lines', where: {status: 3}, required: false}]
                 )
                 .then(demand => {
                     if ([0, 3].includes(demand.status)) {
-                        reject(new Error(`This demand has already been ${line_status[demand.status].toLowerCase()}`));
+                        reject(new Error(`This demand has already been ${lineStatus[demand.status].toLowerCase()}`));
     
                     } else if (demand.lines.length > 0)        {
                         reject(new Error('You can not cancel a demand with received lines'));
@@ -163,28 +163,28 @@ module.exports = function (m, fn) {
                 .catch(reject);
             });
         };
-        function update_demand_and_lines(demand) {
+        function updateDemandAndLines(demand) {
             return new Promise((resolve, reject) => {
                 Promise.all([
                     fn.update(demand, {status: 0}),
-                    cancel_open_demand_lines(demand.demand_id)
+                    cancelOpenDemandLines(demand.demand_id)
                 ])
                 .then(result => resolve(['CANCELLED', demand.demand_id, user_id]))
                 .catch(reject);
             });
         };
-        function cancel_open_demand_lines(demand_id) {
+        function cancelOpenDemandLines(demand_id) {
             return new Promise((resolve, reject) => {
-                fn.demands.lines.get_all({
+                fn.demands.lines.findAll({
                     demand_id: demand_id,
                     status: {[fn.op.or]: [1, 2]}
                 })
                 .then(lines => {
                     let actions = [];
-                    lines.forEach(line => {
+                    lines.forEach(demand_line => {
                         actions.push(
                             fn.demands.lines.cancel(
-                                line.demand_line_id,
+                                demand_line.line_id,
                                 user_id
                             )
                         );
@@ -197,8 +197,8 @@ module.exports = function (m, fn) {
             })
         };
         return new Promise((resolve, reject) => {
-            check_demand(demand_id)
-            .then(update_demand_and_lines)
+            check(demand_id)
+            .then(updateDemandAndLines)
             .then(fn.actions.create)
             .then(result => resolve(true))
             .catch(reject);
@@ -206,9 +206,9 @@ module.exports = function (m, fn) {
     };
 
     fn.demands.close = function (demand_id, user_id) {
-        function check_demand(demand_id) {
+        function check(demand_id) {
             return new Promise((resolve, reject) => {
-                fn.demands.get(
+                fn.demands.find(
                     {demand_id: demand_id},
                     [{
                         model: m.demand_lines,
@@ -232,7 +232,7 @@ module.exports = function (m, fn) {
                 .catch(reject);
             });
         };
-        function update_demand(demand) {
+        function updateDemand(demand) {
             return new Promise((resolve, reject) => {
                 fn.update(demand, {status: 3})
                 .then(result => {
@@ -246,8 +246,8 @@ module.exports = function (m, fn) {
             });
         };
         return new Promise((resolve, reject) => {
-            check_demand(demand_id)
-            .then(update_demand)
+            check(demand_id)
+            .then(updateDemand)
             .then(fn.actions.create)
             .then(result => resolve(true))
             .catch(reject);
@@ -255,7 +255,7 @@ module.exports = function (m, fn) {
     };
 
     fn.demands.download = function (req, res) {
-        fn.demands.get({demand_id: req.params.id})
+        fn.demands.find({demand_id: req.params.id})
         .then(demand => {
             if (demand.filename) {
                 fn.fs.download('demands', demand.filename, res);
@@ -263,10 +263,10 @@ module.exports = function (m, fn) {
             } else {
                 fn.demands.file.create([demand.demand_id, req.user])
                 .then(file => fn.fs.download('demands', file, res))
-                .catch(err => fn.send_error(res, err));
+                .catch(err => fn.sendError(res, err));
 
             };
         })
-        .catch(err => fn.send_error(res, err));
+        .catch(err => fn.sendError(res, err));
     };
 };

@@ -17,7 +17,7 @@ function getSaleLines() {
                     add_cell(row, {text: `£${Number(line.item.price).toFixed(2)}`});
                     add_cell(row, {text: `£${Number(line.item.price*line.qty).toFixed(2)}`});
                 } catch (error) {
-                    console.error(error);
+                    console.error(`canteen/sales/show/lines/view.js | getSaleLines | ${error}`);
                 };
             });
         });

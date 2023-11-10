@@ -1,7 +1,7 @@
 module.exports = function (m, fn) {
     fn.sales = {lines: {}, payments: {}};
-    fn.sales.get = function (where) {
-        return fn.get(
+    fn.sales.find = function (where) {
+        return fn.find(
             m.sales,
             where,
             [
@@ -11,7 +11,7 @@ module.exports = function (m, fn) {
             ]
         );
     };
-    fn.sales.get_all = function (query) {
+    fn.sales.findAll = function (query) {
         return new Promise((resolve, reject) => {
             m.sales.findAndCountAll({
                 where: query.where,
@@ -25,9 +25,9 @@ module.exports = function (m, fn) {
             .catch(reject);
         });
     };
-    fn.sales.get_current = function (user_id) {
+    fn.sales.findCurrent = function (user_id) {
         return new Promise((resolve, reject) => {
-            fn.sessions.get_current()
+            fn.sessions.findCurrent()
             .then(session => {
                 m.sales.findOrCreate({
                     where: {
@@ -43,10 +43,10 @@ module.exports = function (m, fn) {
         });
     };
 
-    fn.sales.lines.get = function (line_id) {
+    fn.sales.lines.find = function (line_id) {
         return new Promise((resolve, reject) => {
             m.sale_lines.findOne({
-                where: {sale_line_id: line_id},
+                where: {line_id: line_id},
                 include: [fn.inc.canteen.sale({session: true})]
             })
             .then(line => {
@@ -59,7 +59,7 @@ module.exports = function (m, fn) {
             .catch(reject);
         });
     };
-    fn.sales.lines.get_all = function (query) {
+    fn.sales.lines.findAll = function (query) {
         return new Promise((resolve, reject) => {
             m.sale_lines.findAndCountAll({
                 where:   query.where,
@@ -73,7 +73,7 @@ module.exports = function (m, fn) {
 
     fn.sales.complete = function (sale_id, _sale, user_id) {
         function process_payments(sale_id, sale, user_id) {
-            function credit_account(user_id_credit, amount) {
+            function creditAccount(user_id_credit, amount) {
                 return new Promise(resolve => {
                     m.credits.findOrCreate({
                         where: {user_id: user_id_credit},
@@ -97,7 +97,7 @@ module.exports = function (m, fn) {
                     });
                 });
             };
-            function get_sale_total(sale_id) {
+            function getSaleTotal(sale_id) {
                 return new Promise((resolve, reject) => {
                     m.sale_lines.findAll({
                         where: {sale_id: sale_id}
@@ -117,15 +117,15 @@ module.exports = function (m, fn) {
                     .catch(reject);
                 });
             };
-            function get_payment_total(sale_id) {
+            function getPaymentTotal(sale_id) {
                 return new Promise((resolve, reject) => {
                     m.payments.sum('amount', {where: {sale_id: sale_id}})
                     .then(paid => resolve(paid))
                     .catch(reject);
                 });
             };
-            function process_account_payment(user_id_debit, balance, sale_id, user_id) {
-                function debit_account(sale_id, account, amount, user_id) {
+            function processAccountPayment(user_id_debit, balance, sale_id, user_id) {
+                function debitAccount(sale_id, account, amount, user_id) {
                     return new Promise((resolve, reject) => {
                         account.decrement('credit', {by: amount})
                         .then(result => {
@@ -145,14 +145,14 @@ module.exports = function (m, fn) {
                     });
                 };
                 return new Promise((resolve, reject) => {
-                    fn.credits.get({credit_id: user_id_debit})
+                    fn.credits.find({credit_id: user_id_debit})
                     .then(account => {
                         if (balance <= account.credit) {
-                            debit_account(sale_id, account, balance, user_id)
+                            debitAccount(sale_id, account, balance, user_id)
                             .then(result => resolve(true))
                             .catch(reject);
                         } else {
-                            debit_account(sale_id, account, account.credit, user_id)
+                            debitAccount(sale_id, account, account.credit, user_id)
                             .then(result => resolve(true))
                             .catch(reject);
                         };
@@ -160,7 +160,7 @@ module.exports = function (m, fn) {
                     .catch(reject);
                 });
             };
-            function confirm_payments(sale_id) {
+            function confirmPayments(sale_id) {
                 return new Promise((resolve, reject) => {
                     m.payments.update({status: 2}, {where: {sale_id: sale_id, status: 1}})
                     .then(result => {
@@ -190,25 +190,25 @@ module.exports = function (m, fn) {
                     )
                 )
                 .then(result => {
-                    get_payment_total(sale_id) //Check total payments made
+                    getPaymentTotal(sale_id) //Check total payments made
                     .then(paid => {
-                        get_sale_total(sale_id)
+                        getSaleTotal(sale_id)
                         .then(total => {
                             let balance = Number(total - paid);
                             Promise.all(
                                 (paid < total && sale.user_id_debit ? 
-                                    [process_account_payment(sale.user_id_debit, balance, sale_id, user_id)] : 
+                                    [processAccountPayment(sale.user_id_debit, balance, sale_id, user_id)] : 
                                     []
                                 )
                             )
                             .then(result => {
-                                get_payment_total(sale_id)
+                                getPaymentTotal(sale_id)
                                 .then(paid => {
                                     if (paid >= total) {
-                                        confirm_payments(sale_id)
+                                        confirmPayments(sale_id)
                                         .then(result => {
                                             if (sale.user_id_credit) {
-                                                credit_account(sale.user_id_credit, Number(paid - total))
+                                                creditAccount(sale.user_id_credit, Number(paid - total))
                                                 .then(change => resolve(change))
                                                 .catch(err => {
                                                     console.error(err);
@@ -234,9 +234,9 @@ module.exports = function (m, fn) {
                 .catch(reject);
             });
         };
-        function subtract_sold_qty_from_stock(item_id, qty) {
+        function subtractSoldQtyFromStock(item_id, qty) {
             return new Promise((resolve, reject) => {
-                fn.canteen_items.get({item_id: item_id})
+                fn.canteen_items.find({item_id: item_id})
                 .then(item => {
                     item.decrement('qty', {by: qty})
                     .then(result => resolve(true))
@@ -246,7 +246,7 @@ module.exports = function (m, fn) {
             });
         }
         return new Promise((resolve, reject) => {
-            fn.sales.get({sale_id: sale_id})
+            fn.sales.find({sale_id: sale_id})
             .then(sale => {
                 if (sale.status === 0) {
                     reject(new Error('Sale has been cancelled'));
@@ -258,7 +258,7 @@ module.exports = function (m, fn) {
                     process_payments(sale.sale_id, _sale, user_id)
                     .then(change => {
                         let actions = [fn.update(sale, {status: 2})];
-                        sale.lines.forEach(line => actions.push(subtract_sold_qty_from_stock(line.item_id, line.qty)));
+                        sale.lines.forEach(line => actions.push(subtractSoldQtyFromStock(line.item_id, line.qty)));
                         Promise.all(actions)
                         .then(result => resolve(change))
                         .catch(reject);
@@ -275,9 +275,9 @@ module.exports = function (m, fn) {
     };
 
     fn.sales.lines.create = function (ean, sale_id) {
-        function check_sale(sale_id) {
+        function check(sale_id) {
             return new Promise((resolve, reject) => {
-                fn.sales.get({sale_id: sale_id})
+                fn.sales.find({sale_id: sale_id})
                 .then(sale => {
                     if (!sale.session) {
                         reject(new Error('Session not found'));
@@ -295,8 +295,8 @@ module.exports = function (m, fn) {
         };
         return new Promise((resolve, reject) => {
             Promise.all([
-                check_sale(sale_id),
-                fn.canteen_items.get_by_EAN(ean)
+                check(sale_id),
+                fn.canteen_items.findByEAN(ean)
             ])
             .then(([sale, item]) => {
                 m.sale_lines.findOrCreate({
@@ -327,9 +327,9 @@ module.exports = function (m, fn) {
     };
 
     fn.sales.lines.edit = function (line) {
-        function check_sale_line(_line) {
+        function check(_line) {
             return new Promise((resolve, reject) => {
-                fn.sales.lines.get(_line.sale_line_id)
+                fn.sales.lines.find(_line.line_id)
                 .then(line => {
                     if (!line.sale) {
                         reject(new Error('Sale not found'));
@@ -348,14 +348,14 @@ module.exports = function (m, fn) {
                 .catch(reject);
             });
         };
-        function increase_qty([line, qty]) {
+        function increaseQty([line, qty]) {
             return new Promise((resolve, reject) => {
                 line.increment('qty', {by: qty})
                 .then(updated_line => resolve(updated_line))
                 .catch(reject);
             });
         };
-        function delete_if_qty_zero (line) {
+        function deleteIfQtyZero (line) {
             return new Promise((resolve, reject) => {
                 if (line.qty <= 0) {
                     line.destroy()
@@ -376,9 +376,9 @@ module.exports = function (m, fn) {
         };
         return new Promise((resolve, reject) => {
             if (line) {
-                check_sale_line(line)
-                .then(increase_qty)
-                .then(delete_if_qty_zero)
+                check(line)
+                .then(increaseQty)
+                .then(deleteIfQtyZero)
                 .then(resolve(true))
                 .catch(reject);
 
@@ -391,7 +391,7 @@ module.exports = function (m, fn) {
 
     fn.sales.payments.delete = function (payment_id) {
         return new Promise((resolve, reject) => {
-            fn.payments.get({payment_id: payment_id})
+            fn.payments.find({payment_id: payment_id})
             .then(payment => {
                 if (payment.status === 0) {
                     reject(new Error('Payment has been cancelled'));

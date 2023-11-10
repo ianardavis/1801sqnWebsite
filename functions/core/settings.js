@@ -5,7 +5,7 @@ module.exports = function (m, fn) {
         printers: {},
         logs: {}
     };
-    fn.settings.get = function (where) {
+    fn.settings.find = function (where) {
         return new Promise((resolve, reject) => {
             m.settings.findAll({where: where})
             .then(settings => {
@@ -23,7 +23,7 @@ module.exports = function (m, fn) {
             .catch(reject);
         });
     };
-    fn.settings.get_all = function (query) {
+    fn.settings.findAll = function (query) {
         return new Promise((resolve, reject) => {
             m.settings.findAll({
                 where:      query.where,
@@ -74,7 +74,7 @@ module.exports = function (m, fn) {
     };
     fn.settings.delete = function (setting_id) {
         return new Promise((resolve, reject) => {
-            fn.settings.get({setting_id: setting_id})
+            fn.settings.find({setting_id: setting_id})
             .then(setting => {
                 setting.destroy()
                 .then(result => {
@@ -92,7 +92,7 @@ module.exports = function (m, fn) {
         });
     };
 
-    fn.settings.printers.get = function () {
+    fn.settings.printers.find = function () {
         return new Promise((resolve, reject) => {
             ptp.getPrinters()
             .then(printers => resolve(printers))
@@ -100,9 +100,9 @@ module.exports = function (m, fn) {
         });
     };
 
-    fn.settings.logs.get = function (type, res) {
+    fn.settings.logs.find = function (type, res) {
         return new Promise((resolve, reject) => {
-            fn.settings.get({name: `log ${type || ''}`})
+            fn.settings.find({name: `log ${type || ''}`})
             .then(setting => {
                 let readStream = fs.createReadStream(setting.value);
                 readStream.on('open',  ()  => {readStream.pipe(res)});
@@ -117,10 +117,10 @@ module.exports = function (m, fn) {
         });
     };
 
-    fn.settings.run_command = function (command) {
+    fn.settings.runCommand = function (command) {
         return new Promise((resolve, reject) => {
             try {
-                const output = fn.run_cmd(command);
+                const output = fn.runCommand(command);
                 console.log(output);
                 resolve(true);
 

@@ -1,7 +1,7 @@
 module.exports = function (m, fn) {
     fn.sessions = {};
-    fn.sessions.get = function (where) {
-        return fn.get(
+    fn.sessions.find = function (where) {
+        return fn.find(
             m.sessions,
             where,
             [
@@ -10,7 +10,7 @@ module.exports = function (m, fn) {
             ]
         );
     };
-    fn.sessions.get_all = function (query) {
+    fn.sessions.findAll = function (query) {
         return new Promise((resolve, reject) => {
             m.sessions.findAndCountAll({
                 where: query.where,
@@ -24,7 +24,7 @@ module.exports = function (m, fn) {
             .catch(reject);
         });
     };
-    fn.sessions.get_current = function () {
+    fn.sessions.findCurrent = function () {
         return new Promise((resolve, reject) => {
             m.sessions.findAll({
                 where: {
@@ -48,7 +48,7 @@ module.exports = function (m, fn) {
         });
     };
     
-    fn.sessions.count_cash = function (obj) {
+    fn.sessions.countCash = function (obj) {
         let cash = 0.0;
         for (let [key, denomination] of Object.entries(obj)) {
             for (let [key, value] of Object.entries(denomination)) {
@@ -81,7 +81,7 @@ module.exports = function (m, fn) {
             .catch(reject);
         });
     };
-    fn.sessions.getSales = function (session_id) {
+    fn.sessions.findSales = function (session_id) {
         return new Promise((resolve, reject) => {
             m.payments.findAll({
                 where:   {type: {[fn.op.or]: ['Cash', 'cash']}},
@@ -97,7 +97,7 @@ module.exports = function (m, fn) {
     };
     fn.sessions.close = function (session_id, balance, user_id) {
         return new Promise((resolve, reject) => {
-            fn.sessions.get({session_id: session_id})
+            fn.sessions.find({session_id: session_id})
             .then(session => {
                 if (session.status !== 1) {
                     reject(new Error('This session is not open'));
@@ -117,11 +117,11 @@ module.exports = function (m, fn) {
                         })
                         Promise.allSettled(sale_actions)
                         .then(results => {
-                            fn.sessions.getSales(session.session_id)
+                            fn.sessions.findSales(session.session_id)
                             .then(takings => {
                                 m.holdings.findOrCreate({where: {description: 'Canteen float'}})
                                 .then(([holding, created]) => {
-                                    let counted = fn.sessions.count_cash(balance),
+                                    let counted = fn.sessions.countCash(balance),
                                         cash_in = counted - holding.cash,
                                         actions = [];
                                     actions.push(fn.update(holding, {cash: counted}));

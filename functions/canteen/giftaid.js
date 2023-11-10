@@ -1,12 +1,12 @@
 module.exports = function (m, fn) {
 	fn.giftaid = {};
-    fn.giftaid.get = function (where) {
-        return fn.get(
+    fn.giftaid.find = function (where) {
+        return fn.find(
             m.giftaid,
             where
         );
     };
-	fn.giftaid.get_all = function (query) {
+	fn.giftaid.findAll = function (query) {
 		return new Promise((resolve, reject) => {
 			m.giftaid.findAndCountAll({
 				where: query.where,
@@ -34,7 +34,7 @@ module.exports = function (m, fn) {
 	fn.giftaid.edit = function (giftaid_id, details) {
 		return new Promise((resolve, reject) => {
 			if (giftaid) {
-				fn.giftaid.get({giftaid_id: giftaid_id})
+				fn.giftaid.find({giftaid_id: giftaid_id})
 				.then(giftaid => {
 					fn.update(giftaid, details)
 					.then(result => resolve(true))

@@ -206,7 +206,7 @@ function getPages() {
             return true;
         })
         .catch(err => {
-            console.error(err);
+            console.error(`canteen/pos/view.old.js | getPages | ${err}`);
             return false;
         });
     })

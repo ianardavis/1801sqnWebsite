@@ -1,6 +1,6 @@
 module.exports = function (m, fn) {
     const default_attributes = ['user_id', 'full_name', 'first_name', 'surname', 'status_id', 'rank_id'];
-    fn.users.get = function (where, attributes = default_attributes) {
+    fn.users.find = function (where, attributes = default_attributes) {
         return new Promise((resolve, reject) => {
             m.users.findOne({
                 where: where,
@@ -19,7 +19,7 @@ module.exports = function (m, fn) {
             .catch(reject);
         });
     };
-    fn.users.get_all = function (query, options = {}) {
+    fn.users.findAll = function (query, options = {}) {
         return new Promise((resolve, reject) => {
             m.users.findAndCountAll({
                 where:      query.where,
@@ -71,7 +71,7 @@ module.exports = function (m, fn) {
     };
     fn.users.edit = function (user_id, details) {
         if (details) {
-            function update_user(user) {
+            function updateUser(user) {
                 return new Promise((resolve, reject) => {
                     ['user_id', 'full_name', 'salt', 'password', 'last_login', 'createdAt', 'updatedAt', 'reset'].forEach(e => {
                         if (details[e]) delete details[e];
@@ -82,11 +82,11 @@ module.exports = function (m, fn) {
                 });
             };
             return new Promise((resolve, reject) => {
-                fn.users.get(
+                fn.users.find(
                     {user_id: user_id},
                     ['user_id', 'login_id', 'first_name', 'surname', 'status_id', 'rank_id', 'service_number']
                 )
-                .then(update_user)
+                .then(updateUser)
                 .then(resolve)
                 .catch(reject);
             });
@@ -96,9 +96,9 @@ module.exports = function (m, fn) {
         
         };
     };
-    fn.users.toggle_reset = function (user_id) {
+    fn.users.toggleReset = function (user_id) {
         return new Promise((resolve, reject) => {
-            fn.users.get({user_id: user_id}, ["user_id", "reset"])
+            fn.users.find({user_id: user_id}, ["user_id", "reset"])
             .then(user => {
                 fn.update(user, {reset: !user.reset})
                 .then(result => resolve(result))
@@ -109,7 +109,7 @@ module.exports = function (m, fn) {
     };
     fn.users.delete = function (user_id, user_id_self) {
         return new Promise((resolve, reject) => {
-            fn.users.get({user_id: user_id})
+            fn.users.find({user_id: user_id})
             .then(user => {
                 if (user.user_id === user_id_self) {
                     reject(new Error('You can not delete your own account'));
@@ -124,7 +124,7 @@ module.exports = function (m, fn) {
 
                 };
             })
-            .catch(err => fn.send_error(res, err));
+            .catch(err => fn.sendError(res, err));
         });
     };
 };

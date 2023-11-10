@@ -1,12 +1,12 @@
 module.exports = function (m, fn) {
 	fn.holdings = {};
-    fn.holdings.get = function (where) {
-        return fn.get(
+    fn.holdings.find = function (where) {
+        return fn.find(
             m.holdings,
             where
         );
     };
-	fn.holdings.get_all = function (query) {
+	fn.holdings.findAll = function (query) {
 		return new Promise((resolve, reject) => {
 			m.holdings.findAndCountAll({
 				where: query.where,
@@ -27,7 +27,7 @@ module.exports = function (m, fn) {
 			.catch(reject);
 		});
 	};
-	function create_action(holding_id, action, user_id) {
+	function createAction(holding_id, action, user_id) {
 		return new Promise(resolve => {
 			fn.actions.create([
 				`HOLDING | ${action}`,
@@ -77,7 +77,7 @@ module.exports = function (m, fn) {
 			.then(result => {
 				create_holding(holding)
 				.then(([holding_id, cash]) => {
-					create_action(holding_id, `CREATED: Opening balance: £${Number(cash).toFixed(2)}`, user_id)
+					createAction(holding_id, `CREATED: Opening balance: £${Number(cash).toFixed(2)}`, user_id)
 					.then(result => resolve(true))
 					.catch(err => {
 						console.error(err);
@@ -95,7 +95,7 @@ module.exports = function (m, fn) {
 		return new Promise((resolve, reject) => {
 			fn.holding.get(holding_id)
 			.then(holding => {
-				let cash = fn.sessions.count_cash(balance);
+				let cash = fn.sessions.countCash(balance);
 				fn.update(holding, {cash: cash})
 				.then(result => {
 					let state = (cash === holding.cash ?
@@ -107,7 +107,7 @@ module.exports = function (m, fn) {
 					);
 					let variance = Math.abs(holding.cash - cash);
 
-					create_action(
+					createAction(
 						holding.holding_id,
 						`COUNT | Balance: £${Number(cash).toFixed(2)}. Holding ${state} | Variance: ${variance}`,
 						user_id
