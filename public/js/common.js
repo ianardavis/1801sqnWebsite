@@ -154,12 +154,11 @@ function toggle_checkbox_on_row_click(event) {
     if (e) e.click();
 };
 function modalHide(id) {
-    bootstrap.Modal.getInstance(document.querySelector(`#mdl_${id}`)).hide();
+    const myModal = new bootstrap.Modal(`#mdl_${id}`);
+    myModal.hide();
 };
 function sidebarClose(id) {
-    // const sdb = document.querySelector(`#sdb_${id}`);
     const sdb = new bootstrap.Offcanvas(`#sdb_${id}`);
-    console.log(sdb);
     sdb.hide();
 };
 function modalOnShow(id, func) {

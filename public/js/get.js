@@ -1,4 +1,4 @@
-function build_query(options) {
+function buildQuery(options) {
     let queries = [];
     if (!options.action || (options.action !== 'sum' && options.action !== 'count')) {
         if (!options.order) {
@@ -21,7 +21,7 @@ function build_query(options) {
             if (offset)                                 queries.push(`offset=${JSON.stringify(offset.dataset.value)}`);
 
         } catch (error) {
-            console.error(`get.js | build_query | ${error}`);
+            console.error(`get.js | buildQuery | ${error}`);
 
         }
     };
@@ -31,7 +31,7 @@ function build_query(options) {
     if (options.gt   ) queries.push(`gt=${   JSON.stringify(options.gt)}`);
     return queries;
 };
-function eventParse(event) {
+function parseEvent(event) {
     return new Promise((resolve, reject) => {
         if (!event) {
             reject(new Error('No event'));
@@ -57,34 +57,45 @@ function eventParse(event) {
         };
     });
 };
-function print_error(message, error) {
-    console.error(`get.js | print_error | ${error}`);
+function printError(message, error) {
+    console.error(`get.js | printError | ${error}`);
     alert_toast(message);
 };
-function get_stream(streamAction) {
+function getStream(streamAction) {
     return function (event) {
         try {
             streamAction(event.target.responseText);
         } catch (error) {
-            // print_error(`Error with stream request`, response.message || error);
+            // printError(`Error with stream request`, response.message || error);
             reject(error);
             
         };
     };
 };
+function showToast() {
+    const toast_form = document.getElementById('toast_form');
+    const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toast_form);
+    toastBootstrap.show();
+};
+function hideToast() {
+    const toast_form = document.getElementById('toast_form');
+    const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toast_form);
+    toastBootstrap.hide();
+};
 function get(options) {
     return new Promise((resolve, reject) => {
         show_spinner(options.spinner || options.table || '');
+        showToast();
         const XHR = new XMLHttpRequest();
         XHR.addEventListener("loadend", (event) => hide_spinner(options.spinner || options.table || ''));
         XHR.addEventListener("error",   (event) => reject());
 
         if (options.streamAction) {
-            XHR.addEventListener("load", get_stream(options.streamAction));
+            XHR.addEventListener("load", getStream(options.streamAction));
 
         } else {
             XHR.addEventListener("load", function (event) {
-                eventParse(event)
+                parseEvent(event)
                 .then(response => {
                     if (response.success) {
                         if (options.func) {
@@ -99,30 +110,27 @@ function get(options) {
                         resolve([response.result, options]);
 
                     } else {
-                        // print_error(`Error getting ${options.table}`, response.message || response);
+                        // printError(`Error getting ${options.table}`, response.message || response);
                         reject(new Error(response.message));
 
                     };
                 })
-                .catch(err => reject(err));
+                .catch(err => reject(err))
+                .finally(hideToast);
             });
 
         };
         
-        send_XHR(
+        sendXHR(
             XHR,
             'GET',
             `/${options.action || 'get'}/${options.location || options.table}`,
-            {params: build_query(options).join('&')}
+            {params: buildQuery(options).join('&')}
         );
     });
 };
 function addFormListener(form_id, method, location, options = {reload: false}) {
     try {
-        const toast_form = document.getElementById('toast_form');
-        const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toast_form);
-        toastBootstrap.show();
-
         let form = document.querySelector(`#form_${form_id}`);
         if (form) {
             form.addEventListener("submit", function (event) {
@@ -146,14 +154,12 @@ function addFormListener(form_id, method, location, options = {reload: false}) {
     };
 };
 function sendData(form, method, _location, options = {reload: false}) {
-    const toast_form = document.getElementById('toast_form');
-    const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toast_form);
-
+    showToast();
     const XHR = new XMLHttpRequest();
     const FD  = new FormData(form);
     XHR.addEventListener("loadend", (event) => {hide_spinner(options.spinner || options.table || '')});
     XHR.addEventListener("load",    function (event) {
-        eventParse(event)
+        parseEvent(event)
         .then(response => {
             if (response.success) {
                 if (!options.noConfirmAlert) alert_toast(response.message);
@@ -182,15 +188,17 @@ function sendData(form, method, _location, options = {reload: false}) {
 
             };
         })
-        .catch(err => print_error('Error parsing response', err))
-        .finally(() => toastBootstrap.hide());
+        .catch(err => {
+            printError('Error parsing response', err);
+        })
+        .finally(hideToast);
     });
     
-    send_XHR(XHR, method, _location, {data: FD});
+    sendXHR(XHR, method, _location, {data: FD});
 };
-function send_XHR(XHR, method, path, options = {}) {
+function sendXHR(XHR, method, path, options = {}) {
     XHR.addEventListener("error", function (event) {
-        print_error('Error with request', event);
+        printError('Error with request', event);
         alert_toast('Error with request');
     });
     XHR.open(method, `${path}?${options.params || ''}`);
