@@ -1,5 +1,5 @@
 window.addEventListener( "load", function () {
-    enable_button('issues_action');
-    enable_button('issue_add');
+    enableButton('issues_action');
+    enableButton('issue_add');
     modalOnShown('issue_add', selectedUsers, [path[2]]);
 });

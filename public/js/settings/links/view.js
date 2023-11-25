@@ -1,28 +1,28 @@
-function get_headings() {
+function getHeadings() {
     clear('tbl_resource_link_headings')
     .then(tbl_link_headings => {
         get({
             table: 'resource_link_headings',
-            func: get_headings
+            func: getHeadings
         })
         .then(function ([results, options]) {
             if (results.resource_link_headings && results.resource_link_headings.length > 0) {
                 results.resource_link_headings.forEach(link => {
                     let row = tbl_link_headings.insertRow(-1);
-                    add_cell(row, {text: heading.heading});
+                    add_cell(row, {text: link.heading});
                     add_cell(row)
                 });
             };
-            if (typeof linksEditBtns === 'function') linkHeadingsEditBtns();
+            if (typeof linkHeadingsEditBtns === 'function') linkHeadingsEditBtns();
         });
     });
 };
-function get_links() {
+function getLinks() {
     clear('tbl_resource_links')
     .then(tbl_links => {
         get({
             table: 'resource_links',
-            func: get_links
+            func: getLinks
         })
         .then(function ([results, options]) {
             if (results.resource_links && results.resource_links.length > 0) {
@@ -62,9 +62,9 @@ function viewLink(resource_link_id) {
     });
 };
 window.addEventListener('load', function () {
-    add_listener('reload', get_links);
-    add_sort_listeners('resource_links', get_links);
-    add_sort_listeners('resource_link_headings', get_headings);
+    add_listener('reload', getLinks);
+    add_sort_listeners('resource_links', getLinks);
+    add_sort_listeners('resource_link_headings', getHeadings);
     modalOnShow('link_view', function (event) {viewLink(event.relatedTarget.dataset.id)});
-    get_headings();
+    getHeadings();
 });

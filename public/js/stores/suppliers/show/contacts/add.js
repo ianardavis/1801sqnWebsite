@@ -1,5 +1,5 @@
 window.addEventListener( "load", function () {
-    enable_button('contact_add');
+    enableButton('contact_add');
     addFormListener(
         'contact_add',
         'POST',

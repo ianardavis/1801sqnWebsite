@@ -1,6 +1,6 @@
-const enable_add_order = enable_button('order_add');
+const enable_add_order = enableButton('order_add');
 window.addEventListener( "load", function () {
-    enable_button('order_add');
+    enableButton('order_add');
     addFormListener(
         'order_add',
         'POST',

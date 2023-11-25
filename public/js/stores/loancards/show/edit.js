@@ -24,7 +24,7 @@ function completeLoancardDueDate() {
     set_attribute('date_due_complete', 'value', dateToday(7));
     set_attribute('date_due_complete', 'min',   dateToday());
 };
-const enable_complete_button = function () {enable_button('loancard_complete')};
+const enable_complete_button = function () {enableButton('loancard_complete')};
 window.addEventListener( "load", function () {
     modalOnShow('due_edit',          editLoancardDueDate);
     modalOnShow('loancard_complete', completeLoancardDueDate);

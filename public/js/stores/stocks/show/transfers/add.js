@@ -17,7 +17,7 @@ function viewTransferAdd() {
     });
 };
 window.addEventListener('load', function () {
-    enable_button('transfer_add');
+    enableButton('transfer_add');
     addFormListener(
         'transfer_add',
         'PUT',

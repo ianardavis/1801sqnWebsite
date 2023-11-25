@@ -131,7 +131,7 @@ module.exports = function (m, fn) {
     fn.runCommand = function (cmd) {
         return execSync(cmd, { encoding: 'utf-8' });
     };
-    fn.checkForValidLinesToUpdate = function (lines) {
+    fn.checkLines = function (lines) {
         return new Promise((resolve, reject) => {
             if (!lines) {
                 reject(new Error('No lines submitted'));
@@ -147,6 +147,19 @@ module.exports = function (m, fn) {
             };
         });
     };
+    fn.actionLines = function ([actions, submitted]) {
+        return new Promise((resolve, reject) => {
+            Promise.allSettled(actions)
+            .then(fn.logRejects)
+            .then(results => {
+                const resolved = results.filter(e => e.status ==='fulfilled').length;
+                const message = `${resolved} of ${submitted} tasks completed`;
+                resolve(message)
+            })
+            .catch(reject);
+        });
+    };
+    
     fn.logRejects = function (results) {
         results.filter(e => e.status === 'rejected').forEach(e => console.error(e));
         return results;

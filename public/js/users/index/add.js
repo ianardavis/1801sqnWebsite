@@ -16,7 +16,7 @@ function getRanksAdd() {
     });
 };
 window.addEventListener( "load", function () {
-    enable_button('user_add');
+    enableButton('user_add');
     modalOnShow('user_add', addUserReset);
     modalOnShow('user_add', getRanksAdd);
     modalOnShow('user_add', getStatusesAdd);

@@ -21,9 +21,9 @@ function viewLinkEdit(resource_link_id) {
     .then(function([link, options]) {
         set_attribute('resource_link_id_edit', 'value', link.resource_link_id);
         set_value('link_heading_edit', link.heading);
-        set_value('link_title_edit', link.title);
-        set_value('link_text_edit', link.text);
-        set_value('link_href_edit', link.href);
+        set_value('link_title_edit',   link.title);
+        set_value('link_text_edit',    link.text);
+        set_value('link_href_edit',    link.href);
     });
 };
 window.addEventListener('load', function () {
@@ -33,7 +33,7 @@ window.addEventListener('load', function () {
         '/resource_links',
         {
             onComplete: [
-                get_links,
+                getLinks,
                 function () {modalHide('link_edit')}
             ]
         }

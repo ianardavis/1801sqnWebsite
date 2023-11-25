@@ -1,4 +1,4 @@
-const enable_add_detail = enable_button('detail_add');
+const enable_add_detail = enableButton('detail_add');
 function getDetailOptions() {
     clear('list_detail_options')
     .then(list => {
@@ -24,7 +24,7 @@ window.addEventListener('load', function () {
     add_listener('reload_options', getDetailOptions)
     modalOnShow('detail_add', reset_add_detail);
     modalOnShow('detail_add', getDetailOptions);
-    enable_button('detail_add');
+    enableButton('detail_add');
     addFormListener(
         'detail_add',
         'POST',

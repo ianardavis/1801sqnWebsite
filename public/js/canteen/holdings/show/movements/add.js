@@ -18,7 +18,7 @@ function getHoldings() {
     });
 };
 window.addEventListener('load', function () {
-    enable_button('movement_add');
+    enableButton('movement_add');
     modalOnShow('movement_add', getHoldings);
     addFormListener(
         'movement_add',

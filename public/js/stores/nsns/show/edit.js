@@ -15,7 +15,7 @@ function viewNSNEdit() {
     })
 };
 window.addEventListener( "load", function () {
-    enable_button('nsn_edit');
+    enableButton('nsn_edit');
     addFormListener(
         'nsn_edit',
         'PUT',

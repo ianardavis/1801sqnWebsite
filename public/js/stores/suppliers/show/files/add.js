@@ -18,7 +18,7 @@ function reset_FileAdd() {
 };
 window.addEventListener("load", function () {
     modalOnShow('file_add', getFileDescriptions);
-    enable_button('file_add');
+    enableButton('file_add');
     addFormListener(
         'file_add',
         'POST',

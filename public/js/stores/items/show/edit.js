@@ -1,4 +1,4 @@
-const enable_edit_button = function () {enable_button('item_edit')};
+const enable_edit_button = function () {enableButton('item_edit')};
 function view_item_edit() {
     function display_details ([item, options]) {
         set_value('description_edit', item.description);

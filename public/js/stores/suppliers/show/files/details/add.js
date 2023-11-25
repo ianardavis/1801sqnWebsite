@@ -13,7 +13,7 @@ function getFileDetailNames() {
     });
 };
 window.addEventListener('load', function () {
-    enable_button('file_add');
+    enableButton('file_add');
     addFormListener(
         'file_detail_add',
         'POST',

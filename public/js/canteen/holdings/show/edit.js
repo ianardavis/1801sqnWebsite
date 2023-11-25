@@ -8,8 +8,8 @@ function viewHoldingEdit() {
     });
 };
 window.addEventListener('load', function () {
-    enable_button('holding_edit');
-    enable_button('holding_count');
+    enableButton('holding_edit');
+    enableButton('holding_count');
     modalOnShow('holding_edit', viewHoldingEdit);
     modalOnShow('holding_count', clearAllBalances);
     addFormListener(

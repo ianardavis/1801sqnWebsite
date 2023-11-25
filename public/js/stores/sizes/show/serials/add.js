@@ -2,7 +2,7 @@ function reset_add_serial() {
     set_value('serial_serial');
     set_value('serial_location');
 };
-const enable_add_serial = enable_button('serial_add');
+const enable_add_serial = enableButton('serial_add');
 window.addEventListener( "load", function () {
     addFormListener(
         'serial_add',

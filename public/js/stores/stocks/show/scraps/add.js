@@ -61,7 +61,7 @@ function getSerials(size) {
 window.addEventListener('load', function () {
     modalOnShow('scrap_add', resetScrapAdd);
     modalOnShow('scrap_add', getNSN_Serials);
-    enable_button('scrap_add');
+    enableButton('scrap_add');
     addFormListener(
         'scrap_add',
         'PUT',

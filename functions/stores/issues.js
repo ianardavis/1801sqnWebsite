@@ -1,6 +1,5 @@
 const statuses = {0: 'cancelled', 1: 'requested', 2: 'approved', 3: 'ordered', 4: 'added to loancard', 5: 'returned'};
 module.exports = function (m, fn) {
-    // Common functions
     fn.issues = {};
     
     fn.issues.find = function (where, include = {}) {
@@ -17,7 +16,7 @@ module.exports = function (m, fn) {
         return fn.find(m.issues, where, includes);
     };
     fn.issues.count = function (where) {return m.issues.count({where: where})};
-    fn.issues.sum   = function (where) {return m.issues.sum('qty', {where: where})};
+    fn.issues.sum = function (where) {return m.issues.sum('qty', {where: where})};
     fn.issues.increment = function (issue, qty, user_id) {
         return new Promise((resolve, reject) => {
             issue.increment('qty', {by: qty})
@@ -71,14 +70,12 @@ module.exports = function (m, fn) {
                 if (!query.offset || isNaN(query.offset)) query.offset = 0;
                 if ( query.limit  && isNaN(query.limit))  delete query.limit;
 
-                const include = [
-                    fn.inc.stores.size_filter(query),
-                    fn.inc.users.user({as: 'user_issue', ...user_filter})
-                ];
-
                 m.issues.findAndCountAll({
                     where: fn.buildQuery(query),
-                    include: include,
+                    include: [
+                        fn.inc.stores.size_filter(query),
+                        fn.inc.users.user({as: 'user_issue', ...user_filter})
+                    ],
                     ...fn.pagination(query)
                 })
                 .then(results => resolve(results))
@@ -154,58 +151,50 @@ module.exports = function (m, fn) {
     };
 
     fn.issues.update = function (lines, user_id) {
-        return new Promise((resolve, reject) => {
-            function sortIssues([issues, submitted]) {
-                return new Promise((resolve, reject) => {
-                    let actions = [];
-                    
-                    issues.filter(e => e.status === '-1').forEach(issue => {
-                        actions.push(fn.issues.decline(issue.issue_id, user_id));
-                    });
-        
-                    issues.filter(e => e.status ===  '2').forEach(issue => {
-                        actions.push(fn.issues.approve(issue.issue_id, user_id));
-                    });
-        
-                    const to_order = issues.filter(e => e.status === '3');
-                    if (to_order.length > 0) {
-                        actions.push(fn.issues.order(to_order, user_id));
-                    };
-        
-                    issues.filter(e => e.status ===  '-3' || e.status ===  '-2').forEach(issue => {
-                        actions.push(fn.issues.cancel(issue.issue_id, issue.status, user_id));
-                    });
-        
-                    issues.filter(e => e.status === '0').forEach(issue => {
-                        actions.push(fn.issues.restore(issue.issue_id, user_id));
-                    });
-        
-                    const to_issue = issues.filter(e => e.status === '4')
-                    if (to_issue.length > 0) {
-                        actions.push(fn.issues.addToLoancard(to_issue, user_id));
-                    };
-
-                    if (actions.length > 0) {
-                        resolve([actions, submitted]);
-
-                    } else {
-                        reject(new Error('No actions to perform'));
-        
-                    };
+        function filterIssues([issues, submitted]) {
+            return new Promise((resolve, reject) => {
+                let actions = [];
+                
+                issues.filter(e => e.status === '-1').forEach(issue => {
+                    actions.push(fn.issues.decline(issue.issue_id, user_id));
                 });
-            };
-            fn.checkForValidLinesToUpdate(lines)
-            .then(sortIssues)
-            .then(([actions, submitted]) => {
-                Promise.allSettled(actions)
-                .then(fn.logRejects)
-                .then(results => {
-                    const resolved = results.filter(e => e.status ==='fulfilled').length;
-                    const message = `${resolved} of ${submitted} tasks completed`;
-                    resolve(message)
-                })
-                .catch(reject);
-            })
+    
+                issues.filter(e => e.status ===  '2').forEach(issue => {
+                    actions.push(fn.issues.approve(issue.issue_id, user_id));
+                });
+    
+                const to_order = issues.filter(e => e.status === '3');
+                if (to_order.length > 0) {
+                    actions.push(fn.issues.order(to_order, user_id));
+                };
+    
+                issues.filter(e => e.status ===  '-3' || e.status ===  '-2').forEach(issue => {
+                    actions.push(fn.issues.cancel(issue.issue_id, issue.status, user_id));
+                });
+    
+                issues.filter(e => e.status === '0').forEach(issue => {
+                    actions.push(fn.issues.restore(issue.issue_id, user_id));
+                });
+    
+                const to_issue = issues.filter(e => e.status === '4')
+                if (to_issue.length > 0) {
+                    actions.push(fn.issues.addToLoancard(to_issue, user_id));
+                };
+
+                if (actions.length > 0) {
+                    resolve([actions, submitted]);
+
+                } else {
+                    reject(new Error('No actions to perform'));
+    
+                };
+            });
+        };
+        return new Promise((resolve, reject) => {
+            fn.checkLines(lines)
+            .then(filterIssues)
+            .then(fn.actionLines)
+            .then(resolve)
             .catch(reject);
         });
     };

@@ -4,7 +4,7 @@ const getGendersAdd = listGenders({
         spinner: 'genders_add'
     });
 window.addEventListener( "load", function () {
-    enable_button('item_add');
+    enableButton('item_add');
     modalOnShow('item_add', getGendersAdd);
     modalOnShow('item_add', get_size_descriptions);
     add_listener('reload_genders_add', getGendersAdd);

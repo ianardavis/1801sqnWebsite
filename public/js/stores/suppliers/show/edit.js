@@ -12,7 +12,7 @@ function viewSupplierEdit() {
 };
 window.addEventListener("load", function () {
     add_listener('reload_accounts', listAccounts);
-    enable_button('supplier_edit');
+    enableButton('supplier_edit');
     modalOnShow('supplier_edit', viewSupplierEdit);
     addFormListener(
         'supplier_edit',

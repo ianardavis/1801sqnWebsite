@@ -1,3 +1,3 @@
 window.addEventListener('load', function () {
-    enable_button('giftaid_edit');
+    enableButton('giftaid_edit');
 });

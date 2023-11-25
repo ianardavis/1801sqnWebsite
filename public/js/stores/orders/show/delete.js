@@ -5,7 +5,7 @@ function setDeleteButton() {
     })
     .then(function([result, options]) {
         disable_button('delete');
-        if ([1, 2, 3].includes(result.status)) enable_button('delete');
+        if ([1, 2, 3].includes(result.status)) enableButton('delete');
     });
 };
 window.addEventListener( "load", function () {

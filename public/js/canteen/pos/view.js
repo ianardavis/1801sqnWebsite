@@ -34,8 +34,8 @@ function getSaleLines() {
                     disable_button('complete_sale')
                     disable_button('finish');
                 } else {
-                    enable_button('complete_sale');
-                    enable_button('finish');
+                    enableButton('complete_sale');
+                    enableButton('finish');
                     results.lines.forEach(line => {
                         total += line.qty * line.price;
                         let row = tbl_sale_lines.insertRow(-1);

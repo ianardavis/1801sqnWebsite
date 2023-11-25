@@ -6,7 +6,7 @@ function setDefaultBtn() {
     })
     .then(function ([setting, options]) {
         if (setting.value === path[2]) disable_button('default');
-        else                           enable_button('default');
+        else                           enableButton('default');
     });
 };
 window.addEventListener("load", function () {

@@ -1,9 +1,9 @@
 function set_mark_as_options(status) {
     if (status >= 0 && status <= 5) {
         for (let i=0; i<=5 ; i++) {
-            if (status !== i) enable_button(`mark_${i}`);
+            if (status !== i) enableButton(`mark_${i}`);
         };
-        enable_button('mark_as');
+        enableButton('mark_as');
     };
 };
 function get_qty() {
@@ -63,8 +63,8 @@ function get_sizes() {
 window.addEventListener('load', function () {
     modalOnShow('size_edit', get_sizes);
     modalOnShow('qty_edit',  get_qty);
-    enable_button('size_edit');
-    enable_button('qty_edit');
+    enableButton('size_edit');
+    enableButton('qty_edit');
     add_sort_listeners('sizes', get_sizes);
 
     addFormListener(

@@ -8,7 +8,7 @@ function viewStockEdit() {
     });
 };
 window.addEventListener('load', function () {
-    enable_button('stock_edit');
+    enableButton('stock_edit');
     addFormListener(
         'stock_edit',
         'PUT',

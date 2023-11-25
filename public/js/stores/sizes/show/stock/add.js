@@ -1,4 +1,4 @@
-const enable_add_stock = enable_button('stock_add');
+const enable_add_stock = enableButton('stock_add');
 function getReceiptStocks() {
     clear('receipt_stock')
     .then(receipt_qty => {
@@ -14,8 +14,8 @@ function getReceiptStocks() {
     })
 }
 window.addEventListener( "load", function () {
-    enable_button('receipt_add');
-    enable_button('stock_add');
+    enableButton('receipt_add');
+    enableButton('stock_add');
     modalOnShow('stock_add',   getLocations);
     modalOnShow('receipt_add', getReceiptStocks);
     addFormListener(

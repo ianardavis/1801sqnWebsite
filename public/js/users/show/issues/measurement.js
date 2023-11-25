@@ -130,7 +130,7 @@ window.addEventListener( "load", function () {
     add_listener('tbl_items', toggle_checkbox_on_row_click);
     modalOnShow('issue_measurement', get_items);
     add_listener('btn_measurement_search', get_sizes);
-    enable_button('issue_measurement');
+    enableButton('issue_measurement');
     addFormListener(
         'issue_measurement',
         'POST',

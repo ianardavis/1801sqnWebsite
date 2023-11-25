@@ -1,5 +1,5 @@
 function enable_close_button(status) {
-    if (status === 1) enable_button('session_close')
+    if (status === 1) enableButton('session_close')
     else disable_button('session_close')
 };
 window.addEventListener('load', function () {

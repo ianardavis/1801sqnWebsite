@@ -1,5 +1,5 @@
 window.addEventListener('load', function () {
-    enable_button('setting_add');
+    enableButton('setting_add');
     addFormListener(
         'setting_add',
         'POST',

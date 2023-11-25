@@ -1,5 +1,5 @@
 window.addEventListener('load', function () {
-    enable_button('gender_add');
+    enableButton('gender_add');
     addFormListener(
         'gender_add',
         'POST',

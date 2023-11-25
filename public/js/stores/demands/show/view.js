@@ -42,15 +42,15 @@ function get_demand() {
         return demand;
     };
     function set_button_states(demand) {
-        if (demand.status > 1 || demand.filename) enable_button('download');
-        if (demand.status === 2)                  enable_button('close');
+        if (demand.status > 1 || demand.filename) enableButton('download');
+        if (demand.status === 2)                  enableButton('close');
         if (demand.status === 1) {
-            enable_button('complete');
-            enable_button('line_add');
+            enableButton('complete');
+            enableButton('line_add');
         };
         if ([1, 2].includes(demand.status)) {
-            enable_button('delete');
-            enable_button('action');
+            enableButton('delete');
+            enableButton('action');
         };
         return demand;
     };

@@ -1,4 +1,4 @@
-const enable_edit_size = enable_button('size_edit');
+const enable_edit_size = enableButton('size_edit');
 function viewSizeEdit() {
     get({
         table: 'size',
@@ -24,7 +24,7 @@ function get_suppliers(selected = null) {
 };
 
 window.addEventListener('load', function () {
-    enable_button('size_edit');
+    enableButton('size_edit');
     addFormListener(
         'size_edit',
         'PUT',

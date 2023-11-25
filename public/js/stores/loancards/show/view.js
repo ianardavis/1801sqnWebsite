@@ -59,12 +59,12 @@ function get_loancard() {
             if (typeof enable_action_button === 'function') enable_action_button();
         }
         if (loancard.status >= 2) {
-            enable_button('print');
-            enable_button('download');
-            enable_button('loancard_file_print');
-            enable_button('loancard_file_download');
-            if (loancard.filename) enable_button('loancard_file_delete');
-            enable_button('loancard_date_due_edit', '');
+            enableButton('print');
+            enableButton('download');
+            enableButton('loancard_file_print');
+            enableButton('loancard_file_download');
+            if (loancard.filename) enableButton('loancard_file_delete');
+            enableButton('loancard_date_due_edit', '');
             set_attribute('form_loancard_file_download', 'method', 'GET');
             set_attribute('form_loancard_file_download', 'action', `/loancards/${loancard.loancard_id}/download`);
 

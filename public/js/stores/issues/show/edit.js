@@ -1,9 +1,9 @@
 function set_mark_as_options(status) {
     if (status >= 0 && status <= 5) {
         for (let i=0; i<=5 ; i++) {
-            if (status !== i) enable_button(`mark_${i}`);
+            if (status !== i) enableButton(`mark_${i}`);
         };
-        enable_button('mark_as');
+        enableButton('mark_as');
     };
 };
 function check_issue_status([issue, options]) {

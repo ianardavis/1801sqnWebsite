@@ -12,7 +12,7 @@ function getItemEdit() {
 };
 window.addEventListener('load', function () {
     modalOnShow('item_edit', getItemEdit);
-    enable_button('item_edit');
+    enableButton('item_edit');
     addFormListener(
         'item_edit',
         'PUT',

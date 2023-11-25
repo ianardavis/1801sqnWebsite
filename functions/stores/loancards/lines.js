@@ -30,7 +30,7 @@ module.exports = function (m, fn) {
     };
     
     fn.loancards.lines.process = function (lines, user_id) {
-        function action_lines() {
+        function actionLines() {
             return new Promise((resolve, reject) => {
                 let actions = [];
     
@@ -52,9 +52,9 @@ module.exports = function (m, fn) {
                 .catch(reject);
             });
         };
-        function check_loancards(loancard_ids) {
-            function check_loancard_lines(loancard_id) {
-                function get_lines() {
+        function checkLoancards(loancard_ids) {
+            function checkLoancardLines(loancard_id) {
+                function getLines() {
                     return m.loancard_lines.findAll({
                         where: {
                             loancard_id: loancard_id,
@@ -67,7 +67,7 @@ module.exports = function (m, fn) {
                         }]
                     });
                 };
-                function check_lines(lines) {
+                function checkLines(lines) {
                     function close_loancard_line(line) {
                         return new Promise((resolve, reject) => {
                             fn.update(line, {status: 3})
@@ -97,14 +97,14 @@ module.exports = function (m, fn) {
                 };
 
                 return new Promise((resolve, reject) => {
-                    get_lines()
-                    .then(check_lines)
+                    getLines()
+                    .then(checkLines)
                     .then(resolve)
                     .catch(reject);
                 });
             };
-            function check_loancard(loancard_id) {
-                function get_loancard() {
+            function checkLoancard(loancard_id) {
+                function getLoancard() {
                     return m.loancards.findOne({
                         where: {loancard_id: loancard_id},
                         include: [{
@@ -117,7 +117,7 @@ module.exports = function (m, fn) {
                 };
 
                 return new Promise((resolve, reject) => {
-                    get_loancard()
+                    getLoancard()
                     .then(loancard => {
                         if (!loancard.lines || loancard.lines.length === 0) {
                             if (loancard.status === 0) {
@@ -153,8 +153,8 @@ module.exports = function (m, fn) {
                 let actions = [];
                 loancard_ids.forEach(loancard_id => {
                     actions.push(new Promise((resolve, reject) => {
-                        check_loancard_lines(loancard_id)
-                        .then(check_loancard)
+                        checkLoancardLines(loancard_id)
+                        .then(checkLoancard)
                         .then(resolve)
                         .catch(reject);
                     }));
@@ -167,8 +167,8 @@ module.exports = function (m, fn) {
         };
 
         return new Promise((resolve, reject) => {
-            action_lines()
-            .then(check_loancards)
+            actionLines()
+            .then(checkLoancards)
             .then(resolve)
             .catch(reject);
         });
@@ -360,7 +360,7 @@ module.exports = function (m, fn) {
         return new Promise((resolve, reject) => {
             Promise.all([
                 fn.loancards.find({loancard_id: loancard_id}),
-                fn.sizes    .get({size_id:     issue.size_id})
+                fn.sizes    .get ({size_id:     issue.size_id})
             ])
             .then(([loancard, size]) => {
                 check_nsn(size)

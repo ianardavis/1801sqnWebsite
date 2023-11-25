@@ -8,7 +8,7 @@ function viewSerialEdit() {
     })
 };
 window.addEventListener( "load", function () {
-    enable_button('serial_edit');
+    enableButton('serial_edit');
     addFormListener(
         'serial_edit',
         'PUT',

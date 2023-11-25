@@ -3,7 +3,7 @@ function reset_receipt_add() {
 };
 window.addEventListener('load', function () {
     modalOnShow('receipt_add', reset_receipt_add);
-    enable_button('receipt_add');
+    enableButton('receipt_add');
     addFormListener(
         'receipt_add',
         'POST',

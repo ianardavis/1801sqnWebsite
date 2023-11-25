@@ -99,7 +99,7 @@ function cancel_options() {
         };
     });
 };
-const enable_action_button = function () {enable_button('action')};
+const enable_action_button = function () {enableButton('action')};
 window.addEventListener( "load", function () {
     addFormListener(
         'actions',

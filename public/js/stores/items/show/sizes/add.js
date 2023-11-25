@@ -15,7 +15,7 @@ function get_suppliers() {
 };
 window.addEventListener('load', function () {
     modalOnShow('size_add', reset_add_size);
-    enable_button('size_add');
+    enableButton('size_add');
     addFormListener(
         'size_add',
         'POST',

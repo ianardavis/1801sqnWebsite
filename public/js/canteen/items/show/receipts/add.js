@@ -6,7 +6,7 @@ function calculate_cost() {
     };
 };
 window.addEventListener('load', function () {
-    enable_button('receipt_add');
+    enableButton('receipt_add');
     ['qty_receipt', 'cost_total'].forEach(e => {
         let input = document.querySelector(`#${e}`)
         if (input) input.addEventListener('input', calculate_cost);

@@ -1,5 +1,5 @@
 window.addEventListener('load', function () {
-    enable_button('delete');
+    enableButton('delete');
     addFormListener(
         'delete',
         'DELETE',

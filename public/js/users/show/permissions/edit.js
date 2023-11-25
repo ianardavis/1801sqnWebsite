@@ -94,7 +94,7 @@ function check_permission(permission) {
     permission.setAttribute('checked', true)
 };
 window.addEventListener('load', function () {
-    enable_button('permissions_edit')
+    enableButton('permissions_edit')
     add_listener('reload_permission_edit', getPermissionsEdit);
     addFormListener(
         'permissions_edit',

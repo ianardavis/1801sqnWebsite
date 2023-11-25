@@ -13,7 +13,7 @@ function get_qty() {
 };
 window.addEventListener('load', function () {
     modalOnShow('qty_edit', get_qty);
-    enable_button('qty_edit');
+    enableButton('qty_edit');
     addFormListener(
         'qty_edit',
         'PUT',

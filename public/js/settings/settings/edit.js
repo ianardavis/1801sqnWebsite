@@ -42,9 +42,9 @@ function getPrinters() {
     });
 };
 window.addEventListener('load', function () {
-    enable_button('logs_flush');
-    enable_button('git_pull');
-    enable_button('pm2_reload');
+    enableButton('logs_flush');
+    enableButton('git_pull');
+    enableButton('pm2_reload');
     addFormListener(
         'setting_edit',
         'PUT',

@@ -8,7 +8,7 @@ function viewLocationEdit() {
     });
 };
 window.addEventListener('load', function () {
-    enable_button('location_edit');
+    enableButton('location_edit');
     addFormListener(
         'location_edit',
         'PUT',

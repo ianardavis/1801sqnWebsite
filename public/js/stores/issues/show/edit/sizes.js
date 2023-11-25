@@ -46,7 +46,7 @@ function show_sizes() {
 };
 window.addEventListener('load', function () {
     modalOnShow('size_edit', show_sizes);
-    enable_button('size_edit');
+    enableButton('size_edit');
     add_sort_listeners('sizes', show_sizes);
     addFormListener(
         'size_edit',

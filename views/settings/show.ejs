@@ -15,7 +15,6 @@
                 <%- include(`${partials}/menu/button`, {id: 'gender_add',   text: 'Add Gender',     modal: 'gender_add'}) %>
                 <%- include(`${partials}/menu/button`, {id: 'account_add',  text: 'Add Account',    modal: 'account_add'}) %>
                 <%- include(`${partials}/menu/button`, {id: 'category_add', text: 'Add Category',   modal: 'category_add'}) %>
-                <%- include(`${partials}/menu/button`, {id: 'link_add',     text: 'Add Link',       modal: 'link_add'}) %>
             </div>
         </li>
         <%- include(`${partials}/tab_head`, {id: 'printers',   title: 'Printers',     spinner: 'printers'}) %>
@@ -110,28 +109,22 @@
         <div class="tab-pane fade" id="links"      role="tabpanel" aria-labelledby="links-tab">
             <div class="row">
                 <div class="col-12 col-md-4">
+                    <%- include(`${partials}/button/modal`, {id: 'link_heading_add', text: 'Add Heading', type: 'success'}) %>
                     <table class="table table-sm table-hover">
                         <thead class="thead-dark" id="tbl_resource_link_headings_head">
                             <th class='w-100' data-column='["heading"]' data-dir="ASC">Heading</th>
                             <th><i class='fas fa-search'></i></th>
                         </thead>
-                        <form id="form_link_heading_add">
-                            <tbody>
-                                <tr>
-                                    <td><input class="form-control form-control-sm" name='heading' type="text" id=""></td>
-                                    <td><input type="button" text="Save"></td>
-                                </tr>
-                            </tbody>
-                        </form>
                         <tbody id='tbl_resource_link_headings'></tbody>
                     </table>
                     <%- include(`${partials}/limit`, {table: 'resource_link_headings'}) %>
                 </div>
                 <div class="col-12 col-md-8">
+                    <%- include(`${partials}/button/modal`, {id: 'link_add', text: 'Add Link', type: 'success'}) %>
                     <table class="table table-sm table-hover">
                         <thead class="thead-dark" id="tbl_resource_links_head">
                             <th class='w-50' data-column='["title"]' data-dir="ASC">Title</th>
-                            <th class='w-50' data-column='["text"]' >Text</th>
+                            <th class='w-50' data-column='["text"]'>Text</th>
                             <th><i class='fas fa-search'></i></th>
                         </thead>
                         <tbody id='tbl_resource_links'></tbody>
@@ -204,6 +197,22 @@
                     </div>
                     <div class="modal-footer">
                         <%- include(`${partials}/button/save`) %>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="modal fade" id="mdl_link_heading_add" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <form class="modal-content" id='form_link_heading_add'>
+                    <div class="modal-header">
+                        <h5 class="modal-title">Link Heading</h5>
+                    </div>
+                    <div class="modal-body">
+                        <%- include(`${partials}/inputs/text`, {id: 'link_heading_heading_add', title: 'Heading', name: 'heading', required: true}) %>
+                    </div>
+                    <div class="modal-footer">
+                    <%- include(`${partials}/button/save`) %>
                     </div>
                 </form>
             </div>

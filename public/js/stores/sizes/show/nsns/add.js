@@ -1,4 +1,4 @@
-const enable_add_nsn = enable_button('add_nsn');
+const enable_add_nsn = enableButton('add_nsn');
 window.addEventListener( "load", function () {
     addFormListener(
         'nsn_add',

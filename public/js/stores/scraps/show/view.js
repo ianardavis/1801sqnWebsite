@@ -37,14 +37,14 @@ function getScrap() {
     };
     function set_button_states(scrap) {
         if (scrap.status == 1) {
-            enable_button('scrap_complete');
-            enable_button('delete');
-            enable_button('lines_action');
+            enableButton('scrap_complete');
+            enableButton('delete');
+            enableButton('lines_action');
         };
         if (scrap.status == 2) {
-            enable_button('scrap_file_print');
-            enable_button('scrap_file_download');
-            if (scrap.filename) enable_button('scrap_file_delete');
+            enableButton('scrap_file_print');
+            enableButton('scrap_file_download');
+            if (scrap.filename) enableButton('scrap_file_delete');
             set_attribute('form_scrap_file_download', 'method', 'GET');
             set_attribute('form_scrap_file_download', 'action', `/scraps/${scrap.scrap_id}/download`);
         } else {

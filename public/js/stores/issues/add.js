@@ -91,7 +91,7 @@ function selectedUsers(users) {
     };
 };
 window.addEventListener('load', function () {
-    enable_button("issue_add");
+    enableButton("issue_add");
     add_listener('btn_issue_sizes', selectSize);
     add_listener('btn_issue_users', selectUser);
     modalOnShow('issue_add', reset_issue_add);

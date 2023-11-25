@@ -1,5 +1,5 @@
 window.addEventListener('load', function () {
-    enable_button('note_add');
+    enableButton('note_add');
     addFormListener(
         'note_add',
         'POST',

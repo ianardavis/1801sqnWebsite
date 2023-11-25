@@ -19,7 +19,7 @@ function getUser() {
 window.addEventListener('load', function () {
     add_listener('reload', getUser);
     document.querySelectorAll('.user_id').forEach(e => e.value = path[2]);
-    enable_button('user_password');
+    enableButton('user_password');
     addFormListener(
         'user_password',
         'PUT',

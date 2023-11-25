@@ -9,7 +9,7 @@ function yesno(boolean) {
     if (boolean) return 'Yes'
     else return 'No'
 };
-function enable_button(id, pretext = 'btn_') {
+function enableButton(id, pretext = 'btn_') {
     let button = document.querySelector(`#${pretext}${id}`);
     if (button) button.removeAttribute('disabled');
 };
