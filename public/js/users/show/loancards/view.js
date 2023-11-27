@@ -16,7 +16,7 @@ function getLoancards () {
             func: getLoancards
         })
         .then(function ([result, options]) {
-            set_count('loancards', result.count);
+            setCount('loancards', result.count);
             result.loancards.forEach(loancard => {
                 let row = tbl_loancards.insertRow(-1);
                 add_cell(row, table_date(loancard.createdAt));

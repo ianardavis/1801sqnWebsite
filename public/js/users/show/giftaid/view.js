@@ -28,10 +28,10 @@ function viewGiftaid(giftaid_id) {
         spinner: 'giftaid_view'
     })
     .then(function ([giftaid, options]) {
-        set_innerText('giftaid_view_startDate', print_date(giftaid.startDate));
-        set_innerText('giftaid_view_endDate',   print_date(giftaid.endDate));
-        set_innerText('giftaid_view_createdAt', print_date(giftaid.createdAt, true));
-        set_innerText('giftaid_view_updatedAt', print_date(giftaid.updatedAt, true));
+        setInnerText('giftaid_view_startDate', print_date(giftaid.startDate));
+        setInnerText('giftaid_view_endDate',   print_date(giftaid.endDate));
+        setInnerText('giftaid_view_createdAt', print_date(giftaid.createdAt, true));
+        setInnerText('giftaid_view_updatedAt', print_date(giftaid.updatedAt, true));
     });
 };
 window.addEventListener('load', function () {

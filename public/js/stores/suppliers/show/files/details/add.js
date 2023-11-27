@@ -22,8 +22,8 @@ window.addEventListener('load', function () {
             onComplete: function () {
                 let file_id = document.querySelector('#file_id');
                 if (file_id) viewDetails(file_id.innerText);
-                set_value('file_detail_name_add');
-                set_value('file_detail_value_add');
+                setValue('file_detail_name_add');
+                setValue('file_detail_value_add');
             }
         }
     );

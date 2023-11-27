@@ -1,5 +1,5 @@
 function addUserReset() {
-    ['service_number', 'surname', 'first_name', 'login_id'].forEach(e => set_value(`inp_${e}`));
+    ['service_number', 'surname', 'first_name', 'login_id'].forEach(e => setValue(`inp_${e}`));
 };
 function getStatusesAdd() {
     listStatuses({

@@ -4,6 +4,6 @@ function getDefault() {
         where: {name: 'default_supplier'}
     })
     .then(function ([setting, options]) {
-        set_innerText(`default_${setting.value}`, 'Default');
+        setInnerText(`default_${setting.value}`, 'Default');
     });
 };

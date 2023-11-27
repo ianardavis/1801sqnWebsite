@@ -21,24 +21,24 @@ function getNSNs() {
             func: getNSNs
         })
         .then(function ([result, options]) {
-            set_count('nsn', result.count);
+            setCount('nsn', result.count);
             result.nsns.forEach(nsn => add_line(nsn));
         });
     });
 };
 function viewNSN(event) {
     function display_details([nsn, options]) {
-        set_innerText('nsn_group_id',   `${String(nsn.nsn_group.code)  .padStart(2, '0')} | ${nsn.nsn_group.group}`);
-        set_innerText('nsn_class_id',   `${String(nsn.nsn_class.code)  .padStart(2, '0')} | ${nsn.nsn_class.class}`);
-        set_innerText('nsn_country_id', `${String(nsn.nsn_country.code).padStart(2, '0')} | ${nsn.nsn_country.country}`);
-        set_innerText('item_number',    nsn.item_number);
-        set_innerText('nsn_id',         nsn.nsn_id);
-        set_innerText('nsn_view',       print_nsn(nsn));
-        set_innerText('_default',       yesno((nsn.nsn_id === nsn.size.nsn_id)));
+        setInnerText('nsn_group_id',   `${String(nsn.nsn_group.code)  .padStart(2, '0')} | ${nsn.nsn_group.group}`);
+        setInnerText('nsn_class_id',   `${String(nsn.nsn_class.code)  .padStart(2, '0')} | ${nsn.nsn_class.class}`);
+        setInnerText('nsn_country_id', `${String(nsn.nsn_country.code).padStart(2, '0')} | ${nsn.nsn_country.country}`);
+        setInnerText('item_number',    nsn.item_number);
+        setInnerText('nsn_id',         nsn.nsn_id);
+        setInnerText('nsn_view',       print_nsn(nsn));
+        setInnerText('_default',       yesno((nsn.nsn_id === nsn.size.nsn_id)));
         return nsn;
     };
     function set_links(nsn) {
-        set_href('btn_nsn_link', `/nsns/${nsn.nsn_id}`);
+        setHREF('btn_nsn_link', `/nsns/${nsn.nsn_id}`);
         return nsn;
     };
     get({

@@ -1,6 +1,6 @@
 function reset_add_serial() {
-    set_value('serial_serial');
-    set_value('serial_location');
+    setValue('serial_serial');
+    setValue('serial_location');
 };
 const enable_add_serial = enableButton('serial_add');
 window.addEventListener( "load", function () {
@@ -11,7 +11,7 @@ window.addEventListener( "load", function () {
         {
             onComplete: [
                 getSerials,
-                function () {set_value('serial_serial')}
+                function () {setValue('serial_serial')}
             ]
         }
     );

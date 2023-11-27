@@ -4,7 +4,7 @@ function viewSerialEdit() {
         where: {serial_id: path[2]}
     })
     .then(function ([serial, options]) {
-        set_value('serial_serial_edit', serial.item_number);
+        setValue('serial_serial_edit', serial.item_number);
     })
 };
 window.addEventListener( "load", function () {

@@ -32,24 +32,24 @@ function get_orders() {
             func: get_orders
         })
         .then(function ([result, options]) {
-            set_count('order', result.count);
+            setCount('order', result.count);
             result.orders.forEach(order => add_line(order));
         });
     });
 };
 function viewOrder(order_id) {
     function display_details([order, options]) {
-        set_innerText('order_user',      print_user(order.user));
-        set_innerText('order_qty',       order.qty);
-        set_innerText('order_status',    order_statuses[order.status]);
-        set_innerText('order_createdAt', print_date(order.createdAt));
-        set_innerText('order_updatedAt', print_date(order.updatedAt));
-        set_innerText('order_id',        order.order_id);
+        setInnerText('order_user',      print_user(order.user));
+        setInnerText('order_qty',       order.qty);
+        setInnerText('order_status',    order_statuses[order.status]);
+        setInnerText('order_createdAt', print_date(order.createdAt));
+        setInnerText('order_updatedAt', print_date(order.updatedAt));
+        setInnerText('order_id',        order.order_id);
         return order;
     };
     function set_links(order) {
-        set_href('btn_order_link',  `/orders/${order.order_id}`);
-        set_href('order_user_link', `/users/${order.user_id}`);
+        setHREF('btn_order_link',  `/orders/${order.order_id}`);
+        setHREF('order_user_link', `/users/${order.user_id}`);
         return order;
     };
     get({

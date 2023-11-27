@@ -1,23 +1,23 @@
 const statuses = {"0": "Cancelled", "1": "Draft", "2": "Closed"};
 function getScrap() {
     function disable_all_buttons() {
-        disable_button('scrap_complete');
-        disable_button('scrap_file_print');
-        disable_button('scrap_file_download');
-        disable_button('scrap_file_delete');
-        disable_button('delete');
-        disable_button('lines_action');
+        disableButton('scrap_complete');
+        disableButton('scrap_file_print');
+        disableButton('scrap_file_download');
+        disableButton('scrap_file_delete');
+        disableButton('delete');
+        disableButton('lines_action');
     };
     function display_details([scrap, options]) {
-        set_breadcrumb(`${scrap.supplier.name} | ${print_date(scrap.createdAt)}`);
-        set_innerText('scrap_supplier',  scrap.supplier.name);
-        set_innerText('scrap_createdAt', print_date(scrap.createdAt, true));
-        set_innerText('scrap_updatedAt', print_date(scrap.updatedAt, true));
-        set_innerText('scrap_filename',  scrap.filename || '');
+        setBreadcrumb(`${scrap.supplier.name} | ${print_date(scrap.createdAt)}`);
+        setInnerText('scrap_supplier',  scrap.supplier.name);
+        setInnerText('scrap_createdAt', print_date(scrap.createdAt, true));
+        setInnerText('scrap_updatedAt', print_date(scrap.updatedAt, true));
+        setInnerText('scrap_filename',  scrap.filename || '');
         return scrap;
     };
     function set_links(scrap) {
-        set_href('scrap_supplier_link', `/suppliers/${scrap.supplier_id}`);
+        setHREF('scrap_supplier_link', `/suppliers/${scrap.supplier_id}`);
         return scrap;
     };
     function set_status_badges(scrap) {

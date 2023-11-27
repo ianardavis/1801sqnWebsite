@@ -46,7 +46,7 @@ function getLines() {
             func: getLines
         })
         .then(function ([result, options]) {
-            set_count('line', result.count);
+            setCount('line', result.count);
             let index = 0;
             result.lines.forEach(line => {
                 add_line(line, index);
@@ -100,16 +100,16 @@ function viewLine(line_id) {
         where: {line_id: line_id}
     })
     .then(function ([line, options]) {
-        set_innerText('line_id',        line.line_id);
-        set_innerText('line_item',      line.size.item.description);
-        set_innerText('line_size',      print_size(line.size));
-        set_innerText('line_qty',       line.qty);
-        set_innerText('line_createdAt', print_date(line.createdAt, true));
-        set_innerText('line_updatedAt', print_date(line.updatedAt, true));
-        set_href('btn_line_link',  `/scrap_lines/${line.line_id}`);
-        set_href('line_item_link', `/items/${line.size.item_id}`);
-        set_href('line_size_link', `/sizes/${line.size_id}`);
-        set_href('line_user_link', `/users/${line.user_id}`);
+        setInnerText('line_id',        line.line_id);
+        setInnerText('line_item',      line.size.item.description);
+        setInnerText('line_size',      print_size(line.size));
+        setInnerText('line_qty',       line.qty);
+        setInnerText('line_createdAt', print_date(line.createdAt, true));
+        setInnerText('line_updatedAt', print_date(line.updatedAt, true));
+        setHREF('btn_line_link',  `/scrap_lines/${line.line_id}`);
+        setHREF('line_item_link', `/items/${line.size.item_id}`);
+        setHREF('line_size_link', `/sizes/${line.size_id}`);
+        setHREF('line_user_link', `/users/${line.user_id}`);
     });
 };
 window.addEventListener('load', function () {

@@ -6,13 +6,13 @@ function viewAddressEdit(address_id) {
     })
     .then(function ([address, options]) {
         set_attribute('supplier_address_id_edit', 'value', address.address_id);
-        set_value('address_type_edit',        address.address.type);
-        set_value('address_unit_number_edit', address.address.unit_number);
-        set_value('address_street_edit',      address.address.street);
-        set_value('address_town_edit',        address.address.town);
-        set_value('address_county_edit',      address.address.county);
-        set_value('address_country_edit',     address.address.country);
-        set_value('address_postcode_edit',    address.address.postcode);
+        setValue('address_type_edit',        address.address.type);
+        setValue('address_unit_number_edit', address.address.unit_number);
+        setValue('address_street_edit',      address.address.street);
+        setValue('address_town_edit',        address.address.town);
+        setValue('address_county_edit',      address.address.county);
+        setValue('address_country_edit',     address.address.country);
+        setValue('address_postcode_edit',    address.address.postcode);
         modalHide('address_view');
     })
     .catch(err => {

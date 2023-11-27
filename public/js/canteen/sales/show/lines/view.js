@@ -7,7 +7,7 @@ function getSaleLines() {
             func: getSaleLines
         })
         .then(function ([result, options]) {
-            set_count('line', result.count);
+            setCount('line', result.count);
             result.lines.forEach(line => {
                 try {
                     let row = tbl_lines.insertRow(-1);

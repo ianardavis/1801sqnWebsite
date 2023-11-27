@@ -7,7 +7,7 @@ function getAddresses() {
             func: getAddresses
         })
         .then(function ([result, options]) {
-            set_count('address', result.count);
+            setCount('address', result.count);
             result.addresses.forEach(address => {
                 let row = tbl_addresses.insertRow(-1);
                 add_cell(row, {text: address.type});
@@ -29,17 +29,17 @@ function viewAddress(supplier_address_id) {
         spinner: 'address_view'
     })
     .then(function ([address, options]) {
-        set_innerText('supplier_address_id', address.supplier_address_id);
-        set_innerText('address_id',          address.address_id);
-        set_innerText('address_type',        address.address.type);
-        set_innerText('address_unit_number', address.address.unit_number);
-        set_innerText('address_street',      address.address.street);
-        set_innerText('address_town',        address.address.town);
-        set_innerText('address_county',      address.address.country);
-        set_innerText('address_country',     address.address.country);
-        set_innerText('address_postcode',    address.address.postcode);
-        set_innerText('address_createdAt',   print_date(address.address.createdAt, true));
-        set_innerText('address_updatedAt',   print_date(address.address.updatedAt, true));
+        setInnerText('supplier_address_id', address.supplier_address_id);
+        setInnerText('address_id',          address.address_id);
+        setInnerText('address_type',        address.address.type);
+        setInnerText('address_unit_number', address.address.unit_number);
+        setInnerText('address_street',      address.address.street);
+        setInnerText('address_town',        address.address.town);
+        setInnerText('address_county',      address.address.country);
+        setInnerText('address_country',     address.address.country);
+        setInnerText('address_postcode',    address.address.postcode);
+        setInnerText('address_createdAt',   print_date(address.address.createdAt, true));
+        setInnerText('address_updatedAt',   print_date(address.address.updatedAt, true));
     });
 };
 window.addEventListener('load', function () {

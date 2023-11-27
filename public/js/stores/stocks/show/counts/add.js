@@ -1,8 +1,8 @@
-function reset_count_add() {
-    set_value('adjustment_qty_count');
+function resetCount_add() {
+    setValue('adjustment_qty_count');
 };
 window.addEventListener('load', function () {
-    modalOnShow('count_add', reset_count_add);
+    modalOnShow('count_add', resetCount_add);
     enableButton('count_add');
     addFormListener(
         'count_add',

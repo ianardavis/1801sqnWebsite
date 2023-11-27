@@ -7,7 +7,7 @@ function getStocks() {
             func: getStocks
         })
         .then(function ([result, options]) {
-            set_count('stock', result.count);
+            setCount('stock', result.count);
             result.stocks.forEach(stock => {
                 try {
                     let row = tbl_stocks.insertRow(-1);

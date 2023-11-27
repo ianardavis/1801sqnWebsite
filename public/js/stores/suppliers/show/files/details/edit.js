@@ -7,8 +7,8 @@ function viewDetailEdit(file_detail_id) {
     })
     .then(function ([detail, options]) {
         set_attribute('file_detail_id_edit', 'value', detail.file_detail_id);
-        set_value('file_detail_name_edit',  detail.name);
-        set_value('file_detail_value_edit', detail.value);
+        setValue('file_detail_name_edit',  detail.name);
+        setValue('file_detail_value_edit', detail.value);
     });
 };
 function addDetailEditBtns() {

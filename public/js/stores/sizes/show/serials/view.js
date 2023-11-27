@@ -7,7 +7,7 @@ function getSerials() {
             func: getSerials
         })
         .then(function ([result, options]) {
-            set_count('serial', result.count);
+            setCount('serial', result.count);
                 result.serials.forEach(serial => {
                 try {
                     let row = tbl_serials.insertRow(-1);

@@ -18,7 +18,7 @@ function getStocks() {
             func: getStocks
         })
         .then(function ([result, options]) {
-            set_count('stock', result.count);
+            setCount('stock', result.count);
             result.stocks.forEach(stock => {
                 add_line(stock);
             });
@@ -27,18 +27,18 @@ function getStocks() {
 };
 function viewStock(stock_id) {
     function display_details([stock, options]) {
-        set_innerText('stock_id',        stock.stock_id);
-        set_innerText('stock_item',      stock.size.item.description);
-        set_innerText('stock_size',      print_size(stock.size));
-        set_innerText('stock_qty',       stock.qty);
-        set_innerText('stock_createdAt', print_date(stock.createdAt, true));
-        set_innerText('stock_updatedAt', print_date(stock.updatedAt, true));
+        setInnerText('stock_id',        stock.stock_id);
+        setInnerText('stock_item',      stock.size.item.description);
+        setInnerText('stock_size',      print_size(stock.size));
+        setInnerText('stock_qty',       stock.qty);
+        setInnerText('stock_createdAt', print_date(stock.createdAt, true));
+        setInnerText('stock_updatedAt', print_date(stock.updatedAt, true));
         return stock;
     };
     function set_links(stock) {
-        set_href('stock_item_link', `/items/${stock.size.item_id}`);
-        set_href('stock_size_link', `/sizes/${stock.size_id}`);
-        set_href('btn_stock_link',  `/stocks/${stock.stock_id}`);
+        setHREF('stock_item_link', `/items/${stock.size.item_id}`);
+        setHREF('stock_size_link', `/sizes/${stock.size_id}`);
+        setHREF('btn_stock_link',  `/stocks/${stock.stock_id}`);
         return stock;
     };
     get({

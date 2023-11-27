@@ -7,7 +7,7 @@ function getFiles() {
             func: getFiles
         })
         .then(function ([result, options]) {
-            set_count('file', result.count);
+            setCount('file', result.count);
             result.files.forEach(file => {
                 let row = tbl_files.insertRow(-1);
                 add_cell(row, {text: file.filename})
@@ -30,12 +30,12 @@ function viewFile(file_id) {
     })
     .then(function ([file, options]) {
         set_attribute('form_file_download', 'action', `/files/${file.file_id}/download`);
-        set_innerText('file_id',          file.file_id);
-        set_innerText('file_filename',    file.filename);
-        set_innerText('file_description', file.description);
-        set_innerText('file_user',        print_user(file.user));
-        set_innerText('file_createdAt',   print_date(file.createdAt, true));
-        set_innerText('file_updatedAt',   print_date(file.updatedAt, true));
+        setInnerText('file_id',          file.file_id);
+        setInnerText('file_filename',    file.filename);
+        setInnerText('file_description', file.description);
+        setInnerText('file_user',        print_user(file.user));
+        setInnerText('file_createdAt',   print_date(file.createdAt, true));
+        setInnerText('file_updatedAt',   print_date(file.updatedAt, true));
     });
 };
 window.addEventListener('load', function () {

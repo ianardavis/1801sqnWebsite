@@ -29,11 +29,11 @@ function viewGender(gender_id) {
         where: {gender_id: gender_id}
     })
     .then(function([gender, options]) {
-        set_innerText('gender_id',        gender.gender_id);
-        set_innerText('gender_gender',    gender.gender);
-        set_innerText('gender_user',      print_user(gender.user));
-        set_innerText('gender_createdAt', print_date(gender.createdAt, true));
-        set_innerText('gender_updatedAt', print_date(gender.updatedAt, true));
+        setInnerText('gender_id',        gender.gender_id);
+        setInnerText('gender_gender',    gender.gender);
+        setInnerText('gender_user',      print_user(gender.user));
+        setInnerText('gender_createdAt', print_date(gender.createdAt, true));
+        setInnerText('gender_updatedAt', print_date(gender.updatedAt, true));
     });
 };
 window.addEventListener('load', function () {

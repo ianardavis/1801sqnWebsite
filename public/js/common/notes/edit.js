@@ -6,7 +6,7 @@ function viewNoteEdit(note_id) {
     })
     .then(function ([note, options]) {
         set_attribute('note_id_edit', 'value', note.note_id);
-        set_innerText('note_edit', note.note);
+        setInnerText('note_edit', note.note);
     })
     .catch(err => {
         modalHide('note_edit');

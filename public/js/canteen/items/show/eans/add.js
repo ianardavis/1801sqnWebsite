@@ -1,6 +1,6 @@
 function AddEAN(ean, result) {
     console.log(ean, result);
-    set_value('inp_ean_add', ean);
+    setValue('inp_ean_add', ean);
 };
 window.addEventListener('load', function () {
     modalOnShow('loancard_open', function () {StartScanning(AddEAN)});

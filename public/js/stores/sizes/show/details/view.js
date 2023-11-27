@@ -27,11 +27,11 @@ function viewDetail(detail_id) {
         spinner: 'detail_view'
     })
     .then(function ([detail, options]) {
-        set_innerText('detail_id',        detail.detail_id);
-        set_innerText('detail_name',      detail.name);
-        set_innerText('detail_value',     detail.value);
-        set_innerText('detail_createdAt', print_date(detail.createdAt));
-        set_innerText('detail_updatedAt', print_date(detail.updatedAt));
+        setInnerText('detail_id',        detail.detail_id);
+        setInnerText('detail_name',      detail.name);
+        setInnerText('detail_value',     detail.value);
+        setInnerText('detail_createdAt', print_date(detail.createdAt));
+        setInnerText('detail_updatedAt', print_date(detail.updatedAt));
     });
 };
 window.addEventListener('load', function () {

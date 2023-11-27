@@ -17,7 +17,7 @@ function get_sizes() {
             func: get_sizes
         })
         .then(function ([result, options]) {
-            set_count('size', result.count);
+            setCount('size', result.count);
             result.sizes.forEach(size => {
                 add_line(size);
             });

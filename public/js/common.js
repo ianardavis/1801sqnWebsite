@@ -1,8 +1,24 @@
 const path = window.location.pathname.toString().split('/');
+function getElement(id) {
+    return new Promise((resolve, reject) => {
+        const select = document.getElementById(id);
+        if (select) {
+            resolve(select);
+
+        } else {
+            reject(new Error(`Element not found: ${id}`));
+
+        };
+    });
+};
 function removeID(id) {
     if (typeof id === 'string') {
-        let e = document.querySelector(`#${id}`);
-        if (e) e.remove();
+        getElement(id)
+        .then(e => e.remove())
+        .catch(err => {
+            console.error(`common.js | removeID | ${err.message}`);
+            reject(err);
+        });
     } else id.remove();
 };
 function yesno(boolean) {
@@ -10,27 +26,47 @@ function yesno(boolean) {
     else return 'No'
 };
 function enableButton(id, pretext = 'btn_') {
-    let button = document.querySelector(`#${pretext}${id}`);
-    if (button) button.removeAttribute('disabled');
+    getElement(`${pretext}${id}`)
+    .then(button => button.removeAttribute('disabled'))
+    .catch(err => {
+        console.error(`common.js | enableButton | ${err.message}`);
+        reject(err);
+    });
 };
-function disable_button(id, pretext = 'btn_') {
-    let button = document.querySelector(`#${pretext}${id}`);
-    if (button) button.setAttribute('disabled', true);
+function disableButton(id, pretext = 'btn_') {
+    getElement(`${pretext}${id}`)
+    .then(button => button.setAttribute('disabled', true))
+    .catch(err => {
+        console.error(`common.js | disableButton | ${err.message}`);
+        reject(err);
+    });
 };
-function set_count(id, count) {
-    let _count = document.querySelector(`#${id}_count`);
-    if (_count) _count.innerText = count || '0';
+function setCount(id, count) {
+    getElement(`${id}_count`)
+    .then(_count => _count.innerText = count || '0')
+    .catch(err => {
+        console.error(`common.js | setCount | ${err.message}`);
+        reject(err);
+    });
 };
-function set_innerText(id, text = '') {
-    let e = document.querySelector(`#${id}`);
-    if (e) e.innerText = text;
+function setInnerText(id, text = '') {
+    getElement(id)
+    .then(e => e.innerText = text)
+    .catch(err => {
+        console.error(`common.js | setInnerText | ${err.message}`);
+        reject(err);
+    });
 };
-function set_breadcrumb(text, id = 'breadcrumb', href = null) {
-    let e = document.querySelector(`#${id}`);
-    if (e) {
+function setBreadcrumb(text, id = 'breadcrumb', href = null) {
+    getElement(id)
+    .then(e => {
         e.innerText = text;
         if (href) e.setAttribute('href', href);
-    };
+    })
+    .catch(err => {
+        console.error(`common.js | setBreadcrumb | ${err.message}`);
+        reject(err);
+    });
 };
 function clear_statuses(max, statuses) {
     for (s=1; s<=max; s++) {
@@ -47,20 +83,40 @@ function set_badge(bdg, colour, text = '') {
         if (text) badge.innerText = text;
     };
 };
-function set_href(id, value = null) {
-    let e = document.querySelector(`#${id}`);
-    if (e) {
+function setHREF(id, value = null) {
+    getElement(id)
+    .then(e => {
         if (value) e.setAttribute('href', value);
         else       e.removeAttribute('href');
-    };
+    })
+    .catch(err => {
+        console.error(`common.js | setHREF | ${err.message}`);
+        reject(err);
+    });
 };
-function set_data(id, field, value) {
-    let e = document.querySelector(`#${id}`);
-    if (e) e.setAttribute(`data-${field}`, value);
+function setData(id, field, value) {
+    getElement(id)
+    .then(e => e.setAttribute(`data-${field}`, value))
+    .catch(err => {
+        console.error(`common.js | setData | ${err.message}`);
+        reject(err);
+    });
 };
-function set_value(id, text = '') {
-    let e = document.querySelector(`#${id}`);
-    if (e) e.value = text || '';
+function selectableRow(row, row_id,  tbl, func) {
+    row.setAttribute('data-row_id', row_id);
+    row.addEventListener('click', function () {
+        tbl.querySelectorAll('.selected_row').forEach(e => e.classList.remove('selected_row'));
+        row.classList.add('selected_row');
+        func();
+    });
+};
+function setValue(id, text = '') {
+    getElement(id)
+    .then(e => e.value = text || '')
+    .catch(err => {
+        console.error(`common.js | setValue | ${err.message}`);
+        reject(err);
+    });
 };
 function set_attribute(id, attribute, value = null) {
     let e = document.querySelector(`#${id}`);
@@ -229,9 +285,9 @@ function add_page_links(count, limit, offset, table, func) {
         count  = Number(count);
         let max = limit * (Number(offset) + 1);
         if (max > count) max = count;
-        set_innerText(`${table}_page_low`, (limit * offset) + 1);
-        set_innerText(`${table}_page_high`, max);
-        set_innerText(`${table}_page_max`,  count);
+        setInnerText(`${table}_page_low`, (limit * offset) + 1);
+        setInnerText(`${table}_page_high`, max);
+        setInnerText(`${table}_page_max`,  count);
         let page_count = Math.ceil(count/limit);
         if (page_count < offset) offset = 0;
         if (limit) {
@@ -265,21 +321,29 @@ function toProperCase(str) {
 };
 
 function set_status_filter_options(id, options) {
-    let select = document.querySelector(`#filter_${id}_status`);
-    options.forEach(option => {
-        let opt = document.createElement('option');
-        opt.setAttribute('value', option.value);
-        opt.innerText = option.text;
-        if (option.selected) opt.setAttribute('selected', true);
-        select.appendChild(opt);
+    getElement(`filter_${id}_status`)
+    .then(select => {
+        options.forEach(option => {
+            select.appendChild(new Option(option).e);
+        });
+        select.setAttribute('size', options.length);
+    })
+    .catch(err => {
+        console.error(`common.js | set_status_filter_options | ${err.message}`);
+        reject(err);
     });
-    select.setAttribute('size', options.length)
 };
 function getSelectedOptions(id) {
-    let e = document.querySelector(`#${id}`);
-    if (e && e.selectedOptions) {
-        return Array.from(e.selectedOptions).map(({ value }) => value)
-    } else return [];
+    getElement(id)
+    .then(select => {
+        if (select.selectedOptions) {
+            return Array.from(select.selectedOptions).map(({ value }) => value)
+        } else return [];
+    })
+    .catch(err => {
+        console.error(`common.js | getSelectedOptions | ${err.message}`);
+        reject(err);
+    });
 };
 function filter_item(id) {
     const item = document.querySelector(`#filter_${id}_description`);

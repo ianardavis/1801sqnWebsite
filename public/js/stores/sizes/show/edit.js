@@ -6,13 +6,13 @@ function viewSizeEdit() {
     })
     .then(function ([size, options]) {
         get_suppliers(size.supplier_id);
-        set_value('sel_issueable', (size.issueable   ? '1' : '0'));
-        set_value('sel_orderable', (size.orderable   ? '1' : '0'));
-        set_value('sel_serials',   (size.has_serials ? '1' : '0'));
-        set_value('sel_nsns',      (size.has_nsns    ? '1' : '0'));
-        set_value('size1_edit',    size.size1);
-        set_value('size2_edit',    size.size2);
-        set_value('size3_edit',    size.size3);
+        setValue('sel_issueable', (size.issueable   ? '1' : '0'));
+        setValue('sel_orderable', (size.orderable   ? '1' : '0'));
+        setValue('sel_serials',   (size.has_serials ? '1' : '0'));
+        setValue('sel_nsns',      (size.has_nsns    ? '1' : '0'));
+        setValue('size1_edit',    size.size1);
+        setValue('size2_edit',    size.size2);
+        setValue('size3_edit',    size.size3);
     });
 };
 function get_suppliers(selected = null) {

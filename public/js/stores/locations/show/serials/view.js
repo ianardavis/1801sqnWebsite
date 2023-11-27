@@ -18,7 +18,7 @@ function getSerials() {
             func: getSerials
         })
         .then(function ([result, options]) {
-            set_count('serial', result.count);
+            setCount('serial', result.count);
             result.serials.forEach(serial => {
                 add_line(serial);
             });
@@ -27,18 +27,18 @@ function getSerials() {
 };
 function viewSerial(serial_id) {
     function display_details([serial, options]) {
-        set_innerText('serial_id',        serial.serial_id);
-        set_innerText('serial_item',      serial.size.item.description);
-        set_innerText('serial_size',      print_size(serial.size));
-        set_innerText('serial_serial',    serial.serial);
-        set_innerText('serial_createdAt', print_date(serial.createdAt, true));
-        set_innerText('serial_updatedAt', print_date(serial.updatedAt, true));
+        setInnerText('serial_id',        serial.serial_id);
+        setInnerText('serial_item',      serial.size.item.description);
+        setInnerText('serial_size',      print_size(serial.size));
+        setInnerText('serial_serial',    serial.serial);
+        setInnerText('serial_createdAt', print_date(serial.createdAt, true));
+        setInnerText('serial_updatedAt', print_date(serial.updatedAt, true));
         return serial;
     };
     function set_links(serial) {
-        set_href('serial_item_link', `/items/${serial.size.item_id}`);
-        set_href('serial_size_link', `/sizes/${serial.size_id}`);
-        set_href('btn_serial_link',  `/serials/${serial.serial_id}`);
+        setHREF('serial_item_link', `/items/${serial.size.item_id}`);
+        setHREF('serial_size_link', `/sizes/${serial.size_id}`);
+        setHREF('btn_serial_link',  `/serials/${serial.serial_id}`);
         return serial;
     };
     get({

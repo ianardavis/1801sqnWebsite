@@ -6,14 +6,14 @@ function isShown(id) {
 function set_tendered(amt) {
     amt = String(amt).padStart(3, '0');
     amt = amt.substring(0, amt.length - 2) + "." + amt.substring(amt.length - 2);
-    set_value('tendered', amt);
+    setValue('tendered', amt);
 };
 
 function getSale() {
     get({table: 'sale_current'})
     .then(function ([sale_id, options]) {
         if (sale_id) {
-            set_innerText('sale_id', sale_id);
+            setInnerText('sale_id', sale_id);
             document.querySelectorAll('.sale_id').forEach(e => e.setAttribute('value', sale_id));
             getSaleLines();
         } else alert_toast('Sale not found');
@@ -31,8 +31,8 @@ function getSaleLines() {
             .then(function ([results, options]) {
                 let total  = 0;
                 if (results.lines.length === 0) {
-                    disable_button('complete_sale')
-                    disable_button('finish');
+                    disableButton('complete_sale')
+                    disableButton('finish');
                 } else {
                     enableButton('complete_sale');
                     enableButton('finish');
@@ -89,7 +89,7 @@ function reset_sale_complete() {
     change.innerText = '';
     hide('btn_close_sale_complete');
     show('btn_sale_complete');
-    set_value('tendered', '0.00')
+    setValue('tendered', '0.00')
 };
 function getSession() {
     get({
@@ -97,7 +97,7 @@ function getSession() {
         where: {status: 1}
     })
     .then(function ([results, options]) {
-        set_href('btn_session', `/sessions/${results.sessions[0].session_id}`);
+        setHREF('btn_session', `/sessions/${results.sessions[0].session_id}`);
     });
 };
 
@@ -114,7 +114,7 @@ window.addEventListener('load', function () {
                 getSale,
                 function (response) {
                     if (typeof getCredits === 'function') getCredits;
-                    set_innerText('change', `${Number(response.change).toFixed(2)}`)
+                    setInnerText('change', `${Number(response.change).toFixed(2)}`)
                     show('btn_close_sale_complete');
                     hide('btn_sale_complete');
                 }

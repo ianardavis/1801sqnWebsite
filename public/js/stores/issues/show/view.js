@@ -9,36 +9,36 @@ const statuses = {
 };
 function getIssue() {
     function disable_all_buttons() {
-        disable_button('delete');
-        disable_button('mark_as');
+        disableButton('delete');
+        disableButton('mark_as');
         for (let i=0; i<=5 ; i++) {
-            disable_button(`mark_${i}`);
+            disableButton(`mark_${i}`);
         };
     };
     function display_details([issue, options]) {
-        set_breadcrumb(issue.issue_id);
-        set_innerText('issue_user_issue', print_user(issue.user_issue));
-        set_innerText('issue_size',       print_size(issue.size));
-        set_innerText('issue_item',       issue.size.item.description);
-        set_innerText('issue_qty',        issue.qty);
-        set_innerText('issue_order',      issue.order_id);
-        set_innerText('issue_createdAt',  print_date(issue.createdAt, true));
-        set_innerText('issue_updatedAt',  print_date(issue.updatedAt, true));
-        set_innerText('issue_user',       print_user(issue.user));
+        setBreadcrumb(issue.issue_id);
+        setInnerText('issue_user_issue', print_user(issue.user_issue));
+        setInnerText('issue_size',       print_size(issue.size));
+        setInnerText('issue_item',       issue.size.item.description);
+        setInnerText('issue_qty',        issue.qty);
+        setInnerText('issue_order',      issue.order_id);
+        setInnerText('issue_createdAt',  print_date(issue.createdAt, true));
+        setInnerText('issue_updatedAt',  print_date(issue.updatedAt, true));
+        setInnerText('issue_user',       print_user(issue.user));
         return issue;
     };
     function set_links(issue) {
-        set_href('issue_user_link',       `/users/${issue.user_id}`);
-        set_href('issue_user_issue_link', `/users/${issue.user_id_issue}`);
-        set_href('issue_size_link',       `/sizes/${issue.size_id}`);
+        setHREF('issue_user_link',       `/users/${issue.user_id}`);
+        setHREF('issue_user_issue_link', `/users/${issue.user_id_issue}`);
+        setHREF('issue_size_link',       `/sizes/${issue.size_id}`);
         if (issue.order_id) {
-            set_href('issue_order_link',  `/orders/${issue.order_id}`);
+            setHREF('issue_order_link',  `/orders/${issue.order_id}`);
 
         } else {
-            set_href('issue_order_link');
+            setHREF('issue_order_link');
 
         };
-        set_href('issue_item_link',       `/items/${issue.size.item_id}`);
+        setHREF('issue_item_link',       `/items/${issue.size.item_id}`);
         return issue;
     };
     function display_loancard_lines(issue) {

@@ -6,13 +6,13 @@ function viewUserEdit() {
     .then(function ([user, options]) {
         listStatuses( {select: 'sel_statuses', selected: user.status_id, id_only: true});
         listRanks(    {select: 'sel_ranks',    selected: user.rank_id,   id_only: true});
-        set_innerText('full_name_edit', print_user(user));
-        set_value('inp_service_number', user.service_number);
-        set_value('inp_rank_id',        user.rank.rank);
-        set_value('inp_surname',        user.surname);
-        set_value('inp_first_name',     user.first_name);
-        set_value('inp_status_id',      user.status.status);
-        set_value('inp_login_id',       user.login_id);
+        setInnerText('full_name_edit', print_user(user));
+        setValue('inp_service_number', user.service_number);
+        setValue('inp_rank_id',        user.rank.rank);
+        setValue('inp_surname',        user.surname);
+        setValue('inp_first_name',     user.first_name);
+        setValue('inp_status_id',      user.status.status);
+        setValue('inp_login_id',       user.login_id);
     });
 };
 window.addEventListener('load', function () {

@@ -1,10 +1,10 @@
 const enable_edit_button = function () {enableButton('item_edit')};
 function view_item_edit() {
     function display_details ([item, options]) {
-        set_value('description_edit', item.description);
-        set_value('size_text1_edit',  item.size_text1);
-        set_value('size_text2_edit',  item.size_text2);
-        set_value('size_text3_edit',  item.size_text3);
+        setValue('description_edit', item.description);
+        setValue('size_text1_edit',  item.size_text1);
+        setValue('size_text2_edit',  item.size_text2);
+        setValue('size_text3_edit',  item.size_text3);
         return item;
     };
     function get_genders(item) {

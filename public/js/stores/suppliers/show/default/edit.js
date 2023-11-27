@@ -5,7 +5,7 @@ function setDefaultBtn() {
         spinner: 'supplier'
     })
     .then(function ([setting, options]) {
-        if (setting.value === path[2]) disable_button('default');
+        if (setting.value === path[2]) disableButton('default');
         else                           enableButton('default');
     });
 };

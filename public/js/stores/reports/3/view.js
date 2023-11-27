@@ -39,7 +39,7 @@ function getSizes() {
         };
         function get_stock_count(size_id) {
             get_stock(size_id)
-            .then(stock => set_innerText(`${size_id}_stocks`, stock || '0'));
+            .then(stock => setInnerText(`${size_id}_stocks`, stock || '0'));
         };
         function get_order_sum(size_id) {
             get({
@@ -51,7 +51,7 @@ function getSizes() {
                 }
             })
             .then(function([orders, options]) {
-                set_innerText(`${size_id}_orders`, orders || '0');
+                setInnerText(`${size_id}_orders`, orders || '0');
             });
         };
         function get_issue_sum(size_id) {
@@ -64,7 +64,7 @@ function getSizes() {
                 }
             })
             .then(function([issues, options]) {
-                set_innerText(`${size_id}_issues`, issues || '0');
+                setInnerText(`${size_id}_issues`, issues || '0');
             });
         };
         function get_demand_line_qty(size_id) {
@@ -82,7 +82,7 @@ function getSizes() {
                         qty += order.qty;
                     });
                 });
-                set_innerText(`${size_id}_demands`, qty);
+                setInnerText(`${size_id}_demands`, qty);
             });
         };
 

@@ -1,0 +1,10 @@
+<button
+<% if (locals.form) { %>
+    form="form_<%= id %>"
+<% } %>
+    id='btn_<%= id %>'
+    class="btn btn-<%= colour %> w-100 mb-1"
+    disabled
+>
+    <%= text %>
+</button>

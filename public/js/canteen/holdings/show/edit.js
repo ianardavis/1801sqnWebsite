@@ -4,7 +4,7 @@ function viewHoldingEdit() {
         where: {holding_id: path[2]}
     })
     .then(function([holding, options]) {
-        set_value('holding_description_edit', holding.description);
+        setValue('holding_description_edit', holding.description);
     });
 };
 window.addEventListener('load', function () {

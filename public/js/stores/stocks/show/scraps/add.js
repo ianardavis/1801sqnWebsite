@@ -1,5 +1,5 @@
 function resetScrapAdd() {
-    set_value('adjustment_qty_scrap');
+    setValue('adjustment_qty_scrap');
 };
 function getSize() {
     return new Promise((resolve, reject) => {

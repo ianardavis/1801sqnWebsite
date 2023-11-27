@@ -29,8 +29,8 @@ function viewCategoryEdit(category_id) {
         where: {category_id: category_id}
     })
     .then(function([category, options]) {
-        set_value('category_id_edit', category.category_id);
-        set_value('_category_edit',   category.category);
+        setValue('category_id_edit', category.category_id);
+        setValue('_category_edit',   category.category);
         listCategories({select: 'sel_category_edit', selected: category.parent_category_id || ''});
     });
 };

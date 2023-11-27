@@ -7,7 +7,7 @@ function getReceipts() {
             func: getReceipts
         })
         .then(function ([result, options]) {
-            set_count('receipt', result.count);
+            setCount('receipt', result.count);
             result.receipts.forEach(receipt => {
                 try {
                     let row = tbl_receipts.insertRow(-1);

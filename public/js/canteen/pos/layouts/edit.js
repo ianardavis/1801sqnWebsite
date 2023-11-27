@@ -50,9 +50,9 @@ function viewButton(page_id, position, layout = null) {
                 text:  e.name,
                 selected: (layout && layout.item_id === e.item_id ? true : false)
             }).e));
-            set_value('layout_button_edit', position);
-            set_value('layout_page_edit',   page_id);
-            set_value('colour_edit',        (layout ? `${layout.colour}` : '#31639e'));
+            setValue('layout_button_edit', position);
+            setValue('layout_page_edit',   page_id);
+            setValue('colour_edit',        (layout ? `${layout.colour}` : '#31639e'));
             clear('layout_delete_btn')
             .then(layout_delete_btn => {
                 get({

@@ -1,6 +1,6 @@
 function editBtnStatus(status) {
     if (status === 1) enableButton('paid_in_out_complete')
-    else              disable_button('paid_in_out_complete');
+    else              disableButton('paid_in_out_complete');
 };
 window.addEventListener('load', function () {
     addFormListener(

@@ -15,7 +15,7 @@
 	background-color: #bdffa3;
 	color:#010a1f;
 }
-.selected_item {
+.selected_row {
 	background-color: var(--main-color);
 	color: var(--main-bg-color);
 }

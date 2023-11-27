@@ -8,7 +8,7 @@ function getMovements() {
             func: getMovements
         })
         .then(function ([results, options]) {
-            set_count('movement', results.count);
+            setCount('movement', results.count);
             results.movements.forEach(movement => {
                 let row = tbl_movements.insertRow(-1);
                 add_cell(row, {text: print_date(movement.createdAt)});

@@ -14,7 +14,7 @@ function get_users() {
             func: get_users
         })
         .then(function ([results, options]) {
-            set_count('user', results.length);
+            setCount('user', results.length);
             results.forEach(user => {
                 add_line(user);
             });

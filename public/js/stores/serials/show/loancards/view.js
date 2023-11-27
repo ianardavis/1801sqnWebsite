@@ -19,7 +19,7 @@ function getLoancards() {
             func: getLoancards
         })
         .then(function ([result, options]) {
-            set_count('loancard', result.count);
+            setCount('loancard', result.count);
             result.lines.forEach(line => {
                 add_line(line);
             });
@@ -28,30 +28,30 @@ function getLoancards() {
 };
 function viewLoancard(line_id) {
     function display_details([line, options]) {
-        set_innerText('loancard_id',             line.loancard_id);
-        set_innerText('line_id',                 line.line_id);
-        set_innerText('loancard_user_to',        print_user(line.loancard.user_loancard));
-        set_innerText('loancard_user_by',        print_user(line.loancard.user));
-        set_innerText('loancard_status',         line.loancard.status);
-        set_innerText('loancard_createdAt',      print_date(line.loancard.createdAt, true));
-        set_innerText('loancard_updatedAt',      print_date(line.loancard.updatedAt, true));
-        set_innerText('loancard_line_item',      (line.size   ? (line.size.item ? line.size.item.description : 'Unknown Item') : 'Unknown Size'));
-        set_innerText('loancard_line_size',      (line.size   ? print_size(line.size) : 'Unknown Size'));
-        set_innerText('loancard_line_nsn',       (line.nsn ? print_nsn(line.nsn) : ''));
-        set_innerText('loancard_line_status',    line.status);
-        set_innerText('loancard_line_createdAt', print_date(line.createdAt, true));
-        set_innerText('loancard_line_updatedAt', print_date(line.updatedAt, true));
-        set_innerText('loancard_line_user',      print_user(line.user));
+        setInnerText('loancard_id',             line.loancard_id);
+        setInnerText('line_id',                 line.line_id);
+        setInnerText('loancard_user_to',        print_user(line.loancard.user_loancard));
+        setInnerText('loancard_user_by',        print_user(line.loancard.user));
+        setInnerText('loancard_status',         line.loancard.status);
+        setInnerText('loancard_createdAt',      print_date(line.loancard.createdAt, true));
+        setInnerText('loancard_updatedAt',      print_date(line.loancard.updatedAt, true));
+        setInnerText('loancard_line_item',      (line.size   ? (line.size.item ? line.size.item.description : 'Unknown Item') : 'Unknown Size'));
+        setInnerText('loancard_line_size',      (line.size   ? print_size(line.size) : 'Unknown Size'));
+        setInnerText('loancard_line_nsn',       (line.nsn ? print_nsn(line.nsn) : ''));
+        setInnerText('loancard_line_status',    line.status);
+        setInnerText('loancard_line_createdAt', print_date(line.createdAt, true));
+        setInnerText('loancard_line_updatedAt', print_date(line.updatedAt, true));
+        setInnerText('loancard_line_user',      print_user(line.user));
         return line;
     };
     function set_links(line) {
-        set_href('btn_loancard_link',       `/loancards/${line.loancard_id})`);
-        set_href('loancard_line_item_link', (line.size                   ? (line.size.item ? `/items/${line.size.item_id}` : '') : null));
-        set_href('loancard_user_to_link',   (line.loancard.user_loancard ? `/users/${line.loancard.user_id_loancard}` : null));
-        set_href('loancard_user_by_link',   (line.loancard.user          ? `/users/${line.loancard.user_id}`          : null));
-        set_href('loancard_line_size_link', (line.size                   ? `/sizes/${line.size_id}`                   : null));
-        set_href('loancard_line_nsn_link',  (line.nsn                    ? `/nsns/${line.nsn_id}`                     : null));
-        set_href('loancard_line_user_link', (line.user                   ? `/users/${line.user_id})`                  : null));
+        setHREF('btn_loancard_link',       `/loancards/${line.loancard_id})`);
+        setHREF('loancard_line_item_link', (line.size                   ? (line.size.item ? `/items/${line.size.item_id}` : '') : null));
+        setHREF('loancard_user_to_link',   (line.loancard.user_loancard ? `/users/${line.loancard.user_id_loancard}` : null));
+        setHREF('loancard_user_by_link',   (line.loancard.user          ? `/users/${line.loancard.user_id}`          : null));
+        setHREF('loancard_line_size_link', (line.size                   ? `/sizes/${line.size_id}`                   : null));
+        setHREF('loancard_line_nsn_link',  (line.nsn                    ? `/nsns/${line.nsn_id}`                     : null));
+        setHREF('loancard_line_user_link', (line.user                   ? `/users/${line.user_id})`                  : null));
         return line;
     };
 

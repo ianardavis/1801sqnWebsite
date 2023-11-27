@@ -7,7 +7,7 @@ function getPayments() {
             func: getPayments
         })
         .then(function ([results, options]) {
-            set_count('payment', results.count);
+            setCount('payment', results.count);
             results.payments.forEach(payment => {
                 let row = tbl_payments.insertRow(-1);
                 add_cell(row, {text: payment.type});

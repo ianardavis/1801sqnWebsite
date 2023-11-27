@@ -7,7 +7,7 @@ function getSales() {
             func: getSales
         })
         .then(function ([result, options]) {
-            set_count('sale', result.count);
+            setCount('sale', result.count);
             result.lines.forEach(line => {
                 try {
                     let row = tbl_sales.insertRow(-1);

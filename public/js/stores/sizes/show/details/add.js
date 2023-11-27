@@ -17,8 +17,8 @@ function getDetailOptions() {
     });
 };
 function reset_add_detail() {
-    set_value('detail_name_add');
-    set_value('detail_value_add');
+    setValue('detail_name_add');
+    setValue('detail_value_add');
 };
 window.addEventListener('load', function () {
     add_listener('reload_options', getDetailOptions)
@@ -34,8 +34,8 @@ window.addEventListener('load', function () {
                 reset_add_detail,
                 get_details,
                 function () {
-                    set_value('inp_detail_name',);
-                    set_value('inp_detail_value');
+                    setValue('inp_detail_name',);
+                    setValue('inp_detail_value');
                 }
             ]
         }

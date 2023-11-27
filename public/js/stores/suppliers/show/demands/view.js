@@ -26,7 +26,7 @@ function getDemands() {
             func: getDemands
         })
         .then(function ([result, options]) {
-            set_count('demand', result.count);
+            setCount('demand', result.count);
             result.demands.forEach(demand => add_line(demand));
         });
     })

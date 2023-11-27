@@ -10,7 +10,7 @@ function getActions() {
             func: getActions
         })
         .then(function ([result, options]) {
-            set_count('action', result.count);
+            setCount('action', result.count);
             result.actions.forEach(action => {
                 let row = tbl_actions.insertRow(-1);
                 add_cell(row, table_date(action.createdAt, true));
@@ -51,11 +51,11 @@ function viewLine(action_id) {
         where: {action_id: action_id}
     })
     .then(function ([action, options]) {
-        set_innerText('action_id',        action.action_id);
-        set_innerText('action_action',    action.action);
-        set_innerText('action_user',      print_user(action.user));
-        set_innerText('action_createdAt', print_date(action.createdAt, true));
-        set_href('action_user_link', `/users/${action.user_id}`);
+        setInnerText('action_id',        action.action_id);
+        setInnerText('action_action',    action.action);
+        setInnerText('action_user',      print_user(action.user));
+        setInnerText('action_createdAt', print_date(action.createdAt, true));
+        setHREF('action_user_link', `/users/${action.user_id}`);
     });
 };
 window.addEventListener('load', function () {

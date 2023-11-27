@@ -6,14 +6,19 @@ function listLinkHeadings() {
         })
         .then(function ([results, options]) {
             results.resource_link_headings.forEach(heading => {
-                link_heading_add.appendChild(new Option({text: heading.heading, value: heading.resource_link_heading_id}).e)
+                link_heading_add.appendChild(
+                    new Option({
+                        text:  heading.heading,
+                        value: heading.resource_link_heading_id
+                    }).e
+                )
             });
         });
     })
 };
 window.addEventListener('load', function () {
     modalOnShow('link_add', listLinkHeadings);
-    modalOnShow('link_heading_add', () => set_value('link_heading_heading_add'));
+    modalOnShow('link_heading_add', () => setValue('link_heading_heading_add'));
     enableButton('link_heading_add');
     enableButton('link_add');
     addFormListener(

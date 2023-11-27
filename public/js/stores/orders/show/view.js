@@ -12,19 +12,19 @@ const demand_line_statuses = {
 };
 function getOrder() {
     function display_details([order, options]) {
-        set_breadcrumb(order.order_id);
-        set_innerText('order_size',      print_size(order.size));
-        set_innerText('order_item',      order.size.item.description);
-        set_innerText('order_qty',       order.qty);
-        set_innerText('order_createdAt', print_date(order.createdAt, true));
-        set_innerText('order_updatedAt', print_date(order.updatedAt, true));
-        set_innerText('order_user',      print_user(order.user));
+        setBreadcrumb(order.order_id);
+        setInnerText('order_size',      print_size(order.size));
+        setInnerText('order_item',      order.size.item.description);
+        setInnerText('order_qty',       order.qty);
+        setInnerText('order_createdAt', print_date(order.createdAt, true));
+        setInnerText('order_updatedAt', print_date(order.updatedAt, true));
+        setInnerText('order_user',      print_user(order.user));
         return order;
     };
     function set_links(order) {
-        set_href('order_user_link', `/users/${order.user_id}`);
-        set_href('order_size_link', `/sizes/${order.size_id}`);
-        set_href('order_item_link', `/items/${order.size.item_id}`);
+        setHREF('order_user_link', `/users/${order.user_id}`);
+        setHREF('order_size_link', `/sizes/${order.size_id}`);
+        setHREF('order_item_link', `/items/${order.size.item_id}`);
         return order;
     };
     function set_button_states(order) {
@@ -75,9 +75,9 @@ function getOrder() {
         return order;
     };
 
-    disable_button('mark_as');
+    disableButton('mark_as');
     for (let i=0; i<=5 ; i++) {
-        disable_button(`mark_${i}`);
+        disableButton(`mark_${i}`);
     };
     get({
         table: 'order',

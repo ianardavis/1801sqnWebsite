@@ -20,7 +20,7 @@ function viewGenderEdit(gender_id) {
     })
     .then(function([gender, options]) {
         set_attribute('gender_id_edit', 'value', gender.gender_id);
-        set_value('gender_gender_edit', gender.gender);
+        setValue('gender_gender_edit', gender.gender);
     });
 };
 window.addEventListener('load', function () {

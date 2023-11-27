@@ -7,7 +7,7 @@ function getPermissions () {
             func: getPermissions
         })
         .then(function ([result, options]) {
-            set_count('permission', result.count);
+            setCount('permission', result.count);
             result.permissions.forEach(e => {
                 let row = tbl_permissions.insertRow(-1);
                 add_cell(row, {text: e.permission.replaceAll('_', ' ')});

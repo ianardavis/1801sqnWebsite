@@ -13,8 +13,8 @@ function getFileDescriptions() {
     });
 };
 function reset_FileAdd() {
-    set_value('file_upload');
-    set_value('file_description_add');
+    setValue('file_upload');
+    setValue('file_description_add');
 };
 window.addEventListener("load", function () {
     modalOnShow('file_add', getFileDescriptions);

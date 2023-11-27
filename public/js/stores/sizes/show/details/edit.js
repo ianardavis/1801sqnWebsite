@@ -6,8 +6,8 @@ function viewDetailEdit(detail_id) {
     })
     .then(function ([detail, options]) {
         set_attribute('detail_id_edit', 'value', detail.detail_id);
-        set_value('detail_name_edit', detail.name);
-        set_innerText('detail_value_edit', detail.value);
+        setValue('detail_name_edit', detail.name);
+        setInnerText('detail_value_edit', detail.value);
     })
     .catch(err => {
         modalHide('detail_edit');

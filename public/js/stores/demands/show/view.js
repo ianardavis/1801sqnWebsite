@@ -1,26 +1,26 @@
 const statuses = {"0": "Cancelled", "1": "Draft", "2": "Complete", "3": "Closed"};
 function get_demand() {
     function disable_all_buttons() {
-        disable_button('download');
-        disable_button('close');
-        disable_button('complete');
-        disable_button('delete');
-        disable_button('action');
-        disable_button('line_add');
+        disableButton('download');
+        disableButton('close');
+        disableButton('complete');
+        disableButton('delete');
+        disableButton('action');
+        disableButton('line_add');
     };
     function display_details([demand, options]) {
-        set_breadcrumb(`${demand.supplier.name} - ${print_date(demand.createdAt)}`);
-        set_innerText('demand_supplier',  demand.supplier.name);
-        set_innerText('demand_user',      print_user(demand.user));
-        set_innerText('demand_createdAt', print_date(demand.createdAt, true));
-        set_innerText('demand_updatedAt', print_date(demand.updatedAt, true));
-        set_innerText('demand_file',      (demand.filename ? demand.filename : ''));
+        setBreadcrumb(`${demand.supplier.name} - ${print_date(demand.createdAt)}`);
+        setInnerText('demand_supplier',  demand.supplier.name);
+        setInnerText('demand_user',      print_user(demand.user));
+        setInnerText('demand_createdAt', print_date(demand.createdAt, true));
+        setInnerText('demand_updatedAt', print_date(demand.updatedAt, true));
+        setInnerText('demand_file',      (demand.filename ? demand.filename : ''));
         document.querySelectorAll('.demand_id').forEach(e => e.setAttribute('value', demand.demand_id));
         return demand;
     };
     function set_links(demand) {
-        set_href('demand_supplier_link', `/suppliers/${demand.supplier_id}`);
-        set_href('demand_user_link',     `/users/${demand.user_id}`);
+        setHREF('demand_supplier_link', `/suppliers/${demand.supplier_id}`);
+        setHREF('demand_user_link',     `/users/${demand.user_id}`);
         return demand;
     };
     function set_status_badges(demand) {

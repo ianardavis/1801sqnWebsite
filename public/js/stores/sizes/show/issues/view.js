@@ -35,26 +35,26 @@ function get_issues() {
             func: get_issues
         })
         .then(function ([result, options]) {
-            set_count('issue', result.count);
+            setCount('issue', result.count);
             result.issues.forEach(issue => add_line(issue));
         });
     });
 };
 function viewIssue(issue_id) {
     function display_details([issue, options]) {
-        set_innerText('issue_user_to',   print_user(issue.user_issue));
-        set_innerText('issue_user_by',   print_user(issue.user));
-        set_innerText('issue_qty',       issue.qty);
-        set_innerText('issue_status',    issue_statuses[issue.status]);
-        set_innerText('issue_createdAt', print_date(issue.createdAt));
-        set_innerText('issue_updatedAt', print_date(issue.updatedAt));
-        set_innerText('issue_id',        issue.issue_id);
+        setInnerText('issue_user_to',   print_user(issue.user_issue));
+        setInnerText('issue_user_by',   print_user(issue.user));
+        setInnerText('issue_qty',       issue.qty);
+        setInnerText('issue_status',    issue_statuses[issue.status]);
+        setInnerText('issue_createdAt', print_date(issue.createdAt));
+        setInnerText('issue_updatedAt', print_date(issue.updatedAt));
+        setInnerText('issue_id',        issue.issue_id);
         return issue;
     };
     function set_links(issue) {
-        set_href('btn_issue_link',     `/issues/${issue.issue_id}`);
-        set_href('issue_user_to_link', `/users/${issue.user_id_issue}`);
-        set_href('issue_user_by_link', `/users/${issue.user_id}`);
+        setHREF('btn_issue_link',     `/issues/${issue.issue_id}`);
+        setHREF('issue_user_to_link', `/users/${issue.user_id_issue}`);
+        setHREF('issue_user_by_link', `/users/${issue.user_id}`);
         return issue;
     };
     get({

@@ -7,7 +7,7 @@ function viewFileEdit(file_id) {
     })
     .then(function ([file, options]) {
         set_attribute('file_id_edit', 'value', file.file_id);
-        set_value('file_description_edit', file.description);
+        setValue('file_description_edit', file.description);
     });
 };
 function fileEditBtn(file_id) {

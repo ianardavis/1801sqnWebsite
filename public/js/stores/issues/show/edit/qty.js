@@ -4,7 +4,7 @@ function get_qty() {
         where: {issue_id: path[2]}
     })
     .then(check_issue_status)
-    .then(issue => set_value('inp_qty_edit', issue.qty))
+    .then(issue => setValue('inp_qty_edit', issue.qty))
     .catch(err => {
         modalHide('qty_edit');
         alert_toast(err.message);

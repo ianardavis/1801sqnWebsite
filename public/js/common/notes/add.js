@@ -7,10 +7,10 @@ window.addEventListener('load', function () {
         {
             onComplete: [
                 getNotes,
-                function () {set_value('note_add_note')}
+                function () {setValue('note_add_note')}
             ]
         }
     );
-    set_value('note_add_table', path[1]);
-    set_value('note_add_id',    path[2]);
+    setValue('note_add_table', path[1]);
+    setValue('note_add_id',    path[2]);
 });

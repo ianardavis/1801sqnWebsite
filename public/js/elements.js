@@ -290,19 +290,20 @@ function Select(options = {}) {
 };
 function Option(options = {}) {
     this.e = document.createElement('option');
-    let _text = '', pre_text = '';
+    let post_text = '';
+    let pre_text = '';
     if (options.selected === true) {
         this.e.setAttribute('selected', true);
         if (options.star_default) {
-            _text = '***';
+            post_text = '***';
             pre_text = '***'
-        } else if (options.default === true) _text = ' (default)';
+        } else if (options.default === true) post_text = ' (default)';
     };
     if (options.value) this.e.setAttribute('value', options.value)
     else               this.e.setAttribute('value', '');
     
     if (options.disabled) this.e.setAttribute('disabled', true);
-    this.e.innerText = `${pre_text}${options.text || ''}${_text}`;
+    this.e.innerText = `${pre_text}${options.text || ''}${post_text}`;
 };
 function Spinner(id = null) {
     this.e = document.createElement('div');

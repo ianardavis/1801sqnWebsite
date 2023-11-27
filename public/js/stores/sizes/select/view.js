@@ -7,9 +7,9 @@ function getItems() {
 };
 function getSizes() {
     function display_size_texts([item, options]) {
-        set_innerText('size_text1', item.size_text1);
-        set_innerText('size_text2', item.size_text2);
-        set_innerText('size_text3', item.size_text3);
+        setInnerText('size_text1', item.size_text1);
+        setInnerText('size_text2', item.size_text2);
+        setInnerText('size_text3', item.size_text3);
         return item;
     };
 

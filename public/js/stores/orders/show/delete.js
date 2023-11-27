@@ -4,7 +4,7 @@ function setDeleteButton() {
         where: {order_id: path[2]}
     })
     .then(function([result, options]) {
-        disable_button('delete');
+        disableButton('delete');
         if ([1, 2, 3].includes(result.status)) enableButton('delete');
     });
 };

@@ -42,10 +42,10 @@ function viewCategory(category_id) {
         where: {category_id: category_id}
     })
     .then(function([category, options]) {
-        set_innerText('category',           category.category);
-        set_innerText('parent',             (category.parent ? category.parent.category : ''));
-        set_innerText('createdAt_category', print_date(category.createdAt, true));
-        set_innerText('updatedAt_category', print_date(category.updatedAt, true));
+        setInnerText('category',           category.category);
+        setInnerText('parent',             (category.parent ? category.parent.category : ''));
+        setInnerText('createdAt_category', print_date(category.createdAt, true));
+        setInnerText('updatedAt_category', print_date(category.updatedAt, true));
     });
 };
 window.addEventListener('load', function () {

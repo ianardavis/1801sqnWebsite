@@ -1,28 +1,28 @@
 function get_size() {
     function disable_all_buttons() {
-        disable_button('delete');
-        disable_button('size_edit');//
-        disable_button('detail_add');
-        disable_button('nsn_add');//
-        disable_button('serial_add');//
-        disable_button('stock_add');//
-        disable_button('receipt_add');
-        disable_button('order_add');//
-        disable_button('issue_add');//
+        disableButton('delete');
+        disableButton('size_edit');//
+        disableButton('detail_add');
+        disableButton('nsn_add');//
+        disableButton('serial_add');//
+        disableButton('stock_add');//
+        disableButton('receipt_add');
+        disableButton('order_add');//
+        disableButton('issue_add');//
     };
     function display_details([size, options]) {
-        set_breadcrumb(`${print_size_text(size.item)}: ${print_size(size)}`);
-        set_innerText('issueable',   yesno(size.issueable));
-        set_innerText('orderable',   yesno(size.orderable));
-        set_innerText('has_serials', yesno(size.has_serials));
-        set_innerText('has_nsns',    yesno(size.has_nsns));
-        set_innerText('supplier',    (size.supplier ? size.supplier.name : ''));
-        set_innerText('item',        size.item.description);
+        setBreadcrumb(`${print_size_text(size.item)}: ${print_size(size)}`);
+        setInnerText('issueable',   yesno(size.issueable));
+        setInnerText('orderable',   yesno(size.orderable));
+        setInnerText('has_serials', yesno(size.has_serials));
+        setInnerText('has_nsns',    yesno(size.has_nsns));
+        setInnerText('supplier',    (size.supplier ? size.supplier.name : ''));
+        setInnerText('item',        size.item.description);
         return size;
     };
     function set_links(size) {
-        set_href('supplier_link', (size.supplier ? `/suppliers/${size.supplier_id}` : ''));
-        set_href('item', `/items/${size.item_id}`);
+        setHREF('supplier_link', (size.supplier ? `/suppliers/${size.supplier_id}` : ''));
+        setHREF('item', `/items/${size.item_id}`);
         return size;
     };
     function set_button_states(size) {

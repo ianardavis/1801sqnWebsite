@@ -37,7 +37,7 @@ function getStocks(location_id) {
             ]});
             add_cell(row, {append: new Link(`/stocks/${stock.stock_id}`).e});
         };
-        set_value('location_id', location_id)
+        setValue('location_id', location_id)
         if (location_id) {
             get({
                 table: 'stocks',

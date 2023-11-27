@@ -4,14 +4,14 @@ function getReceipt() {
         where: {receipt_id: path[2]}
     })
     .then(function ([receipt, options]) {
-        set_breadcrumb(`${receipt.item.name} | ${print_date(receipt.createdAt, true)}`);
-        set_innerText('item',      receipt.item.name);
-        set_innerText('qty',       receipt.qty);
-        set_innerText('cost',      `£${receipt.cost}`);
-        set_innerText('createdAt', print_date(receipt.createdAt, true));
-        set_innerText('user',      print_user(receipt.user));
-        set_href('item_link', `/canteen_items/${receipt.item_id}`);
-        set_href('user_link', `/users/${receipt.user_id}`);
+        setBreadcrumb(`${receipt.item.name} | ${print_date(receipt.createdAt, true)}`);
+        setInnerText('item',      receipt.item.name);
+        setInnerText('qty',       receipt.qty);
+        setInnerText('cost',      `£${receipt.cost}`);
+        setInnerText('createdAt', print_date(receipt.createdAt, true));
+        setInnerText('user',      print_user(receipt.user));
+        setHREF('item_link', `/canteen_items/${receipt.item_id}`);
+        setHREF('user_link', `/users/${receipt.user_id}`);
     })
 };
 window.addEventListener('load', function () {

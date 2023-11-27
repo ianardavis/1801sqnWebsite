@@ -1,6 +1,6 @@
 function resetTransferAdd() {
-    set_value('transfer_add_location');
-    set_value('transfer_add_qty');
+    setValue('transfer_add_location');
+    setValue('transfer_add_qty');
 };
 function viewTransferAdd() {
     get({

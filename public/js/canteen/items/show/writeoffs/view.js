@@ -7,7 +7,7 @@ function getWriteoffs() {
             func: getWriteoffs
         })
         .then(function ([result, options]) {
-            set_count('writeoff', result.count);
+            setCount('writeoff', result.count);
             result.writeoffs.forEach(writeoff => {
                 try {
                     let row = tbl_writeoffs.insertRow(-1);

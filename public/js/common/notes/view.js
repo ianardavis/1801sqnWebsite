@@ -13,7 +13,7 @@ function getNotes() {
             func: getNotes
         })
         .then(function ([result, options]) {
-            set_count('note', result.count);
+            setCount('note', result.count);
             result.notes.forEach(note => {
                 let row = tbl_notes.insertRow(-1);
                 add_cell(row, table_date(note.createdAt));
@@ -35,12 +35,12 @@ function viewNote(note_id) {
         spinner: 'note_view'
     })
     .then(function ([note, options]) {
-        set_innerText('note_id_view',   note.note_id);
-        set_innerText('note_createdAt', print_date(note.createdAt, true));
-        set_innerText('note_user',      note.user.full_name);
-        set_innerText('note_system',    yesno(note.system));
-        set_innerText('note_note',      note.note);
-        set_href('note_user_link', `/users/${note.user_id}`);
+        setInnerText('note_id_view',   note.note_id);
+        setInnerText('note_createdAt', print_date(note.createdAt, true));
+        setInnerText('note_user',      note.user.full_name);
+        setInnerText('note_system',    yesno(note.system));
+        setInnerText('note_note',      note.note);
+        setHREF('note_user_link', `/users/${note.user_id}`);
     });
 };
 window.addEventListener('load', function () {

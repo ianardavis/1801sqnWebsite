@@ -31,7 +31,7 @@ function getPrinter() {
         spinner: 'printers'
     })
     .then(function ([setting, options]) {
-        set_innerText('setting_printer', setting.value)
+        setInnerText('setting_printer', setting.value)
     })
 };
 function getErrorLog() {
@@ -66,11 +66,11 @@ function viewSetting(setting_id) {
         where: {setting_id: setting_id}
     })
     .then(function([setting, options]) {
-        set_innerText('setting_id',        setting.setting_id);
-        set_innerText('setting_name',      setting.name);
-        set_innerText('setting_value',     setting.value);
-        set_innerText('setting_createdAt', print_date(setting.createdAt, true));
-        set_innerText('setting_updatedAt', print_date(setting.updatedAt, true));
+        setInnerText('setting_id',        setting.setting_id);
+        setInnerText('setting_name',      setting.name);
+        setInnerText('setting_value',     setting.value);
+        setInnerText('setting_createdAt', print_date(setting.createdAt, true));
+        setInnerText('setting_updatedAt', print_date(setting.updatedAt, true));
     });
 };
 window.addEventListener('load', function () {

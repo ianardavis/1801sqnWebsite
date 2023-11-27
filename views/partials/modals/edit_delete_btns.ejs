@@ -1,0 +1,25 @@
+<span class="float-end">
+    <span class='float-end ms-1'>
+        <form id="form_<%= id %>_delete" method="DELETE" onclick='return confirm("Are you sure?")'>
+            <button
+                id="btn_<%= id %>_delete"
+                class="btn btn-danger"
+                disabled
+            >
+                <i class="fas fa-trash-alt"></i>
+            </button>
+        </form>
+    </span>
+    <span class='float-end ms-1'>
+        <button
+            id='btn_<%= id %>_edit'
+            type="button"
+            class="btn btn-primary"
+            data-bs-toggle="modal"
+            data-bs-target="#mdl_<%= id %>_edit"
+            disabled
+        >
+            <i class="fas fa-pencil-alt"></i>
+        </button>
+    </span>
+</span>

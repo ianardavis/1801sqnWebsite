@@ -13,7 +13,7 @@ function get_qty() {
     })
     .then(function ([order, options]) {
         if (order.status === 1) {
-            set_value('inp_qty_edit', order.qty);
+            setValue('inp_qty_edit', order.qty);
         } else {
             modalHide('qty_edit');
             alert_toast('Not an editable status');

@@ -5,10 +5,10 @@ function getSale() {
         where: {sale_id: path[2]}
     })
     .then(function ([sale, options]) {
-        set_breadcrumb(sale.sale_id);
-        set_innerText('sale_createdAt', print_date(sale.createdAt, true));
-        set_innerText('sale_user',      print_user(sale.user));
-        set_innerText('sale_status',    statuses[sale.status] || 'Unknown');
+        setBreadcrumb(sale.sale_id);
+        setInnerText('sale_createdAt', print_date(sale.createdAt, true));
+        setInnerText('sale_user',      print_user(sale.user));
+        setInnerText('sale_status',    statuses[sale.status] || 'Unknown');
     });
 };
 window.addEventListener('load', function () {

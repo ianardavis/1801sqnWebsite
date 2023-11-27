@@ -12,7 +12,7 @@ function get_issues () {
         })
         .then(function ([result, options]) {
             let row_index = 0;
-            set_count('issue', result.count);
+            setCount('issue', result.count);
             result.issues.forEach(issue => {
                 let row = tbl_issues.insertRow(-1);
                 add_cell(row, table_date(issue.createdAt));

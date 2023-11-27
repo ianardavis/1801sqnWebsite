@@ -4,7 +4,7 @@ function getDefault() {
         where: {name: 'default_supplier'}
     })
     .then(function ([setting, options]) {
-        set_innerText('supplier_is_default', yesno((setting.value === path[2])));
+        setInnerText('supplier_is_default', yesno((setting.value === path[2])));
     });
 };
 window.addEventListener('load', function () {

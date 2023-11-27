@@ -18,9 +18,9 @@ function viewAccountEdit(account_id) {
         where: {account_id: account_id}
     })
     .then(function([account, options]) {
-        set_value('account_id_edit',     account.account_id);
-        set_value('account_name_edit',   account.name);
-        set_value('account_number_edit', account.number);
+        setValue('account_id_edit',     account.account_id);
+        setValue('account_name_edit',   account.name);
+        setValue('account_number_edit', account.number);
         listUsers({
             select:   'sel_account_user_edit',
             selected: account.user_id_account

@@ -16,7 +16,7 @@ function get_categories() {
             func:  get_categories
         })
         .then(function ([result, options]) {
-            set_count('category', result.count);
+            setCount('category', result.count);
             result.categories.forEach(category => {
                 add_line(category);
             });
@@ -30,10 +30,10 @@ function viewCategory(category_id) {
         spinner: 'category_view'
     })
     .then(function ([category, options]) {
-        set_innerText('category_id',        category.category_id);
-        set_innerText('item_category_id',   category.item_category_id);
-        set_innerText('category_category',  category.category.category);
-        set_innerText('category_createdAt', print_date(category.createdAt));
+        setInnerText('category_id',        category.category_id);
+        setInnerText('item_category_id',   category.item_category_id);
+        setInnerText('category_category',  category.category.category);
+        setInnerText('category_createdAt', print_date(category.createdAt));
     });
 };
 window.addEventListener('load', function () {

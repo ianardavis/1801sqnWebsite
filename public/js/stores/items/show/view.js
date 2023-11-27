@@ -1,17 +1,17 @@
 function get_item() {
     function disable_all_buttons() {
-        disable_button('delete');
+        disableButton('delete');
     };
     function display_details([item, options]) {
-        set_breadcrumb(item.description);
-        set_innerText('item_description', item.description);
-        set_innerText('item_size_text1',  item.size_text1);
-        set_innerText('item_size_text2',  item.size_text2);
-        set_innerText('item_size_text3',  item.size_text3);
-        set_innerText('item_gender',      (item.gender ? item.gender.gender : ''));
-        set_innerText('size_text1_sizes_table', item.size_text1);
-        set_innerText('size_text2_sizes_table', item.size_text2);
-        set_innerText('size_text3_sizes_table', item.size_text3);
+        setBreadcrumb(item.description);
+        setInnerText('item_description', item.description);
+        setInnerText('item_size_text1',  item.size_text1);
+        setInnerText('item_size_text2',  item.size_text2);
+        setInnerText('item_size_text3',  item.size_text3);
+        setInnerText('item_gender',      (item.gender ? item.gender.gender : ''));
+        setInnerText('size_text1_sizes_table', item.size_text1);
+        setInnerText('size_text2_sizes_table', item.size_text2);
+        setInnerText('size_text3_sizes_table', item.size_text3);
         return item;
     };
     function set_button_states(item) {

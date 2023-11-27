@@ -1,7 +1,7 @@
 function reset_issue_add() {
     clear('tbl_issue_users_add');
     clear('tbl_issue_sizes_add');
-    set_value('issue_add_qty', '1');
+    setValue('issue_add_qty', '1');
 };
 let row_count_sizes = 0;
 let row_count_users = 0;

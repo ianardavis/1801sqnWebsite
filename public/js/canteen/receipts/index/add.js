@@ -2,13 +2,13 @@ function calculate_cost() {
     let qty        = document.querySelector('#qty'),
         cost_total = document.querySelector('#cost_total');
     if (qty.value > 0 && cost_total.value !== '') {
-        set_value('cost_each', Number(cost_total.value / qty.value).toFixed(2));
+        setValue('cost_each', Number(cost_total.value / qty.value).toFixed(2));
     };
 };
 function reset_add_item() {
-    set_value('qty');
-    set_value('cost_each');
-    set_value('cost_total');
+    setValue('qty');
+    setValue('cost_each');
+    setValue('cost_total');
 };
 function getItems() {
     clear('sel_items')

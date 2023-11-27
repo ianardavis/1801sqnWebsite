@@ -1,6 +1,6 @@
 function deleteBtnStatus(status) {
     if (status === 1) enableButton('paid_in_out_cancel')
-    else              disable_button('paid_in_out_cancel');
+    else              disableButton('paid_in_out_cancel');
 };
 window.addEventListener('load', function () {
     addFormListener(

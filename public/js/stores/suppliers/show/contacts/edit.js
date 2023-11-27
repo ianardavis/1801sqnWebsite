@@ -6,9 +6,9 @@ function viewContactEdit(contact_id) {
     })
     .then(function ([contact, options]) {
         set_attribute('supplier_contact_id_edit', 'value', contact.supplier_contact_id);
-        set_value('contact_type_edit',        contact.contact.type);
-        set_value('contact_description_edit', contact.contact.description);
-        set_value('contact_contact_edit',     contact.contact.contact);
+        setValue('contact_type_edit',        contact.contact.type);
+        setValue('contact_description_edit', contact.contact.description);
+        setValue('contact_contact_edit',     contact.contact.contact);
         modalHide('contact_view');
     })
     .catch(err => {

@@ -4,10 +4,10 @@ function getItemEdit() {
         where: {item_id: path[2]}
     })
     .then(function([item, options]) {
-        set_value('item_name_edit',    item.name);
-        set_value('item_price_edit',   item.price);
-        set_value('item_cost_edit',    item.cost);
-        set_value('item_current_edit', (item.current ? '1' : '0'));
+        setValue('item_name_edit',    item.name);
+        setValue('item_price_edit',   item.price);
+        setValue('item_cost_edit',    item.cost);
+        setValue('item_current_edit', (item.current ? '1' : '0'));
     });
 };
 window.addEventListener('load', function () {
