@@ -5,7 +5,7 @@ function viewAddressEdit(address_id) {
         spinner: 'address_edit'
     })
     .then(function ([address, options]) {
-        set_attribute('supplier_address_id_edit', 'value', address.address_id);
+        setAttribute('supplier_address_id_edit', 'value', address.address_id);
         setValue('address_type_edit',        address.address.type);
         setValue('address_unit_number_edit', address.address.unit_number);
         setValue('address_street_edit',      address.address.street);

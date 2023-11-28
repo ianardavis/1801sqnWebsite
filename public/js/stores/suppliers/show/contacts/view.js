@@ -10,10 +10,10 @@ function getContacts() {
             setCount('contact', result.count);
             result.contacts.forEach(contact => {
                 let row = tbl_contacts.insertRow(-1);
-                add_cell(row, {text: contact.type});
-                add_cell(row, {text: contact.description});
-                add_cell(row, {text: contact.contact});
-                add_cell(row, {append: new Modal_Button(
+                addCell(row, {text: contact.type});
+                addCell(row, {text: contact.description});
+                addCell(row, {text: contact.contact});
+                addCell(row, {append: new Modal_Button(
                     _search(),
                     'contact_view',
                     [{field: 'id', value: contact.suppliers[0].supplier_contacts.supplier_contact_id}]
@@ -34,13 +34,13 @@ function viewContact(supplier_contact_id) {
         setInnerText('contact_type',        contact.contact.type);
         setInnerText('contact_description', contact.contact.description);
         setInnerText('contact_contact',     contact.contact.contact);
-        setInnerText('contact_createdAt',   print_date(contact.contact.createdAt, true));
-        setInnerText('contact_updatedAt',   print_date(contact.contact.updatedAt, true));
+        setInnerText('contact_createdAt',   printDate(contact.contact.createdAt, true));
+        setInnerText('contact_updatedAt',   printDate(contact.contact.updatedAt, true));
     });
 };
 window.addEventListener('load', function () {
-    add_listener('reload', getContacts);
+    addListener('reload', getContacts);
     modalOnShow('contact_view', function (event) {viewContact(event.relatedTarget.dataset.id)});
-    add_sort_listeners('contacts', getContacts);
+    addSortListeners('contacts', getContacts);
     getContacts();
 });

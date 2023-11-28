@@ -19,18 +19,18 @@ function getLoancards () {
             setCount('loancards', result.count);
             result.loancards.forEach(loancard => {
                 let row = tbl_loancards.insertRow(-1);
-                add_cell(row, table_date(loancard.createdAt));
-                add_cell(row, {text: loancard.lines.length || '0'});
-                add_cell(row, {text: loancard_statuses[loancard.status]})
-                add_cell(row, {append: new Link(`/loancards/${loancard.loancard_id}`).e});
+                addCell(row, tableDate(loancard.createdAt));
+                addCell(row, {text: loancard.lines.length || '0'});
+                addCell(row, {text: loancard_statuses[loancard.status]})
+                addCell(row, {append: new Link(`/loancards/${loancard.loancard_id}`).e});
             });
         });
     })
     .catch(err => console.error(err));
 };
 window.addEventListener('load', function () {
-    add_listener('reload', getLoancards);
-    add_listener('sel_loancard_statuses', getLoancards, 'change');
-    add_sort_listeners('loancards', getLoancards);
+    addListener('reload', getLoancards);
+    addListener('sel_loancard_statuses', getLoancards, 'change');
+    addSortListeners('loancards', getLoancards);
     getLoancards();
 });

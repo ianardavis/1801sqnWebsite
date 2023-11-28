@@ -7,10 +7,10 @@ function getAccounts() {
         .then(function ([results, options]) {
             results.accounts.forEach(account => {
                 let row = tbl_accounts.insertRow(-1);
-                add_cell(row, {text: account.name});
-                add_cell(row, {text: account.number});
-                add_cell(row, {text: print_user(account.user)});
-                add_cell(row, {append: 
+                addCell(row, {text: account.name});
+                addCell(row, {text: account.number});
+                addCell(row, {text: printUser(account.user)});
+                addCell(row, {append: 
                     new Modal_Button(
                         _search(),
                         'account_view',
@@ -36,15 +36,15 @@ function viewAccount(account_id) {
         setInnerText('account_id',        account.account_id);
         setInnerText('account_name',      account.name);
         setInnerText('account_number',    account.number);
-        setInnerText('account_user',      print_user(account.user));
-        setInnerText('account_createdAt', print_date(account.createdAt, true));
-        setInnerText('account_updatedAt', print_date(account.updatedAt, true));
+        setInnerText('account_user',      printUser(account.user));
+        setInnerText('account_createdAt', printDate(account.createdAt, true));
+        setInnerText('account_updatedAt', printDate(account.updatedAt, true));
         setHREF('account_user_link', `/users/${account.user_id}`);
     });
 };
 window.addEventListener('load', function () {
-    add_listener('reload', getAccounts);
+    addListener('reload', getAccounts);
     modalOnShow('account_view', function (event) {viewAccount(event.relatedTarget.dataset.id)});
-    add_sort_listeners('accounts', getAccounts);
+    addSortListeners('accounts', getAccounts);
     getAccounts();
 });

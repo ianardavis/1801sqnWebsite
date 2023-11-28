@@ -68,7 +68,7 @@ function setBreadcrumb(text, id = 'breadcrumb', href = null) {
         reject(err);
     });
 };
-function clear_statuses(max, statuses) {
+function clearStatuses(max, statuses) {
     for (s=1; s<=max; s++) {
         set_badge(s, 'secondary', statuses[s]);
     };
@@ -118,14 +118,18 @@ function setValue(id, text = '') {
         reject(err);
     });
 };
-function set_attribute(id, attribute, value = null) {
-    let e = document.querySelector(`#${id}`);
-    if (e) {
+function setAttribute(id, attribute, value = null) {
+    getElement(id)
+    .then(e => {
         if (value) e.setAttribute(   attribute, value)
         else       e.removeAttribute(attribute);
-    };
+    })
+    .catch(err => {
+        console.error(`common.js | setAttribute | ${err.message}`);
+        reject(err);
+    });
 };
-function add_cell(row, options = {}) {
+function addCell(row, options = {}) {
     let cell = row.insertCell();
 
     if      (options.text) cell.innerText = options.text || '';
@@ -142,70 +146,77 @@ function add_cell(row, options = {}) {
     return cell;
 };
 function show(id) {
-    let e = document.querySelector(`#${id}`);
-    if (e) e.classList.remove('hidden');
+    getElement(id)
+    .then(e => e.classList.remove('hidden'))
+    .catch(err => {
+        console.error(`common.js | show | ${err.message}`);
+        reject(err);
+    });
 };
 function hide(id) {
-    let e = document.querySelector(`#${id}`);
-    if (e) e.classList.add('hidden');
+    getElement(id)
+    .then(e => e.classList.add('hidden'))
+    .catch(err => {
+        console.error(`common.js | hide | ${err.message}`);
+        reject(err);
+    });
 };
-function print_user(user) {
+function printUser(user) {
     if (user) return `${user.rank.rank} ${user.full_name}`
     else return '';
 };
-function print_date(date, time = false) {
+function printDate(date, time = false) {
     if (date) {
         let str = new Date(date).toDateString();
         if (time) str += ` ${new Date(date).toLocaleTimeString()}`;
         return str;
     } else return '';
 };
-function print_time(date) {
+function printTime(date) {
     if (date) return new Date(date).toLocaleTimeString()
     else return '';
 };
-function print_nsn(nsn) {
+function printNSN(nsn) {
     if (nsn && nsn.nsn_group && nsn.nsn_class && nsn.nsn_country) {
         return `${String(nsn.nsn_group.code).padStart(2, '0')}${String(nsn.nsn_class.code).padStart(2, '0')}-${String(nsn.nsn_country.code).padStart(2, '0')}-${nsn.item_number}`
     } else return '';
 };
-function print_account(account) {
+function printAccount(account) {
     if (account) return `${account.name} | ${account.number}`
     else return '';
 };
-function print_size(size) {
-    if (size) {
-        return `${size.size1}${(size.size2 ? `/${size.size2}` : '')}${(size.size3 ? `/${size.size3}` : '')}`;
-    } else {
-        return '';
-    };
+function printSize(size) {
+    if (size) return `${size.size1}${(size.size2 ? `/${size.size2}` : '')}${(size.size3 ? `/${size.size3}` : '')}`;
+    else return '';
 };
-function print_size_text(item) {
+function printSizeText(item) {
     return `${item.size_text1}${(item.size_text2 ? `/${item.size_text2}` : '')}${(item.size_text3 ? `/${item.size_text3}` : '')}`
 };
-function table_date(date, time = false) {
-    let _date = {
-        text: print_date(date, time)
-    };
-    return _date;
+function tableDate(date, time = false) {
+    return { text: printDate(date, time) };
 }
 function clear(id) {
     return new Promise((resolve, reject) => {
-        let e = document.getElementById(id);
-        if (e) {
+        getElement(id)
+        .then(e => {
             e.innerHTML = '';
             resolve(e);
-        } else {
-            console.error(`common.js | clear | Element not found: ${id}`);
-            reject(new Error('Element not found'));
-        };
-    })
+        })
+        .catch(err => {
+            console.error(`common.js | clear | ${err.message}`);
+            reject(err);
+        });
+    });
 };
-function add_listener(btn, func, event = 'click') {
-    let e = document.querySelector(`#${btn}`)
-    if (e) e.addEventListener(event, func);
+function addListener(btn, func, event = 'click') {
+    getElement(btn)
+    .then(e => e.addEventListener(event, func))
+    .catch(err => {
+        console.error(`common.js | addListener | ${err.message}`);
+        reject(err);
+    });
 };
-function toggle_checkbox_on_row_click(event) {
+function toggleCheckboxOnRowClick(event) {
     let e = event.target.parentNode.childNodes[0].querySelector('input');
     if (e) e.click();
 };
@@ -218,45 +229,83 @@ function sidebarClose(id) {
     sdb.hide();
 };
 function modalOnShow(id, func) {
-    let e = document.querySelector(`#mdl_${id}`);
-    if (e) e.addEventListener('show.bs.modal', function (event){func(event)});
+    getElement(`mdl_${id}`)
+    .then(e => e.addEventListener('show.bs.modal', function (event){func(event)}))
+    .catch(err => {
+        console.error(`common.js | modalOnShow | ${err.message}`);
+        reject(err);
+    });
 };
 function sidebarOnShow(id, func) {
-    let e = document.querySelector(`#sdb_${id}`);
-    if (e) e.addEventListener('show.bs.offcanvas', function (event){func(event)});
+    getElement(`#sdb_${id}`)
+    .then(e => e.addEventListener('show.bs.offcanvas', function (event){func(event)}))
+    .catch(err => {
+        console.error(`common.js | sidebarOnShow | ${err.message}`);
+        reject(err);
+    });
 };
-function modalOnShown(id, func, args = []) {
-    let e = document.querySelector(`#mdl_${id}`);
-    if (e) e.addEventListener('shown.bs.modal', function (){func(...args)});
+function modalOnShown(id, func, args = []) {7
+    getElement(`mdl_${id}`)
+    .then(e => e.addEventListener('shown.bs.modal', function (){func(...args)}))
+    .catch(err => {
+        console.error(`common.js | modalOnShown | ${err.message}`);
+        reject(err);
+    });
 };
 function modalOnHide(id, func) {
-    let e = document.querySelector(`#mdl_${id}`);
-    if (e) e.addEventListener('hide.bs.modal', function (event){func(event)});
+    getElement(`mdl_${id}`)
+    .then(e => e.addEventListener('hide.bs.modal', function (event){func(event)}))
+    .catch(err => {
+        console.error(`common.js | modalOnHide | ${err.message}`);
+        reject(err);
+    });
 };
 function modalIsShown(id) {
-    let e = document.querySelector(`#mdl_${id}`);
-    if (e && e.classList.contains('show')) return true
-    else return false;
+    getElement(`mdl_${id}`)
+    .then(e => {return e.classList.contains('show')})
+    .catch(err => {
+        console.error(`common.js | modalIsShown | ${err.message}`);
+        reject(err);
+    });
 };
-function show_tab(tab) {
-    let tabHead = document.querySelector(`#${tab}-tab`),
-        tabBody = document.querySelector(`#${tab}`);
-    if (tabHead) tabHead.classList.add('active');
-    if (tabBody) tabBody.classList.add('active', 'show');
+function showTab(tab) {
+    Promise.all(
+        getElement(`${tab}-tab`),
+        getElement(tab)
+    )
+    .then(([tabHead, tabBody]) => {
+        tabHead.classList.add('active');
+        tabBody.classList.add('active', 'show');
+    })
+    .catch(err => {
+        console.error(`common.js | showTab | ${err.message}`);
+        reject(err);
+    });
 };
-function show_spinner(id) {
-    let spn_results = document.querySelector(`#spn_${id}`);
-    if (spn_results) spn_results.classList.remove('hidden');
+function showSpinner(id) {
+    getElement(`spn_${id}`)
+    .then(e => e.classList.remove('hidden'))
+    .catch(err => {
+        console.error(`common.js | showSpinner | ${err.message}`);
+        reject(err);
+    });
 };
-function hide_spinner(id) {
-    let spn_results = document.querySelector(`#spn_${id}`);
-    if (spn_results) spn_results.classList.add('hidden');
+function hideSpinner(id) {
+    getElement(`spn_${id}`)
+    .then(e => e.classList.add('hidden'))
+    .catch(err => {
+        console.error(`common.js | hideSpinner | ${err.message}`);
+        reject(err);
+    });
 };
-function remove_spinner(id) {
-    let spinner = document.querySelector(`#spn_${id}`);
-    if (spinner) spinner.remove();
+function removeSpinner(id) {
+    removeID(`spn_${id}`)
+    .catch(err => {
+        console.error(`common.js | removeSpinner | ${err.message}`);
+        reject(err);
+    });
 };
-function get_stock(size_id) {
+function getStock(size_id) {
     return new Promise(resolve => {
         get({
             action: 'sum',
@@ -265,15 +314,15 @@ function get_stock(size_id) {
         })
         .then(([stock, options]) => resolve(stock))
         .catch(err => {
-            console.error('common.js | get_stock | Error getting stock:', err);
+            console.error('common.js | getStock | Error getting stock:', err);
             resolve('?');
         });
     });
 };
-function add_page_links(count, limit, offset, table, func) {
+function addPageLinks(count, limit, offset, table, func) {
     clear(`page_buttons_${table}`)
     .then(page_buttons => {
-        let listener = function (e) {
+        function listener(e) {
             let offset = document.querySelector(`.offset_${table} .active`);
             offset.classList.remove('active');
             e.target.parentNode.classList.add('active');
@@ -320,7 +369,7 @@ function toProperCase(str) {
     );
 };
 
-function set_status_filter_options(id, options) {
+function setStatusFilterOptions(id, options) {
     getElement(`filter_${id}_status`)
     .then(select => {
         options.forEach(option => {
@@ -329,7 +378,7 @@ function set_status_filter_options(id, options) {
         select.setAttribute('size', options.length);
     })
     .catch(err => {
-        console.error(`common.js | set_status_filter_options | ${err.message}`);
+        console.error(`common.js | setStatusFilterOptions | ${err.message}`);
         reject(err);
     });
 };
@@ -345,55 +394,91 @@ function getSelectedOptions(id) {
         reject(err);
     });
 };
-function filter_item(id) {
-    const item = document.querySelector(`#filter_${id}_description`);
-    if (item && item.value) return {description: item.value}
-    else return {};
+function filterItem(id) {
+    getElement(`filter_${id}_description`)
+    .then(e => {
+        if (e.value) return {description: e.value}
+    })
+    .catch(err => {
+        console.error(`common.js | filterItem | ${err.message}`);
+        reject(err);
+    });
 };
-function filter_size(id) {
-    const size1 = document.querySelector(`#filter_${id}_size_1`);
-    const size2 = document.querySelector(`#filter_${id}_size_2`);
-    const size3 = document.querySelector(`#filter_${id}_size_3`);
-    let like = {};
-    if (size1 && size1.value) like.size1 = size1.value;
-    if (size2 && size2.value) like.size2 = size2.value;
-    if (size3 && size3.value) like.size3 = size3.value;
-    return like;
-
+function filterSize(id) {
+    Promise.all(
+        getElement(`filter_${id}_size_1`),
+        getElement(`filter_${id}_size_2`),
+        getElement(`filter_${id}_size_3`)
+    )
+    .then(([size1, size2, size3]) => {
+        let like = {};
+        if (size1 && size1.value) like.size1 = size1.value;
+        if (size2 && size2.value) like.size2 = size2.value;
+        if (size3 && size3.value) like.size3 = size3.value;
+        return like;
+    })
+    .catch(err => {
+        console.error(`common.js | filterItem | ${err.message}`);
+        reject(err);
+    });
 };
-function filter_status(id) {
+function filterStatus(id) {
     const statuses = getSelectedOptions(`filter_${id}_status`);
     if (statuses && statuses.length > 0) return {status: statuses}
     else return {};
 };
-function filter_supplier(id) {
-    const supplier = document.querySelector(`#filter_${id}_supplier`);
-    if (supplier && supplier .value !== '') return {supplier_id: supplier.value}
-    else return {};
+function filterSupplier(id) {
+    getElement(`filter_${id}_supplier`)
+    .then(e => {
+        if (e.value !== '') return {supplier_id: e.value}
+        else return {};
+    })
+    .catch(err => {
+        console.error(`common.js | filterSupplier | ${err.message}`);
+        reject(err);
+    });
 };
-function filter_date_from(id) {
-    const date_from = document.querySelector(`#filter_${id}_createdAt_from`);
-    if (date_from && date_from.value !== '') return {column: 'createdAt', value: date_from.value}
-    else return null;
+function filterDateFrom(id) {
+    getElement(`filter_${id}_createdAt_from`)
+    .then(e => {
+        if (e.value !== '') return {column: 'createdAt', value: e.value}
+        else return null;
+    })
+    .catch(err => {
+        console.error(`common.js | filterDateFrom | ${err.message}`);
+        reject(err);
+    });
 };
-function filter_date_to(id) {
-    const date_to = document.querySelector(`#filter_${id}_createdAt_to`);
-    if (date_to && date_to.value !== '') return {column: 'createdAt', value: date_to.value}
-    else return null;
+function filterDateTo(id) {
+    getElement(`filter_${id}_createdAt_to`)
+    .then(e => {
+        if (e.value !== '') return {column: 'createdAt', value: e.value}
+        else return null;
+    })
+    .catch(err => {
+        console.error(`common.js | filterDateTo | ${err.message}`);
+        reject(err);
+    });
 };
-function filter_user(id) {
-    const user = document.querySelector(`#filter_${id}_user`);
-    let where = {};
-    if (user && user.value) where[`user_id_${id}`] = user.value;
-    return where;
+function filterUser(id) {
+    getElement(`filter_${id}_user`)
+    .then(e => {
+        let where = {};
+        if (e.value) where[`user_id_${id}`] = e.value;
+        return where;
+    })
+    .catch(err => {
+        console.error(`common.js | filterUser | ${err.message}`);
+        reject(err);
+    });
 };
-function filter_gender(id) {
+function filterGender(id) {
     const genders = getSelectedOptions(`filter_${id}_gender`);
     if (genders && genders.length > 0) return {gender_id: genders}
     else return {};
 };
 
-function add_sort_listeners(table, func) {
+function addSortListeners(table, func) {
     function sort(tr, func) {
         if (!tr.dataset.dir) {
             (tr.parentNode.querySelectorAll("[data-dir]")).forEach(e => {
@@ -420,7 +505,7 @@ function add_sort_listeners(table, func) {
         };
         func();
     };
-    let limit_func = function (e) {
+    function limitFunc(e) {
         let limit = document.querySelector(`.limit_${table} .active`);
         if (limit) {
             limit.classList.remove('active');
@@ -428,13 +513,13 @@ function add_sort_listeners(table, func) {
             if (func) func();
         };
     };
-    add_listener(`limit_${table}_10`,  limit_func);
-    add_listener(`limit_${table}_20`,  limit_func);
-    add_listener(`limit_${table}_30`,  limit_func);
-    add_listener(`limit_${table}_all`, limit_func);
+    addListener(`limit_${table}_10`,  limitFunc);
+    addListener(`limit_${table}_20`,  limitFunc);
+    addListener(`limit_${table}_30`,  limitFunc);
+    addListener(`limit_${table}_all`, limitFunc);
     
-    let tbl = document.querySelector(`#tbl_${table}_head`);
-    if (tbl) {
+    getElement(`tbl_${table}_head`)
+    .then(tbl => {
         tbl.querySelectorAll("[data-column]").forEach(th => {
             th.insertAdjacentHTML('afterbegin', '<i class="fas"></i>');
             th.addEventListener('click', function () {sort(this, func)});
@@ -444,9 +529,13 @@ function add_sort_listeners(table, func) {
             let i = selected.querySelector('i');
             if (i) i.classList.add(`fa-arrow-${(selected.dataset.dir === 'ASC' ? 'up' : 'down')}`);
         };
-    };
+    })
+    .catch(err => {
+        console.error(`common.js | addSortListeners | ${err.message}`);
+        reject(err);
+    });
 };
-function div_details(id, index) {
+function divDetails(id, index) {
     return new Div({
         attributes: [
             {field: 'id', value: `details_${id}`}
@@ -454,7 +543,7 @@ function div_details(id, index) {
         data: [{field: 'index', value: index}]
     }).e;
 };
-function redirect_on_error(err, path) {
+function redirectOnError(err, path) {
     alert(err);
     window.location.assign(path);
 };

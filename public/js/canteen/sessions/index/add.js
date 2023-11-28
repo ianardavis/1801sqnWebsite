@@ -3,6 +3,6 @@ window.addEventListener('load', function () {
         'session_add',
         'POST',
         `/sessions`,
-        {onComplete: function () {window.location.assign('/pos')}}
+        {redirect: '/pos'}
     );
 });

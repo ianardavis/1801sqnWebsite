@@ -12,18 +12,18 @@ function getItems() {
         .then(function ([results, options]) {
             results.items.forEach(item => {
                 let row = tbl_items.insertRow(-1);
-                add_cell(row, {text: item.name});
-                add_cell(row, {text: `£${Number(item.price).toFixed(2)}`});
-                add_cell(row, {text: item.qty || '0'});
-                add_cell(row, {html: (item.current ? _check() : '')});
-                add_cell(row, {append: new Link(`/canteen_items/${item.item_id}`).e});
+                addCell(row, {text: item.name});
+                addCell(row, {text: `£${Number(item.price).toFixed(2)}`});
+                addCell(row, {text: item.qty || '0'});
+                addCell(row, {html: (item.current ? _check() : '')});
+                addCell(row, {append: new Link(`/canteen_items/${item.item_id}`).e});
             });
         });
     });
 };
 window.addEventListener('load', function () {
-    add_listener('reload', getItems);
-    add_listener('current', getItems, 'change');
-    add_sort_listeners('canteen_items', getItems);
+    addListener('reload', getItems);
+    addListener('current', getItems, 'change');
+    addSortListeners('canteen_items', getItems);
     getItems();
 });

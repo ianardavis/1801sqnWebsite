@@ -18,7 +18,7 @@ function viewSettingEdit(setting_id) {
         where: {setting_id: setting_id}
     })
     .then(function([setting, options]) {
-        set_attribute('setting_id_edit', 'value', setting.setting_id);
+        setAttribute('setting_id_edit', 'value', setting.setting_id);
         setValue('setting_name_edit',  setting.name);
         setValue('setting_value_edit', setting.value);
     });
@@ -30,13 +30,13 @@ function getPrinters() {
         .then(function ([printers, options]) {
             printers.forEach(printer => {
                 let row = tbl_printers.insertRow(-1);
-                add_cell(row, {append: new Radio({
+                addCell(row, {append: new Radio({
                     attributes: [
                         {field: 'name',  value: 'printer'},
                         {field: 'value', value: printer.deviceId}
                     ]
                 }).e});
-                add_cell(row, {text: printer.deviceId});
+                addCell(row, {text: printer.deviceId});
             });
         });
     });
@@ -84,7 +84,7 @@ window.addEventListener('load', function () {
             function() {setTimeout(location.reload ,5000)}
         ]}
     );
-    add_listener('btn_printers', getPrinters);
+    addListener('btn_printers', getPrinters);
     modalOnShow('setting_edit', function (event) {viewSettingEdit(event.relatedTarget.dataset.id)});
     modalOnShow('setting_view', function (event) {settingEditBtn( event.relatedTarget.dataset.id)});
 });

@@ -9,10 +9,10 @@ function getScrap() {
         disableButton('lines_action');
     };
     function display_details([scrap, options]) {
-        setBreadcrumb(`${scrap.supplier.name} | ${print_date(scrap.createdAt)}`);
+        setBreadcrumb(`${scrap.supplier.name} | ${printDate(scrap.createdAt)}`);
         setInnerText('scrap_supplier',  scrap.supplier.name);
-        setInnerText('scrap_createdAt', print_date(scrap.createdAt, true));
-        setInnerText('scrap_updatedAt', print_date(scrap.updatedAt, true));
+        setInnerText('scrap_createdAt', printDate(scrap.createdAt, true));
+        setInnerText('scrap_updatedAt', printDate(scrap.updatedAt, true));
         setInnerText('scrap_filename',  scrap.filename || '');
         return scrap;
     };
@@ -21,7 +21,7 @@ function getScrap() {
         return scrap;
     };
     function set_status_badges(scrap) {
-        clear_statuses(3, statuses);
+        clearStatuses(3, statuses);
         if ([0, 1, 2, 3].includes(scrap.status)) {
             if (scrap.status === 0) {
                 set_badge(1, 'danger', 'Cancelled');
@@ -45,11 +45,11 @@ function getScrap() {
             enableButton('scrap_file_print');
             enableButton('scrap_file_download');
             if (scrap.filename) enableButton('scrap_file_delete');
-            set_attribute('form_scrap_file_download', 'method', 'GET');
-            set_attribute('form_scrap_file_download', 'action', `/scraps/${scrap.scrap_id}/download`);
+            setAttribute('form_scrap_file_download', 'method', 'GET');
+            setAttribute('form_scrap_file_download', 'action', `/scraps/${scrap.scrap_id}/download`);
         } else {
-            set_attribute('form_scrap_file_download', 'method');
-            set_attribute('form_scrap_file_download', 'action');
+            setAttribute('form_scrap_file_download', 'method');
+            setAttribute('form_scrap_file_download', 'action');
         };
         return scrap;
     };
@@ -66,7 +66,7 @@ function getScrap() {
 };
 
 window.addEventListener('load', function () {
-    add_listener('reload', getScrap);
+    addListener('reload', getScrap);
     addFormListener(
         'scrap_file_print',
         'GET',

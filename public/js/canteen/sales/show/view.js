@@ -6,11 +6,11 @@ function getSale() {
     })
     .then(function ([sale, options]) {
         setBreadcrumb(sale.sale_id);
-        setInnerText('sale_createdAt', print_date(sale.createdAt, true));
-        setInnerText('sale_user',      print_user(sale.user));
+        setInnerText('sale_createdAt', printDate(sale.createdAt, true));
+        setInnerText('sale_user',      printUser(sale.user));
         setInnerText('sale_status',    statuses[sale.status] || 'Unknown');
     });
 };
 window.addEventListener('load', function () {
-    add_listener('reload', getSale);
+    addListener('reload', getSale);
 });

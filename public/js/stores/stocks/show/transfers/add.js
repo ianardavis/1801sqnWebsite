@@ -9,10 +9,10 @@ function viewTransferAdd() {
     })
     .then(function ([stock, options]) {
         if (stock.qty <= 0) {
-            alert_toast('This stock location has no stock. Transfer is not possible');
+            alertToast('This stock location has no stock. Transfer is not possible');
             modalHide('transfer_add');
         } else {
-            set_attribute('transfer_add_qty', 'max', stock.qty);
+            setAttribute('transfer_add_qty', 'max', stock.qty);
         };
     });
 };
@@ -32,5 +32,5 @@ window.addEventListener('load', function () {
     modalOnShow('transfer_add', resetTransferAdd);
     modalOnShow('transfer_add', viewTransferAdd);
     modalOnShow('transfer_add', getLocations);
-    add_listener('reload_locations_transfer', getLocations);
+    addListener('reload_locations_transfer', getLocations);
 });

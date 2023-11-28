@@ -43,5 +43,5 @@ window.addEventListener('load', function () {
         {onComplete: getNSNs}
     );
     modalOnShow('size_edit', viewSizeEdit);
-    add_listener('reload_suppliers', get_suppliers);
+    addListener('reload_suppliers', get_suppliers);
 });

@@ -30,6 +30,6 @@ window.addEventListener( "load", function () {
         '/stocks/receipts',
         {onComplete: getStocks}
     );
-    add_listener('reload_locations_stock',   getLocations);
-    add_listener('reload_locations_receipt', getReceiptStocks);
+    addListener('reload_locations_stock',   getLocations);
+    addListener('reload_locations_receipt', getReceiptStocks);
 });

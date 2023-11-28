@@ -3,16 +3,16 @@ function get_sizes() {
     .then(tbl_sizes => {
         function add_line(size) {
             let row = tbl_sizes.insertRow(-1);
-            add_cell(row, {text: size.size1});
-            add_cell(row, {text: size.size2});
-            add_cell(row, {text: size.size3});
-            add_cell(row, {append: new Link(`/sizes/${size.size_id}`).e});
+            addCell(row, {text: size.size1});
+            addCell(row, {text: size.size2});
+            addCell(row, {text: size.size3});
+            addCell(row, {append: new Link(`/sizes/${size.size_id}`).e});
         };
         get({
             table: 'sizes',
             where: {item_id: path[2]},
             like: {
-                ...filter_size('size')
+                ...filterSize('size')
             },
             func: get_sizes
         })
@@ -25,7 +25,7 @@ function get_sizes() {
     });
 };
 window.addEventListener('load', function () {
-    add_listener('reload', get_sizes);
-    add_sort_listeners('sizes', get_sizes);
+    addListener('reload', get_sizes);
+    addSortListeners('sizes', get_sizes);
     get_sizes();
 });

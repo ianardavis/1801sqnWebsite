@@ -7,7 +7,7 @@ function get_qty() {
     .then(issue => setValue('inp_qty_edit', issue.qty))
     .catch(err => {
         modalHide('qty_edit');
-        alert_toast(err.message);
+        alertToast(err.message);
         console.error(err);
     });
 };

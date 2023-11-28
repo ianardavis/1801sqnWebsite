@@ -8,15 +8,15 @@ function getHoldings() {
         .then(function ([results, options]) {
             results.holdings.forEach(holding => {
                 let row = tbl_holdings.insertRow(-1);
-                add_cell(row, {text: holding.description});
-                add_cell(row, {text: `£${Number(holding.cash).toFixed(2)}`});
-                add_cell(row, {append: new Link(`/holdings/${holding.holding_id}`).e});
+                addCell(row, {text: holding.description});
+                addCell(row, {text: `£${Number(holding.cash).toFixed(2)}`});
+                addCell(row, {append: new Link(`/holdings/${holding.holding_id}`).e});
             });
         });
     });
 };
 window.addEventListener('load', function () {
-    add_listener('reload', getHoldings);
-    add_sort_listeners('holdings', getHoldings);
+    addListener('reload', getHoldings);
+    addSortListeners('holdings', getHoldings);
     getHoldings();
 });

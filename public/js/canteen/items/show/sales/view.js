@@ -11,9 +11,9 @@ function getSales() {
             result.lines.forEach(line => {
                 try {
                     let row = tbl_sales.insertRow(-1);
-                    add_cell(row, table_date(line.createdAt));
-                    add_cell(row, {text: line.qty});
-                    add_cell(row, {append: new Link(`/sales/${line.sale_id}`).e});
+                    addCell(row, tableDate(line.createdAt));
+                    addCell(row, {text: line.qty});
+                    addCell(row, {append: new Link(`/sales/${line.sale_id}`).e});
                 } catch (error) {
                     console.error(`canteen/items/show/sales/view.js | getSales | ${error}`);
                 };
@@ -22,7 +22,7 @@ function getSales() {
     });
 };
 window.addEventListener('load', function () {
-    add_listener('reload', getSales);
-    add_sort_listeners('sale_lines', getSales);
+    addListener('reload', getSales);
+    addSortListeners('sale_lines', getSales);
     getSales();
 });

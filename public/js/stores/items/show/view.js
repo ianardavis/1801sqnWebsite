@@ -32,9 +32,9 @@ function get_item() {
     .then(display_details)
     .then(set_button_states)
     .then(set_item_id_values)
-    .catch(err => redirect_on_error(err, '/items'));
+    .catch(err => redirectOnError(err, '/items'));
 };
 window.addEventListener('load', function () {
-    add_listener('reload', get_item);
+    addListener('reload', get_item);
     get_item();
 });

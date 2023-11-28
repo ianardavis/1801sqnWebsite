@@ -4,14 +4,14 @@ function getLines() {
     .then(tbl_issues => {
         function add_line(line, index) {
             let row = tbl_issues.insertRow(-1);
-            add_cell(row, {text: print_user(line.loancard.user_loancard)});
-            add_cell(row, {text: (line.size ? (line.size.item ? line.size.item.description : '') : '')});
-            add_cell(row, {text: (line.size ? print_size(line.size) : '')});
-            add_cell(row, {text: line.qty});
-            add_cell(row, table_date(line.createdAt));
-            add_cell(row, table_date(line.loancard.date_due));
-            add_cell(row, {text: 'Issued'});
-            add_cell(row, {
+            addCell(row, {text: printUser(line.loancard.user_loancard)});
+            addCell(row, {text: (line.size ? (line.size.item ? line.size.item.description : '') : '')});
+            addCell(row, {text: (line.size ? printSize(line.size) : '')});
+            addCell(row, {text: line.qty});
+            addCell(row, tableDate(line.createdAt));
+            addCell(row, tableDate(line.loancard.date_due));
+            addCell(row, {text: 'Issued'});
+            addCell(row, {
                 ...(
                     (line.status === 1 && line.loancard.status === 1) ||
                     (line.status === 2 && line.loancard.status === 2)
@@ -25,7 +25,7 @@ function getLines() {
                     : {}
                 )
             });
-            add_cell(row, {append: new Link(`/loancards/${line.loancard_id}`).e});
+            addCell(row, {append: new Link(`/loancards/${line.loancard_id}`).e});
         };
         get({
             table: 'loancard_lines_due'
@@ -41,5 +41,5 @@ function getLines() {
     })
 };
 window.addEventListener('load', function () {
-    add_listener('reload', getLines);
+    addListener('reload', getLines);
 });

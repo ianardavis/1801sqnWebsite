@@ -1,8 +1,8 @@
 function issue_options() {
     if (this.dataset.id) {
         clear(`details_${this.dataset.id}`)
-        .then(div_details => {
-            div_details.appendChild(new Spinner(this.dataset.id).e);
+        .then(divDetails => {
+            divDetails.appendChild(new Spinner(this.dataset.id).e);
             if (this.value === '4') {
                 get({
                     table: 'issue',
@@ -12,29 +12,29 @@ function issue_options() {
                 .then(function ([issue, options]) {
                     if ([2,3].includes(issue.status)) {
                         if (issue.size.has_nsns) {
-                            add_nsn_select(div_details, options.index, issue.size_id);
+                            add_nsn_select(divDetails, options.index, issue.size_id);
                         };
 
                         if (issue.size.has_serials) {
-                            add_serial_select(div_details, options.index, issue.size_id, issue.qty);
+                            add_serial_select(divDetails, options.index, issue.size_id, issue.qty);
 
                         } else {
-                            add_stock_select(div_details, options.index, issue.size_id);
-                            add_qty_input(   div_details, options.index, issue.qty);
+                            add_stock_select(divDetails, options.index, issue.size_id);
+                            add_qty_input(   divDetails, options.index, issue.qty);
 
                         };
                     };
-                    remove_spinner(issue.issue_id);
+                    removeSpinner(issue.issue_id);
                 });
 
             } else {
-                remove_spinner(this.dataset.id);
+                removeSpinner(this.dataset.id);
             };
         })
-        .catch(err => remove_spinner(this.dataset.id));
+        .catch(err => removeSpinner(this.dataset.id));
     };
 };
-function add_nsn_select(div_details, index, size_id) {
+function add_nsn_select(divDetails, index, size_id) {
     let select = new Select({
         attributes: [
             {field: 'name',     value: `lines[][${index}][nsn_id]`},
@@ -42,19 +42,19 @@ function add_nsn_select(div_details, index, size_id) {
         ],
         options: [{text: 'Select NSN', selected: true}]
     }).e;
-    div_details.appendChild(select);
+    divDetails.appendChild(select);
     get({
         table: 'nsns',
         where: {size_id: size_id}
     })
     .then(function ([result, options]) {
         result.nsns.forEach(e => select.appendChild(new Option({
-            text: print_nsn(e),
+            text: printNSN(e),
             value: e.nsn_id
         }).e));
     });
 };
-function add_stock_select(div_details, index, size_id) {
+function add_stock_select(divDetails, index, size_id) {
     let select = new Select({
         attributes: [
             {field: 'name',     value: `lines[][${index}][stock_id]`},
@@ -62,7 +62,7 @@ function add_stock_select(div_details, index, size_id) {
         ],
         options: [{text: 'Select Location', selected: true}]
     }).e;
-    div_details.appendChild(select);
+    divDetails.appendChild(select);
     get({
         table: 'stocks',
         where: {size_id: size_id}
@@ -74,7 +74,7 @@ function add_stock_select(div_details, index, size_id) {
         }).e));
     });
 };
-function add_serial_select(div_details, index, size_id, qty) {
+function add_serial_select(divDetails, index, size_id, qty) {
     get({
         table: 'current_serials',
         where: {size_id: size_id},
@@ -90,7 +90,7 @@ function add_serial_select(div_details, index, size_id, qty) {
         });
         
         for (let i = 0; i < qty; i++) {
-            div_details.appendChild(new Select({
+            divDetails.appendChild(new Select({
                 attributes: [
                     {field: 'name',     value: `lines[][${index}][serials][][${i}][serial_id]`},
                     {field: 'required', value: true}

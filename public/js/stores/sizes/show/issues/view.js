@@ -12,11 +12,11 @@ function get_issues() {
         function add_line(issue) {
             try {
                 let row = tbl_issues.insertRow(-1);
-                add_cell(row, table_date(issue.createdAt));
-                add_cell(row, {text: print_user(issue.user_issue)});
-                add_cell(row, {text: issue.qty});
-                add_cell(row, {text: issue_statuses[issue.status]});
-                add_cell(row, {append: new Modal_Button(
+                addCell(row, tableDate(issue.createdAt));
+                addCell(row, {text: printUser(issue.user_issue)});
+                addCell(row, {text: issue.qty});
+                addCell(row, {text: issue_statuses[issue.status]});
+                addCell(row, {append: new Modal_Button(
                     _search(),
                     'issue_view',
                     [{field: 'id', value: issue.issue_id}]
@@ -30,7 +30,7 @@ function get_issues() {
             table: 'issues',
             where: {
                 size_id: path[2],
-                ...filter_status('issue')
+                ...filterStatus('issue')
             },
             func: get_issues
         })
@@ -42,12 +42,12 @@ function get_issues() {
 };
 function viewIssue(issue_id) {
     function display_details([issue, options]) {
-        setInnerText('issue_user_to',   print_user(issue.user_issue));
-        setInnerText('issue_user_by',   print_user(issue.user));
+        setInnerText('issue_user_to',   printUser(issue.user_issue));
+        setInnerText('issue_user_by',   printUser(issue.user));
         setInnerText('issue_qty',       issue.qty);
         setInnerText('issue_status',    issue_statuses[issue.status]);
-        setInnerText('issue_createdAt', print_date(issue.createdAt));
-        setInnerText('issue_updatedAt', print_date(issue.updatedAt));
+        setInnerText('issue_createdAt', printDate(issue.createdAt));
+        setInnerText('issue_updatedAt', printDate(issue.updatedAt));
         setInnerText('issue_id',        issue.issue_id);
         return issue;
     };
@@ -67,7 +67,7 @@ function viewIssue(issue_id) {
     .catch(err => console.error(err));
 };
 window.addEventListener('load', function () {
-    set_status_filter_options('issue', [
+    setStatusFilterOptions('issue', [
         {value: '0', text: 'Cancelled'},
         {value: '1', text: 'Requested', selected: true},
         {value: '2', text: 'Approved',  selected: true},
@@ -76,9 +76,9 @@ window.addEventListener('load', function () {
         {value: '5', text: 'Returned'}
     ]);
 
-    add_listener('reload', get_issues);
-    add_listener('filter_issue_status', get_issues,'change');
+    addListener('reload', get_issues);
+    addListener('filter_issue_status', get_issues,'change');
     modalOnShow('issue_view', function (event) {viewIssue(event.relatedTarget.dataset.id)});
-    add_sort_listeners('issues', get_issues);
+    addSortListeners('issues', get_issues);
     get_issues();
 });

@@ -6,7 +6,7 @@ function viewFileEdit(file_id) {
         spinner: 'file_edit'
     })
     .then(function ([file, options]) {
-        set_attribute('file_id_edit', 'value', file.file_id);
+        setAttribute('file_id_edit', 'value', file.file_id);
         setValue('file_description_edit', file.description);
     });
 };

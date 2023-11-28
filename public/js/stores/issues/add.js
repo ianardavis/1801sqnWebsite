@@ -20,8 +20,8 @@ function selectedSizes(sizes) {
                     if (size.issueable && !tbl_issue_sizes_add.querySelector(`#size-${size.size_id}`)) {
                         let row = tbl_issue_sizes_add.insertRow(-1);
                         row.setAttribute('id', `size-${size.size_id}`);
-                        add_cell(row, {text: size.item.description});
-                        add_cell(row, {
+                        addCell(row, {text: size.item.description});
+                        addCell(row, {
                             text: size.size1,
                             append: new Hidden_Input({
                                 attributes: [
@@ -30,9 +30,9 @@ function selectedSizes(sizes) {
                                 ]
                             }).e
                         });
-                        add_cell(row, {text: size.size2});
-                        add_cell(row, {text: size.size3});
-                        add_cell(row, {append: new Number_Input({
+                        addCell(row, {text: size.size2});
+                        addCell(row, {text: size.size3});
+                        addCell(row, {append: new Number_Input({
                             attributes: [
                                 {field: 'name',  value: `issues[sizes][][${row_count_sizes}][qty]`},
                                 {field: 'value', value: qty.value}
@@ -45,7 +45,7 @@ function selectedSizes(sizes) {
                             data: [{field: 'id', value: size.size_id}]
                         }).e
                         delete_button.addEventListener('click', function () {removeID(`size-${this.dataset.id}`)});
-                        add_cell(row, {append: delete_button});
+                        addCell(row, {append: delete_button});
                         row_count_sizes++;
                     };
                 });
@@ -66,9 +66,9 @@ function selectedUsers(users) {
                 if (!tbl_issue_users_add.querySelector(`#user-${user.user_id}`)) {
                     let row = tbl_issue_users_add.insertRow(-1);
                     row.setAttribute('id', `user-${user.user_id}`);
-                    add_cell(row, {text: user.service_number});
-                    add_cell(row, {
-                        text: print_user(user),
+                    addCell(row, {text: user.service_number});
+                    addCell(row, {
+                        text: printUser(user),
                         append: new Hidden_Input({
                             attributes: [
                                 {field: 'name',  value: `issues[users][][${row_count_users}][user_id_issue]`},
@@ -83,7 +83,7 @@ function selectedUsers(users) {
                         data: [{field: 'id', value: user.user_id}]
                     }).e
                     delete_button.addEventListener('click', function () {removeID(`user-${this.dataset.id}`)});
-                    add_cell(row, {append: delete_button});
+                    addCell(row, {append: delete_button});
                     row_count_users++;
                 };
             });
@@ -92,8 +92,8 @@ function selectedUsers(users) {
 };
 window.addEventListener('load', function () {
     enableButton("issue_add");
-    add_listener('btn_issue_sizes', selectSize);
-    add_listener('btn_issue_users', selectUser);
+    addListener('btn_issue_sizes', selectSize);
+    addListener('btn_issue_users', selectUser);
     modalOnShow('issue_add', reset_issue_add);
     addFormListener(
         'issue_add',

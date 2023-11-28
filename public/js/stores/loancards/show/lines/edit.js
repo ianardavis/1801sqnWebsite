@@ -1,5 +1,5 @@
 function return_options() {
-    function add_scrap_switch(div_details, index, div_location) {
+    function add_scrap_switch(divDetails, index, div_location) {
         let div_switch = new Div({classes: ['form-check', 'form-switch']}).e;
         div_switch.appendChild(new Input({
             classes: ['form-check-input'],
@@ -27,12 +27,12 @@ function return_options() {
                 attributes: [{field: 'for', value: `scrap_${index}`}]
             }
         ).e);
-        div_details.appendChild(div_switch);
+        divDetails.appendChild(div_switch);
         add_location_input(div_location, index);
     };
     
     clear(`details_${this.dataset.id}`)
-    .then(div_details => {
+    .then(divDetails => {
         if (this.value === '3') {
             get({
                 table: 'loancard_line',
@@ -44,15 +44,15 @@ function return_options() {
                     let div_location = new Div({
                         attributes: [{field: 'id', value: `location_${line.line_id}`}]
                     }).e;
-                    add_scrap_switch(div_details, options.index, div_location);
-                    div_details.appendChild(div_location);
-                    add_location_list(div_details, (line.serial_id), line.size_id, options.index);
+                    add_scrap_switch(divDetails, options.index, div_location);
+                    divDetails.appendChild(div_location);
+                    add_location_list(divDetails, (line.serial_id), line.size_id, options.index);
                     if (!line.serial_id) {
                         let qty = 0;
                         line.issues.forEach(issue => {
                             if (Number(issue.status) === 4) qty += issue.qty;
                         });
-                        add_qty_input(div_details, options.index, qty);
+                        add_qty_input(divDetails, options.index, qty);
                     };
                 };
             });
@@ -62,7 +62,7 @@ function return_options() {
 
 function cancel_options() {
     clear(`details_${this.dataset.id}`)
-    .then(div_details => {
+    .then(divDetails => {
         if (this.value === '0') {
             get({
                 table: 'loancard_line',
@@ -71,7 +71,7 @@ function cancel_options() {
             })
             .then(function ([line, options]) {
                 if (line.status === 1) {
-                    div_details.appendChild(new Text_Input({
+                    divDetails.appendChild(new Text_Input({
                         attributes: [
                             {field: 'name',        value: `lines[][${options.index}][location]`},
                             {field: 'required',    value: true},
@@ -80,10 +80,10 @@ function cancel_options() {
                         ],
                         options: [{text: 'Enter Location'}]
                     }).e);
-                    add_location_list(div_details, (line.serial_id), line.size_id, options.index);
+                    add_location_list(divDetails, (line.serial_id), line.size_id, options.index);
 
                     if (!line.serial_id) {
-                        div_details.appendChild(new Number_Input({
+                        divDetails.appendChild(new Number_Input({
                             attributes: [
                                 {field: 'min',         value: '1'},
                                 {field: 'max',         value: line.qty},

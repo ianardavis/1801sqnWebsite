@@ -95,7 +95,7 @@ function check_permission(permission) {
 };
 window.addEventListener('load', function () {
     enableButton('permissions_edit')
-    add_listener('reload_permission_edit', getPermissionsEdit);
+    addListener('reload_permission_edit', getPermissionsEdit);
     addFormListener(
         'permissions_edit',
         'PUT',
@@ -108,7 +108,7 @@ window.addEventListener('load', function () {
         }
     );
     modalOnShow('permissions_edit', getPermissionsEdit);
-    add_listener('btn_select_all', select_all_permissions);
-    add_listener('btn_permissions_storeman', set_storeman);
-    add_listener('btn_permissions_canteen',  set_canteen);
+    addListener('btn_select_all', select_all_permissions);
+    addListener('btn_permissions_storeman', set_storeman);
+    addListener('btn_permissions_canteen',  set_canteen);
 });

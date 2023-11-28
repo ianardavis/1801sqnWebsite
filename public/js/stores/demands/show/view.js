@@ -9,11 +9,11 @@ function get_demand() {
         disableButton('line_add');
     };
     function display_details([demand, options]) {
-        setBreadcrumb(`${demand.supplier.name} - ${print_date(demand.createdAt)}`);
+        setBreadcrumb(`${demand.supplier.name} - ${printDate(demand.createdAt)}`);
         setInnerText('demand_supplier',  demand.supplier.name);
-        setInnerText('demand_user',      print_user(demand.user));
-        setInnerText('demand_createdAt', print_date(demand.createdAt, true));
-        setInnerText('demand_updatedAt', print_date(demand.updatedAt, true));
+        setInnerText('demand_user',      printUser(demand.user));
+        setInnerText('demand_createdAt', printDate(demand.createdAt, true));
+        setInnerText('demand_updatedAt', printDate(demand.updatedAt, true));
         setInnerText('demand_file',      (demand.filename ? demand.filename : ''));
         document.querySelectorAll('.demand_id').forEach(e => e.setAttribute('value', demand.demand_id));
         return demand;
@@ -24,7 +24,7 @@ function get_demand() {
         return demand;
     };
     function set_status_badges(demand) {
-        clear_statuses(3, statuses);
+        clearStatuses(3, statuses);
         if ([0, 1, 2, 3].includes(demand.status)) {
             if (demand.status === 0) {
                 set_badge(1, 'danger', 'Cancelled');
@@ -64,10 +64,10 @@ function get_demand() {
     .then(set_links)
     .then(set_status_badges)
     .then(set_button_states)
-    .catch(err => redirect_on_error(err, '/demands'));
+    .catch(err => redirectOnError(err, '/demands'));
 };
 window.addEventListener('load', function () {
-    set_attribute('form_download', 'action', `/demands/${path[2]}/download`);
+    setAttribute('form_download', 'action', `/demands/${path[2]}/download`);
     addFormListener(
         'complete',
         'PUT',
@@ -90,6 +90,6 @@ window.addEventListener('load', function () {
             ]
         }
     );
-    add_listener('reload', get_demand);
+    addListener('reload', get_demand);
     get_demand();
 });

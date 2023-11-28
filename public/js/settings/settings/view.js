@@ -7,9 +7,9 @@ function getSettings() {
         .then(function ([settings, options]) {
             settings.forEach(setting => {
                 let row = tbl_settings.insertRow(-1);
-                add_cell(row, {text: setting.name});
-                add_cell(row, {text: setting.value});
-                add_cell(row, {append:
+                addCell(row, {text: setting.name});
+                addCell(row, {text: setting.value});
+                addCell(row, {append:
                     new Modal_Button(
                         _search(),
                         'setting_view',
@@ -69,15 +69,15 @@ function viewSetting(setting_id) {
         setInnerText('setting_id',        setting.setting_id);
         setInnerText('setting_name',      setting.name);
         setInnerText('setting_value',     setting.value);
-        setInnerText('setting_createdAt', print_date(setting.createdAt, true));
-        setInnerText('setting_updatedAt', print_date(setting.updatedAt, true));
+        setInnerText('setting_createdAt', printDate(setting.createdAt, true));
+        setInnerText('setting_updatedAt', printDate(setting.updatedAt, true));
     });
 };
 window.addEventListener('load', function () {
-    add_listener('reload', getErrorLog);
-    add_listener('reload', getOutLog);
-    add_listener('reload', getPrinter);
-    add_listener('reload', getSettings);
+    addListener('reload', getErrorLog);
+    addListener('reload', getOutLog);
+    addListener('reload', getPrinter);
+    addListener('reload', getSettings);
     addFormListener(
         'command',
         'POST',
@@ -90,7 +90,7 @@ window.addEventListener('load', function () {
         }
     );
     modalOnShow('setting_view', function (event) {viewSetting(event.relatedTarget.dataset.id)});
-    add_sort_listeners('settings', getSettings);
+    addSortListeners('settings', getSettings);
     getSettings();
     getPrinter();
     getErrorLog();

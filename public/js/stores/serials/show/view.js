@@ -2,7 +2,7 @@ function getSerial() {
     function display_details([serial, options]) {
         setBreadcrumb(serial.serial)
         setInnerText('serial_item',     serial.size.item.description);
-        setInnerText('serial_size',     print_size(serial.size));
+        setInnerText('serial_size',     printSize(serial.size));
         setInnerText('serial_location', (serial.location ? serial.location.location: (serial.issue ? 'Issued' : 'Unknown')));
         setInnerText('serial_serial',   serial.serial);
         return serial;

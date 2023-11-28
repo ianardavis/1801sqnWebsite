@@ -10,15 +10,15 @@ function getPayments() {
             setCount('payment', results.count);
             results.payments.forEach(payment => {
                 let row = tbl_payments.insertRow(-1);
-                add_cell(row, {text: payment.type});
-                add_cell(row, {text: `£${Number(payment.amount).toFixed(2)}`});
-                add_cell(row, {append: new Link(`/payments/${payment.payment_id}`).e});
+                addCell(row, {text: payment.type});
+                addCell(row, {text: `£${Number(payment.amount).toFixed(2)}`});
+                addCell(row, {append: new Link(`/payments/${payment.payment_id}`).e});
             });
         });
     });
 };
 window.addEventListener('load', function () {
-    add_listener('reload', getPayments);
-    add_sort_listeners('payments_session', getPayments);
+    addListener('reload', getPayments);
+    addSortListeners('payments_session', getPayments);
     getPayments();
 });

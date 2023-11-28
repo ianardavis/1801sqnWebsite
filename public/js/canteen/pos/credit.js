@@ -16,6 +16,6 @@ function getPaymentUsers() {
 window.addEventListener('load', function () {
     modalOnShow('sale_complete',  getUsers);
     modalOnShow('sale_complete',  getPaymentUsers);
-    add_listener('reload_credit',  getUsers);
-    add_listener('reload_payment', getPaymentUsers);
+    addListener('reload_credit',  getUsers);
+    addListener('reload_payment', getPaymentUsers);
 });

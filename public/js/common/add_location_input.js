@@ -1,6 +1,6 @@
-function add_location_input(div_details, index) {
+function add_location_input(divDetails, index) {
     console.log(index);
-    div_details.appendChild(new Text_Input({
+    divDetails.appendChild(new Text_Input({
         classes: ['mb-1'],
         attributes: [
             {field: 'name',        value: `lines[][${index}][location]`},
@@ -11,7 +11,7 @@ function add_location_input(div_details, index) {
         options: [{text: 'Enter Location'}]
     }).e);
 };
-function add_location_list(div_details, has_serial, size_id, index) {
+function add_location_list(divDetails, has_serial, size_id, index) {
     const search_table = (has_serial ? 'serials' : 'stocks')
     get({
         table: search_table,
@@ -26,7 +26,7 @@ function add_location_list(div_details, has_serial, size_id, index) {
                 locs.push(e.location.location);
                 locations_list.appendChild(new Option({value: e.location.location}).e)
             };
-            div_details.appendChild(locations_list);
+            divDetails.appendChild(locations_list);
         });
     });
 };

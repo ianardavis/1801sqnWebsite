@@ -34,7 +34,7 @@ function getNSNs(size) {
                 where: {size_id: size.size_id}
             })
             .then(function ([results, options]) {
-                results.nsns.forEach(nsn => select.appendChild(new Option({value: nsn.nsn_id, text: print_nsn(nsn)}).e));
+                results.nsns.forEach(nsn => select.appendChild(new Option({value: nsn.nsn_id, text: printNSN(nsn)}).e));
             });
         };
     });

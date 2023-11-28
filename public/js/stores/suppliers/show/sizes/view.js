@@ -12,7 +12,7 @@ function get_items() {
             result.items.forEach(item => {
                 let row = tbl_items.insertRow(-1);
                 selectableRow(row, item.item_id, tbl_items, get_sizes);
-                add_cell(row, {text: item.description});
+                addCell(row, {text: item.description});
             });
         });
     });
@@ -31,17 +31,17 @@ function get_sizes() {
         .then(function ([result, options]) {
             result.sizes.forEach(size => {
                 let row = tbl_sizes.insertRow(-1);
-                add_cell(row, {text: size.size1});
-                add_cell(row, {text: size.size2});
-                add_cell(row, {text: size.size3});
-                add_cell(row, {append: new Link(`/sizes/${size.size_id}`).e});
+                addCell(row, {text: size.size1});
+                addCell(row, {text: size.size2});
+                addCell(row, {text: size.size3});
+                addCell(row, {append: new Link(`/sizes/${size.size_id}`).e});
             });
         });
     });
 };
 window.addEventListener('load', function () {
-    add_listener('reload', get_items);
-    add_sort_listeners('items', get_items);
-    add_sort_listeners('sizes', get_sizes);
+    addListener('reload', get_items);
+    addSortListeners('items', get_items);
+    addSortListeners('sizes', get_sizes);
     get_items();
 });

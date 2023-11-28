@@ -11,10 +11,10 @@ function getWriteoffs() {
             result.writeoffs.forEach(writeoff => {
                 try {
                     let row = tbl_writeoffs.insertRow(-1);
-                    add_cell(row, table_date(writeoff.createdAt));
-                    add_cell(row, {text: writeoff.reason});
-                    add_cell(row, {text: writeoff.qty});
-                    add_cell(row, {append: new Link(`/writeoffs/${writeoff.writeoff_id}`).e});
+                    addCell(row, tableDate(writeoff.createdAt));
+                    addCell(row, {text: writeoff.reason});
+                    addCell(row, {text: writeoff.qty});
+                    addCell(row, {append: new Link(`/writeoffs/${writeoff.writeoff_id}`).e});
                 } catch (error) {
                     console.error(`canteen/items/show/writeoffs/view.js | getWriteoffs | ${error}`);
                 };
@@ -23,7 +23,7 @@ function getWriteoffs() {
     })
 };
 window.addEventListener('load', function () {
-    add_listener('reload', getWriteoffs);
-    add_sort_listeners('writeoffs', getWriteoffs);
+    addListener('reload', getWriteoffs);
+    addSortListeners('writeoffs', getWriteoffs);
     getWriteoffs();
 });

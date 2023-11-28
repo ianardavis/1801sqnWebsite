@@ -17,9 +17,9 @@ function selectedSizes(sizes) {
                     if (size.orderable && !tbl_order_add.querySelector(`#size-${size.size_id}`)) {
                         let row = tbl_order_add.insertRow(-1);
                         row.setAttribute('id', `size-${size.size_id}`);
-                        add_cell(row, {text: size.item.description});
-                        add_cell(row, {
-                            text: print_size(size),
+                        addCell(row, {text: size.item.description});
+                        addCell(row, {
+                            text: printSize(size),
                             append: new Hidden_Input({
                                 attributes: [
                                     {field: 'name',  value: `orders[][${row_count}][size_id]`},
@@ -27,7 +27,7 @@ function selectedSizes(sizes) {
                                 ]
                             }).e
                         });
-                        add_cell(row, {append: new Number_Input({
+                        addCell(row, {append: new Number_Input({
                             attributes: [
                                 {field: 'name',  value: `orders[][${row_count}][qty]`},
                                 {field: 'value', value: qty.value}
@@ -40,7 +40,7 @@ function selectedSizes(sizes) {
                             data: [{field: 'id', value: size.size_id}]
                         }).e
                         delete_button.addEventListener('click', function () {removeID(`size-${this.dataset.id}`)});
-                        add_cell(row, {append: delete_button});
+                        addCell(row, {append: delete_button});
                         row_count++;
                     };
                 });
@@ -48,7 +48,7 @@ function selectedSizes(sizes) {
     };
 };
 window.addEventListener('load', function () {
-    add_listener('btn_order_sizes', selectSize);
+    addListener('btn_order_sizes', selectSize);
     modalOnShow('order_add', reset_order_add);
     addFormListener(
         'order_add',

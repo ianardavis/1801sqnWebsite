@@ -8,8 +8,8 @@ function editLoancardDueDate() {
         where: {loancard_id: path[2]}
     })
     .then(function ([loancard, options]) {
-        set_attribute('date_due_edit', 'value', returnDate(loancard.date_due));
-        set_attribute('date_due_edit', 'min',   returnDate(loancard.createdAt));
+        setAttribute('date_due_edit', 'value', returnDate(loancard.date_due));
+        setAttribute('date_due_edit', 'min',   returnDate(loancard.createdAt));
     });
 };
 function dateToday(addYears = 0) {
@@ -21,8 +21,8 @@ function dateToday(addYears = 0) {
     `;
 };
 function completeLoancardDueDate() {
-    set_attribute('date_due_complete', 'value', dateToday(7));
-    set_attribute('date_due_complete', 'min',   dateToday());
+    setAttribute('date_due_complete', 'value', dateToday(7));
+    setAttribute('date_due_complete', 'min',   dateToday());
 };
 const enable_complete_button = function () {enableButton('loancard_complete')};
 window.addEventListener( "load", function () {
@@ -54,6 +54,6 @@ window.addEventListener( "load", function () {
         'loancard_file_delete',
         'DELETE',
         `/loancards/${path[2]}/file`,
-        {onComplete: [get_loancard]}
+        {onComplete: get_loancard}
     );
 });

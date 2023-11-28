@@ -6,7 +6,7 @@ function viewUserEdit() {
     .then(function ([user, options]) {
         listStatuses( {select: 'sel_statuses', selected: user.status_id, id_only: true});
         listRanks(    {select: 'sel_ranks',    selected: user.rank_id,   id_only: true});
-        setInnerText('full_name_edit', print_user(user));
+        setInnerText('full_name_edit', printUser(user));
         setValue('inp_service_number', user.service_number);
         setValue('inp_rank_id',        user.rank.rank);
         setValue('inp_surname',        user.surname);

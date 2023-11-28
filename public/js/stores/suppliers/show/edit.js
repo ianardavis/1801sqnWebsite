@@ -11,7 +11,7 @@ function viewSupplierEdit() {
     });
 };
 window.addEventListener("load", function () {
-    add_listener('reload_accounts', listAccounts);
+    addListener('reload_accounts', listAccounts);
     enableButton('supplier_edit');
     modalOnShow('supplier_edit', viewSupplierEdit);
     addFormListener(

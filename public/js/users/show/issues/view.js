@@ -2,8 +2,8 @@ let issue_statuses = {'0': 'Cancelled', '1': 'Requested', '2': 'Approved', '3': 
 function get_issues () {
     clear('tbl_issues')
     .then(tbl_issues => {
-        let where = {user_id_issue: path[2]},
-            statuses = getSelectedOptions('sel_issue_statuses');
+        let where = {user_id_issue: path[2]};
+        const statuses = getSelectedOptions('sel_issue_statuses');
         if (statuses.length > 0) where.status = statuses;
         get({
             table: 'issues',
@@ -15,11 +15,11 @@ function get_issues () {
             setCount('issue', result.count);
             result.issues.forEach(issue => {
                 let row = tbl_issues.insertRow(-1);
-                add_cell(row, table_date(issue.createdAt));
-                add_cell(row, {text: (issue.size ? (issue.size.item ? issue.size.item.description : '') : '')});
-                add_cell(row, {text: (issue.size ? print_size(issue.size) : '')});
-                add_cell(row, {text: issue.qty});
-                add_cell(row, {
+                addCell(row, tableDate(issue.createdAt));
+                addCell(row, {text: (issue.size ? (issue.size.item ? issue.size.item.description : '') : '')});
+                addCell(row, {text: (issue.size ? printSize(issue.size) : '')});
+                addCell(row, {text: issue.qty});
+                addCell(row, {
                     text: issue_statuses[issue.status] || 'Unknown',
                     ...(
                         [1, 2, 3].includes(issue.status) ?
@@ -32,7 +32,7 @@ function get_issues () {
                         } : {}
                     )
                 });
-                add_cell(row, {append: new Link(`/issues/${issue.issue_id}`).e});
+                addCell(row, {append: new Link(`/issues/${issue.issue_id}`).e});
                 row_index ++;
             });
             if (typeof addEditSelect === 'function') addEditSelect();
@@ -59,12 +59,12 @@ function filter(tbl_issues) {
     });
 };
 window.addEventListener('load', function () {
-    add_listener('reload', get_issues);
-    add_listener('sel_issue_statuses', get_issues, 'change');
-    add_listener('issue_createdAt_from', function (){filter()}, 'change');
-    add_listener('issue_createdAt_to',   function (){filter()}, 'change');
-    add_listener('item',           function (){filter()}, 'input');
-    add_listener('size',           function (){filter()}, 'input');
-    add_sort_listeners('issues', get_issues);
+    addListener('reload', get_issues);
+    addListener('sel_issue_statuses', get_issues, 'change');
+    addListener('issue_createdAt_from', function (){filter()}, 'change');
+    addListener('issue_createdAt_to',   function (){filter()}, 'change');
+    addListener('item',           function (){filter()}, 'input');
+    addListener('size',           function (){filter()}, 'input');
+    addSortListeners('issues', get_issues);
     get_issues();
 });

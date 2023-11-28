@@ -59,7 +59,7 @@ function parseEvent(event) {
 };
 function printError(message, error) {
     console.error(`get.js | printError | ${error}`);
-    alert_toast(message);
+    alertToast(message);
 };
 function getStream(streamAction) {
     return function (event) {
@@ -84,10 +84,10 @@ function hideToast() {
 };
 function get(options) {
     return new Promise((resolve, reject) => {
-        show_spinner(options.spinner || options.table || '');
+        showSpinner(options.spinner || options.table || '');
         showToast();
         const XHR = new XMLHttpRequest();
-        XHR.addEventListener("loadend", (event) => hide_spinner(options.spinner || options.table || ''));
+        XHR.addEventListener("loadend", (event) => hideSpinner(options.spinner || options.table || ''));
         XHR.addEventListener("error",   (event) => reject());
 
         if (options.streamAction) {
@@ -99,7 +99,7 @@ function get(options) {
                 .then(response => {
                     if (response.success) {
                         if (options.func) {
-                            add_page_links(
+                            addPageLinks(
                                 response.result.count,
                                 response.result.limit,
                                 response.result.offset,
@@ -110,7 +110,6 @@ function get(options) {
                         resolve([response.result, options]);
 
                     } else {
-                        // printError(`Error getting ${options.table}`, response.message || response);
                         reject(new Error(response.message));
 
                     };
@@ -129,40 +128,31 @@ function get(options) {
         );
     });
 };
-function addFormListener(form_id, method, location, options = {reload: false}) {
-    try {
-        let form = document.querySelector(`#form_${form_id}`);
-        if (form) {
-            form.addEventListener("submit", function (event) {
-                event.preventDefault();
-                if (options.spinner) show_spinner(options.spinner);
+function addFormListener(form_id, method, location, options) {
+    getElement(`form_${form_id}`)
+    .then(form => {
+        form.addEventListener("submit", function (event) {
+            event.preventDefault();
+            if (options.spinner) showSpinner(options.spinner);
 
-                if (
-                    method.toUpperCase() === 'GET' ||
-                    options.noConfirm    === true  ||
-                    confirm('Are you sure?')
-                ) sendData(form, method, location, options);
-            });
-            
-        } else {
-            console.error(`get.js | addFormListener | ${form_id} not found`);
-
-        };
-    } catch (error) {
-        console.error(`get.js | addFormListener | Error on form: ${form_id}: `, error);
-
-    };
+            if (
+                method.toUpperCase() === 'GET' ||
+                options.noConfirm    === true  ||
+                confirm('Are you sure?')
+            ) sendData(method, location, options, form);
+        });
+    })
+    .catch(err => console.error(`get.js | addFormListener | ${err.message}`));
 };
-function sendData(form, method, _location, options = {reload: false}) {
+function sendData(method, _location, options, form = null) {
     showToast();
     const XHR = new XMLHttpRequest();
-    const FD  = new FormData(form);
-    XHR.addEventListener("loadend", (event) => {hide_spinner(options.spinner || options.table || '')});
-    XHR.addEventListener("load",    function (event) {
+    XHR.addEventListener("loadend", (event) => hideSpinner(options.spinner || options.table || ''));
+    XHR.addEventListener("load",    (event) => {
         parseEvent(event)
         .then(response => {
             if (response.success) {
-                if (!options.noConfirmAlert) alert_toast(response.message);
+                if (!options.noConfirmAlert) alertToast(response.message);
                 
                 if ( options.onComplete) {
                     if (Array.isArray(options.onComplete)) {
@@ -175,16 +165,13 @@ function sendData(form, method, _location, options = {reload: false}) {
 
                     };
                 };
-                if (options.reload) {
-                    window.location.reload();
-
-                } else if (options.redirect) {
+                if (options.redirect) {
                     window.location.assign(options.redirect);
 
                 };
             } else {
                 console.error(`get.js | sendData | ${response}`);
-                alert_toast(response.message || 'Ooooopsie');
+                alertToast(response.message || 'Ooooopsie');
 
             };
         })
@@ -194,13 +181,16 @@ function sendData(form, method, _location, options = {reload: false}) {
         .finally(hideToast);
     });
     
-    sendXHR(XHR, method, _location, {data: FD});
+    sendXHR(XHR, method, _location, (form ? {form: form} : null));
 };
 function sendXHR(XHR, method, path, options = {}) {
     XHR.addEventListener("error", function (event) {
         printError('Error with request', event);
-        alert_toast('Error with request');
+        alertToast('Error with request');
     });
     XHR.open(method, `${path}?${options.params || ''}`);
-    XHR.send(options.data || null);
+
+    let FD = null;
+    if (options.form) FD = new FormData(options.form);
+    XHR.send(FD);
 };

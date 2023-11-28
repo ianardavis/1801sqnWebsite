@@ -3,10 +3,10 @@ function getStocks() {
     .then(tbl_stocks => {
         function add_line(stock) {
             let row = tbl_stocks.insertRow(-1);
-            add_cell(row, {text: stock.size.item.description});
-            add_cell(row, {text: print_size(stock.size)});
-            add_cell(row, {text: stock.qty || '0'});
-            add_cell(row, {append: new Modal_Button(
+            addCell(row, {text: stock.size.item.description});
+            addCell(row, {text: printSize(stock.size)});
+            addCell(row, {text: stock.qty || '0'});
+            addCell(row, {append: new Modal_Button(
                 _search(),
                 'stock_view',
                 [{field: 'id', value: stock.stock_id}]
@@ -29,10 +29,10 @@ function viewStock(stock_id) {
     function display_details([stock, options]) {
         setInnerText('stock_id',        stock.stock_id);
         setInnerText('stock_item',      stock.size.item.description);
-        setInnerText('stock_size',      print_size(stock.size));
+        setInnerText('stock_size',      printSize(stock.size));
         setInnerText('stock_qty',       stock.qty);
-        setInnerText('stock_createdAt', print_date(stock.createdAt, true));
-        setInnerText('stock_updatedAt', print_date(stock.updatedAt, true));
+        setInnerText('stock_createdAt', printDate(stock.createdAt, true));
+        setInnerText('stock_updatedAt', printDate(stock.updatedAt, true));
         return stock;
     };
     function set_links(stock) {

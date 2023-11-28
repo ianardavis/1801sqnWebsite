@@ -17,14 +17,14 @@ function getIssue() {
     };
     function display_details([issue, options]) {
         setBreadcrumb(issue.issue_id);
-        setInnerText('issue_user_issue', print_user(issue.user_issue));
-        setInnerText('issue_size',       print_size(issue.size));
+        setInnerText('issue_user_issue', printUser(issue.user_issue));
+        setInnerText('issue_size',       printSize(issue.size));
         setInnerText('issue_item',       issue.size.item.description);
         setInnerText('issue_qty',        issue.qty);
         setInnerText('issue_order',      issue.order_id);
-        setInnerText('issue_createdAt',  print_date(issue.createdAt, true));
-        setInnerText('issue_updatedAt',  print_date(issue.updatedAt, true));
-        setInnerText('issue_user',       print_user(issue.user));
+        setInnerText('issue_createdAt',  printDate(issue.createdAt, true));
+        setInnerText('issue_updatedAt',  printDate(issue.updatedAt, true));
+        setInnerText('issue_user',       printUser(issue.user));
         return issue;
     };
     function set_links(issue) {
@@ -46,14 +46,14 @@ function getIssue() {
         .then(tbl_issue_loancard_lines => {
             issue.loancard_lines.forEach(line => {
                 let row = tbl_issue_loancard_lines.insertRow(-1);
-                add_cell(row, {text: line.line_id});
-                add_cell(row, {append: new Link(`/loancard_lines/${line.line_id}`).e});
+                addCell(row, {text: line.line_id});
+                addCell(row, {append: new Link(`/loancard_lines/${line.line_id}`).e});
             });
         });
         return issue;
     };
     function set_status_badges(issue) {
-        clear_statuses(5, statuses);
+        clearStatuses(5, statuses);
         if ([-3, -2, -1, 1, 2, 3, 4, 5].includes(issue.status)) {
             if ([-3, -2, 1, 2, 3, 4, 5].includes(issue.status)) {
                 set_badge(1, 'success');
@@ -98,9 +98,9 @@ function getIssue() {
     .then(display_loancard_lines)
     .then(set_status_badges)
     .then(set_button_states)
-    .catch(err => redirect_on_error(err, '/issues'));
+    .catch(err => redirectOnError(err, '/issues'));
 };
 window.addEventListener('load', function () {
-    add_listener('reload', getIssue);
+    addListener('reload', getIssue);
     getIssue();
 });

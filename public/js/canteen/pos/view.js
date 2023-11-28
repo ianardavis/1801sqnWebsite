@@ -16,7 +16,7 @@ function getSale() {
             setInnerText('sale_id', sale_id);
             document.querySelectorAll('.sale_id').forEach(e => e.setAttribute('value', sale_id));
             getSaleLines();
-        } else alert_toast('Sale not found');
+        } else alertToast('Sale not found');
     });
 };
 function getSaleLines() {
@@ -39,10 +39,10 @@ function getSaleLines() {
                     results.lines.forEach(line => {
                         total += line.qty * line.price;
                         let row = tbl_sale_lines.insertRow(-1);
-                        add_cell(row, {text: line.item.name});
-                        add_cell(row, {text: `£${Number(line.price).toFixed(2)}`});
-                        add_cell(row, {text: line.qty});
-                        add_cell(row, {text: `£${Number(line.qty * line.price).toFixed(2)}`});
+                        addCell(row, {text: line.item.name});
+                        addCell(row, {text: `£${Number(line.price).toFixed(2)}`});
+                        addCell(row, {text: line.qty});
+                        addCell(row, {text: `£${Number(line.qty * line.price).toFixed(2)}`});
                         let form = document.createElement('form');
                         form.setAttribute('id', `form_${line.line_id}_minus`)
                         form.appendChild(new Hidden_Input({
@@ -58,12 +58,15 @@ function getSaleLines() {
                             ]}).e
                         );
                         form.appendChild(new Button({html: '<i class="fas fa-minus"></i>', small: true, noType: true}).e);
-                        add_cell(row, {append: form});
+                        addCell(row, {append: form});
                         addFormListener(
                             `${line.line_id}_minus`,
                             'PUT',
                             `/sale_lines`,
-                            {noConfirm: true, onComplete: getSaleLines}
+                            {
+                                noConfirm: true, 
+                                onComplete: getSaleLines
+                            }
                         );
                     });
                 };
@@ -75,13 +78,13 @@ function getSaleLines() {
 function addSaleLine(ean, result) {
     console.log(ean, result);
     sendData(
-        this,
         'POST',
         `/sale_lines/ean/${ean}`,
         {
             onComplete: getSaleLines,
             noConfirm: true
-        }
+        },
+        this
     );
 };
 function reset_sale_complete() {
@@ -102,7 +105,7 @@ function getSession() {
 };
 
 window.addEventListener('load', function () {
-    add_listener('reload', getSale);
+    addListener('reload', getSale);
     modalOnShow('sale_complete', reset_sale_complete);
     addFormListener(
         'sale_complete',

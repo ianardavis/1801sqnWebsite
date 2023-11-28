@@ -16,7 +16,7 @@ function get_qty() {
             setValue('inp_qty_edit', order.qty);
         } else {
             modalHide('qty_edit');
-            alert_toast('Not an editable status');
+            alertToast('Not an editable status');
         };
     })
     .catch(err => console.error(err));
@@ -40,10 +40,10 @@ function get_sizes() {
                 .then(function ([result, options]) {
                     result.sizes.forEach(size => {
                         let row = tbl_sizes.insertRow(-1);
-                        add_cell(row, {text: size.size1});
-                        add_cell(row, {text: size.size2});
-                        add_cell(row, {text: size.size3});
-                        add_cell(row, {append: new Radio({
+                        addCell(row, {text: size.size1});
+                        addCell(row, {text: size.size2});
+                        addCell(row, {text: size.size3});
+                        addCell(row, {append: new Radio({
                             attributes: [
                                 {field: 'name',  value: 'size_id'},
                                 {field: 'value', value: size.size_id}
@@ -54,7 +54,7 @@ function get_sizes() {
                 .catch(err => console.error(err));
             } else {
                 modalHide('size_edit');
-                alert_toast('Not an editable status');
+                alertToast('Not an editable status');
             };
         })
         .catch(err => console.error(err));
@@ -65,7 +65,7 @@ window.addEventListener('load', function () {
     modalOnShow('qty_edit',  get_qty);
     enableButton('size_edit');
     enableButton('qty_edit');
-    add_sort_listeners('sizes', get_sizes);
+    addSortListeners('sizes', get_sizes);
 
     addFormListener(
         'mark_as',

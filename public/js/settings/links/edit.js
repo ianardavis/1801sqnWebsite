@@ -1,8 +1,8 @@
 function linkEditBtn(resource_link_id) {
-    set_attribute('btn_link_edit', 'data-resource_link_id', resource_link_id);
+    setAttribute('btn_link_edit', 'data-resource_link_id', resource_link_id);
 };
 function linkHeadingEditBtn(resource_link_heading_id) {
-    set_attribute('btn_link_heading_edit', 'data-resource_link_heading_id', resource_link_heading_id);
+    setAttribute('btn_link_heading_edit', 'data-resource_link_heading_id', resource_link_heading_id);
 };
 
 function viewLinkHeadingEdit(resource_link_heading_id) {
@@ -12,7 +12,7 @@ function viewLinkHeadingEdit(resource_link_heading_id) {
         where: {resource_link_heading_id: resource_link_heading_id}
     })
     .then(function([heading, options]) {
-        set_attribute('resource_link_heading_id_edit', 'value', heading.resource_link_heading_id);
+        setAttribute('resource_link_heading_id_edit', 'value', heading.resource_link_heading_id);
         setValue('link_heading_edit', heading.heading);
     });
 };
@@ -23,7 +23,7 @@ function viewLinkEdit(resource_link_id) {
         where: {resource_link_id: resource_link_id}
     })
     .then(function([link, options]) {
-        set_attribute('resource_link_id_edit', 'value', link.resource_link_id);
+        setAttribute('resource_link_id_edit', 'value', link.resource_link_id);
         setValue('link_heading_edit', link.heading);
         setValue('link_title_edit',   link.title);
         setValue('link_text_edit',    link.text);

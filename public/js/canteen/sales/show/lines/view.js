@@ -11,11 +11,11 @@ function getSaleLines() {
             result.lines.forEach(line => {
                 try {
                     let row = tbl_lines.insertRow(-1);
-                    add_cell(row, table_date(line.createdAt));
-                    add_cell(row, {text: line.item.name});
-                    add_cell(row, {text: line.qty});
-                    add_cell(row, {text: `£${Number(line.item.price).toFixed(2)}`});
-                    add_cell(row, {text: `£${Number(line.item.price*line.qty).toFixed(2)}`});
+                    addCell(row, tableDate(line.createdAt));
+                    addCell(row, {text: line.item.name});
+                    addCell(row, {text: line.qty});
+                    addCell(row, {text: `£${Number(line.item.price).toFixed(2)}`});
+                    addCell(row, {text: `£${Number(line.item.price*line.qty).toFixed(2)}`});
                 } catch (error) {
                     console.error(`canteen/sales/show/lines/view.js | getSaleLines | ${error}`);
                 };
@@ -24,5 +24,5 @@ function getSaleLines() {
     });
 };
 window.addEventListener('load', function () {
-    add_listener('reload', getSaleLines);
+    addListener('reload', getSaleLines);
 });

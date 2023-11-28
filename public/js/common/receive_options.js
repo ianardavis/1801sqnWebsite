@@ -2,9 +2,9 @@ let receive_options = null;
 function receive_option_func(table) {
     receive_options = function () {
         clear(`details_${this.dataset.id}`)
-        .then(div_details => {
+        .then(divDetails => {
             if (this.value === '3') {
-                div_details.appendChild(new Spinner(this.dataset.id).e);
+                divDetails.appendChild(new Spinner(this.dataset.id).e);
                 let where = {};
                 where[`${table}_id`] = this.dataset.id;
                 get({
@@ -14,14 +14,14 @@ function receive_option_func(table) {
                 })
                 .then(function ([line, options]) {
                     function add_serial_selects(i) {
-                        div_details.appendChild(new Select({
+                        divDetails.appendChild(new Select({
                             attributes: [
                                 {field: 'name',        value: `lines[][${options.index}][serials][][${i}][serial]`},
                                 {field: 'required',    value: true},
                                 {field: 'placeholder', value: `Serial ${i + 1}`}
                             ]
                         }).e);
-                        div_details.appendChild(new Select({
+                        divDetails.appendChild(new Select({
                             attributes: [
                                 {field: 'name',        value: `lines[][${options.index}][serials][][${i}][location]`},
                                 {field: 'required',    value: true},
@@ -32,7 +32,7 @@ function receive_option_func(table) {
                     function add_stock_selects() {
                         let list = document.createElement('datalist');
                         list.setAttribute('id', `loc_list_${options.index}`);
-                        div_details.appendChild(new Text_Input({
+                        divDetails.appendChild(new Text_Input({
                             attributes: [
                                 {field: 'name',        value: `lines[][${options.index}][location]`},
                                 {field: 'required',    value: true},
@@ -40,7 +40,7 @@ function receive_option_func(table) {
                                 {field: 'placeholder', value: 'Enter Location...'}
                             ]
                         }).e);
-                        div_details.appendChild(list);
+                        divDetails.appendChild(list);
                         get({
                             table: 'stocks',
                             where: {size_id: line.size_id}
@@ -48,7 +48,7 @@ function receive_option_func(table) {
                         .then(function ([result, options]) {
                             result.stocks.forEach(e => list.appendChild(new Option({value: e.location.location}).e));
                         });
-                        div_details.appendChild(new Number_Input({
+                        divDetails.appendChild(new Number_Input({
                             attributes: [
                                 {field: 'min',         value: '1'},
                                 {field: 'placeholder', value: 'Receipt Quantity'},
@@ -70,7 +70,7 @@ function receive_option_func(table) {
                         };
 
                     };
-                    remove_spinner(line[`${table}_id`]);
+                    removeSpinner(line[`${table}_id`]);
                 });
 
             };

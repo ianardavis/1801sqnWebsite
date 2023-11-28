@@ -4,9 +4,9 @@ function getNSNs() {
         function add_line(nsn) {
             try {
                 let row = tbl_nsns.insertRow(-1);
-                add_cell(row, {text: print_nsn(nsn)});
-                add_cell(row, {html: (nsn.size.nsn_id === nsn.nsn_id ? _check() : '')});
-                add_cell(row, {
+                addCell(row, {text: printNSN(nsn)});
+                addCell(row, {html: (nsn.size.nsn_id === nsn.nsn_id ? _check() : '')});
+                addCell(row, {
                     append: new Modal_Button(
                         _search(),
                         'nsn_view',
@@ -33,7 +33,7 @@ function viewNSN(event) {
         setInnerText('nsn_country_id', `${String(nsn.nsn_country.code).padStart(2, '0')} | ${nsn.nsn_country.country}`);
         setInnerText('item_number',    nsn.item_number);
         setInnerText('nsn_id',         nsn.nsn_id);
-        setInnerText('nsn_view',       print_nsn(nsn));
+        setInnerText('nsn_view',       printNSN(nsn));
         setInnerText('_default',       yesno((nsn.nsn_id === nsn.size.nsn_id)));
         return nsn;
     };
@@ -51,8 +51,8 @@ function viewNSN(event) {
     .catch(err => console.error(err));
 };
 window.addEventListener('load', function() {
-    add_listener('reload', getNSNs);
+    addListener('reload', getNSNs);
     modalOnShow('nsn_view', viewNSN);
-    add_sort_listeners('nsns', getNSNs);
+    addSortListeners('nsns', getNSNs);
     getNSNs();
 });

@@ -29,6 +29,6 @@ window.addEventListener('load', function () {
     );
     modalOnShow('file_view', function (event) {
         getFileDetailNames();
-        set_attribute('file_id_detail_add', 'value', event.relatedTarget.dataset.id);
+        setAttribute('file_id_detail_add', 'value', event.relatedTarget.dataset.id);
     });
 });

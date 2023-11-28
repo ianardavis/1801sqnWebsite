@@ -10,14 +10,14 @@ function getEANs() {
             result.eans.forEach(ean => {
                 try {
                     let row = tbl_eans.insertRow(-1);
-                    add_cell(row, {text: ean.ean});
-                    add_cell(row, table_date(ean.createdAt));
-                    add_cell(row, {append: new Delete_Button({
+                    addCell(row, {text: ean.ean});
+                    addCell(row, tableDate(ean.createdAt));
+                    addCell(row, {append: new Delete_Button({
                         descriptor: 'EAN',
                         path: `/eans/${ean.ean_id}`,
                         small: true
                     }).e});
-                    add_cell(row, );
+                    addCell(row, );
                 } catch (error) {
                     console.error(`canteen/items/show/eans/view.js | getEANs | ${error}`);
                 };
@@ -26,7 +26,7 @@ function getEANs() {
     });
 };
 window.addEventListener('load', function () {
-    add_listener('reload', getEANs);
-    add_sort_listeners('nsns', getEANs);
+    addListener('reload', getEANs);
+    addSortListeners('nsns', getEANs);
     getEANs();
 });

@@ -4,21 +4,21 @@ function get_scraps() {
     .then(tbl_scraps => {
         function add_line(scrap) {
             let row = tbl_scraps.insertRow(-1);
-            add_cell(row, table_date(scrap.createdAt));
-            add_cell(row, {text: scrap.supplier.name});
-            add_cell(row, {text: scrap.lines.length || '0'});
-            add_cell(row, {text: scrap_statuses[scrap.status]});
-            add_cell(row, {append: new Link(`/scraps/${scrap.scrap_id}`).e});
+            addCell(row, tableDate(scrap.createdAt));
+            addCell(row, {text: scrap.supplier.name});
+            addCell(row, {text: scrap.lines.length || '0'});
+            addCell(row, {text: scrap_statuses[scrap.status]});
+            addCell(row, {append: new Link(`/scraps/${scrap.scrap_id}`).e});
         };
 
         get({
             table: 'scraps',
             where: {
-                ...filter_status('scrap'),
-                ...filter_supplier('scrap')
+                ...filterStatus('scrap'),
+                ...filterSupplier('scrap')
             },
-            gt: filter_date_from('scrap'),
-            lt: filter_date_to('scrap'),
+            gt: filterDateFrom('scrap'),
+            lt: filterDateTo('scrap'),
             func:  get_scraps
         })
         .then(function ([results, options]) {
@@ -35,18 +35,18 @@ function getSuppliers() {
     })  
 };
 window.addEventListener('load', function () {
-    set_status_filter_options('scrap', [
+    setStatusFilterOptions('scrap', [
         {value: '0', text: 'Cancelled'},
         {value: '1', text: 'Draft', selected: true},
         {value: '2', text: 'Closed'}
     ]);
-    add_listener('reload', get_scraps);
+    addListener('reload', get_scraps);
     getSuppliers();
-    add_listener('reload_users', getSuppliers);
-    add_listener('filter_scrap_statuses', get_scraps, 'change');
-    add_listener('filter_scrap_suppliers', get_scraps, 'change');
-    add_listener('createdAt_from',     get_scraps, 'change');
-    add_listener('createdAt_to',       get_scraps, 'change');
-    add_sort_listeners('scraps', get_scraps);
+    addListener('reload_users', getSuppliers);
+    addListener('filter_scrap_statuses', get_scraps, 'change');
+    addListener('filter_scrap_suppliers', get_scraps, 'change');
+    addListener('createdAt_from',     get_scraps, 'change');
+    addListener('createdAt_to',       get_scraps, 'change');
+    addSortListeners('scraps', get_scraps);
     get_scraps();
 });

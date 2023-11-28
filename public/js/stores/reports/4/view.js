@@ -16,12 +16,12 @@ function getStocks(location_id) {
     .then(tbl_stocks => {
         function add_line(stock, index) {
             let row = tbl_stocks.insertRow(-1);
-            add_cell(row, {text: stock.size.item.description});
-            add_cell(row, {text: stock.size.size1});
-            add_cell(row, {text: stock.size.size2});
-            add_cell(row, {text: stock.size.size3});
-            add_cell(row, {text: stock.qty || '0'});
-            add_cell(row, {append: [
+            addCell(row, {text: stock.size.item.description});
+            addCell(row, {text: stock.size.size1});
+            addCell(row, {text: stock.size.size2});
+            addCell(row, {text: stock.size.size3});
+            addCell(row, {text: stock.qty || '0'});
+            addCell(row, {append: [
                 new Number_Input({
                     attributes: [
                         {field: 'name', value: `counts[][${index}][qty]`},
@@ -35,7 +35,7 @@ function getStocks(location_id) {
                     ]
                 }).e
             ]});
-            add_cell(row, {append: new Link(`/stocks/${stock.stock_id}`).e});
+            addCell(row, {append: new Link(`/stocks/${stock.stock_id}`).e});
         };
         setValue('location_id', location_id)
         if (location_id) {
@@ -54,14 +54,14 @@ function getStocks(location_id) {
     });
 };
 window.addEventListener('load', function () {
-    add_listener('reload', getLocations);
-    add_listener('sel_location', function (e) {getStocks(e.target.value)}, 'input');
+    addListener('reload', getLocations);
+    addListener('sel_location', function (e) {getStocks(e.target.value)}, 'input');
     addFormListener(
         'stocks',
         'PUT',
         '/stocks/counts',
         {onComplete: function (e) {getStocks(e.result)}}
     );
-    add_sort_listeners('locations', getStocks);
+    addSortListeners('locations', getStocks);
     getLocations();
 });

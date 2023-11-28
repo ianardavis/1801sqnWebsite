@@ -25,8 +25,8 @@ function getSuppliers() {
     });
 };
 window.addEventListener('load', function () {
-    add_listener('reload', getSuppliers);
+    addListener('reload', getSuppliers);
     inp_supplier_name.addEventListener('input', getSuppliers);
-    add_sort_listeners('suppliers', getSuppliers);
+    addSortListeners('suppliers', getSuppliers);
     getSuppliers();
 });

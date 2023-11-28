@@ -9,7 +9,7 @@ function get_items() {
         .then(function ([result, options]) {
             result.items.forEach(item => {
                 let row = tbl_items.insertRow(-1);
-                add_cell(row, {append: new Checkbox({
+                addCell(row, {append: new Checkbox({
                     small:    true,
                     listener: {event: 'input', func: get_sizes},
                     attributes: [
@@ -17,9 +17,9 @@ function get_items() {
                         {field: 'data-index',   value: index}
                     ]
                 }).e});
-                add_cell(row, {text: item.description});
-                add_cell(row, {id: `${item.item_id}_sizes`});
-                add_cell(row, {id: `${item.item_id}_qty`});
+                addCell(row, {text: item.description});
+                addCell(row, {id: `${item.item_id}_sizes`});
+                addCell(row, {id: `${item.item_id}_qty`});
                 index++;
             });
         });
@@ -118,7 +118,7 @@ function get_sizes(event) {
                     let measurements = get_measurements(),
                         recommended  = false;
                     result.sizes.forEach(size => {
-                        sel_sizes.appendChild(new Option({value: size.size_id, text: print_size(size)}).e);
+                        sel_sizes.appendChild(new Option({value: size.size_id, text: printSize(size)}).e);
                     })
                     sizes_cell.appendChild(sel_sizes);
                 });
@@ -127,9 +127,9 @@ function get_sizes(event) {
     });
 };
 window.addEventListener( "load", function () {
-    add_listener('tbl_items', toggle_checkbox_on_row_click);
+    addListener('tbl_items', toggleCheckboxOnRowClick);
     modalOnShow('issue_measurement', get_items);
-    add_listener('btn_measurement_search', get_sizes);
+    addListener('btn_measurement_search', get_sizes);
     enableButton('issue_measurement');
     addFormListener(
         'issue_measurement',
@@ -137,5 +137,5 @@ window.addEventListener( "load", function () {
         '/issues',
         {onComplete: get_issues}
     );
-    add_sort_listeners('sizes', get_sizes);
+    addSortListeners('sizes', get_sizes);
 });

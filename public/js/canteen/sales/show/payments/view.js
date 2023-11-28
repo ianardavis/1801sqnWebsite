@@ -11,10 +11,10 @@ function getPayments() {
             result.payments.forEach(payment => {
                 try {
                     let row = tbl_payments.insertRow(-1);
-                    add_cell(row, table_date(payment.createdAt));
-                    add_cell(row, {text: `£${Number(payment.amount).toFixed(2)}`});
-                    add_cell(row, {text: payment.type});
-                    add_cell(row, {text: print_user(payment.user)});
+                    addCell(row, tableDate(payment.createdAt));
+                    addCell(row, {text: `£${Number(payment.amount).toFixed(2)}`});
+                    addCell(row, {text: payment.type});
+                    addCell(row, {text: printUser(payment.user)});
                 } catch (error) {
                     console.error(`canteen/sales/show/payments/view.js | getPayments | ${error}`);
                 };
@@ -23,5 +23,5 @@ function getPayments() {
     });
 };
 window.addEventListener('load', function () {
-    add_listener('reload', getPayments);
+    addListener('reload', getPayments);
 });

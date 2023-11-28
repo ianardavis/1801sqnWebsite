@@ -22,5 +22,5 @@ window.addEventListener('load', function () {
     );
     modalOnShow('stock_edit', viewStockEdit);
     modalOnShow('stock_edit', getLocations);
-    add_listener('reload_locations_edit', getLocations);
+    addListener('reload_locations_edit', getLocations);
 });

@@ -3,11 +3,9 @@ window.addEventListener('load', function () {
         'item_add',
         'POST',
         '/canteen_items',
-        {
-            onComplete: [
-                getItems,
-                function () {modalHide('item_add')}
-            ]
-        }
+        {onComplete: [
+            getItems,
+            function () {modalHide('item_add')}
+        ]}
     )
 })

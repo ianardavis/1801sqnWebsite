@@ -3,10 +3,10 @@ function getLoancards() {
     .then(tbl_loancards => {
         function add_line(line) {
             let row = tbl_loancards.insertRow(-1);
-            add_cell(row, table_date(line.createdAt));
-            add_cell(row, {text: print_user(line.loancard.user_loancard)});
-            add_cell(row, {text: line.status});
-            add_cell(row, {append: new Modal_Button(
+            addCell(row, tableDate(line.createdAt));
+            addCell(row, {text: printUser(line.loancard.user_loancard)});
+            addCell(row, {text: line.status});
+            addCell(row, {append: new Modal_Button(
                 _search(),
                 'loancard_view',
                 [{field: 'id', value: line.line_id}]
@@ -30,18 +30,18 @@ function viewLoancard(line_id) {
     function display_details([line, options]) {
         setInnerText('loancard_id',             line.loancard_id);
         setInnerText('line_id',                 line.line_id);
-        setInnerText('loancard_user_to',        print_user(line.loancard.user_loancard));
-        setInnerText('loancard_user_by',        print_user(line.loancard.user));
+        setInnerText('loancard_user_to',        printUser(line.loancard.user_loancard));
+        setInnerText('loancard_user_by',        printUser(line.loancard.user));
         setInnerText('loancard_status',         line.loancard.status);
-        setInnerText('loancard_createdAt',      print_date(line.loancard.createdAt, true));
-        setInnerText('loancard_updatedAt',      print_date(line.loancard.updatedAt, true));
+        setInnerText('loancard_createdAt',      printDate(line.loancard.createdAt, true));
+        setInnerText('loancard_updatedAt',      printDate(line.loancard.updatedAt, true));
         setInnerText('loancard_line_item',      (line.size   ? (line.size.item ? line.size.item.description : 'Unknown Item') : 'Unknown Size'));
-        setInnerText('loancard_line_size',      (line.size   ? print_size(line.size) : 'Unknown Size'));
-        setInnerText('loancard_line_nsn',       (line.nsn ? print_nsn(line.nsn) : ''));
+        setInnerText('loancard_line_size',      (line.size   ? printSize(line.size) : 'Unknown Size'));
+        setInnerText('loancard_line_nsn',       (line.nsn ? printNSN(line.nsn) : ''));
         setInnerText('loancard_line_status',    line.status);
-        setInnerText('loancard_line_createdAt', print_date(line.createdAt, true));
-        setInnerText('loancard_line_updatedAt', print_date(line.updatedAt, true));
-        setInnerText('loancard_line_user',      print_user(line.user));
+        setInnerText('loancard_line_createdAt', printDate(line.createdAt, true));
+        setInnerText('loancard_line_updatedAt', printDate(line.updatedAt, true));
+        setInnerText('loancard_line_user',      printUser(line.user));
         return line;
     };
     function set_links(line) {
@@ -63,6 +63,6 @@ function viewLoancard(line_id) {
     .then(set_links);
 };
 window.addEventListener('load', function () {
-    add_listener('reload', getLoancards);
+    addListener('reload', getLoancards);
     modalOnShow('loancard_view', function (event) {viewLoancard(event.relatedTarget.dataset.id)});
 });

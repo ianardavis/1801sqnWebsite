@@ -1,5 +1,5 @@
 function linkDeleteBtn(resource_link_id) {
-    set_attribute('form_link_delete', 'action', `/resource_links/${resource_link_id}`);
+    setAttribute('form_link_delete', 'action', `/resource_links/${resource_link_id}`);
     // clear('link_delete')
     // .then(span_delete => {
     //     span_delete.appendChild(
@@ -17,7 +17,7 @@ function linkDeleteBtn(resource_link_id) {
     // });
 };
 function linkHeadingDeleteBtn(resource_link_heading_id) {
-    set_attribute('form_link_delete', 'action', `/resource_link_headings/${resource_link_heading_id}`);
+    setAttribute('form_link_delete', 'action', `/resource_link_headings/${resource_link_heading_id}`);
 };
 window.addEventListener('load', function () {
     enableButton('link_heading_delete');

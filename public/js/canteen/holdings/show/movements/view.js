@@ -11,16 +11,16 @@ function getMovements() {
             setCount('movement', results.count);
             results.movements.forEach(movement => {
                 let row = tbl_movements.insertRow(-1);
-                add_cell(row, {text: print_date(movement.createdAt)});
-                add_cell(row, {text: (movement.holding_id_to === path[2] ? 'In' : (movement.holding_id_from === path[2] ? 'Out' : '?'))});
-                add_cell(row, {text: movement.type});
-                add_cell(row, {text: `£${Number(movement.amount).toFixed(2)}`});
-                add_cell(row, {text: movement.description});
-                add_cell(row, {append: new Link(`/movements/${movement.movement_id}`).e});
+                addCell(row, {text: printDate(movement.createdAt)});
+                addCell(row, {text: (movement.holding_id_to === path[2] ? 'In' : (movement.holding_id_from === path[2] ? 'Out' : '?'))});
+                addCell(row, {text: movement.type});
+                addCell(row, {text: `£${Number(movement.amount).toFixed(2)}`});
+                addCell(row, {text: movement.description});
+                addCell(row, {append: new Link(`/movements/${movement.movement_id}`).e});
             });
         });
     });
 };
 window.addEventListener('load', function () {
-    add_listener('reload', getMovements);
+    addListener('reload', getMovements);
 });

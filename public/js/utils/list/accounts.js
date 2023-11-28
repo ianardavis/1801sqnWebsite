@@ -11,7 +11,7 @@ function listAccounts(options = {}) {
                 sel_accounts.appendChild(
                     new Option({
                         value:    account.account_id,
-                        text:     print_account(account),
+                        text:     printAccount(account),
                         selected: (options.selected === account.account_id)
                     }).e
                 )

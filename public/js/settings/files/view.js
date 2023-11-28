@@ -16,10 +16,10 @@ function get_files() {
                 fs.forEach(file => table_files.push({filename: file, exists: 'Yes'}));
                 table_files.forEach(file => {
                     let row = tbl_files.insertRow(-1);
-                    add_cell(row, {text: file.file_id || ''});
-                    add_cell(row, {text: file.filename, classes: ['text-start']});
-                    add_cell(row, (file.exists ? {html: _check()} : null))
-                    add_cell(row, {
+                    addCell(row, {text: file.file_id || ''});
+                    addCell(row, {text: file.filename, classes: ['text-start']});
+                    addCell(row, (file.exists ? {html: _check()} : null))
+                    addCell(row, {
                         classes: ['files'],
                         data: [
                             (file.file_id ? {field: 'id', value: file.file_id} : {field: 'file', value: file.filename})
@@ -32,7 +32,7 @@ function get_files() {
     });
 };
 window.addEventListener('load', function () {
-    add_listener('reload', get_files);
-    add_sort_listeners('files', get_files);
+    addListener('reload', get_files);
+    addSortListeners('files', get_files);
     get_files();
 });

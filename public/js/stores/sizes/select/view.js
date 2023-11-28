@@ -1,8 +1,8 @@
 function getItems() {
     clear('tbl_sizes');
-    let filter_items = document.querySelector('#filter_items') || {value: ''};
+    let filterItems = document.querySelector('#filterItems') || {value: ''};
     listItems({
-        ...(filter_items.value !== '' ? {like:  {description: filter_items.value}} : {})
+        ...(filterItems.value !== '' ? {like:  {description: filterItems.value}} : {})
     });
 };
 function getSizes() {
@@ -22,17 +22,17 @@ function getSizes() {
             })
             .then(function ([result, options]) {
                 result.sizes.forEach(size => {
-                    get_stock(size.size_id)
+                    getStock(size.size_id)
                     .then(stock => {
                         let row = tbl_sizes.insertRow(-1);
-                        add_cell(row, {append: new Checkbox({
+                        addCell(row, {append: new Checkbox({
                             small: true,
                             attributes: [{field: 'data-id', value: size.size_id}]}).e
                         });
-                        add_cell(row, {text: size.size1});
-                        add_cell(row, (size.size2 ? {text: size.size2} : {}));
-                        add_cell(row, (size.size3 ? {text: size.size3} : {}));
-                        add_cell(row, {text: stock || '0'});
+                        addCell(row, {text: size.size1});
+                        addCell(row, (size.size2 ? {text: size.size2} : {}));
+                        addCell(row, (size.size3 ? {text: size.size3} : {}));
+                        addCell(row, {text: stock || '0'});
                     });
                 });
             });
@@ -56,13 +56,13 @@ function selectSizes() {
             e.checked = false;
         });
         window.opener.selectedSizes(sizes);
-    } else alert_toast('Source window not found');
+    } else alertToast('Source window not found');
 };
 window.addEventListener('load', function () {
-    add_listener('tbl_sizes', toggle_checkbox_on_row_click);
-    add_listener('btn_select',   selectSizes);
-    add_listener('sel_items',    getSizes, 'input');
-    add_listener('filter_items', getItems, 'input');
-    add_sort_listeners('sizes', getSizes);
+    addListener('tbl_sizes', toggleCheckboxOnRowClick);
+    addListener('btn_select',   selectSizes);
+    addListener('sel_items',    getSizes, 'input');
+    addListener('filterItems', getItems, 'input');
+    addSortListeners('sizes', getSizes);
     getItems();
 });

@@ -11,9 +11,9 @@ function getStocks() {
             result.stocks.forEach(stock => {
                 try {
                     let row = tbl_stocks.insertRow(-1);
-                    add_cell(row, {text: stock.location.location});
-                    add_cell(row, {text: stock.qty || '0'});
-                    add_cell(row, {append: new Link(`/stocks/${stock.stock_id}`).e});
+                    addCell(row, {text: stock.location.location});
+                    addCell(row, {text: stock.qty || '0'});
+                    addCell(row, {append: new Link(`/stocks/${stock.stock_id}`).e});
                     
                 } catch (error) {
                     console.error(error);
@@ -24,7 +24,7 @@ function getStocks() {
     });
 };
 window.addEventListener('load', function () {
-    add_listener('reload', getStocks);
-    add_sort_listeners('stocks', getStocks);
+    addListener('reload', getStocks);
+    addSortListeners('stocks', getStocks);
     getStocks();
 });

@@ -4,8 +4,8 @@ function getNotes() {
         let where = {
                 _table: path[1],
                 id:     path[2]
-            },
-            system = getSelectedOptions('sel_system');
+            };
+        const system = getSelectedOptions('sel_system');
         if (system.length > 0) where.system = system;
         get({
             table: 'notes',
@@ -16,9 +16,9 @@ function getNotes() {
             setCount('note', result.count);
             result.notes.forEach(note => {
                 let row = tbl_notes.insertRow(-1);
-                add_cell(row, table_date(note.createdAt));
-                add_cell(row, {text: note.note});
-                add_cell(row, {append: new Modal_Button(
+                addCell(row, tableDate(note.createdAt));
+                addCell(row, {text: note.note});
+                addCell(row, {append: new Modal_Button(
                     _search(),
                     'note_view',
                     [{field: 'id', value: note.note_id}]
@@ -36,7 +36,7 @@ function viewNote(note_id) {
     })
     .then(function ([note, options]) {
         setInnerText('note_id_view',   note.note_id);
-        setInnerText('note_createdAt', print_date(note.createdAt, true));
+        setInnerText('note_createdAt', printDate(note.createdAt, true));
         setInnerText('note_user',      note.user.full_name);
         setInnerText('note_system',    yesno(note.system));
         setInnerText('note_note',      note.note);
@@ -44,13 +44,13 @@ function viewNote(note_id) {
     });
 };
 window.addEventListener('load', function () {
-    add_listener('reload', getNotes);
+    addListener('reload', getNotes);
     modalOnShow('note_view', function(event) {
         if (event.relatedTarget.dataset.id) {
             viewNote(event.relatedTarget.dataset.id)
         } else modalHide('note_view');
     });
-    add_listener('sel_system', getNotes, 'input');
-    add_sort_listeners('notes', getNotes);
+    addListener('sel_system', getNotes, 'input');
+    addSortListeners('notes', getNotes);
     getNotes();
 });

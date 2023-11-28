@@ -4,16 +4,16 @@ function get_items() {
     .then(tbl_items => {
         function add_line(item) {
             let row = tbl_items.insertRow(-1);
-            add_cell(row, {text: item.description});
-            add_cell(row, {append: new Link(`/items/${item.item_id}`).e});
+            addCell(row, {text: item.description});
+            addCell(row, {append: new Link(`/items/${item.item_id}`).e});
         };
         get({
             table: 'items',
             where: {
-                ...filter_gender('item')
+                ...filterGender('item')
             },
             like: {
-                ...filter_item('item')
+                ...filterItem('item')
             },
             func: get_items
         })
@@ -25,10 +25,10 @@ function get_items() {
     });
 };
 window.addEventListener('load', function () {
-    add_listener('reload', get_items);
-    add_listener('sel_genders',      get_items, 'input');
-    add_listener('item_description', get_items, 'input');
-    add_listener('reload_genders',   get_genders);
-    add_sort_listeners('items', get_items);
+    addListener('reload', get_items);
+    addListener('sel_genders',      get_items, 'input');
+    addListener('item_description', get_items, 'input');
+    addListener('reload_genders',   get_genders);
+    addSortListeners('items', get_items);
     get_items();
 });

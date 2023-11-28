@@ -9,7 +9,7 @@ function getNSNs(size_id, line_id, cell, nsn_id = null) {
         let opts = [{value: '', text: '... Select NSN'}];
         nsns.forEach(e => opts.push({
             value:    e.nsn_id,
-            text:     print_nsn(e),
+            text:     printNSN(e),
             selected: (e.nsn_id === nsn_id),
             default:  (e.nsn_id === nsn_id)
         }));
@@ -22,6 +22,6 @@ function getNSNs(size_id, line_id, cell, nsn_id = null) {
                 options:  opts
             }).e
         );
-        remove_spinner(`nsns_${line_id}`);
+        removeSpinner(`nsns_${line_id}`);
     });
 };

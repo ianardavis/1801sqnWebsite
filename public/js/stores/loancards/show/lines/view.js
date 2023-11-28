@@ -11,11 +11,11 @@ function get_lines() {
                     if (issue.status >= 1 && issue.status <= 4) open_qty += issue.qty;
                 });
                 let row = tbl_lines.insertRow(-1);
-                add_cell(row, {text: line.size.item.description});
-                add_cell(row, {text: print_size(line.size)});
-                add_cell(row, {text: qty});
-                add_cell(row, {text: open_qty.toString()});
-                add_cell(row, {
+                addCell(row, {text: line.size.item.description});
+                addCell(row, {text: printSize(line.size)});
+                addCell(row, {text: qty});
+                addCell(row, {text: open_qty.toString()});
+                addCell(row, {
                     text: line_statuses[line.status],
                     append: new Hidden_Input({
                         attributes: [
@@ -50,8 +50,8 @@ function get_lines() {
                         };
                     };
                 };
-                add_cell(row, {append: [radios, div_details(line.line_id, index)]});
-                add_cell(row, {append: 
+                addCell(row, {append: [radios, divDetails(line.line_id, index)]});
+                addCell(row, {append: 
                     new Modal_Button(
                         _search(),
                         'line_view',
@@ -70,7 +70,7 @@ function get_lines() {
             table: 'loancard_lines',
             where: {
                 loancard_id: path[2],
-                ...filter_status('loancard_lines')
+                ...filterStatus('loancard_lines')
             },
             func: get_lines
         })
@@ -89,11 +89,11 @@ function view_line(line_id) {
     function display_details([line, options]) {
         setInnerText('line_id',        line.line_id);
         setInnerText('line_item',      line.size.item.description);
-        setInnerText('line_size',      print_size(line.size));
+        setInnerText('line_size',      printSize(line.size));
         setInnerText('line_qty',       line.qty);
-        setInnerText('line_user',      print_user(line.user));
-        setInnerText('line_createdAt', print_date(line.createdAt, true));
-        setInnerText('line_updatedAt', print_date(line.updatedAt, true));
+        setInnerText('line_user',      printUser(line.user));
+        setInnerText('line_createdAt', printDate(line.createdAt, true));
+        setInnerText('line_updatedAt', printDate(line.updatedAt, true));
         return line;
     };
     function set_links(line) {
@@ -111,15 +111,15 @@ function view_line(line_id) {
     .then(set_links);
 };
 window.addEventListener('load', function () {
-    set_status_filter_options('loancard_lines', [
+    setStatusFilterOptions('loancard_lines', [
         {value: '0', text: 'Cancelled', selected: true},
         {value: '1', text: 'Pending',   selected: true},
         {value: '2', text: 'Open',      selected: true},
         {value: '3', text: 'Returned',  selected: true}
     ]);
-    add_listener('reload', get_lines);
-    add_listener('sel_status', get_lines, 'change');
+    addListener('reload', get_lines);
+    addListener('sel_status', get_lines, 'change');
     modalOnShow('line_view', function (event) {view_line(event.relatedTarget.dataset.id)});
-    add_sort_listeners('loancard_lines', get_lines);
+    addSortListeners('loancard_lines', get_lines);
     get_lines();
 });

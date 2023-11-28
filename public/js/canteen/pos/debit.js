@@ -18,5 +18,5 @@ function getCredits() {
 };
 window.addEventListener('load', function () {
     modalOnShow('sale_complete', getCredits);
-    add_listener('reload_debit',  getCredits);
+    addListener('reload_debit',  getCredits);
 });

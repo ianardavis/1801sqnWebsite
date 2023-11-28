@@ -7,8 +7,8 @@ function getGenders() {
         .then(function ([results, options]) {
             results.genders.forEach(gender => {
                 let row = tbl_genders.insertRow(-1);
-                add_cell(row, {text: gender.gender});
-                add_cell(row, {append:
+                addCell(row, {text: gender.gender});
+                addCell(row, {append:
                     new Modal_Button(
                         _search(),
                         'gender_view',
@@ -31,14 +31,14 @@ function viewGender(gender_id) {
     .then(function([gender, options]) {
         setInnerText('gender_id',        gender.gender_id);
         setInnerText('gender_gender',    gender.gender);
-        setInnerText('gender_user',      print_user(gender.user));
-        setInnerText('gender_createdAt', print_date(gender.createdAt, true));
-        setInnerText('gender_updatedAt', print_date(gender.updatedAt, true));
+        setInnerText('gender_user',      printUser(gender.user));
+        setInnerText('gender_createdAt', printDate(gender.createdAt, true));
+        setInnerText('gender_updatedAt', printDate(gender.updatedAt, true));
     });
 };
 window.addEventListener('load', function () {
-    add_listener('reload', getGenders);
+    addListener('reload', getGenders);
     modalOnShow('gender_view', function (event) {viewGender(event.relatedTarget.dataset.id)});
-    add_sort_listeners('genders', getGenders);
+    addSortListeners('genders', getGenders);
     getGenders();
 });

@@ -122,15 +122,13 @@ function Link(href) {
     ).e;
 };
 function Delete_Button(options = {}) {
-    const submit_action = function (event) {
+    function submitAction(event) {
             event.preventDefault();
             if (confirm(`Delete ${options.descriptor || `line`}?`)){
-                sendData(this.e, 'DELETE', options.path, options.options || {reload: true});
+                sendData('DELETE', options.path, options.options || {});
             };
         };
-    this.e = new Form({
-        submit: submit_action
-    }).e;
+    this.e = new Form({submit: submitAction}).e;
 
     this.e.appendChild(new Button({
         html: _delete(),

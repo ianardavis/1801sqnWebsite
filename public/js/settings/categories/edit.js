@@ -35,7 +35,7 @@ function viewCategoryEdit(category_id) {
     });
 };
 window.addEventListener('load', function () {
-    add_listener('reload', loadCategoriesEdit);
+    addListener('reload', loadCategoriesEdit);
     modalOnShow('category_view', function (event) {categoryEditBtn(event.relatedTarget.dataset.id)});
     modalOnShow('category_edit', function (event) {viewCategoryEdit(event.relatedTarget.dataset.id)});
     addFormListener(
@@ -70,8 +70,8 @@ window.addEventListener('load', function () {
             if (id) {
                 let ele = document.querySelector(`.list-group-item [data-id="${id}"]`);
                 if (ele) {
-                    set_attribute('category_id_move', 'value', id);
-                    set_attribute('parent_category_id_move', 'value');
+                    setAttribute('category_id_move', 'value', id);
+                    setAttribute('parent_category_id_move', 'value');
                     ele.classList.add('green');
                     dragging = true;
                 };
@@ -82,7 +82,7 @@ window.addEventListener('load', function () {
             if (id) {
                 let ele = document.querySelector(`.list-group-item [data-id="${id}"]`);
                 if (ele) {
-                    set_attribute('parent_category_id_move', 'value', id);
+                    setAttribute('parent_category_id_move', 'value', id);
                     document.querySelectorAll('.green').forEach(e => e.classList.remove('green'));
                     document.querySelectorAll('.red')  .forEach(e => e.classList.remove('red'));
                     dragging = false;

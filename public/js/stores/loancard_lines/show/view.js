@@ -6,15 +6,15 @@ const statuses = {
 };
 function getLoancardLine() {
     function display_details([line, options]) {
-        setBreadcrumb(`${line.size.item.description} | ${line.size.item.size_text || 'Size'}: ${print_size(line.size)}`);
-        setInnerText('bcr_loancard',   `${print_user(line.loancard.user_loancard)} | ${print_date(line.loancard.createdAt)}`);
+        setBreadcrumb(`${line.size.item.description} | ${line.size.item.size_text || 'Size'}: ${printSize(line.size)}`);
+        setInnerText('bcr_loancard',   `${printUser(line.loancard.user_loancard)} | ${printDate(line.loancard.createdAt)}`);
         setInnerText('line_item',      line.size.item.description);
-        setInnerText('line_size',      print_size(line.size));
+        setInnerText('line_size',      printSize(line.size));
         setInnerText('line_serial',    (line.serial ? line.serial.serial : ''));
-        setInnerText('line_nsn',       (line.nsn ? print_nsn(line.nsn) : ''));
-        setInnerText('line_user',      print_user(line.user));
-        setInnerText('line_createdAt', print_date(line.createdAt, true));
-        setInnerText('line_updatedAt', print_date(line.updatedAt, true));
+        setInnerText('line_nsn',       (line.nsn ? printNSN(line.nsn) : ''));
+        setInnerText('line_user',      printUser(line.user));
+        setInnerText('line_createdAt', printDate(line.createdAt, true));
+        setInnerText('line_updatedAt', printDate(line.updatedAt, true));
         return line;
     };
     function set_links(line) {
@@ -32,15 +32,15 @@ function getLoancardLine() {
             line.issues.forEach(issue => {
                 qty += issue.qty
                 let row = tbl_issues.insertRow(-1);
-                add_cell(row, {text: issue.issue_id});
-                add_cell(row, {append: new Link(`/issues/${issue.issue_id}`).e});
+                addCell(row, {text: issue.issue_id});
+                addCell(row, {append: new Link(`/issues/${issue.issue_id}`).e});
             });
             setInnerText('line_qty', qty);
         });
         return line;
     };
     function set_status_badges(line) {
-        clear_statuses(3, statuses);
+        clearStatuses(3, statuses);
         if ([0, 1, 2, 3].includes(line.status)) {
             if (line.status === 0) {
                 set_badge(1, 'danger', 'Cancelled');
@@ -68,5 +68,5 @@ function getLoancardLine() {
     .then(set_status_badges)
 };
 window.addEventListener('load', function () {
-    add_listener('reload', getLoancardLine);
+    addListener('reload', getLoancardLine);
 });

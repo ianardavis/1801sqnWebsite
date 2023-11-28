@@ -1,4 +1,4 @@
-function reset_add_paid_in_out() {
+function resetAddPaidInOut() {
     getHoldings();
     getUsers();
     setValue('paid_in_out_paid_in', '1');
@@ -21,14 +21,14 @@ function getUsers() {
     });
 };
 window.addEventListener('load', function () {
-    modalOnShow('paid_in_out_add', reset_add_paid_in_out);
+    modalOnShow('paid_in_out_add', resetAddPaidInOut);
     addFormListener(
         'paid_in_out_add',
         'POST',
         '/paid_in_outs',
         {
             onComplete: [
-                reset_add_paid_in_out,
+                resetAddPaidInOut,
                 getPaidInOuts
             ]
         }

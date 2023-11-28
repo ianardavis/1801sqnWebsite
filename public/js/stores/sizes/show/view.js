@@ -11,7 +11,7 @@ function get_size() {
         disableButton('issue_add');//
     };
     function display_details([size, options]) {
-        setBreadcrumb(`${print_size_text(size.item)}: ${print_size(size)}`);
+        setBreadcrumb(`${printSizeText(size.item)}: ${printSize(size)}`);
         setInnerText('issueable',   yesno(size.issueable));
         setInnerText('orderable',   yesno(size.orderable));
         setInnerText('has_serials', yesno(size.has_serials));
@@ -71,9 +71,9 @@ function get_size() {
     .then(size => {
         document.querySelectorAll('.size_id').forEach(e => e.setAttribute('value', size.size_id));
     })
-    .catch(err => redirect_on_error(err, '/items'));
+    .catch(err => redirectOnError(err, '/items'));
 };
 window.addEventListener('load', function () {
-    add_listener('reload', get_size);
+    addListener('reload', get_size);
     get_size();
 });

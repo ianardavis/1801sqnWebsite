@@ -10,13 +10,13 @@ function getPermissions () {
             setCount('permission', result.count);
             result.permissions.forEach(e => {
                 let row = tbl_permissions.insertRow(-1);
-                add_cell(row, {text: e.permission.replaceAll('_', ' ')});
+                addCell(row, {text: e.permission.replaceAll('_', ' ')});
             });
         });
     });
 };
 window.addEventListener('load', function () {
-    add_listener('reload', getPermissions);
-    add_sort_listeners('permissions', getPermissions);
+    addListener('reload', getPermissions);
+    addSortListeners('permissions', getPermissions);
     getPermissions();
 });

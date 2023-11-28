@@ -19,7 +19,7 @@ function listUsers(options = {}) {
                     sel_users.appendChild(
                         new Option({
                             value:    user.user_id,
-                            text:     print_user(user),
+                            text:     printUser(user),
                             selected: (options.selected === user.user_id)
                         }).e
                     );
@@ -59,7 +59,7 @@ function listCurrentUsers(options = {}) {
                     sel_users.appendChild(
                         new Option({
                             value:    user.user_id,
-                            text:     print_user(user),
+                            text:     printUser(user),
                             selected: (options.selected === user.user_id)
                         }).e
                     );

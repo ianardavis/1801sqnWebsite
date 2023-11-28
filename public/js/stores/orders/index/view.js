@@ -4,11 +4,11 @@ function getOrders() {
     .then(tbl_orders => {
         function add_line(order, index) {
             let row = tbl_orders.insertRow(-1);
-            add_cell(row, table_date(order.createdAt));
-            add_cell(row, {text: order.size.item.description});
-            add_cell(row, {text: print_size(order.size)});
-            add_cell(row, {text: order.qty});
-            add_cell(row, {
+            addCell(row, tableDate(order.createdAt));
+            addCell(row, {text: order.size.item.description});
+            addCell(row, {text: printSize(order.size)});
+            addCell(row, {text: order.qty});
+            addCell(row, {
                 text: order_statuses[order.status] || 'Unknown',
                 append: new Hidden_Input({
                     attributes: [
@@ -41,20 +41,20 @@ function getOrders() {
                 if (typeof receive_radio === 'function') radios.push(receive_radio(...args));
             };
             radios.push(new Div({attributes: [{field: 'id', value: `details_${order.order_id}`}]}).e);
-            add_cell(row, {
+            addCell(row, {
                 id: `${order.order_id}_row`,
                 append: radios
             });
-            add_cell(row, {append: new Link(`/orders/${order.order_id}`).e});
+            addCell(row, {append: new Link(`/orders/${order.order_id}`).e});
         };
         get({
             table: 'orders',
             like: {
-                ...filter_item('order'),
-                ...filter_size('order')
+                ...filterItem('order'),
+                ...filterSize('order')
             },
-            gt: filter_date_from('order'),
-            lt: filter_date_to('order'),
+            gt: filterDateFrom('order'),
+            lt: filterDateTo('order'),
             func: getOrders
         })
         .then(function ([result, options]) {
@@ -67,26 +67,26 @@ function getOrders() {
     });
 };
 window.addEventListener('load', function () {
-    set_status_filter_options('order', [
+    setStatusFilterOptions('order', [
         {value: '0', text: 'Cancelled'},
         {value: '1', text: 'Placed',          selected: true},
         {value: '2', text: 'Added to Demand', selected: true},
         {value: '3', text: 'Received'}
     ]);
-    add_listener('reload', getOrders);
-    add_listener('filter_order_statuses',       getOrders, 'input');
-    add_listener('filter_order_createdAt_from', getOrders, 'input');
-    add_listener('filter_order_createdAt_to',   getOrders, 'input');
-    add_listener('filter_order_item',           getOrders, 'input');
-    add_listener('filter_order_size_1',         getOrders, 'input');
-    add_listener('filter_order_size_2',         getOrders, 'input');
-    add_listener('filter_order_size_3',         getOrders, 'input');
+    addListener('reload', getOrders);
+    addListener('filter_order_statuses',       getOrders, 'input');
+    addListener('filter_order_createdAt_from', getOrders, 'input');
+    addListener('filter_order_createdAt_to',   getOrders, 'input');
+    addListener('filter_order_item',           getOrders, 'input');
+    addListener('filter_order_size_1',         getOrders, 'input');
+    addListener('filter_order_size_2',         getOrders, 'input');
+    addListener('filter_order_size_3',         getOrders, 'input');
     addFormListener(
         'order_edit',
         'PUT',
         '/orders',
         {onComplete: getOrders}
     );
-    add_sort_listeners('orders', getOrders);
+    addSortListeners('orders', getOrders);
     getOrders();
 });

@@ -8,11 +8,11 @@ function getLines() {
     .then(tbl_lines => {
         function add_line(line, index) {
             let row = tbl_lines.insertRow(-1);
-            add_cell(row, {text: line.size.item.description});
-            add_cell(row, {text: print_size(line.size)});
-            add_cell(row, {text: print_nsn( line.nsn)});
-            add_cell(row, {text: line.qty});
-            add_cell(row, {
+            addCell(row, {text: line.size.item.description});
+            addCell(row, {text: printSize(line.size)});
+            addCell(row, {text: printNSN( line.nsn)});
+            addCell(row, {text: line.qty});
+            addCell(row, {
                 text: line_statuses[line.status],
                 append: new Hidden_Input({
                     attributes: [
@@ -22,7 +22,7 @@ function getLines() {
                 }).e
             });
             add_action_radios(row, line, index);
-            add_cell(row, {append: 
+            addCell(row, {append: 
                 new Modal_Button(
                     _search(),
                     'line_view',
@@ -37,11 +37,11 @@ function getLines() {
             table: 'scrap_lines',
             where: {
                 scrap_id: path[2],
-                ...filter_status('scrap_line')
+                ...filterStatus('scrap_line')
             },
             like: {
-                ...filter_item('scrap_line'),
-                ...filter_size('scrap_line')
+                ...filterItem('scrap_line'),
+                ...filterSize('scrap_line')
             },
             func: getLines
         })
@@ -63,21 +63,21 @@ function add_action_radios(row, line, row_index) {
         radios.push(   nil_radio(...args));
         radios.push(cancel_radio(...args, cancel_options));
     };
-    radios.push(div_details(line.line_id, row_index));
-    add_cell(row, {append: radios});
+    radios.push(divDetails(line.line_id, row_index));
+    addCell(row, {append: radios});
 };
 
 function cancel_options() {
     if (this.dataset.id) {
         clear(`details_${this.dataset.id}`)
-        .then(div_details => {
+        .then(divDetails => {
             get({
                 table: 'scrap_line',
                 where: {line_id: this.dataset.id},
                 index: this.dataset.index
             })
             .then(function ([line, options]) {
-                div_details.appendChild(new Number_Input({
+                divDetails.appendChild(new Number_Input({
                     attributes: [
                         {field: 'min',      value: '1'},
                         {field: 'max',      value: line.qty},
@@ -87,8 +87,8 @@ function cancel_options() {
                         {field: 'placeholder', value: 'Quantity'}
                     ]
                 }).e);
-                add_location_input(div_details, options.index);
-                add_location_list(div_details, (line.size.has_serials), line.size_id, options.index);
+                add_location_input(divDetails, options.index);
+                add_location_list(divDetails, (line.size.has_serials), line.size_id, options.index);
             });
         });
     };
@@ -102,10 +102,10 @@ function viewLine(line_id) {
     .then(function ([line, options]) {
         setInnerText('line_id',        line.line_id);
         setInnerText('line_item',      line.size.item.description);
-        setInnerText('line_size',      print_size(line.size));
+        setInnerText('line_size',      printSize(line.size));
         setInnerText('line_qty',       line.qty);
-        setInnerText('line_createdAt', print_date(line.createdAt, true));
-        setInnerText('line_updatedAt', print_date(line.updatedAt, true));
+        setInnerText('line_createdAt', printDate(line.createdAt, true));
+        setInnerText('line_updatedAt', printDate(line.updatedAt, true));
         setHREF('btn_line_link',  `/scrap_lines/${line.line_id}`);
         setHREF('line_item_link', `/items/${line.size.item_id}`);
         setHREF('line_size_link', `/sizes/${line.size_id}`);
@@ -113,7 +113,7 @@ function viewLine(line_id) {
     });
 };
 window.addEventListener('load', function () {
-    set_status_filter_options('scrap_line', [
+    setStatusFilterOptions('scrap_line', [
         {value: '0', text: 'Cancelled'},
         {value: '1', text: 'Pending', selected: true},
         {value: '2', text: 'Closed', selected: true}
@@ -129,13 +129,13 @@ window.addEventListener('load', function () {
             ]
         }
     );
-    add_listener('reload', getLines);
-    add_listener('filter_scrap_line_statuses', getLines, 'input');
-    add_listener('filter_scrap_line_size_1',   getLines, 'input');
-    add_listener('filter_scrap_line_size_2',   getLines, 'input');
-    add_listener('filter_scrap_line_size_3',   getLines, 'input');
-    add_listener('filter_scrap_line_item',     getLines, 'input');
+    addListener('reload', getLines);
+    addListener('filter_scrap_line_statuses', getLines, 'input');
+    addListener('filter_scrap_line_size_1',   getLines, 'input');
+    addListener('filter_scrap_line_size_2',   getLines, 'input');
+    addListener('filter_scrap_line_size_3',   getLines, 'input');
+    addListener('filter_scrap_line_item',     getLines, 'input');
     modalOnShow('line_view', function (event) {viewLine(event.relatedTarget.dataset.id)});
-    add_sort_listeners('scrap_lines', getLines);
+    addSortListeners('scrap_lines', getLines);
     getLines();
 });

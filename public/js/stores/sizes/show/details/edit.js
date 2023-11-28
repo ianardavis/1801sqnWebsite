@@ -5,7 +5,7 @@ function viewDetailEdit(detail_id) {
         spinner: 'detail_edit'
     })
     .then(function ([detail, options]) {
-        set_attribute('detail_id_edit', 'value', detail.detail_id);
+        setAttribute('detail_id_edit', 'value', detail.detail_id);
         setValue('detail_name_edit', detail.name);
         setInnerText('detail_value_edit', detail.value);
     })

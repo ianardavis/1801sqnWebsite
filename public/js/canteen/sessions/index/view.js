@@ -9,21 +9,21 @@ function getSessions() {
             let current_sessions = [];
             results.sessions.forEach(session => {
                 let row = tbl_sessions.insertRow(-1);
-                add_cell(row, table_date(session.createdAt, true));
-                add_cell(row, (session.datetime_end ? table_date(session.datetime_end, true) : ''));
-                add_cell(row, {text: 
+                addCell(row, tableDate(session.createdAt, true));
+                addCell(row, (session.datetime_end ? tableDate(session.datetime_end, true) : ''));
+                addCell(row, {text: 
                     (session.status === 0 ? 'Cancelled' : 
                     (session.status === 1 ? 'Open'      : 
                     (session.status === 2 ? 'Closed'    : 'Unknown')))
                 });
                 if (session.status === 1) current_sessions.push(session.session_id);
-                add_cell(row, {append: new Link(`/sessions/${session.session_id}`).e});
+                addCell(row, {append: new Link(`/sessions/${session.session_id}`).e});
             });
         });
     });
 };
 window.addEventListener('load', function () {
-    add_listener('reload', getSessions);
-    add_sort_listeners('sessions', getSessions);
+    addListener('reload', getSessions);
+    addSortListeners('sessions', getSessions);
     getSessions();
 });

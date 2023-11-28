@@ -27,6 +27,6 @@ function getStock(size_id, line_id, cell, entry = false) {
                 }).e
             );
         };
-        remove_spinner(`stocks_${line_id}`);
+        removeSpinner(`stocks_${line_id}`);
     });
 };

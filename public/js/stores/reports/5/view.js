@@ -10,7 +10,7 @@ function getSizes() {
     .then(tbl_sizes => {
         function add_line(size, index) {
             let row = tbl_sizes.insertRow(-1);
-            add_cell(row, {
+            addCell(row, {
                 text: size.size1,
                 append: [
                     new Hidden_Input({
@@ -21,11 +21,11 @@ function getSizes() {
                     }).e
                 ]
             });
-            add_cell(row, {text: size.size2});
-            add_cell(row, {text: size.size3});
-            add_cell(row, {id: `${size.size_id}_page`});
-            add_cell(row, {id: `${size.size_id}_cell`});
-            add_cell(row, {append: new Link(`/sizes/${size.size_id}`).e});
+            addCell(row, {text: size.size2});
+            addCell(row, {text: size.size3});
+            addCell(row, {id: `${size.size_id}_page`});
+            addCell(row, {id: `${size.size_id}_cell`});
+            addCell(row, {append: new Link(`/sizes/${size.size_id}`).e});
             addInput(size.size_id, 'Page', index);
             addInput(size.size_id, 'Cell', index);
         };
@@ -76,14 +76,14 @@ function addInput(size_id, _cell, index) {
     };
 };
 window.addEventListener('load', function () {
-    add_listener('reload', getItems);
-    add_listener('sel_items', getSizes, 'input');
+    addListener('reload', getItems);
+    addListener('sel_items', getSizes, 'input');
     addFormListener(
         'sizes',
         'PUT',
         '/details',
         {onComplete: getSizes}
     );
-    add_sort_listeners('sizes', getSizes);
-    // add_sort_listeners('items', getItems);
+    addSortListeners('sizes', getSizes);
+    // addSortListeners('items', getItems);
 });

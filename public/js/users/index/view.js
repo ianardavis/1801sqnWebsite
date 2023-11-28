@@ -1,9 +1,9 @@
 function getUsers() {
     clear('tbl_users')
     .then(tbl => {
-        let where  = {},
-            statuses = getSelectedOptions('sel_statuses'),
-            ranks    = getSelectedOptions('sel_ranks');
+        let where  = {};
+        const statuses = getSelectedOptions('sel_statuses');
+        const ranks    = getSelectedOptions('sel_ranks');
         if (statuses.length > 0) where.status_id = statuses;
         if (ranks   .length > 0) where.rank_id   = ranks;
         get({
@@ -14,11 +14,11 @@ function getUsers() {
         .then(function ([result, options]) {
             result.users.forEach(user => {
                 let row = tbl.insertRow(-1);
-                add_cell(row, {text: user.service_number});
-                add_cell(row, {text: user.rank.rank});
-                add_cell(row, {text: user.surname});
-                add_cell(row, {text: user.first_name});
-                add_cell(row, {append: new Link(`/users/${user.user_id}`).e});
+                addCell(row, {text: user.service_number});
+                addCell(row, {text: user.rank.rank});
+                addCell(row, {text: user.surname});
+                addCell(row, {text: user.first_name});
+                addCell(row, {append: new Link(`/users/${user.user_id}`).e});
             });
         });
     })
@@ -37,11 +37,11 @@ function getRanks() {
     });
 };
 window.addEventListener("load", function () {
-    add_listener('reload',          getUsers);
-    add_listener('sel_statuses',    getUsers, 'change');
-    add_listener('sel_ranks',       getUsers, 'change');
-    add_listener('reload_statuses', getStatuses);
-    add_listener('reload_ranks',    getRanks);
+    addListener('reload',          getUsers);
+    addListener('sel_statuses',    getUsers, 'change');
+    addListener('sel_ranks',       getUsers, 'change');
+    addListener('reload_statuses', getStatuses);
+    addListener('reload_ranks',    getRanks);
 	Promise.allSettled([
 		getStatuses(),
 		getRanks()
@@ -51,5 +51,5 @@ window.addEventListener("load", function () {
 		console.error(err);
 		getUsers();
 	});
-    add_sort_listeners('users', getUsers);
+    addSortListeners('users', getUsers);
 });

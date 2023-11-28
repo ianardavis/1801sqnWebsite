@@ -44,12 +44,12 @@ function viewCategory(category_id) {
     .then(function([category, options]) {
         setInnerText('category',           category.category);
         setInnerText('parent',             (category.parent ? category.parent.category : ''));
-        setInnerText('createdAt_category', print_date(category.createdAt, true));
-        setInnerText('updatedAt_category', print_date(category.updatedAt, true));
+        setInnerText('createdAt_category', printDate(category.createdAt, true));
+        setInnerText('updatedAt_category', printDate(category.updatedAt, true));
     });
 };
 window.addEventListener('load', function () {
-    add_listener('reload', getCategories);
+    addListener('reload', getCategories);
     modalOnShow('category_view', function (event) {viewCategory(event.relatedTarget.dataset.id)});
     getCategories();
 });

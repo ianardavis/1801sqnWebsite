@@ -3,9 +3,9 @@ function getSizes() {
     .then(tbl_stocks => {
         function add_line(stock, index) {
             let row = tbl_stocks.insertRow(-1);
-            add_cell(row, {text: (stock.size ? (stock.size.item ? stock.size.item.description : '') : '')});
-            add_cell(row, {text: (stock.size ? print_size(stock.size) : '')});
-            add_cell(row, {
+            addCell(row, {text: (stock.size ? (stock.size.item ? stock.size.item.description : '') : '')});
+            addCell(row, {text: (stock.size ? printSize(stock.size) : '')});
+            addCell(row, {
                 text: (stock.location ? stock.location.location : ''),
                 append: [
                     new Hidden_Input({
@@ -17,8 +17,8 @@ function getSizes() {
                     }).e
                 ]
             });
-            add_cell(row, {text: stock.qty});
-            add_cell(row, {append: [
+            addCell(row, {text: stock.qty});
+            addCell(row, {append: [
                 new Number_Input({
                     attributes: [
                         {field: 'name',  value: `counts[][${index}][qty]`},
@@ -42,7 +42,7 @@ function getSizes() {
     });
 };
 window.addEventListener('load', function () {
-    add_listener('reload', getSizes);
+    addListener('reload', getSizes);
     addFormListener(
         'adjustments',
         'PUT',

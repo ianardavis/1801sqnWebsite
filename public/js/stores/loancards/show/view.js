@@ -18,12 +18,12 @@ function get_loancard() {
         ].forEach(button => disableButton(button));
     };
     function display_details([loancard, options]) {
-        setBreadcrumb(`${print_user(loancard.user_loancard)} | ${print_date(loancard.createdAt)}`);
-        setInnerText('loancard_user_loancard', print_user(loancard.user_loancard));
-        setInnerText('loancard_user',          print_user(loancard.user));
-        setInnerText('loancard_createdAt',     print_date(loancard.createdAt, true));
-        setInnerText('loancard_date_due',      print_date(loancard.date_due));
-        setInnerText('loancard_updatedAt',     print_date(loancard.updatedAt, true));
+        setBreadcrumb(`${printUser(loancard.user_loancard)} | ${printDate(loancard.createdAt)}`);
+        setInnerText('loancard_user_loancard', printUser(loancard.user_loancard));
+        setInnerText('loancard_user',          printUser(loancard.user));
+        setInnerText('loancard_createdAt',     printDate(loancard.createdAt, true));
+        setInnerText('loancard_date_due',      printDate(loancard.date_due));
+        setInnerText('loancard_updatedAt',     printDate(loancard.updatedAt, true));
         setInnerText('loancard_filename',      loancard.filename || '');
         return loancard;
     };
@@ -33,7 +33,7 @@ function get_loancard() {
         return loancard;
     };
     function set_status_badges(loancard) {
-        clear_statuses(3, statuses);
+        clearStatuses(3, statuses);
         if ([0, 1, 2, 3].includes(loancard.status)) {
             if (loancard.status === 0) {
                 set_badge(1, 'danger', 'Cancelled');
@@ -65,12 +65,12 @@ function get_loancard() {
             enableButton('loancard_file_download');
             if (loancard.filename) enableButton('loancard_file_delete');
             enableButton('loancard_date_due_edit', '');
-            set_attribute('form_loancard_file_download', 'method', 'GET');
-            set_attribute('form_loancard_file_download', 'action', `/loancards/${loancard.loancard_id}/download`);
+            setAttribute('form_loancard_file_download', 'method', 'GET');
+            setAttribute('form_loancard_file_download', 'action', `/loancards/${loancard.loancard_id}/download`);
 
         } else {
-            set_attribute('form_loancard_file_download', 'method');
-            set_attribute('form_loancard_file_download', 'action');
+            setAttribute('form_loancard_file_download', 'method');
+            setAttribute('form_loancard_file_download', 'action');
 
         };
         return loancard;
@@ -87,7 +87,7 @@ function get_loancard() {
     .then(set_button_states)
 };
 window.addEventListener('load', function () {
-    add_listener('reload', get_loancard);
+    addListener('reload', get_loancard);
     addFormListener(
         'loancard_file_print',
         'GET',

@@ -11,9 +11,9 @@ function getSerials() {
                 result.serials.forEach(serial => {
                 try {
                     let row = tbl_serials.insertRow(-1);
-                    add_cell(row, {text: serial.serial});
-                    add_cell(row, {text: (serial.location ? serial.location.location : (serial.issue ? 'Issued' : 'Unknown'))});
-                    add_cell(row, {append: new Link(`/serials/${serial.serial_id}`).e});
+                    addCell(row, {text: serial.serial});
+                    addCell(row, {text: (serial.location ? serial.location.location : (serial.issue ? 'Issued' : 'Unknown'))});
+                    addCell(row, {append: new Link(`/serials/${serial.serial_id}`).e});
                 } catch (error) {
                     console.error(error);
                 };
@@ -22,7 +22,7 @@ function getSerials() {
     });
 };
 window.addEventListener('load', function () {
-    add_listener('reload', getSerials);
-    add_sort_listeners('serials', getSerials);
+    addListener('reload', getSerials);
+    addSortListeners('serials', getSerials);
     getSerials();
 });

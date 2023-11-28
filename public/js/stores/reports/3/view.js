@@ -10,7 +10,7 @@ function getSizes() {
     .then(tbl_sizes => {
         function add_line(size, index) {
             let row = tbl_sizes.insertRow(-1);
-            add_cell(row, {
+            addCell(row, {
                 text: size.size1,
                 append: [
                     new Hidden_Input({
@@ -21,13 +21,13 @@ function getSizes() {
                     }).e
                 ]
             });
-            add_cell(row, {text: size.size2});
-            add_cell(row, {text: size.size3});
-            add_cell(row, {id: `${size.size_id}_stocks`});
-            add_cell(row, {id: `${size.size_id}_orders`});
-            add_cell(row, {id: `${size.size_id}_demands`});
-            add_cell(row, {id: `${size.size_id}_issues`});
-            add_cell(row, {append: [
+            addCell(row, {text: size.size2});
+            addCell(row, {text: size.size3});
+            addCell(row, {id: `${size.size_id}_stocks`});
+            addCell(row, {id: `${size.size_id}_orders`});
+            addCell(row, {id: `${size.size_id}_demands`});
+            addCell(row, {id: `${size.size_id}_issues`});
+            addCell(row, {append: [
                 new Number_Input({
                     attributes: [
                         {field: 'name', value: `orders[][${index}][qty]`},
@@ -35,10 +35,10 @@ function getSizes() {
                     ]
                 }).e
             ]});
-            add_cell(row, {append: new Link(`/sizes/${size.size_id}`).e});
+            addCell(row, {append: new Link(`/sizes/${size.size_id}`).e});
         };
-        function get_stock_count(size_id) {
-            get_stock(size_id)
+        function getStock_count(size_id) {
+            getStock(size_id)
             .then(stock => setInnerText(`${size_id}_stocks`, stock || '0'));
         };
         function get_order_sum(size_id) {
@@ -102,7 +102,7 @@ function getSizes() {
                 let index = 0;
                 result.sizes.forEach(size => {
                     add_line(size, index);
-                    get_stock_count(size.size_id);
+                    getStock_count(size.size_id);
                     get_order_sum(size.size_id);
                     get_issue_sum(size.size_id);
                     get_demand_line_qty(size.size_id);
@@ -120,16 +120,16 @@ function getSuppliers() {
     });
 };
 window.addEventListener('load', function () {
-    add_listener('reload', getSizes);
-    add_listener('sel_suppliers', getSizes, 'input');
-    add_listener('sel_items',     getSizes, 'input');
+    addListener('reload', getSizes);
+    addListener('sel_suppliers', getSizes, 'input');
+    addListener('sel_items',     getSizes, 'input');
     addFormListener(
         'sizes',
         'POST',
         '/orders',
         {onComplete: getSizes}
     );
-    add_sort_listeners('sizes', getSizes);
+    addSortListeners('sizes', getSizes);
     getItems();
     getSizes();
 });

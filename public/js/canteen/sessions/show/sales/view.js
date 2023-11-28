@@ -14,11 +14,11 @@ function getSales() {
                 let items = [], takings = 0.00;
                 results.sales.forEach(sale => {
                     let row = tbl_sales.insertRow(-1);
-                    add_cell(row, {text: print_time(sale.createdAt)});
-                    add_cell(row, {text: print_user(sale.user)});
-                    add_cell(row, {text: sale.lines.length});
-                    add_cell(row, {text: sale_statuses[sale.status] || 'Unknown'});
-                    add_cell(row, {append: new Link(`/sales/${sale.sale_id}`).e});
+                    addCell(row, {text: printTime(sale.createdAt)});
+                    addCell(row, {text: printUser(sale.user)});
+                    addCell(row, {text: sale.lines.length});
+                    addCell(row, {text: sale_statuses[sale.status] || 'Unknown'});
+                    addCell(row, {append: new Link(`/sales/${sale.sale_id}`).e});
                     sale.lines.forEach(line => {
                         takings += (line.qty * line.item.price);
                         let current = items.find(e => e.item_id === line.item_id);
@@ -39,17 +39,17 @@ function getSales() {
                 setCount('item', items.length);
                 items.forEach(item => {
                     let row = tbl_items.insertRow(-1);
-                    add_cell(row, {text: item.name});
-                    add_cell(row, {text: item.sales});
-                    add_cell(row, {text: item.qty});
-                    add_cell(row, {append: new Link(`/canteen_items/${item.item_id}`).e});
+                    addCell(row, {text: item.name});
+                    addCell(row, {text: item.sales});
+                    addCell(row, {text: item.qty});
+                    addCell(row, {append: new Link(`/canteen_items/${item.item_id}`).e});
                 });
             });
         });
     });
 };
 window.addEventListener('load', function () {
-    add_listener('reload', getSales);
-    add_sort_listeners('sales', getSales);
+    addListener('reload', getSales);
+    addSortListeners('sales', getSales);
     getSales();
 });

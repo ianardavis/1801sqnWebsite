@@ -9,20 +9,20 @@ function getPaidInOuts() {
         .then(function ([results, options]) {
             results.paid_ins.forEach(paid_in_out => {
                 let row = tbl_paid_in_outs.insertRow(-1);
-                add_cell(row, table_date(paid_in_out.createdAt));
-                add_cell(row, {text: (paid_in_out.paid_in ? 'In' : 'Out')});
-                add_cell(row, {text: paid_in_out.holding.description});
-                add_cell(row, {text: print_user(paid_in_out.user_paid_in_out)});
-                add_cell(row, {text: paid_in_out.reason});
-                add_cell(row, {text: `£${Number(paid_in_out.amount).toFixed(2)}`});
-                add_cell(row, {text: statuses[paid_in_out.status]});
-                add_cell(row, {append: new Link(`/paid_in_outs/${paid_in_out.paid_in_out_id}`).e});
+                addCell(row, tableDate(paid_in_out.createdAt));
+                addCell(row, {text: (paid_in_out.paid_in ? 'In' : 'Out')});
+                addCell(row, {text: paid_in_out.holding.description});
+                addCell(row, {text: printUser(paid_in_out.user_paid_in_out)});
+                addCell(row, {text: paid_in_out.reason});
+                addCell(row, {text: `£${Number(paid_in_out.amount).toFixed(2)}`});
+                addCell(row, {text: statuses[paid_in_out.status]});
+                addCell(row, {append: new Link(`/paid_in_outs/${paid_in_out.paid_in_out_id}`).e});
             });
         })
     });
 };
 window.addEventListener('load', function () {
-    add_listener('reload', getPaidInOuts);
-    add_sort_listeners('paid_in_outs', getPaidInOuts);
+    addListener('reload', getPaidInOuts);
+    addSortListeners('paid_in_outs', getPaidInOuts);
     getPaidInOuts();
 });

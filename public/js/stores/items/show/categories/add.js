@@ -67,7 +67,7 @@ window.addEventListener('load', function () {
         ]}
     );
     modalOnShow('category_add', function () {listCategories('1')});
-    add_listener('sel_category_1', function () {
+    addListener('sel_category_1', function () {
         let sub_categories = document.querySelector('#sub_categories');
         if (sub_categories) {
             sub_categories.innerHTML = '';

@@ -27,6 +27,6 @@ function getSerials(size_id, line_id, cell, entry = false) {
                 }).e
             );
         };
-        remove_spinner(`serials_${line_id}`);
+        removeSpinner(`serials_${line_id}`);
     });
 };

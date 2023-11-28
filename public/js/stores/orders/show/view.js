@@ -13,12 +13,12 @@ const demand_line_statuses = {
 function getOrder() {
     function display_details([order, options]) {
         setBreadcrumb(order.order_id);
-        setInnerText('order_size',      print_size(order.size));
+        setInnerText('order_size',      printSize(order.size));
         setInnerText('order_item',      order.size.item.description);
         setInnerText('order_qty',       order.qty);
-        setInnerText('order_createdAt', print_date(order.createdAt, true));
-        setInnerText('order_updatedAt', print_date(order.updatedAt, true));
-        setInnerText('order_user',      print_user(order.user));
+        setInnerText('order_createdAt', printDate(order.createdAt, true));
+        setInnerText('order_updatedAt', printDate(order.updatedAt, true));
+        setInnerText('order_user',      printUser(order.user));
         return order;
     };
     function set_links(order) {
@@ -32,7 +32,7 @@ function getOrder() {
         return order;
     };
     function set_status_badges(order) {
-        clear_statuses(3, statuses);
+        clearStatuses(3, statuses);
         if ([0, 1, 2, 3].includes(order.status)) {
             if (order.status === 0) {
                 set_badge(1, 'danger', 'Cancelled');
@@ -54,10 +54,10 @@ function getOrder() {
         .then(tbl_order_issues => {
             order.issues.forEach(issue => {
                 let row = tbl_order_issues.insertRow(-1);
-                add_cell(row, {text: print_date(issue.createdAt)});
-                add_cell(row, {text: print_user(issue.user_issue)});
-                add_cell(row, {text: issue.qty});
-                add_cell(row, {append: new Link(`/issues/${issue.issue_id}`).e});
+                addCell(row, {text: printDate(issue.createdAt)});
+                addCell(row, {text: printUser(issue.user_issue)});
+                addCell(row, {text: issue.qty});
+                addCell(row, {append: new Link(`/issues/${issue.issue_id}`).e});
             });
         });
         return order;
@@ -67,9 +67,9 @@ function getOrder() {
         .then(tbl_order_demand_lines => {
             order.demand_lines.forEach(line => {
                 let row = tbl_order_demand_lines.insertRow(-1);
-                add_cell(row, {text: print_date(line.createdAt)});
-                add_cell(row, {text: demand_line_statuses[line.status]});
-                add_cell(row, {append: new Link(`/demand_lines/${line.line_id}`).e});
+                addCell(row, {text: printDate(line.createdAt)});
+                addCell(row, {text: demand_line_statuses[line.status]});
+                addCell(row, {append: new Link(`/demand_lines/${line.line_id}`).e});
             });
         });
         return order;
@@ -89,9 +89,9 @@ function getOrder() {
     .then(set_status_badges)
     .then(show_issues)
     .then(show_demand_lines)
-    .catch(err => redirect_on_error(err, '/orders'));
+    .catch(err => redirectOnError(err, '/orders'));
 };
 window.addEventListener('load', function () {
-    add_listener('reload', getOrder);
+    addListener('reload', getOrder);
     getOrder();
 });

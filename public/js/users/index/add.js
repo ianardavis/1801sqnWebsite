@@ -31,6 +31,6 @@ window.addEventListener( "load", function () {
             ]
         }
     );
-    add_listener('reload_ranks_add',    getRanksAdd);
-    add_listener('reload_statuses_add', getStatusesAdd);
+    addListener('reload_ranks_add',    getRanksAdd);
+    addListener('reload_statuses_add', getStatusesAdd);
 });

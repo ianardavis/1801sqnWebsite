@@ -6,9 +6,9 @@ function get_lines() {
             try {
                 let row = tbl_lines.insertRow(-1);
                 const qty = sum_order_qtys(line.orders);
-                add_cell(row, {text: line.size.item.description});
-                add_cell(row, {
-                    text: print_size(line.size),
+                addCell(row, {text: line.size.item.description});
+                addCell(row, {
+                    text: printSize(line.size),
                     append: [new Hidden_Input({
                         attributes:[
                             {field: 'name',  value: `lines[][${index}][line_id]`},
@@ -16,8 +16,8 @@ function get_lines() {
                         ]
                     }).e]
                 });
-                add_cell(row, {text: qty});
-                add_cell(row, {text: line_statuses[line.status] || 'Unknown'});
+                addCell(row, {text: qty});
+                addCell(row, {text: line_statuses[line.status] || 'Unknown'});
     
                 let radios = [];
                 const args = [line.line_id, index, receive_options];
@@ -27,9 +27,9 @@ function get_lines() {
                 if (line.status === 2)                       radios.push(receive_radio(...args));
                 radios.push(new Div({attributes: [{field: 'id', value: `details_${line.line_id}`}]}).e);
     
-                add_cell(row, {append: radios});
+                addCell(row, {append: radios});
     
-                add_cell(row, {append: 
+                addCell(row, {append: 
                     new Modal_Button(
                         _search(),
                         'line_view',
@@ -47,7 +47,7 @@ function get_lines() {
             table: 'demand_lines',
             where: {
                 demand_id: path[2],
-                ...filter_status('demand_lines')
+                ...filterStatus('demand_lines')
             },
             func: get_lines
         })
@@ -66,11 +66,11 @@ function show_line(line_id) {
     function display_details([line, options]) {
         setInnerText('line_id',        line.line_id);
         setInnerText('line_item',      line.size.item.description);
-        setInnerText('line_size',      print_size(line.size));
+        setInnerText('line_size',      printSize(line.size));
         setInnerText('line_qty',       sum_order_qtys(line.orders));
-        setInnerText('line_user',      print_user(line.user));
-        setInnerText('line_createdAt', print_date(line.createdAt, true));
-        setInnerText('line_updatedAt', print_date(line.updatedAt, true));
+        setInnerText('line_user',      printUser(line.user));
+        setInnerText('line_createdAt', printDate(line.createdAt, true));
+        setInnerText('line_updatedAt', printDate(line.updatedAt, true));
         return line;
     };
     function set_links(line) {
@@ -102,17 +102,15 @@ function sum_order_qtys(orders) {
 window.addEventListener('load', function () {
     modalOnShow('line_view', function (event) {show_line(event.relatedTarget.dataset.id)});
 
-    add_listener('reload',             get_lines);
-    add_listener('filter_demand_lines_status', get_lines, 'input');
+    addListener('reload',             get_lines);
+    addListener('filter_demand_lines_status', get_lines, 'input');
     
     addFormListener(
         'lines',
         'PUT',
         '/demand_lines',
-        {
-            onComplete: get_lines
-        }
+        {onComplete: get_lines}
     );
-    add_sort_listeners('demand_lines', get_lines);
+    addSortListeners('demand_lines', get_lines);
     get_lines();
 });

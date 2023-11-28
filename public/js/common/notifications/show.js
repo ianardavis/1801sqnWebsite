@@ -9,7 +9,7 @@ function getNotifications() {
                         urgency: notification.urgency,
                         title:   notification.title,
                         text:    notification.notification,
-                        date:    print_date(notification.createdAt, true)
+                        date:    printDate(notification.createdAt, true)
                     }).e
                 );
             });

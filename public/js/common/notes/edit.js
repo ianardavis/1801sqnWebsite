@@ -5,7 +5,7 @@ function viewNoteEdit(note_id) {
         spinner: 'note_edit'
     })
     .then(function ([note, options]) {
-        set_attribute('note_id_edit', 'value', note.note_id);
+        setAttribute('note_id_edit', 'value', note.note_id);
         setInnerText('note_edit', note.note);
     })
     .catch(err => {

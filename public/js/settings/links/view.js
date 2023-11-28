@@ -10,8 +10,8 @@ function getHeadings() {
                 results.resource_link_headings.forEach(heading => {
                     let row = tbl_link_headings.insertRow(-1);
                     selectableRow(row, heading.resource_link_heading_id, tbl_link_headings, getLinks);
-                    add_cell(row, {text: heading.heading});
-                    add_cell(row, {append:
+                    addCell(row, {text: heading.heading});
+                    addCell(row, {append:
                         new Modal_Button(
                             _search(),
                             'link_heading_view',
@@ -41,9 +41,9 @@ function getLinks() {
             if (results.resource_links && results.resource_links.length > 0) {
                 results.resource_links.forEach(link => {
                     let row = tbl_links.insertRow(-1);
-                    add_cell(row, {text: link.title});
-                    add_cell(row, {text: link.text});
-                    add_cell(row, {append:
+                    addCell(row, {text: link.title});
+                    addCell(row, {text: link.text});
+                    addCell(row, {append:
                         new Modal_Button(
                             _search(),
                             'link_view',
@@ -67,8 +67,8 @@ function viewHeading(resource_link_heading_id) {
     .then(function([heading, options]) {
         setInnerText('resource_link_heading_id', heading.resource_link_heading_id);
         setInnerText('link_heading',             heading.heading);
-        setInnerText('link_createdAt',           print_date(heading.createdAt, true));
-        setInnerText('link_updatedAt',           print_date(heading.updatedAt, true));
+        setInnerText('link_createdAt',           printDate(heading.createdAt, true));
+        setInnerText('link_updatedAt',           printDate(heading.updatedAt, true));
     });
 };
 function viewLink(resource_link_id) {
@@ -82,14 +82,14 @@ function viewLink(resource_link_id) {
         setInnerText('link_title',       link.title);
         setInnerText('link_text',        link.text);
         setInnerText('link_href',        link.href);
-        setInnerText('link_createdAt', print_date(link.createdAt, true));
-        setInnerText('link_updatedAt', print_date(link.updatedAt, true));
+        setInnerText('link_createdAt', printDate(link.createdAt, true));
+        setInnerText('link_updatedAt', printDate(link.updatedAt, true));
     });
 };
 window.addEventListener('load', function () {
-    add_listener('reload', getLinks);
-    add_sort_listeners('resource_links', getLinks);
-    add_sort_listeners('resource_link_headings', getHeadings);
+    addListener('reload', getLinks);
+    addSortListeners('resource_links', getLinks);
+    addSortListeners('resource_link_headings', getHeadings);
     modalOnShow('link_view', function (event) {viewLink(event.relatedTarget.dataset.id)});
     modalOnShow('link_heading_view', function (event) {viewHeading(event.relatedTarget.dataset.id)});
     getHeadings();

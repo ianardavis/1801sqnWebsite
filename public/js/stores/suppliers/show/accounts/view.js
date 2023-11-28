@@ -7,9 +7,9 @@ function viewAccount(account_id) {
         setInnerText('account_id',        account.account_id);
         setInnerText('account_name',      account.name);
         setInnerText('account_number',    account.number);
-        setInnerText('account_user',      print_user(account.user));
-        setInnerText('account_createdAt', print_date(account.createdAt, true));
-        setInnerText('account_updatedAt', print_date(account.updatedAt, true));
+        setInnerText('account_user',      printUser(account.user));
+        setInnerText('account_createdAt', printDate(account.createdAt, true));
+        setInnerText('account_updatedAt', printDate(account.updatedAt, true));
         setHREF('account_user_link', `/users/${account.user_id}`);
     });
 };

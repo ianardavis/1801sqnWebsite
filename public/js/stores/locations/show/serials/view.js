@@ -3,10 +3,10 @@ function getSerials() {
     .then(tbl_serials => {
         function add_line(serial) {
             let row = tbl_serials.insertRow(-1);
-            add_cell(row, {text: serial.size.item.description});
-            add_cell(row, {text: print_size(serial.size)});
-            add_cell(row, {text: serial.serial});
-            add_cell(row, {append: new Modal_Button(
+            addCell(row, {text: serial.size.item.description});
+            addCell(row, {text: printSize(serial.size)});
+            addCell(row, {text: serial.serial});
+            addCell(row, {append: new Modal_Button(
                 _search(),
                 'serial_view',
                 [{field: 'id', value: serial.serial_id}]
@@ -29,10 +29,10 @@ function viewSerial(serial_id) {
     function display_details([serial, options]) {
         setInnerText('serial_id',        serial.serial_id);
         setInnerText('serial_item',      serial.size.item.description);
-        setInnerText('serial_size',      print_size(serial.size));
+        setInnerText('serial_size',      printSize(serial.size));
         setInnerText('serial_serial',    serial.serial);
-        setInnerText('serial_createdAt', print_date(serial.createdAt, true));
-        setInnerText('serial_updatedAt', print_date(serial.updatedAt, true));
+        setInnerText('serial_createdAt', printDate(serial.createdAt, true));
+        setInnerText('serial_updatedAt', printDate(serial.updatedAt, true));
         return serial;
     };
     function set_links(serial) {

@@ -2,8 +2,8 @@ function getLocation() {
     function display_details([location, options]) {
         setBreadcrumb(location.location);
         setInnerText('location_location',  location.location);
-        setInnerText('location_createdAt', print_date(location.createdAt, true));
-        setInnerText('location_updatedAt', print_date(location.updatedAt, true));
+        setInnerText('location_createdAt', printDate(location.createdAt, true));
+        setInnerText('location_updatedAt', printDate(location.updatedAt, true));
     };
     get({
         table: 'location',

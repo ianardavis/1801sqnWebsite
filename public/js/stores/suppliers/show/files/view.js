@@ -10,9 +10,9 @@ function getFiles() {
             setCount('file', result.count);
             result.files.forEach(file => {
                 let row = tbl_files.insertRow(-1);
-                add_cell(row, {text: file.filename})
-                add_cell(row, {text: file.description});
-                add_cell(row, {
+                addCell(row, {text: file.filename})
+                addCell(row, {text: file.description});
+                addCell(row, {
                     append: new Modal_Button(
                         _search(),
                         'file_view',
@@ -29,18 +29,18 @@ function viewFile(file_id) {
         where: {file_id: file_id}
     })
     .then(function ([file, options]) {
-        set_attribute('form_file_download', 'action', `/files/${file.file_id}/download`);
+        setAttribute('form_file_download', 'action', `/files/${file.file_id}/download`);
         setInnerText('file_id',          file.file_id);
         setInnerText('file_filename',    file.filename);
         setInnerText('file_description', file.description);
-        setInnerText('file_user',        print_user(file.user));
-        setInnerText('file_createdAt',   print_date(file.createdAt, true));
-        setInnerText('file_updatedAt',   print_date(file.updatedAt, true));
+        setInnerText('file_user',        printUser(file.user));
+        setInnerText('file_createdAt',   printDate(file.createdAt, true));
+        setInnerText('file_updatedAt',   printDate(file.updatedAt, true));
     });
 };
 window.addEventListener('load', function () {
-    add_listener('reload', getFiles);
+    addListener('reload', getFiles);
     modalOnShow('file_view', function (event) {viewFile(event.relatedTarget.dataset.id)});
-    add_sort_listeners('files', getFiles);
+    addSortListeners('files', getFiles);
     getFiles();
 });

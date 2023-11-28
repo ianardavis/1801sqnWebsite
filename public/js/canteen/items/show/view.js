@@ -14,5 +14,5 @@ function getItem() {
     });
 };
 window.addEventListener('load', function () {
-    add_listener('reload', getItem);
+    addListener('reload', getItem);
 });

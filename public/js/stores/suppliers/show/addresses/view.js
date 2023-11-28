@@ -10,10 +10,10 @@ function getAddresses() {
             setCount('address', result.count);
             result.addresses.forEach(address => {
                 let row = tbl_addresses.insertRow(-1);
-                add_cell(row, {text: address.type});
-                add_cell(row, {text: address.unit_number});
-                add_cell(row, {text: address.street});
-                add_cell(row, {append: new Modal_Button(
+                addCell(row, {text: address.type});
+                addCell(row, {text: address.unit_number});
+                addCell(row, {text: address.street});
+                addCell(row, {append: new Modal_Button(
                     _search(),
                     'address_view',
                     [{field: 'id', value: address.suppliers[0].supplier_addresses.supplier_address_id}]
@@ -38,13 +38,13 @@ function viewAddress(supplier_address_id) {
         setInnerText('address_county',      address.address.country);
         setInnerText('address_country',     address.address.country);
         setInnerText('address_postcode',    address.address.postcode);
-        setInnerText('address_createdAt',   print_date(address.address.createdAt, true));
-        setInnerText('address_updatedAt',   print_date(address.address.updatedAt, true));
+        setInnerText('address_createdAt',   printDate(address.address.createdAt, true));
+        setInnerText('address_updatedAt',   printDate(address.address.updatedAt, true));
     });
 };
 window.addEventListener('load', function () {
-    add_listener('reload', getAddresses);
+    addListener('reload', getAddresses);
     modalOnShow('address_view', function (event) {viewAddress(event.relatedTarget.dataset.id)});
-    add_sort_listeners('addresses', getAddresses);
+    addSortListeners('addresses', getAddresses);
     getAddresses();
 });

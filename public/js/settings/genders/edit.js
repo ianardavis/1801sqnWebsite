@@ -19,7 +19,7 @@ function viewGenderEdit(gender_id) {
         where: {gender_id: gender_id}
     })
     .then(function([gender, options]) {
-        set_attribute('gender_id_edit', 'value', gender.gender_id);
+        setAttribute('gender_id_edit', 'value', gender.gender_id);
         setValue('gender_gender_edit', gender.gender);
     });
 };

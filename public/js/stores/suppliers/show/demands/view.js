@@ -10,9 +10,9 @@ function getDemands() {
         function add_line(demand) {
             try {
                 let row = tbl_demands.insertRow(-1);
-                add_cell(row, table_date(demand.createdAt));
-                add_cell(row, {text: demand_statuses[demand.status]});
-                add_cell(row, {append: new Link(`/demands/${demand.demand_id}`).e});
+                addCell(row, tableDate(demand.createdAt));
+                addCell(row, {text: demand_statuses[demand.status]});
+                addCell(row, {append: new Link(`/demands/${demand.demand_id}`).e});
             } catch (err) {
                 console.error(err);
             };
@@ -21,7 +21,7 @@ function getDemands() {
             table: 'demands',
             where: {
                 supplier_id: path[2],
-                ...filter_status('demand')
+                ...filterStatus('demand')
             },
             func: getDemands
         })
@@ -32,14 +32,14 @@ function getDemands() {
     })
 };
 window.addEventListener('load', function () {
-    set_status_filter_options('demand', [
+    setStatusFilterOptions('demand', [
         {value: '0', text: 'Cancelled'},
         {value: '1', text: 'Draft',    selected: true},
         {value: '2', text: 'Complete', selected: true},
         {value: '3', text: 'Closed',   selected: true}
     ]);
-    add_listener('reload', getDemands);
-    add_listener('sel_demand_status', getDemands, 'change');
-    add_sort_listeners('demands', getDemands);
+    addListener('reload', getDemands);
+    addListener('sel_demand_status', getDemands, 'change');
+    addSortListeners('demands', getDemands);
     getDemands();
 });

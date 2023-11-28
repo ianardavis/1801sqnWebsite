@@ -3,8 +3,8 @@ function get_categories() {
     .then(tbl_categories => {
         function add_line(category) {
             let row = tbl_categories.insertRow(-1);
-            add_cell(row, {text: category.category.category});
-            add_cell(row, {append: new Modal_Button(
+            addCell(row, {text: category.category.category});
+            addCell(row, {append: new Modal_Button(
                 _search(),
                 'category_view',
                 [{field: 'id', value: category.item_category_id}]
@@ -33,11 +33,11 @@ function viewCategory(category_id) {
         setInnerText('category_id',        category.category_id);
         setInnerText('item_category_id',   category.item_category_id);
         setInnerText('category_category',  category.category.category);
-        setInnerText('category_createdAt', print_date(category.createdAt));
+        setInnerText('category_createdAt', printDate(category.createdAt));
     });
 };
 window.addEventListener('load', function () {
-    add_listener('reload', get_categories);
+    addListener('reload', get_categories);
     modalOnShow('category_view', function(event) {
         if (event.relatedTarget.dataset.id) {
             viewCategory(event.relatedTarget.dataset.id);
@@ -47,6 +47,6 @@ window.addEventListener('load', function () {
 
         };
     });
-    add_sort_listeners('item_categories', get_categories);
+    addSortListeners('item_categories', get_categories);
     get_categories();
 });

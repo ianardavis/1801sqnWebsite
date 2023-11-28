@@ -9,9 +9,9 @@ function get_details() {
         .then(function ([result, options]) {
             result.details.forEach(detail => {
                 let row = tbl_details.insertRow(-1);
-                add_cell(row, {text: detail.name});
-                add_cell(row, {text: detail.value});
-                add_cell(row, {append: new Modal_Button(
+                addCell(row, {text: detail.name});
+                addCell(row, {text: detail.value});
+                addCell(row, {append: new Modal_Button(
                     _search(),
                     'detail_view',
                     [{field: 'id', value: detail.detail_id}]
@@ -30,17 +30,17 @@ function viewDetail(detail_id) {
         setInnerText('detail_id',        detail.detail_id);
         setInnerText('detail_name',      detail.name);
         setInnerText('detail_value',     detail.value);
-        setInnerText('detail_createdAt', print_date(detail.createdAt));
-        setInnerText('detail_updatedAt', print_date(detail.updatedAt));
+        setInnerText('detail_createdAt', printDate(detail.createdAt));
+        setInnerText('detail_updatedAt', printDate(detail.updatedAt));
     });
 };
 window.addEventListener('load', function () {
-    add_listener('reload', get_details);
+    addListener('reload', get_details);
     modalOnShow('detail_view', function (event) {
         if (event.relatedTarget.dataset.id) {
             viewDetail(event.relatedTarget.dataset.id)
         } else modalHide('detail_view');
     });
-    add_sort_listeners('details', get_details);
+    addSortListeners('details', get_details);
     get_details();
 });
