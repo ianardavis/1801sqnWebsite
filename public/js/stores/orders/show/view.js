@@ -35,15 +35,15 @@ function getOrder() {
         clearStatuses(3, statuses);
         if ([0, 1, 2, 3].includes(order.status)) {
             if (order.status === 0) {
-                set_badge(1, 'danger', 'Cancelled');
+                setBadge(1, 'danger', 'Cancelled');
     
             } else {
-                set_badge(1, 'success');
+                setBadge(1, 'success');
                 if (order.status > 1) {
-                    set_badge(2, 'success');
+                    setBadge(2, 'success');
                 };
                 if (order.status > 2) {
-                    set_badge(3, 'success');
+                    setBadge(3, 'success');
                 };
             };
         };

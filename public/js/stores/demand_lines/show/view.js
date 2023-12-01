@@ -23,15 +23,15 @@ function getDemandLine() {
         clearStatuses(3, line_statuses);
         if ([0, 1, 2, 3].includes(line.status)) {
             if (line.status === 0) {
-                set_badge(1, 'danger', 'Cancelled');
+                setBadge(1, 'danger', 'Cancelled');
 
             } else {
-                set_badge(1, 'success');
+                setBadge(1, 'success');
                 if (line.status > 1) {
-                    set_badge(2, 'success');
+                    setBadge(2, 'success');
                 };
                 if (line.status > 2) {
-                    set_badge(3, 'success');
+                    setBadge(3, 'success');
                 };
             };
         };

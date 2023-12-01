@@ -70,10 +70,10 @@ function setBreadcrumb(text, id = 'breadcrumb', href = null) {
 };
 function clearStatuses(max, statuses) {
     for (s=1; s<=max; s++) {
-        set_badge(s, 'secondary', statuses[s]);
+        setBadge(s, 'secondary', statuses[s]);
     };
 };
-function set_badge(bdg, colour, text = '') {
+function setBadge(bdg, colour, text = '') {
     let badge = document.querySelector(`#bdg_status_${bdg}`);
     if (badge) {
         badge.classList.remove('text-bg-success');
@@ -287,7 +287,6 @@ function showSpinner(id) {
     .then(e => e.classList.remove('hidden'))
     .catch(err => {
         console.error(`common.js | showSpinner | ${err.message}`);
-        reject(err);
     });
 };
 function hideSpinner(id) {

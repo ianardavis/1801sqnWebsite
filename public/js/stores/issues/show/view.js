@@ -56,26 +56,26 @@ function getIssue() {
         clearStatuses(5, statuses);
         if ([-3, -2, -1, 1, 2, 3, 4, 5].includes(issue.status)) {
             if ([-3, -2, 1, 2, 3, 4, 5].includes(issue.status)) {
-                set_badge(1, 'success');
+                setBadge(1, 'success');
             } else {
-                set_badge(1, 'danger', 'Rejected');
+                setBadge(1, 'danger', 'Rejected');
             };
             
             if (issue.status === -3 || issue.status >= 2) {
-                set_badge(2, 'success');
+                setBadge(2, 'success');
             } else if (issue.status === -2) {
-                set_badge(2, 'danger', 'Cancelled');
+                setBadge(2, 'danger', 'Cancelled');
             };
     
             if (issue.status >= 3) {
-                set_badge(3, 'success');
+                setBadge(3, 'success');
             } else if (issue.status === -3) {
-                set_badge(3, 'danger', 'Cancelled');
+                setBadge(3, 'danger', 'Cancelled');
             };
     
-            if (issue.status >= 4) set_badge(4, 'success');
+            if (issue.status >= 4) setBadge(4, 'success');
             
-            if (issue.status >= 5) set_badge(5, 'success');
+            if (issue.status >= 5) setBadge(5, 'success');
         };
         return issue;
     };
