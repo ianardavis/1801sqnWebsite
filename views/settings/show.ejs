@@ -64,10 +64,12 @@
                 </thead>
                 <tbody id='tbl_genders'></tbody>
             </table>
+            <%- include(`${partials}/limit`, {table: 'genders'}) %>
         </div>
 <% } %>
 <% if (permissions.supplier_admin) { %>
         <div class="tab-pane fade" id="files"      role="tabpanel" aria-labelledby="files-tab">
+            <%- include(`${partials}/spinner`, {id: 'fs_files'}) %>
             <table class="table table-sm table-hover">
                 <thead class="thead-dark" id="tbl_files_head">
                     <th class='w-20' data-column='["file_id"]'>File ID </th>
@@ -77,6 +79,7 @@
                 </thead>
                 <tbody id='tbl_files'></tbody>
             </table>
+            <%- include(`${partials}/limit`, {table: 'files'}) %>
         </div>
 <% } %>
 <% if (permissions.supplier_admin) { %>
@@ -91,6 +94,7 @@
                 </thead>
                 <tbody id='tbl_accounts'></tbody>
             </table>
+            <%- include(`${partials}/limit`, {table: 'accounts'}) %>
         </div>
 <% } %>
 <% if (permissions.stores_stock_admin) { %>
@@ -107,6 +111,7 @@
         <div class="tab-pane fade" id="links"      role="tabpanel" aria-labelledby="links-tab">
             <div class="row">
                 <div class="col-12 col-md-4">
+                    <%- include(`${partials}/spinner`, {id: 'resource_link_headings'}) %>
                     <%- include(`${partials}/button/modal`, {id: 'link_heading_add', text: 'Add Heading', type: 'success'}) %>
                     <table class="table table-sm table-hover">
                         <thead class="thead-dark" id="tbl_resource_link_headings_head">
@@ -118,6 +123,7 @@
                     <%- include(`${partials}/limit`, {table: 'resource_link_headings'}) %>
                 </div>
                 <div class="col-12 col-md-8">
+                    <%- include(`${partials}/spinner`, {id: 'resource_links'}) %>
                     <%- include(`${partials}/button/modal`, {id: 'link_add', text: 'Add Link', type: 'success'}) %>
                     <table class="table table-sm table-hover">
                         <thead class="thead-dark" id="tbl_resource_links_head">
@@ -141,6 +147,7 @@
                 </thead>
                 <tbody id='tbl_settings'></tbody>
             </table>
+            <%- include(`${partials}/limit`, {table: 'settings'}) %>
         </div>
     </div>
     <div id="modals">
@@ -235,7 +242,7 @@
         </div>
         <div class="modal fade" id="mdl_link_heading_edit" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog">
-                <form class="modal-content" id='form_link_edit'>
+                <form class="modal-content" id='form_link_heading_edit'>
                     <div class="modal-header">
                         <h5 class="modal-title">Link Heading</h5>
                     </div>
@@ -488,7 +495,7 @@
     </div>
 </section>
 <%- include(`${partials}/foot/app`) %>
-<script>show_tab('settings')</script>
+<script>showTab('settings')</script>
 <script src="/js/settings/settings/view.js"></script>
 <script src="/js/settings/settings/add.js"></script>
 <script src="/js/settings/settings/edit.js"></script>

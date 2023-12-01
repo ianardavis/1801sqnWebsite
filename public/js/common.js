@@ -213,7 +213,6 @@ function addListener(btn, func, event = 'click') {
     .then(e => e.addEventListener(event, func))
     .catch(err => {
         console.error(`common.js | addListener | ${err.message}`);
-        reject(err);
     });
 };
 function toggleCheckboxOnRowClick(event) {
@@ -269,10 +268,10 @@ function modalIsShown(id) {
     });
 };
 function showTab(tab) {
-    Promise.all(
+    Promise.all([
         getElement(`${tab}-tab`),
         getElement(tab)
-    )
+    ])
     .then(([tabHead, tabBody]) => {
         tabHead.classList.add('active');
         tabBody.classList.add('active', 'show');
@@ -294,7 +293,6 @@ function hideSpinner(id) {
     .then(e => e.classList.add('hidden'))
     .catch(err => {
         console.error(`common.js | hideSpinner | ${err.message}`);
-        reject(err);
     });
 };
 function removeSpinner(id) {

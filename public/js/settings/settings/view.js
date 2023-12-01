@@ -35,27 +35,20 @@ function getPrinter() {
     })
 };
 function getErrorLog() {
-    clear('log_error')
-    .then(log_error => {
-        get({
-            table: 'logs',
-            where: {type: 'error'},
-            spinner: 'log_error',
-            streamAction: function (char) {
-                log_error.innerText += char;
-            }
-        });
-    });
+    getLog('error');
 };
 function getOutLog() {
-    clear('log_out')
-    .then(log_out => {
+    getLog('out');
+};
+function getLog(type) {
+    clear(`log_${type}`)
+    .then(log => {
         get({
             table: 'logs',
-            where: {type: 'out'},
-            spinner: 'log_out',
+            where: {type: type},
+            spinner: `log_${type}`,
             streamAction: function (char) {
-                log_out.innerText += char;
+                log.innerText += char;
             }
         });
     });

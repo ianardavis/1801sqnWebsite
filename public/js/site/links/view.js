@@ -5,9 +5,10 @@ function createSections() {
         .then(function ([result, options]) {
             if (result.resource_link_headings && result.resource_link_headings.length > 0){
                 result.resource_link_headings.forEach(heading => {
-                    link_headings.appendChild(new Link_Section(heading.value).e);
-                    getLinks(heading.value)
-                    .then(result => console.log(`${heading.value} loaded successfully`))
+                    console.log(heading);
+                    link_headings.appendChild(new Link_Section(heading.resource_link_heading_id, heading.heading).e);
+                    getLinks(heading.resource_link_heading_id)
+                    .then(result => console.log(`${heading.heading} loaded successfully`))
                     .catch(console.error);
                 });
             };
@@ -15,13 +16,13 @@ function createSections() {
         .catch(console.error);
     });
 };
-function getLinks(heading) {
+function getLinks(resource_link_heading_id) {
     return new Promise((resolve, reject) => {
-        clear(`collapse${heading}`)
+        clear(`collapse_${resource_link_heading_id}`)
         .then(row => {
             get({
                 table: 'resource_links',
-                where: {heading: heading}
+                where: {resource_link_heading_id: resource_link_heading_id}
             })
             .then(function ([result, options]) {
                 result.resource_links.forEach(link => {

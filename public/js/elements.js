@@ -371,23 +371,23 @@ function Collapse_A(id) {
         }
     ).e);
 };
-function Link_Section(title) {
+function Link_Section(id, title) {
     this.e = document.createElement('section');
     this.e.classList.add('container', 'bordered', 'mb-2');
 
     let a = document.createElement('a');
     a.classList.add('my-3');
     a.setAttribute('data-bs-toggle', 'collapse');
-    a.setAttribute('href', `#collapse${title}`);
+    a.setAttribute('href', `#collapse_${id}`);
     a.setAttribute('role', 'button');
     a.setAttribute('aria-expanded', 'false');
-    a.setAttribute('aria-controls', `collapse${title}`);
+    a.setAttribute('aria-controls', `collapse_${id}`);
     a.innerText = title;
     this.e.appendChild(a);
 
     let div = document.createElement('div');
     div.classList.add('collapse', 'show', 'mb-3', 'menu', 'row'); //menu and row here or in sub div?
-    div.setAttribute('id', `collapse${title}`);
+    div.setAttribute('id', `collapse_${id}`);
     // let card = document.createElement('div');
     // card.classList.add('card', 'card-body');
     // card.setAttribute('id', `row${title}`);
