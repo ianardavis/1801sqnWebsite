@@ -1,4 +1,4 @@
-function create_sections() {
+function createSections() {
     clear('link_headings')
     .then(link_headings => {
         get({table: 'resource_link_headings'})
@@ -6,7 +6,7 @@ function create_sections() {
             if (result.resource_link_headings && result.resource_link_headings.length > 0){
                 result.resource_link_headings.forEach(heading => {
                     link_headings.appendChild(new Link_Section(heading.value).e);
-                    get_links(heading.value)
+                    getLinks(heading.value)
                     .then(result => console.log(`${heading.value} loaded successfully`))
                     .catch(console.error);
                 });
@@ -15,7 +15,7 @@ function create_sections() {
         .catch(console.error);
     });
 };
-function get_links(heading) {
+function getLinks(heading) {
     return new Promise((resolve, reject) => {
         clear(`collapse${heading}`)
         .then(row => {
@@ -39,5 +39,5 @@ function get_links(heading) {
     });
 };
 window.addEventListener('load', function () {
-    create_sections();
+    createSections();
 });

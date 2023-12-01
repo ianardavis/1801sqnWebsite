@@ -287,7 +287,6 @@ function showSpinner(id) {
     .then(e => e.classList.remove('hidden'))
     .catch(err => {
         console.error(`common.js | showSpinner | ${err.message}`);
-        reject(err);
     });
 };
 function hideSpinner(id) {
