@@ -1,5 +1,5 @@
-function linkDeleteBtn(resource_link_id) {
-    setAttribute('form_link_delete', 'action', `/resource_links/${resource_link_id}`);
+function linkDeleteBtn(event) {
+    setAttribute('link_id_delete', 'value', event.relatedTarget.dataset.id);
     // clear('link_delete')
     // .then(span_delete => {
     //     span_delete.appendChild(
@@ -16,12 +16,34 @@ function linkDeleteBtn(resource_link_id) {
     //     );
     // });
 };
-function linkHeadingDeleteBtn(resource_link_heading_id) {
-    setAttribute('form_link_delete', 'action', `/resource_link_headings/${resource_link_heading_id}`);
+function linkHeadingDeleteBtn(event) {
+    setAttribute('link_heading_id_delete', 'value', event.relatedTarget.dataset.id);
 };
 window.addEventListener('load', function () {
+    addFormListener(
+        'link_heading_delete',
+        'DELETE',
+        '/resource_link_headings',
+        {
+            onComplete: [
+                getHeadings,
+                function () {modalHide('link_heading_view')}
+            ]
+        }
+    );
+    addFormListener(
+        'link_delete',
+        'DELETE',
+        '/resource_link_headings',
+        {
+            onComplete: [
+                getLinks,
+                function () {modalHide('link_view')}
+            ]
+        }
+    );
     enableButton('link_heading_delete');
     enableButton('link_delete');
-    modalOnShow('link_view', function (event) {linkDeleteBtn(event.relatedTarget.dataset.id)});
-    modalOnShow('link_heading_view', function (event) {linkHeadingDeleteBtn(event.relatedTarget.dataset.id)});
+    modalOnShow('link_view',         linkDeleteBtn);
+    modalOnShow('link_heading_view', linkHeadingDeleteBtn);
 });

@@ -1,6 +1,7 @@
 <span class="float-end">
     <span class='float-end ms-1'>
-        <form id="form_<%= id %>_delete" method="DELETE" onclick='return confirm("Are you sure?")'>
+        <form id="form_<%= id %>_delete" onclick='return confirm("Are you sure?")'>
+            <input type="hidden" name="<%= id %>_id_delete">
             <button
                 id="btn_<%= id %>_delete"
                 class="btn btn-danger"
