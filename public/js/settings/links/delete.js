@@ -1,20 +1,5 @@
 function linkDeleteBtn(event) {
     setAttribute('link_id_delete', 'value', event.relatedTarget.dataset.id);
-    // clear('link_delete')
-    // .then(span_delete => {
-    //     span_delete.appendChild(
-    //         new Delete_Button({
-    //             descriptor: 'link',
-    //             path:       `/resource_links/${resource_link_id}`,
-    //             options: {
-    //                 onComplete: [
-    //                     getLinks,
-    //                     function () {modalHide('link_view')}
-    //                 ]
-    //             }
-    //         }).e
-    //     );
-    // });
 };
 function linkHeadingDeleteBtn(event) {
     setAttribute('link_heading_id_delete', 'value', event.relatedTarget.dataset.id);

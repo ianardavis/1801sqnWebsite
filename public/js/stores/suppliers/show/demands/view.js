@@ -5,8 +5,11 @@ const demand_statuses = {
     '3': 'Closed'
 };
 function getDemands() {
-    clear('tbl_demands')
-    .then(tbl_demands => {
+    Promise.all([
+        clear('tbl_demands'),
+        filterStatus('demand')
+    ])
+    .then(([tbl_demands, filterStatuses]) => {
         function add_line(demand) {
             try {
                 let row = tbl_demands.insertRow(-1);
@@ -21,7 +24,7 @@ function getDemands() {
             table: 'demands',
             where: {
                 supplier_id: path[2],
-                ...filterStatus('demand')
+                ...filterStatuses
             },
             func: getDemands
         })

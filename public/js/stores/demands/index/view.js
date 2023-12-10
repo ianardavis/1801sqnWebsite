@@ -6,8 +6,11 @@ const demand_statuses = {
 };
 
 function get_demands() {
-    clear('tbl_demands')
-    .then(tbl_demands => {
+    Promise.all([
+        clear('tbl_demands'),
+        filterStatus('demands')
+    ])
+    .then(([tbl_demands, filterStatuses]) => {
         function add_lines([result, options]) {
             function add_line(demand) {
                 let row = tbl_demands.insertRow(-1);
@@ -36,7 +39,7 @@ function get_demands() {
         get({
             table: 'demands',
             where: {
-                ...filterStatus('demands'),
+                ...filterStatuses,
                 ...filterSupplier('demands')
             },
             gt: filterDateFrom('demands'),

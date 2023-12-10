@@ -45,12 +45,12 @@ module.exports = (app, fn) => {
     });
 
     app.delete('/resource_links',         fn.loggedIn(), fn.permissions.check('site_admin'), (req, res) => {
-        fn.site.links.delete(req.body.link_id)
+        fn.site.links.delete(req.body.link_id_delete)
         .then(result => res.send({success: true, message: 'Link deleted'}))
         .catch(err => fn.sendError(res, err));
     });
     app.delete('/resource_link_headings', fn.loggedIn(), fn.permissions.check('site_admin'), (req, res) => {
-        fn.site.links.headings.delete(req.body.link_heading_id)
+        fn.site.links.headings.delete(req.body.link_heading_id_delete)
         .then(result => res.send({success: true, message: 'Heading deleted'}))
         .catch(err => fn.sendError(res, err));
     });

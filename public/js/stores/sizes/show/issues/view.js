@@ -7,8 +7,12 @@ let issue_statuses = {
     '5': 'Returned'
 };
 function get_issues() {
-    clear('tbl_issues')
-    .then(tbl_issues => {
+    Promise.all([
+        clear('tbl_issues'),
+        filterStatus('issue')
+    ])
+    
+    .then(([tbl_issues, filterStatuses]) => {
         function add_line(issue) {
             try {
                 let row = tbl_issues.insertRow(-1);
@@ -30,7 +34,7 @@ function get_issues() {
             table: 'issues',
             where: {
                 size_id: path[2],
-                ...filterStatus('issue')
+                ...filterStatuses
             },
             func: get_issues
         })

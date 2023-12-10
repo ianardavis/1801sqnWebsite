@@ -4,7 +4,6 @@
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/head/components/close`) %>
 <section class="container">
-
     <%- include(`${partials}/sidebar/button`, {id: 'actions', text: 'Actions', float: true}) %>
 
     <ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
@@ -36,7 +35,7 @@
         </div>
         <div class="tab-pane fade" id="addresses" role="tabpanel" aria-labelledby="addresses-tab">
 	        <table class="table table-sm table-hover">
-                <thead class="thead-dark" id="tbl_supplier_addresses_head">
+                <thead class="thead-dark" id="tbl_addresses_head">
 					<th class='w-30' data-column='["type"]' data-dir="ASC">Type</th>
 					<th class="w-30" data-column='["address","unit_number"]'>Unit/Number</th>
                     <th class="w-40" data-column='["address","street"]'>Street</th>
@@ -117,6 +116,7 @@
                 <%- include(`${partials}/button/modal`, {id: 'supplier_edit', text: 'Edit',        type: 'warning'}) %>
                 <%- include(`${partials}/button/modal`, {id: 'address_add',   text: 'New Address', type: 'success'}) %>
                 <%- include(`${partials}/button/modal`, {id: 'contact_add',   text: 'New Contact', type: 'success'}) %>
+                <%- include(`${partials}/button/modal`, {id: 'file_add',      text: 'Upload File', type: 'success'}) %>
                 <%- include(`${partials}/button/modal`, {id: 'note_add',      text: 'New Note',    type: 'success'}) %>
                 <form id='form_set_default'>
                     <button class='btn btn-success w-100' id='btn_default' disabled>Set Default</button>
@@ -192,16 +192,13 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">File</h5>
+                        <%- include(`${partials}/modals/edit_delete_btns`, {id: 'file'}) %>
                         <%- include(`${partials}/spinner`, {id: 'file_view'}) %>
-                        <span class="float-end">
-                            <form id="form_file_download" method='GET' class='float-end ms-1'>
-                                <button class='btn btn-primary'><i class="fas fa-file-download"></i></button>
-                            </form>
-                            <span id="span_file_edit_btn"   class='float-end ms-1'></span>
-                            <span id="span_file_delete_btn" class='float-end ms-1'></span>
-                        </span>
                     </div>
                     <div class="modal-body">
+                        <form id="form_file_download" method='GET'>
+                            <button class='btn btn-primary w-100 mb-1'>Download</button>
+                        </form>
                         <%- include(`${partials}/inputs/display`, {id: 'file_filename',    title: 'Filename'}) %>
                         <%- include(`${partials}/inputs/display`, {id: 'file_description', title: 'Description'}) %>
                         <%- include(`${partials}/inputs/display`, {id: 'file_user',        title: 'Added By'}) %>
@@ -242,6 +239,7 @@
                         <input class='supplier_id' type="hidden" name='file[supplier_id]'>
                         <%- include(`${partials}/inputs/text`, {id: 'file_description_add', name: 'file[description]', title: 'Type', required: true, list_id: 'file_descriptions'}) %>
                         <%- include(`${partials}/inputs/file`, {id: 'file_upload',          name: 'uploaded',          title: 'File'}) %>
+                        <datalist id="file_descriptions"></datalist>
                     </div>
                     <div class="modal-footer">
                         <%- include(`${partials}/button/save`) %>

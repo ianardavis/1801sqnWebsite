@@ -1,9 +1,11 @@
 let issue_statuses = {'0': 'Cancelled', '1': 'Requested', '2': 'Approved', '3': 'Ordered', '4': 'Issued', '5': 'Returned'};
 function get_issues () {
-    clear('tbl_issues')
-    .then(tbl_issues => {
+    Promise.all([
+        clear('tbl_issues'),
+        getSelectedOptions('sel_issue_statuses')
+    ])
+    .then(([tbl_issues, statuses]) => {
         let where = {user_id_issue: path[2]};
-        const statuses = getSelectedOptions('sel_issue_statuses');
         if (statuses.length > 0) where.status = statuses;
         get({
             table: 'issues',

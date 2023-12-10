@@ -1,7 +1,11 @@
 let scrap_statuses   = {"0": "Cancelled", "1": "Draft", "3":"Closed"};
 function get_scraps() {
-    clear('tbl_scraps')
-    .then(tbl_scraps => {
+    Promise.all([
+        clear('tbl_scraps'),
+        filterStatus('scrap')
+    ])
+    
+    .then(([tbl_scraps, filterStatuses]) => {
         function add_line(scrap) {
             let row = tbl_scraps.insertRow(-1);
             addCell(row, tableDate(scrap.createdAt));
@@ -14,7 +18,7 @@ function get_scraps() {
         get({
             table: 'scraps',
             where: {
-                ...filterStatus('scrap'),
+                ...filterStatuses,
                 ...filterSupplier('scrap')
             },
             gt: filterDateFrom('scrap'),

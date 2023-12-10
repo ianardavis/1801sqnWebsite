@@ -30,7 +30,6 @@ function enableButton(id, pretext = 'btn_') {
     .then(button => button.removeAttribute('disabled'))
     .catch(err => {
         console.error(`common.js | enableButton | ${err.message}`);
-        reject(err);
     });
 };
 function disableButton(id, pretext = 'btn_') {
@@ -380,15 +379,17 @@ function setStatusFilterOptions(id, options) {
     });
 };
 function getSelectedOptions(id) {
-    getElement(id)
-    .then(select => {
-        if (select.selectedOptions) {
-            return Array.from(select.selectedOptions).map(({ value }) => value)
-        } else return [];
-    })
-    .catch(err => {
-        console.error(`common.js | getSelectedOptions | ${err.message}`);
-        reject(err);
+    return new Promise((resolve, reject) => {
+        getElement(id)
+        .then(select => {
+            if (select.selectedOptions) {
+                resolve(Array.from(select.selectedOptions).map(({ value }) => value))
+            } else resolve([]);
+        })
+        .catch(err => {
+            console.error(`common.js | getSelectedOptions | ${err.message}`);
+            reject(err);
+        });
     });
 };
 function filterItem(id) {
@@ -420,9 +421,14 @@ function filterSize(id) {
     });
 };
 function filterStatus(id) {
-    const statuses = getSelectedOptions(`filter_${id}_status`);
-    if (statuses && statuses.length > 0) return {status: statuses}
-    else return {};
+    return new Promise((resolve, reject) => {
+        getSelectedOptions(`filter_${id}_status`)
+        .then(statuses => {
+            if (statuses && statuses.length > 0) resolve({status: statuses})
+            else resolve({});
+        })
+        .catch(reject);
+    });
 };
 function filterSupplier(id) {
     getElement(`filter_${id}_supplier`)
@@ -470,9 +476,14 @@ function filterUser(id) {
     });
 };
 function filterGender(id) {
-    const genders = getSelectedOptions(`filter_${id}_gender`);
-    if (genders && genders.length > 0) return {gender_id: genders}
-    else return {};
+    return new Promise((resolve, reject) => {
+        getSelectedOptions(`filter_${id}_gender`)
+        .then(genders => {
+            if (genders && genders.length > 0) resolve({gender_id: genders})
+            else resolve({});
+        })
+        .catch(reject);
+    })
 };
 
 function addSortListeners(table, func) {
@@ -529,7 +540,6 @@ function addSortListeners(table, func) {
     })
     .catch(err => {
         console.error(`common.js | addSortListeners | ${err.message}`);
-        reject(err);
     });
 };
 function divDetails(id, index) {

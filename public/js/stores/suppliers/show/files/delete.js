@@ -1,20 +1,18 @@
-function fileDeleteBtn(file_id) {
-    clear('span_file_delete_btn')
-    .then(span_file_delete_btn => {
-        span_file_delete_btn.appendChild(
-            new Delete_Button({
-                descriptor: 'file',
-                path: `/files/${file_id}`,
-                options: {
-                    onComplete: [
-                        getFiles,
-                        function () {modalHide('file_view')}
-                    ]
-                }
-            }).e
-        );
-    });
+function fileDeleteBtn(event) {
+    setAttribute('file_id_delete', 'value', event.relatedTarget.dataset.id);
 }
 window.addEventListener("load", function () {
-    modalOnShow('file_view', function (event) {fileDeleteBtn(event.relatedTarget.dataset.id)});
+    addFormListener(
+        'file_delete',
+        'DELETE',
+        '/file',
+        {
+            onComplete: [
+                getFiles,
+                function () {modalHide('file_view')}
+            ]
+        }
+    );
+    enableButton('file_delete');
+    modalOnShow('file_view', fileDeleteBtn);
 });

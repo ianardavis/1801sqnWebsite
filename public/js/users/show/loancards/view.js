@@ -5,10 +5,12 @@ const loancard_statuses = {
     '3': 'Closed'
 };
 function getLoancards () {
-    clear('tbl_loancards')
-    .then(tbl_loancards => {
+    Promise.all([
+        clear('tbl_loancards'),
+        getSelectedOptions('sel_loancard_statuses')
+    ])
+    .then(([tbl_loancards, statuses]) => {
         let where = {user_id_loancard: path[2]};
-        const statuses = getSelectedOptions('sel_loancard_statuses');
         if (statuses.length > 0) where.status = statuses;
         get({
             table: 'loancards',

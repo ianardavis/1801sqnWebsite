@@ -4,8 +4,11 @@ const line_statuses = {
     '2': 'Closed'
 };
 function getLines() {
-    clear('tbl_lines')
-    .then(tbl_lines => {
+    Promise.all([
+        clear('tbl_lines'),
+        filterStatus('scrap_line')
+    ])
+    .then(([tbl_lines, filterStatuses]) => {
         function add_line(line, index) {
             let row = tbl_lines.insertRow(-1);
             addCell(row, {text: line.size.item.description});
@@ -37,7 +40,7 @@ function getLines() {
             table: 'scrap_lines',
             where: {
                 scrap_id: path[2],
-                ...filterStatus('scrap_line')
+                ...filterStatuses
             },
             like: {
                 ...filterItem('scrap_line'),

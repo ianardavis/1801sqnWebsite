@@ -1,9 +1,11 @@
 function getUsers() {
-    clear('tbl_users')
-    .then(tbl => {
+    Promise.all([
+        clear('tbl_users'),
+        getSelectedOptions('sel_statuses'),
+        getSelectedOptions('sel_ranks')
+    ])
+    .then(([tbl, statuses, ranks]) => {
         let where  = {};
-        const statuses = getSelectedOptions('sel_statuses');
-        const ranks    = getSelectedOptions('sel_ranks');
         if (statuses.length > 0) where.status_id = statuses;
         if (ranks   .length > 0) where.rank_id   = ranks;
         get({

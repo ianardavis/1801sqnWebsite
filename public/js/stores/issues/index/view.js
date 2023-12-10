@@ -8,8 +8,12 @@ const statuses = {
      '5': 'Returned'
 };
 function get_issues() {
-    clear('tbl_issues')
-    .then(tbl_issues => {
+    Promise.all([
+        clear('tbl_issues'),
+        filterStatus('issue')
+    ])
+    
+    .then(([tbl_issues, filterStatuses]) => {
         function row_radios(issue, index) {
             let radios = [];
             const args = [issue.issue_id, index, issue_options];
@@ -62,7 +66,7 @@ function get_issues() {
             table: 'issues',
             func:  get_issues,
             where: {
-                ...filterStatus('issue'),
+                ...filterStatuses,
                 ...filterUser('issue')
             },
             like: {

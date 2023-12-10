@@ -57,14 +57,13 @@ module.exports = (app, fn) => {
         .catch(err => fn.sendError(res, err));
     });
 
-    app.delete('/files/:id',        fn.loggedIn(), fn.permissions.check('supplier_admin'),  (req, res) => {
-        fn.files.delete(req.params.id)
+    app.delete('/files',        fn.loggedIn(), fn.permissions.check('supplier_admin'),  (req, res) => {
+        fn.files.delete(req.body.file_id_delete)
         .then(result => res.send({success: true, message: 'File deleted'}))
         .catch(err => fn.sendError(res, err));
     });
     app.delete('/fs_files/:id',     fn.loggedIn(), fn.permissions.check('supplier_admin'),  (req, res) => {
-        const path = fn.publicFile('files', req.params.id);
-        fn.rm(path)
+        fn.rm(fn.publicFile('files', req.params.id))
         .then(result => res.send({success: true,  message: 'File deleted'}))
         .catch(err =>   fn.sendError(res, err));
     });

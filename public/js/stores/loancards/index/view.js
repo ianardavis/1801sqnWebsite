@@ -5,8 +5,11 @@ const loancard_statuses = {
     "3": "Closed"
 };
 function get_loancards() {
-    clear('tbl_loancards')
-    .then(tbl_loancards => {
+    Promise.all([
+        clear('tbl_loancards'),
+        filterStatus('loancard')
+    ])
+    .then(([tbl_loancards, filterStatuses]) => {
         function add_line(loancard) {
             let row = tbl_loancards.insertRow(-1);
             addCell(row, tableDate(loancard.createdAt));
@@ -18,7 +21,7 @@ function get_loancards() {
         get({
             table: 'loancards',
             where: {
-                ...filterStatus('loancard'),
+                ...filterStatuses,
                 ...filterUser('loancard')
             },
             gt: filterDateFrom('loancard'),

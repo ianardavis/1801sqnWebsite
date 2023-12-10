@@ -1,7 +1,11 @@
 let line_statuses = {'0': 'Cancelled', '1': 'Pending', '2': 'Issued', '3': 'Returned'};
 function get_lines() {
-    clear('tbl_lines')
-    .then(tbl_lines => {
+    Promise.all([
+        clear('tbl_lines'),
+        filterStatus('loancard_lines')
+    ])
+    
+    .then(([tbl_lines, filterStatuses]) => {
         function add_line(line, index) {
             try {
                 let qty = 0;
@@ -70,7 +74,7 @@ function get_lines() {
             table: 'loancard_lines',
             where: {
                 loancard_id: path[2],
-                ...filterStatus('loancard_lines')
+                ...filterStatuses
             },
             func: get_lines
         })

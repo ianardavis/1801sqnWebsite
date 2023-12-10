@@ -1,12 +1,14 @@
 function getNotes() {
-    clear('tbl_notes')
-    .then(tbl_notes => {
+    Promise.all([
+        clear('tbl_notes'),
+        getSelectedOptions('sel_notes_system')
+    ])
+    .then(([tbl_notes, system_notes]) => {
         let where = {
                 _table: path[1],
                 id:     path[2]
             };
-        const system = getSelectedOptions('sel_system');
-        if (system.length > 0) where.system = system;
+        if (system_notes.length > 0) where['system'] = system_notes;
         get({
             table: 'notes',
             where: where,
@@ -50,7 +52,7 @@ window.addEventListener('load', function () {
             viewNote(event.relatedTarget.dataset.id)
         } else modalHide('note_view');
     });
-    addListener('sel_system', getNotes, 'input');
+    addListener('sel_notes_system', getNotes, 'input');
     addSortListeners('notes', getNotes);
     getNotes();
 });

@@ -1,7 +1,11 @@
 let line_statuses = {'0': 'Cancelled', '1': 'Pending', '2': 'Open', '3': 'Received'};
 function get_lines() {
-    clear('tbl_lines')
-    .then(tbl_lines => {
+    Promise.all([
+        clear('tbl_lines'),
+        filterStatus('demand_lines')
+    ])
+    
+    .then(([tbl_lines, filterStatuses]) => {
         function add_line(line, index) {
             try {
                 let row = tbl_lines.insertRow(-1);
@@ -47,7 +51,7 @@ function get_lines() {
             table: 'demand_lines',
             where: {
                 demand_id: path[2],
-                ...filterStatus('demand_lines')
+                ...filterStatuses
             },
             func: get_lines
         })

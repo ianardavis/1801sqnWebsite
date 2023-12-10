@@ -5,8 +5,12 @@ let order_statuses = {
     '3': 'Received'
 };
 function get_orders() {
-    clear('tbl_orders')
-    .then(tbl_orders => {
+    Promise.all([
+        clear('tbl_orders'),
+        filterStatus('order')
+    ])
+    
+    .then(([tbl_orders, filterStatuses]) => {
         function add_line(order) {
             try {
                 let row = tbl_orders.insertRow(-1);
@@ -27,7 +31,7 @@ function get_orders() {
             table: 'orders',
             where: {
                 size_id: path[2],
-                ...filterStatus('order')
+                ...filterStatuses
             },
             func: get_orders
         })

@@ -1,7 +1,11 @@
 const get_genders = listGenders();
 function get_items() {
-    clear('tbl_items')
-    .then(tbl_items => {
+    Promise.all([
+        clear('tbl_items'),
+        filterGender('item')
+    ])
+    
+    .then(([tbl_items, filterGenders]) => {
         function add_line(item) {
             let row = tbl_items.insertRow(-1);
             addCell(row, {text: item.description});
@@ -10,7 +14,7 @@ function get_items() {
         get({
             table: 'items',
             where: {
-                ...filterGender('item')
+                ...filterGenders
             },
             like: {
                 ...filterItem('item')
