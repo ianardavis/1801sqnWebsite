@@ -2,7 +2,7 @@
 
 module.exports = function(sequelize, DataTypes) {
   return sequelize.define('eans', {
-    'item_id': {
+    'ean_id': {
       type: DataTypes.UUIDV4,
       allowNull: false,
       defaultValue: sequelize.fn('stores.uuid_generate_v1'),
