@@ -23,8 +23,10 @@ function getHeadings() {
                     });
                 });
             };
+            return null;
         });
-    });
+    })
+    .then(getLinks);
 };
 function getLinks() {
     clear('tbl_resource_links')
@@ -59,10 +61,10 @@ function getLinks() {
         });
     });
 };
-function viewHeading(resource_link_heading_id) {
+function viewHeading(event) {
     get({
         table: 'resource_link_heading',
-        where: {resource_link_heading_id: resource_link_heading_id}
+        where: {resource_link_heading_id: event.relatedTarget.dataset.id}
     })
     .then(function([heading, options]) {
         setInnerText('resource_link_heading_id', heading.resource_link_heading_id);
@@ -71,10 +73,10 @@ function viewHeading(resource_link_heading_id) {
         setInnerText('link_updatedAt',           printDate(heading.updatedAt, true));
     });
 };
-function viewLink(resource_link_id) {
+function viewLink(event) {
     get({
         table: 'resource_link',
-        where: {resource_link_id: resource_link_id}
+        where: {resource_link_id: event.relatedTarget.dataset.id}
     })
     .then(function([link, options]) {
         setInnerText('resource_link_id', link.resource_link_id);
@@ -88,9 +90,9 @@ function viewLink(resource_link_id) {
 };
 window.addEventListener('load', function () {
     addListener('reload', getLinks);
-    addSortListeners('resource_links', getLinks);
+    addSortListeners('resource_links',         getLinks);
     addSortListeners('resource_link_headings', getHeadings);
-    modalOnShow('link_view', function (event) {viewLink(event.relatedTarget.dataset.id)});
-    modalOnShow('link_heading_view', function (event) {viewHeading(event.relatedTarget.dataset.id)});
+    modalOnShow('link_view',         viewLink);
+    modalOnShow('link_heading_view', viewHeading);
     getHeadings();
 });
