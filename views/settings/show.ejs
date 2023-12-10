@@ -38,8 +38,7 @@
                 <%- include(`${partials}/button/button`, {id: 'logs_flush', text: 'Flush Logs',     colour: 'success'}) %>
             </form>
             <form id="form_command">
-                <%- include(`${partials}/inputs/text`, {title: 'Command', name: 'command'}) %>
-                <button class='btn btn-primary mb-1 w-100'>Run Command</button>
+                <%- include(`${partials}/inputs/text`, {title: 'Command', name: 'command', button: {text: 'Run Command', colour: 'primary'}}) %>
             </form>
             <ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
                 <%- include(`${partials}/tab_head`, {id: 'log-out',   title: 'Out',   spinner: 'log_out', active: true}) %>
@@ -286,7 +285,7 @@
                         <h5 class="modal-title">Link</h5>
                     </div>
                     <div class="modal-body">
-                        <%- include(`${partials}/inputs/select`, {title: 'Heading', name: 'link[heading]', required: true, id: 'link_heading_add'}) %>
+                        <%- include(`${partials}/inputs/select`, {title: 'Heading', name: 'link[resource_link_heading_id]', required: true, id: 'link_heading_add'}) %>
                         <%- include(`${partials}/inputs/text`,   {title: 'Title',   name: 'link[title]',   required: true}) %>
                         <%- include(`${partials}/inputs/text`,   {title: 'Text',    name: 'link[text]'}) %>
                         <%- include(`${partials}/inputs/text`,   {title: 'URL',     name: 'link[href]',    required: true}) %>

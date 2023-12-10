@@ -2,7 +2,7 @@ function buildQuery(options) {
     let queries = [];
     if (!options.action || (options.action !== 'sum' && options.action !== 'count')) {
         if (!options.order) {
-            const order = document.querySelector(`#tbl_${options.table}_head [data-dir]`);
+            const order = document.querySelector(`#tbl_${ options.table }_head [data-dir]`);
             
             if (order && order.dataset.column && order.dataset.dir) {
                 let order_col_parsed = JSON.parse(order.dataset.column);
@@ -13,22 +13,22 @@ function buildQuery(options) {
         if (options.order) queries.push(`order=${ JSON.stringify(options.order)}`);
 
         try {
-            let limit  = document.querySelector(`.limit_${ options.table} .active`),
-                offset = document.querySelector(`.offset_${options.table} .active`);
+            let limit  = document.querySelector(`.limit_${  options.table } .active`),
+                offset = document.querySelector(`.offset_${ options.table } .active`);
 
-            if (limit && limit.dataset.value !== 'All') queries.push(`limit=${ JSON.stringify(limit .dataset.value)}`);
+            if (limit && limit.dataset.value !== 'All') queries.push(`limit=${  JSON.stringify(limit .dataset.value) }`);
 
-            if (offset)                                 queries.push(`offset=${JSON.stringify(offset.dataset.value)}`);
+            if (offset)                                 queries.push(`offset=${ JSON.stringify(offset.dataset.value) }`);
 
         } catch (error) {
             console.error(`get.js | buildQuery | ${error}`);
 
         }
     };
-    if (options.where) queries.push(`where=${JSON.stringify(options.where)}`);
-    if (options.like ) queries.push(`like=${ JSON.stringify(options.like)}`);
-    if (options.lt   ) queries.push(`lt=${   JSON.stringify(options.lt)}`);
-    if (options.gt   ) queries.push(`gt=${   JSON.stringify(options.gt)}`);
+    if (options.where) queries.push(`where=${ JSON.stringify(options.where) }`);
+    if (options.like ) queries.push(`like=${  JSON.stringify(options.like) }`);
+    if (options.lt   ) queries.push(`lt=${    JSON.stringify(options.lt) }`);
+    if (options.gt   ) queries.push(`gt=${    JSON.stringify(options.gt) }`);
     return queries;
 };
 function parseEvent(event) {
@@ -142,9 +142,9 @@ function addFormListener(form_id, method, location, options) {
             ) sendData(method, location, options, form);
         });
     })
-    .catch(err => console.error(`get.js | addFormListener | ${err.message}`));
+    .catch(err => console.error(`get.js | addFormListener | ${ err.message }`));
 };
-function sendData(method, _location, options, form = null) {
+function sendData(method, location, options, form = null) {
     showToast();
     const XHR = new XMLHttpRequest();
     XHR.addEventListener("loadend", (event) => hideSpinner(options.spinner || options.table || ''));
@@ -181,14 +181,14 @@ function sendData(method, _location, options, form = null) {
         .finally(hideToast);
     });
     
-    sendXHR(XHR, method, _location, (form ? {form: form} : null));
+    sendXHR(XHR, method, location, (form ? { form: form } : null));
 };
 function sendXHR(XHR, method, path, options = {}) {
     XHR.addEventListener("error", function (event) {
         printError('Error with request', event);
         alertToast('Error with request');
     });
-    XHR.open(method, `${path}?${options.params || ''}`);
+    XHR.open(method, `${path}?${ options.params || '' }`);
 
     let FD = null;
     if (options.form) FD = new FormData(options.form);

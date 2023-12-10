@@ -24,5 +24,7 @@
         <a class='btn btn-primary' id='<%= reload_id %>'>
             <i class="fas fa-redo"></i>
         </a>
+    <% } else if (locals.button) { %>
+        <button class='btn btn-<%= button.colour %>'><%= button.text %></button>
     <% } %>
 </div>
