@@ -1,20 +1,18 @@
-function accountDeleteBtn(account_id) {
-    clear('account_delete')
-    .then(span_delete => {
-        span_delete.appendChild(
-            new Delete_Button({
-                descriptor: 'account',
-                path:       `/accounts/${account_id}`,
-                options: {
-                    onComplete: [
-                        getAccounts,
-                        function () {modalHide('account_view')}
-                    ]
-                }
-            }).e
-        );
-    });
+function accountDeleteBtn(event) {
+    setAttribute('account_id_delete', 'value', event.relatedTarget.dataset.id);
 };
 window.addEventListener('load', function () {
-    modalOnShow('account_view', function (event) {accountDeleteBtn(event.relatedTarget.dataset.id)});
+    enableButton('account_delete');
+    addFormListener(
+        'account_delete',
+        'DELETE',
+        '/accounts',
+        {
+            onComplete: [
+                getAccounts,
+                function () {modalHide('account_view')}
+            ]
+        }
+    );
+    modalOnShow('account_view', accountDeleteBtn);
 });

@@ -6,10 +6,7 @@
                     Note
                     <%- include(`${partials}/spinner`, {id: 'note_view'}) %>
                 </h5>
-                <span class='float-end'>
-                    <span id='note_edit_btn'   class='float-end me-1'></span>
-                    <span id='note_delete_btn' class='float-end me-1'></span>
-                </span>
+                <%- include(`${partials}/modals/edit_delete_btns`, {id: 'note'}) %>
             </div>
             <div class="modal-body">
                 <%- include(`${partials}/inputs/display`,  {id: 'note_createdAt', title: 'Added'}) %>

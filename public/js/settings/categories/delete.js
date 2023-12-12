@@ -1,23 +1,21 @@
-function categoryDeleteBtn(category_id) {
-    clear('category_delete')
-    .then(span_delete => {
-        span_delete.appendChild(
-            new Delete_Button({
-                descriptor: 'category',
-                path: `/categories/${category_id}`,
-                options: {
-                    onComplete: [
-                        getCategories,
-                        function () {
-                            if (typeof loadCategoriesEdit === 'function') loadCategoriesEdit();
-                            modalHide('category_view');
-                        }
-                    ]
-                }
-            }).e
-        );
-    })
+function categoryDeleteBtn(event) {
+    setAttribute('category_id_delete', 'value', event.relatedTarget.dataset.id);
 };
 window.addEventListener('load', function () {
-    modalOnShow('category_view', function (event) {categoryDeleteBtn(event.relatedTarget.dataset.id)});
+    enableButton('category_delete');
+    addFormListener(
+        'category_delete',
+        'DELETE',
+        '/categories',
+        {
+            onComplete: [
+                getCategories,
+                function () {
+                    if (typeof loadCategoriesEdit === 'function') loadCategoriesEdit();
+                    modalHide('category_view');
+                }
+            ]
+        }
+    );
+    modalOnShow('category_view', categoryDeleteBtn);
 });

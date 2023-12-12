@@ -85,11 +85,7 @@
                     <div class="modal-header">
                         <h5 class="modal-title">Category</h5>
                         <%- include(`${partials}/spinner`, {id: 'category_view'}) %>
-                        <span class='float-end'>
-                            <% if (permissions.stores_stock_admin) { %>
-                                <span id='category_delete_btn' class='float-end me-1'></span>
-                            <% } %>
-                        </span>
+                        <%- include(`${partials}/modals/edit_delete_btns`, {id: 'category', deleteOnly: true}) %>
                     </div>
                     <div class="modal-body">
                         <%- include(`${partials}/inputs/display`, {id: 'category_category',  title: 'Category'}) %>

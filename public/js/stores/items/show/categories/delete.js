@@ -1,26 +1,18 @@
-function addCategoryDeleteBtn(category_id) {
-    clear('category_delete_btn')
-    .then(category_delete_btn => {
-        get({
-            table: 'item_category',
-            where: {item_category_id: category_id}
-        })
-        .then(function ([category, options]) {
-            category_delete_btn.appendChild(
-                new Delete_Button({
-                    path: `/item_categories/${category.item_category_id}`,
-                    descriptor: 'category',
-                    options: {
-                        onComplete: [
-                            getCategories,
-                            function () {modalHide('category_view')}
-                        ]
-                    }
-                }).e
-            );
-        });
-    });
+function addCategoryDeleteBtn(event) {
+    setAttribute('category_id_delete', 'value', event.relatedTarget.dataset.id);
 };
 window.addEventListener('load', function () {
-    modalOnShow('category_view', function (event) {addCategoryDeleteBtn(event.relatedTarget.dataset.id)});
+    enableButton('category_delete');
+    addFormListener(
+        'category_delete',
+        'DELETE',
+        '/item_categories',
+        {
+            onComplete: [
+                getCategories,
+                function () {modalHide('category_view')}
+            ]
+        }
+    );
+    modalOnShow('category_view', addCategoryDeleteBtn);
 });

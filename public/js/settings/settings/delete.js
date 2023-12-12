@@ -1,20 +1,18 @@
-function settingDeleteBtn(setting_id) {
-    clear('setting_delete')
-    .then(span_delete => {
-        span_delete.appendChild(
-            new Delete_Button({
-                descriptor: 'setting',
-                path:       `/settings/${setting_id}`,
-                options: {
-                    onComplete: [
-                        getSettings,
-                        function () {modalHide('setting_view')}
-                    ]
-                }
-            }).e
-        );
-    });
+function settingDeleteBtn(event) {
+    setAttribute('setting_id_delete', 'value', event.relatedTarget.dataset.id);
 };
 window.addEventListener('load', function () {
-    modalOnShow('setting_view', function (event) {settingDeleteBtn(event.relatedTarget.dataset.id)});
+    enableButton('setting_delete');
+    addFormListener(
+        'link_delete',
+        'DELETE',
+        '/settings',
+        {
+            onComplete: [
+                getSettings,
+                function () {modalHide('setting_view')}
+            ]
+        }
+    );
+    modalOnShow('setting_view', settingDeleteBtn);
 });

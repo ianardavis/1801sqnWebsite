@@ -155,10 +155,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">Setting</h5>
-                        <span class="float-end">
-                            <span id="setting_delete" class='float-end ms-1'></span>
-                            <span id="setting_edit"   class='float-end ms-1'></span>
-                        </span>
+                        <%- include(`${partials}/modals/edit_delete_btns`, {id: 'setting'}) %>
                     </div>
                     <div class="modal-body">
                         <%- include(`${partials}/inputs/display`, {id: 'setting_name',      title: 'Name'}) %>
@@ -322,10 +319,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">Gender</h5>
-                    <span class="float-end">
-                        <span id="gender_delete" class='float-end ms-1'></span>
-                        <span id="gender_edit"   class='float-end ms-1'></span>
-                    </span>
+                        <%- include(`${partials}/modals/edit_delete_btns`, {id: 'gender'}) %>
                     </div>
                     <div class="modal-body">
                         <%- include(`${partials}/inputs/display`, {id: 'gender_gender',    title: 'Gender'}) %>
@@ -440,10 +434,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">Category</h5>
-                        <span class="float-end">
-                            <span id="category_delete" class='float-end ms-1'></span>
-                            <span id="category_edit"   class='float-end ms-1'></span>
-                        </span>
+                        <%- include(`${partials}/modals/edit_delete_btns`, {id: 'category'}) %>
                     </div>
                     <div class="modal-body">
                         <%- include(`${partials}/inputs/display`, {id: 'parent',             title: 'Parent'}) %>

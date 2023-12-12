@@ -1,26 +1,18 @@
-function addAddressDeleteBtn(supplier_address_id) {
-    clear('address_delete_btn')
-    .then(address_delete_btn => {
-        get({
-            table: 'address',
-            where: {supplier_address_id: supplier_address_id}
-        })
-        .then(function ([address, options]) {
-            address_delete_btn.appendChild(
-                new Delete_Button({
-                    path: `/addresses/${address.supplier_address_id}`,
-                    descriptor: 'address',
-                    options: {
-                        onComplete: [
-                            getAddresses,
-                            function () {modalHide('address_view')}
-                        ]
-                    }
-                }).e
-            );
-        });
-    });
+function addAddressDeleteBtn(event) {
+    setAttribute('address_id_delete', 'value', event.relatedTarget.dataset.id);
 };
 window.addEventListener('load', function () {
-    modalOnShow('address_view', function (event) {addAddressDeleteBtn(event.relatedTarget.dataset.id)});
+    enableButton('address_delete');
+    addFormListener(
+        'address_delete',
+        'DELETE',
+        '/addresses',
+        {
+            onComplete: [
+                getAddresses,
+                function () {modalHide('address_view')}
+            ]
+        }
+    );
+    modalOnShow('address_view', addAddressDeleteBtn);
 });

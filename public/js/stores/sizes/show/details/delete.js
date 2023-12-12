@@ -1,26 +1,18 @@
-function addDetailDeleteBtn(detail_id) {
-    clear('detail_delete_btn')
-    .then(detail_delete_btn => {
-        get({
-            table: 'detail',
-            where: {detail_id: detail_id}
-        })
-        .then(function ([detail, options]) {
-            detail_delete_btn.appendChild(
-                new Delete_Button({
-                    path: `/details/${detail.detail_id}`,
-                    descriptor: 'detail',
-                    options: {
-                        onComplete: [
-                            getDetails,
-                            function () {modalHide('detail_view')}
-                        ]
-                    }
-                }).e
-            );
-        });
-    })
+function addDetailDeleteBtn(event) {
+    setAttribute('detail_id_delete', 'value', event.relatedTarget.dataset.id);
 };
 window.addEventListener('load', function () {
-    modalOnShow('detail_view', function (event) {addDetailDeleteBtn(event.relatedTarget.dataset.id)});
+    enableButton('detail_delete');
+    addFormListener(
+        'detail_delete',
+        'DELETE',
+        '/details',
+        {
+            onComplete: [
+                getDetails,
+                function () {modalHide('detail_view')}
+            ]
+        }
+    );
+    modalOnShow('detail_view', addDetailDeleteBtn);
 });

@@ -1,20 +1,18 @@
-function genderDeleteBtn(gender_id) {
-    clear('gender_delete')
-    .then(span_delete => {
-        span_delete.appendChild(
-            new Delete_Button({
-                descriptor: 'gender',
-                path:       `/genders/${gender_id}`,
-                options: {
-                    onComplete: [
-                        getGenders,
-                        function () {modalHide('gender_view')}
-                    ]
-                }
-            }).e
-        );
-    });
+function genderDeleteBtn(event) {
+    setAttribute('gender_id_delete', 'value', event.relatedTarget.dataset.id);
 };
 window.addEventListener('load', function () {
-    modalOnShow('gender_view', function (event) {genderDeleteBtn(event.relatedTarget.dataset.id)});
+    enablebutton('genderDelete');
+    addFormListener(
+        'gender_delete',
+        'DELETE',
+        '/genders',
+        {
+            onComplete: [
+                getGenders,
+                function () {modalHide('gender_view')}
+            ]
+        }
+    );
+    modalOnShow('gender_view', genderDeleteBtn);
 });

@@ -11,6 +11,7 @@
             </button>
         </form>
     </span>
+<% if (!locals.deleteOnly) { %>
     <span class='float-end ms-1'>
         <button
             id='btn_<%= id %>_edit'
@@ -23,4 +24,5 @@
             <i class="fas fa-pencil-alt"></i>
         </button>
     </span>
+<% } %>
 </span>

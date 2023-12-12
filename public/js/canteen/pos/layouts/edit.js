@@ -66,8 +66,8 @@ function viewButton(page_id, position, layout = null) {
                     if (layout) {
                         layout_delete_btn.appendChild(
                             new Delete_Button({
-                                path: `/pos_layouts/${layout.pos_layout_id}`,
                                 descriptor: 'layout',
+                                path: `/pos_layouts/${layout.pos_layout_id}`,
                                 options: {
                                     onComplete: [
                                         getPages,

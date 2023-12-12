@@ -1,26 +1,18 @@
-function addContactDeleteBtn(supplier_contact_id) {
-    clear('contact_delete_btn')
-    .then(contact_delete_btn => {
-        get({
-            table: 'contact',
-            where: {supplier_contact_id: supplier_contact_id}
-        })
-        .then(function ([contact, options]) {
-            contact_delete_btn.appendChild(
-                new Delete_Button({
-                    path: `/contacts/${contact.supplier_contact_id}`,
-                    descriptor: 'contact',
-                    options: {
-                        onComplete: [
-                            getContacts,
-                            function () {modalHide('contact_view')}
-                        ]
-                    }
-                }).e
-            );
-        });
-    });
+function addContactDeleteBtn(event) {
+    setAttribute('contact_id_delete', 'value', event.relatedTarget.dataset.id);
 };
 window.addEventListener('load', function () {
-    modalOnShow('contact_view', function (event) {addContactDeleteBtn(event.relatedTarget.dataset.id)});
+    enableButton('contact_delete');
+    addFormListener(
+        'contact_delete',
+        'DELETE',
+        '/contacts',
+        {
+            onComplete: [
+                getContacts,
+                function () {modalHide('contact_view')}
+            ]
+        }
+    );
+    modalOnShow('contact_view', addContactDeleteBtn);
 });

@@ -86,26 +86,26 @@
                 </div>
             </div>
         </div>
-        <% if (permissions.authorised_demander) { %>
-            <div class="tab-pane fade" id="demands" role="tabpanel" aria-labelledby="demands-tab">
+<% if (permissions.authorised_demander) { %>
+        <div class="tab-pane fade" id="demands" role="tabpanel" aria-labelledby="demands-tab">
 
-	            <div class="row justify-content-between mb-1">
-                    <div class="col-12 col-md-4 mb-1">
-                        <%- include(`${partials}/sidebar/button`, {id: 'demands_filter', text: 'Filter'}) %>
-                    </div>
+            <div class="row justify-content-between mb-1">
+                <div class="col-12 col-md-4 mb-1">
+                    <%- include(`${partials}/sidebar/button`, {id: 'demands_filter', text: 'Filter'}) %>
                 </div>
-
-                <table class="table table-sm table-hover">
-                    <thead class="thead-dark" id="tbl_demands_head">
-                        <th class='w-50' data-column='["createdAt"]' data-dir="DESC">Date  </th>
-                        <th class='w-50' data-column='["status"]'                   >Status</th>
-					    <th><i class="fas fa-search"></i></th>
-                    </thead>
-                    <tbody id="tbl_demands"></tbody>
-                </table>
-                <%- include(`${partials}/limit`, {table: 'demands'}) %>
             </div>
-        <% } %>
+
+            <table class="table table-sm table-hover">
+                <thead class="thead-dark" id="tbl_demands_head">
+                    <th class='w-50' data-column='["createdAt"]' data-dir="DESC">Date  </th>
+                    <th class='w-50' data-column='["status"]'                   >Status</th>
+                    <th><i class="fas fa-search"></i></th>
+                </thead>
+                <tbody id="tbl_demands"></tbody>
+            </table>
+            <%- include(`${partials}/limit`, {table: 'demands'}) %>
+        </div>
+<% } %>
         <%- include(`${partials}/common/notes/tab_body`) %>
     </div>
 
@@ -290,10 +290,7 @@
                     <div class="modal-header">
                         <h5 class="modal-title">Address: <span id="file_id_view"></span></h5>
                         <%- include(`${partials}/spinner`, {id: 'address_view'}) %>
-                        <span class='float-end'>
-                            <span id='address_delete_btn' class='float-end me-1'></span>
-                            <span id='address_edit_btn'   class='float-end me-1'></span>
-                        </span>
+                        <%- include(`${partials}/modals/edit_delete_btns`, {id: 'address'}) %>
                     </div>
                     <div class="modal-body">
                         <%- include(`${partials}/inputs/display`, {id: 'address_type',        title: 'Type'}) %>
@@ -367,10 +364,7 @@
                     <div class="modal-header">
                         <h5 class="modal-title">Contact</h5>
                         <%- include(`${partials}/spinner`, {id: 'contact_view'}) %>
-                        <span class='float-end'>
-                            <span id='contact_edit_btn' class='float-end me-1'></span>
-                            <span id='contact_delete_btn' class='float-end me-1'></span>
-                        </span>
+                        <%- include(`${partials}/modals/edit_delete_btns`, {id: 'contact'}) %>
                     </div>
                     <div class="modal-body">
                         <%- include(`${partials}/inputs/display`, {id: 'contact_type',        title: 'Type'}) %>
