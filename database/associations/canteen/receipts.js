@@ -1,5 +1,5 @@
 module.exports = function (m) {
-    m.receipts.hasOne(
+    m.canteen_receipts.hasOne(
         m.canteen_items,
         {
             foreignKey: 'item_id',
@@ -9,7 +9,7 @@ module.exports = function (m) {
         }
     );
     
-    m.receipts.hasOne(
+    m.canteen_receipts.hasOne(
         m.users,
         {
             foreignKey: 'user_id',

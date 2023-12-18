@@ -7,19 +7,12 @@ function view_item_edit() {
         setValue('size_text3_edit',  item.size_text3);
         return item;
     };
-    function get_genders(item) {
-        listGenders({
-            selected: item.gender_id,
-            blank:    true
-        });
-    };
     get({
         table:   'item',
         where:   {item_id: path[2]},
         spinner: 'item_edit'
     })
-    .then(display_details)
-    .then(get_genders);
+    .then(display_details);
 };
 window.addEventListener('load', function () {
     modalOnShow('item_edit', get_size_descriptions);

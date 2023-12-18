@@ -3,30 +3,13 @@
 <%- include(`${partials}/head/components/close`) %>
 <section class="container">
     <ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
-        <%- include(`${partials}/tab_head`, {id: 'printers',   title: 'Printers',     spinner: 'printers'}) %>
         <%- include(`${partials}/tab_head`, {id: 'server',     title: 'Server'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'genders',    title: 'Genders',      spinner: 'genders',    permission: 'stores_stock_admin'}) %>
         <%- include(`${partials}/tab_head`, {id: 'files',      title: 'Files',        spinner: 'files',      permission: 'supplier_admin'}) %>
         <%- include(`${partials}/tab_head`, {id: 'accounts',   title: 'Accounts',     spinner: 'accounts',   permission: 'supplier_admin'}) %>
         <%- include(`${partials}/tab_head`, {id: 'categories', title: 'Categories',   spinner: 'categories', permission: 'stores_stock_admin'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'links',      title: 'Links',        spinner: 'resource_links'}) %>
         <%- include(`${partials}/tab_head`, {id: 'settings',   title: 'All Settings', spinner: 'settings'}) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
-        <div class="tab-pane fade" id="printers"   role="tabpanel" aria-labelledby="printers-tab">
-            <%- include(`${partials}/inputs/display`, {id: 'setting_printer', title: 'Printer'}) %>
-            <button class='btn btn-primary mb-1 w-100' id='btn_printers'>Find Printers</button>
-            <form id='form_printers'>
-                <button class='btn btn-success mb-1 w-100'>Save Selected Printer</button>
-                <table class="table table-sm table-hover">
-                    <thead class="thead-dark">
-                        <th><i class='fas fa-check'></i></th>
-                        <th class="w-100">Printer</th>
-                    </thead>
-                    <tbody id='tbl_printers'></tbody>
-                </table>
-            </form>
-        </div>
         <div class="tab-pane fade" id="server"     role="tabpanel" aria-labelledby="server-tab">
             <form id="form_git_pull">
                 <%- include(`${partials}/button/button`, {id: 'git_pull',   text: 'Update Server',  colour: 'primary'}) %>
@@ -53,19 +36,6 @@
                 </div>
             </div>
         </div>
-<% if (permissions.stores_stock_admin) { %>
-        <div class="tab-pane fade" id="genders"    role="tabpanel" aria-labelledby="genders-tab">
-            <%- include(`${partials}/button/modal`, {id: 'gender_add', text: 'Add Gender', type: 'success'}) %>
-            <table class="table table-sm table-hover">
-                <thead class="thead-dark" id="tbl_genders_head">
-                    <th class='w-100' data-column='["gender"]' data-dir="ASC">Gender</th>
-                    <th><i class='fas fa-search'></i></th>
-                </thead>
-                <tbody id='tbl_genders'></tbody>
-            </table>
-            <%- include(`${partials}/limit`, {table: 'genders'}) %>
-        </div>
-<% } %>
 <% if (permissions.supplier_admin) { %>
         <div class="tab-pane fade" id="files"      role="tabpanel" aria-labelledby="files-tab">
             <%- include(`${partials}/spinner`, {id: 'fs_files'}) %>
@@ -107,35 +77,6 @@
             </form>
         </div>
 <% } %>
-        <div class="tab-pane fade" id="links"      role="tabpanel" aria-labelledby="links-tab">
-            <div class="row">
-                <div class="col-12 col-md-4">
-                    <%- include(`${partials}/spinner`, {id: 'resource_link_headings'}) %>
-                    <%- include(`${partials}/button/modal`, {id: 'link_heading_add', text: 'Add Heading', type: 'success'}) %>
-                    <table class="table table-sm table-hover">
-                        <thead class="thead-dark" id="tbl_resource_link_headings_head">
-                            <th class='w-100' data-column='["heading"]' data-dir="ASC">Heading</th>
-                            <th><i class='fas fa-search'></i></th>
-                        </thead>
-                        <tbody id='tbl_resource_link_headings'></tbody>
-                    </table>
-                    <%- include(`${partials}/limit`, {table: 'resource_link_headings'}) %>
-                </div>
-                <div class="col-12 col-md-8">
-                    <%- include(`${partials}/spinner`, {id: 'resource_links'}) %>
-                    <%- include(`${partials}/button/modal`, {id: 'link_add', text: 'Add Link', type: 'success'}) %>
-                    <table class="table table-sm table-hover">
-                        <thead class="thead-dark" id="tbl_resource_links_head">
-                            <th class='w-50' data-column='["title"]' data-dir="ASC">Title</th>
-                            <th class='w-50' data-column='["text"]'>Text</th>
-                            <th><i class='fas fa-search'></i></th>
-                        </thead>
-                        <tbody id='tbl_resource_links'></tbody>
-                    </table>
-                    <%- include(`${partials}/limit`, {table: 'resource_links'}) %>
-                </div>
-            </div>
-        </div>
         <div class="tab-pane fade" id="settings"   role="tabpanel" aria-labelledby="settings-tab">
             <%- include(`${partials}/button/modal`, {id: 'setting_add', text: 'Add Setting', type: 'success'}) %>
 	        <table class="table table-sm table-hover">
@@ -203,168 +144,6 @@
                 </form>
             </div>
         </div>
-        
-        <div class="modal fade" id="mdl_link_heading_view" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Link Heading</h5>
-                        <%- include(`${partials}/modals/edit_delete_btns`, {id: 'link_heading'}) %>
-                    </div>
-                    <div class="modal-body">
-                        <%- include(`${partials}/inputs/display`, {id: 'link_heading_heading', title: 'Heading'}) %>
-                    </div>
-                    <div class="modal-footer">
-                        <p class='me-auto'>ID: <span id='resource_link_heading_id'></span></p>
-                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="modal fade" id="mdl_link_heading_add"  tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog">
-                <form class="modal-content" id='form_link_heading_add'>
-                    <div class="modal-header">
-                        <h5 class="modal-title">Link Heading</h5>
-                    </div>
-                    <div class="modal-body">
-                        <%- include(`${partials}/inputs/text`, {id: 'link_heading_heading_add', title: 'Heading', name: 'heading', required: true}) %>
-                    </div>
-                    <div class="modal-footer">
-                    <%- include(`${partials}/button/save`) %>
-                    </div>
-                </form>
-            </div>
-        </div>
-        <div class="modal fade" id="mdl_link_heading_edit" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog">
-                <form class="modal-content" id='form_link_heading_edit'>
-                    <div class="modal-header">
-                        <h5 class="modal-title">Link Heading</h5>
-                    </div>
-                    <div class="modal-body">
-                        <input type="hidden" name='resource_link_heading_id' id='resource_link_heading_id_edit'>
-                        <%- include(`${partials}/inputs/select`, {title: 'Heading', id: 'link_heading_heading_edit', name: 'heading', required: true}) %>
-                    </div>
-                    <div class="modal-footer">
-                        <%- include(`${partials}/button/save`) %>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <div class="modal fade" id="mdl_link_view" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Link</h5>
-                        <%- include(`${partials}/modals/edit_delete_btns`, {id: 'link'}) %>
-                    </div>
-                    <div class="modal-body">
-                        <%- include(`${partials}/inputs/display`, {id: 'link_heading',   title: 'Heading'}) %>
-                        <%- include(`${partials}/inputs/display`, {id: 'link_title',     title: 'Title'}) %>
-                        <%- include(`${partials}/inputs/display`, {id: 'link_text',      title: 'Text'}) %>
-                        <%- include(`${partials}/inputs/display`, {id: 'link_href',      title: 'URL'}) %>
-                        <%- include(`${partials}/inputs/display`, {id: 'link_createdAt', title: 'Created'}) %>
-                        <%- include(`${partials}/inputs/display`, {id: 'link_updatedAt', title: 'Updated'}) %>
-                    </div>
-                    <div class="modal-footer">
-                        <p class='me-auto'>ID: <span id='resource_link_id'></span></p>
-                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="modal fade" id="mdl_link_add"  tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog">
-                <form class="modal-content" id='form_link_add'>
-                    <div class="modal-header">
-                        <h5 class="modal-title">Link</h5>
-                    </div>
-                    <div class="modal-body">
-                        <%- include(`${partials}/inputs/select`, {title: 'Heading', name: 'link[resource_link_heading_id]', required: true, id: 'link_heading_add'}) %>
-                        <%- include(`${partials}/inputs/text`,   {title: 'Title',   name: 'link[title]',   required: true}) %>
-                        <%- include(`${partials}/inputs/text`,   {title: 'Text',    name: 'link[text]'}) %>
-                        <%- include(`${partials}/inputs/text`,   {title: 'URL',     name: 'link[href]',    required: true}) %>
-                    </div>
-                    <div class="modal-footer">
-                    <%- include(`${partials}/button/save`) %>
-                    </div>
-                </form>
-            </div>
-        </div>
-        <div class="modal fade" id="mdl_link_edit" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog">
-                <form class="modal-content" id='form_link_edit'>
-                    <div class="modal-header">
-                        <h5 class="modal-title">Link</h5>
-                    </div>
-                    <div class="modal-body">
-                        <input type="hidden" name='resource_link_id' id='resource_link_id_edit'>
-                        <%- include(`${partials}/inputs/select`, {title: 'Heading', id: 'link_heading_edit', name: 'link[heading]', required: true}) %>
-                        <%- include(`${partials}/inputs/text`,   {title: 'Title',   id: 'link_title_edit',   name: 'link[title]',   required: true}) %>
-                        <%- include(`${partials}/inputs/text`,   {title: 'Text',    id: 'link_text_edit',    name: 'link[text]'}) %>
-                        <%- include(`${partials}/inputs/text`,   {title: 'URL',     id: 'link_href_edit',    name: 'link[href]',    required: true}) %>
-                    </div>
-                    <div class="modal-footer">
-                        <%- include(`${partials}/button/save`) %>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-<% if (permissions.stores_stock_admin) { %>
-        <div class="modal fade" id="mdl_gender_view" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Gender</h5>
-                        <%- include(`${partials}/modals/edit_delete_btns`, {id: 'gender'}) %>
-                    </div>
-                    <div class="modal-body">
-                        <%- include(`${partials}/inputs/display`, {id: 'gender_gender',    title: 'Gender'}) %>
-                        <%- include(`${partials}/inputs/display`, {id: 'gender_createdAt', title: 'Created'}) %>
-                        <%- include(`${partials}/inputs/display`, {id: 'gender_updatedAt', title: 'Updated'}) %>
-                    </div>
-                    <div class="modal-footer">
-                    <p class='me-auto'>ID: <span id='gender_id'></span></p>
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="modal fade" id="mdl_gender_add"  tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog">
-                <form class="modal-content" id='form_gender_add'>
-                    <div class="modal-header">
-                        <h5 class="modal-title">Gender</h5>
-                    </div>
-                    <div class="modal-body">
-                        <%- include(`${partials}/inputs/text`, {title: 'Name', name: 'gender[gender]', required: true}) %>
-                    </div>
-                    <div class="modal-footer">
-                    <%- include(`${partials}/button/save`) %>
-                    </div>
-                </form>
-            </div>
-        </div>
-        <div class="modal fade" id="mdl_gender_edit" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog">
-                <form class="modal-content" id='form_gender_edit'>
-                    <div class="modal-header">
-                        <h5 class="modal-title">Gender</h5>
-                    </div>
-                    <div class="modal-body">
-                        <input type="hidden" name='gender[gender_id]' id='gender_id_edit'>
-                        <%- include(`${partials}/inputs/text`, {title: 'Gender', id: 'gender_gender_edit', name: 'gender[gender]', required: true}) %>
-                    </div>
-                    <div class="modal-footer">
-                        <%- include(`${partials}/button/save`) %>
-                    </div>
-                </form>
-            </div>
-        </div>
-<% } %>
 
 <% if (permissions.supplier_admin) { %>
         <div class="modal fade" id="mdl_account_view" tabindex="-1" aria-hidden="true">
@@ -491,18 +270,7 @@
 <script src="/js/settings/settings/edit.js"></script>
 <script src="/js/settings/settings/delete.js"></script>
 
-<script src="/js/utils/list/link_headings.js"></script>
-<script src="/js/settings/links/view.js"></script>
-<script src="/js/settings/links/add.js"></script>
-<script src="/js/settings/links/edit.js"></script>
-<script src="/js/settings/links/delete.js"></script>
-
 <% if (permissions.stores_stock_admin) { %>
-<script src="/js/settings/genders/view.js"></script>
-<script src="/js/settings/genders/add.js"></script>
-<script src="/js/settings/genders/edit.js"></script>
-<script src="/js/settings/genders/delete.js"></script>
-
 <script src="/js/utils/list/categories.js"></script>
 <script src="/js/settings/categories/view.js"></script>
 <script src="/js/tree.js"></script>

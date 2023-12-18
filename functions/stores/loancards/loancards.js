@@ -240,18 +240,6 @@ module.exports = function (m, fn) {
             .catch(reject);
         });
     };
-    
-    fn.loancards.print = function (loancard_id) {
-        return new Promise((resolve, reject) => {
-            getFilename(loancard_id)
-            .then(filename => {
-                fn.pdfs.print('loancards', filename)
-                .then(result => resolve(true))
-                .catch(reject);
-            })
-            .catch(reject);
-        });
-    };
 
     fn.loancards.close = function (options = {}) {
         function check(loancard_id) {

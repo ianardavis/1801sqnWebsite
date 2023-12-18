@@ -8,7 +8,7 @@ module.exports = fn => {
                 ) {
                     next();
                 } else {
-                    if (req.user.reset) req.flash('info', 'You must change your password before you can continue')
+                    if (req.user.reset) req.flash('info', 'You must change your password before you can continue');
                     res.redirect(`/password/${req.user.user_id}`);
                 };
             } else {

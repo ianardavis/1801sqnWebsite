@@ -1,7 +1,6 @@
 const fs  = require('fs');
 const pdf = require('pdfkit');
 const bwipjs = require('bwip-js');
-const ptp = require('pdf-to-printer');
 module.exports = function (m, fn) {
     fn.pdfs = {};
     fn.pdfs.create = function (id, folder, name, author) {
@@ -94,23 +93,6 @@ module.exports = function (m, fn) {
                 fn.pdfs.createBarcode(text, 'qrcode',  {scale: 3, height: 30, includetext: false, ...options})
             ])
             .then(([file_128, file_qr]) => resolve([file_128.value, file_qr.value]))
-            .catch(reject);
-        });
-    };
-    fn.pdfs.print = function (folder, file) {
-        return new Promise((resolve, reject) => {
-            fn.fs.fileExists(folder, file)
-            .then(path => {
-                fn.settings.find({name: 'printer'})
-                .then(printer => {
-                    const options = ['-o sides=two-sided-long-edge'];
-                    ptp
-                    .print(path, {printer: printer.value, unix: options})
-                    .then(result => resolve(true))
-                    .catch(reject);
-                })
-                .catch(reject);
-            })
             .catch(reject);
         });
     };

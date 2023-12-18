@@ -5,9 +5,9 @@ module.exports = () => {
                 try {
                     req.query[e] = JSON.parse(req.query[e]);
                 } catch (err) {
-                    console.log(`Error parsing query: ${e}`);
-                    console.log(`Line: ${req.query[e]}`);
-                    console.log(`Error: ${err}`);
+                    console.error(`Error parsing query: ${e}`);
+                    console.error(`Line: ${req.query[e]}`);
+                    console.error(`Error: ${err}`);
                 };
             };
         });

@@ -12,11 +12,6 @@ module.exports = (app, fn) => {
         .catch(err => fn.sendError(res, err));
     });
 
-    app.get('/get/printers',      fn.loggedIn(), fn.permissions.check('access_settings'), (req, res) => {
-        fn.settings.printers.find()
-        .then(printers => res.send({success: true, result: printers}))
-        .catch(err => fn.sendError(res, err));
-    });
     app.get('/get/logs',          fn.loggedIn(), fn.permissions.check('access_settings'), (req, res) => {
         fn.settings.logs.find(req.query.where.type, res)
         .catch(err => fn.sendError(res, err));
@@ -30,11 +25,6 @@ module.exports = (app, fn) => {
     app.post('/settings',         fn.loggedIn(), fn.permissions.check('access_settings'), (req, res) => {
         fn.settings.set(req.body.setting.name, req.body.setting.value)
         .then(setting => res.send({success: true, message: 'Setting created'}))
-        .catch(err => fn.sendError(res, err));
-    });
-    app.post('/printers',         fn.loggedIn(), fn.permissions.check('access_settings'), (req, res) => {
-        fn.settings.set('printer', req.body.printer)
-        .then(result => res.send({success: true, message: 'Printer saved'}))
         .catch(err => fn.sendError(res, err));
     });
     app.post('/logs_flush',       fn.loggedIn(), fn.permissions.check('access_settings'), (req, res) => {

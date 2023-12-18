@@ -9,7 +9,7 @@ module.exports = function (m) {
     );
     
     m.canteen_items.hasMany(
-        m.receipts,
+        m.canteen_receipts,
         {
             foreignKey: 'item_id',
             targetKey:  'item_id'

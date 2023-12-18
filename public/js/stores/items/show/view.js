@@ -8,7 +8,6 @@ function get_item() {
         setInnerText('item_size_text1',  item.size_text1);
         setInnerText('item_size_text2',  item.size_text2);
         setInnerText('item_size_text3',  item.size_text3);
-        setInnerText('item_gender',      (item.gender ? item.gender.gender : ''));
         setInnerText('size_text1_sizes_table', item.size_text1);
         setInnerText('size_text2_sizes_table', item.size_text2);
         setInnerText('size_text3_sizes_table', item.size_text3);

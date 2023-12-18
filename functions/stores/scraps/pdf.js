@@ -129,29 +129,6 @@ module.exports = function (m, fn) {
                 .catch(reject);
             });
         };
-        function printPDF(filename) {
-            return new Promise(resolve => {
-                fn.settings.find({name: 'Print scrap'})
-                .then(setting => {
-                    if (setting.value === '1') {
-                        fn.pdfs.print('scraps', file)
-                        .then(result => resolve(filename))
-                        .catch(err => {
-                            console.error(err);
-                            resolve(filename);
-                        });
-    
-                    } else {
-                        resolve(filename);
-    
-                    };
-                })
-                .catch(err => {
-                    console.error(err);
-                    resolve(filename)
-                });
-            });
-        };
         
         function addHeader(doc, y, logos = false) {
             if (logos) {
@@ -184,7 +161,6 @@ module.exports = function (m, fn) {
             .then(addLines)
             .then(finalisePDF)
             .then(updateScrap)
-            .then(printPDF)
             .then(resolve)
             .catch(reject);
         });

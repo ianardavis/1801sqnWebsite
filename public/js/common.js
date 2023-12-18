@@ -475,16 +475,6 @@ function filterUser(id) {
         reject(err);
     });
 };
-function filterGender(id) {
-    return new Promise((resolve, reject) => {
-        getSelectedOptions(`filter_${id}_gender`)
-        .then(genders => {
-            if (genders && genders.length > 0) resolve({gender_id: genders})
-            else resolve({});
-        })
-        .catch(reject);
-    })
-};
 
 function addSortListeners(table, func) {
     function sort(tr, func) {

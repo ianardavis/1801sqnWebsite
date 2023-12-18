@@ -120,29 +120,6 @@ module.exports = function (m, fn) {
                 .catch(reject);
             });
         };
-        function printLoancard(filename) {
-            return new Promise(resolve => {
-                fn.settings.find({name: 'Print loancard'})
-                .then(setting => {
-                    if (setting.value === '1') {
-                        fn.pdfs.print('loancards', filename)
-                        .then(result => resolve(filename))
-                        .catch(err => {
-                            console.error(err);
-                            resolve(filename);
-                        });
-    
-                    } else {
-                        resolve(filename);
-                        
-                    };
-                })
-                .catch(err => {
-                    console.error(err);
-                    resolve(filename)
-                });
-            });
-        };
         
         function addHeader(doc, loancard, y) {
             doc
@@ -174,7 +151,6 @@ module.exports = function (m, fn) {
             .then(addLines)
             .then(finaliseLoancard)
             .then(updateLoancard)
-            .then(printLoancard)
             .then(resolve)
             .catch(reject);
         })

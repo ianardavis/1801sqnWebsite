@@ -22,8 +22,7 @@ module.exports = function (m, fn) {
     fn.items.find = function (where) {
         return fn.find(
             m.items,
-            where,
-            [m.genders]
+            where
         );
     };
     fn.items.findAll = function (query) {
@@ -31,8 +30,7 @@ module.exports = function (m, fn) {
             let where = query.where || {};
             if (query.like) where.description = {[fn.op.substring]: query.like.description || ''};
             m.items.findAndCountAll({
-                where:   where,
-                include: [fn.inc.stores.gender()],
+                where: where,
                 ...fn.pagination(query)
             })
             .then(items => resolve(items))

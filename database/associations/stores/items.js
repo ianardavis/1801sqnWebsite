@@ -1,13 +1,4 @@
 module.exports = function (m) {
-    m.items.hasOne(
-        m.genders,
-        {
-            foreignKey: 'gender_id',
-            sourceKey:  'gender_id',
-            constraints: false
-        }
-    );
-
     m.items.hasMany(
         m.sizes,
         {
@@ -30,14 +21,6 @@ module.exports = function (m) {
         {
             foreignKey: 'item_id',
             targetKey:  'item_id'
-        }
-    );
-
-    m.items.belongsToMany(
-        m.genders,
-        {
-            through: m.item_genders,
-            foreignKey:'item_id'
         }
     );
 

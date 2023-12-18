@@ -24,16 +24,6 @@ function getSettings() {
         });
     });
 };
-function getPrinter() {
-    get({
-        table:   'setting',
-        where:   {name: 'printer'},
-        spinner: 'printers'
-    })
-    .then(function ([setting, options]) {
-        setInnerText('setting_printer', setting.value)
-    })
-};
 function getErrorLog() {
     getLog('error');
 };
@@ -69,7 +59,6 @@ function viewSetting(setting_id) {
 window.addEventListener('load', function () {
     addListener('reload', getErrorLog);
     addListener('reload', getOutLog);
-    addListener('reload', getPrinter);
     addListener('reload', getSettings);
     addFormListener(
         'command',
@@ -85,7 +74,6 @@ window.addEventListener('load', function () {
     modalOnShow('setting_view', function (event) {viewSetting(event.relatedTarget.dataset.id)});
     addSortListeners('settings', getSettings);
     getSettings();
-    getPrinter();
     getErrorLog();
     getOutLog();
 });

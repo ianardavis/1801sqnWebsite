@@ -235,15 +235,4 @@ module.exports = function (m, fn) {
             .catch(reject);
         });
     };
-    fn.scraps.print = function (scrap_id) {
-        return new Promise((resolve, reject) => {
-            getFilename(scrap_id)
-            .then(filename => {
-                fn.pdfs.print('scraps', filename)
-                .then(result => resolve(true))
-                .catch(reject);
-            })
-            .catch(reject);
-        });
-    };
 };

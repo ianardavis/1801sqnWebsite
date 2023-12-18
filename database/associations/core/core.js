@@ -25,14 +25,6 @@ module.exports = function (m) {
         }
     );
     
-    m.genders.belongsToMany(
-        m.items,
-        {
-            foreignKey:'gender_id',
-            through:  m.item_genders
-        }
-    );
-    
     m.notes.hasOne(
         m.users,
         {

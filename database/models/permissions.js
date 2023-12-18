@@ -14,6 +14,11 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       comment: "null"
     },
+    'site_id': {
+      type: DataTypes.UUIDV4,
+      allowNull: false,
+      comment: "null"
+    },
     'permission': {
       type: DataTypes.TEXT,
       allowNull: false,

@@ -24,7 +24,6 @@
 			<%- include(`${partials}/sidebar/header`, {id: 'menu', text: 'Menu'}) %>
 			<div class="offcanvas-body d-flex flex-column">
 				<h5>Filter</h5>
-				<%- include(`${partials}/filter/gender`, {table: 'item'}) %>
 				<%- include(`${partials}/filter/item`,   {table: 'item'}) %>
 				<h5>Actions</h5>
 				<%- include(`${partials}/button/modal`, {id: 'item_add', text: 'New Item', type: 'success'}) %>
@@ -41,11 +40,10 @@
 						</div>
 						<div class='modal-body'>
                             <datalist id='list_descriptions'></datalist>
-							<%- include(`${partials}/inputs/text`,	 {title: 'Description', name: 'item[description]', required: true}) %>
-							<%- include(`${partials}/inputs/text`,	 {title: 'Size Text 1',	name: 'item[size_text1]',  list_id: 'list_descriptions',  required: true}) %>
-							<%- include(`${partials}/inputs/text`,	 {title: 'Size Text 2',	name: 'item[size_text2]',  list_id: 'list_descriptions'}) %>
-							<%- include(`${partials}/inputs/text`,	 {title: 'Size Text 3',	name: 'item[size_text3]',  list_id: 'list_descriptions'}) %>
-							<%- include(`${partials}/inputs/select`, {title: 'Gender',		name: 'item[gender_id]',   id: 'sel_genders_add', spinner_id: 'genders_add', reload_id: 'reload_genders_add'}) %>
+							<%- include(`${partials}/inputs/text`, {title: 'Description', name: 'item[description]', required: true}) %>
+							<%- include(`${partials}/inputs/text`, {title: 'Size Text 1', name: 'item[size_text1]',  list_id: 'list_descriptions', required: true}) %>
+							<%- include(`${partials}/inputs/text`, {title: 'Size Text 2', name: 'item[size_text2]',  list_id: 'list_descriptions'}) %>
+							<%- include(`${partials}/inputs/text`, {title: 'Size Text 3', name: 'item[size_text3]',  list_id: 'list_descriptions'}) %>
 						</div>
 						<div class='modal-footer'>
 							<%- include(`${partials}/button/save`) %>
@@ -57,7 +55,6 @@
 	</div>
 </section>
 <%- include(`${partials}/foot/app`) %>
-<script src='/js/utils/list/genders.js'></script>
 <script src='/js/stores/items/index/view.js'></script>
 <% if (permissions.stores_stock_admin) { %>
 	<script src='/js/stores/items/size_descriptions.js'></script>

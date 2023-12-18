@@ -1,8 +1,8 @@
 /* jshint indent: 2 */
 
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('item_genders', {
-    'item_gender_id': {
+  return sequelize.define('canteen_receipts', {
+    'receipt_id': {
       type: DataTypes.UUIDV4,
       allowNull: false,
       defaultValue: sequelize.fn('stores.uuid_generate_v1'),
@@ -14,7 +14,18 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       comment: "null"
     },
-    'gender_id': {
+    'qty': {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      comment: "null"
+    },
+    'cost': {
+      type: DataTypes.DOUBLE,
+      allowNull: false,
+      defaultValue: '0.00',
+      comment: "null"
+    },
+    'user_id': {
       type: DataTypes.UUIDV4,
       allowNull: false,
       comment: "null"
@@ -30,7 +41,7 @@ module.exports = function(sequelize, DataTypes) {
       comment: "null"
     }
   }, {
-    tableName: 'item_genders',
-    schema: 'core'
+    tableName: 'canteen_receipts',
+    schema: 'canteen'
   });
 };

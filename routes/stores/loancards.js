@@ -6,11 +6,6 @@ module.exports = (app, fn) => {
         fn.loancards.download(req.params.id, res)
         .catch(err => fn.sendError(res, err));
     });
-    app.get('/loancards/:id/print',    fn.loggedIn(), fn.permissions.check('access_stores'),       (req, res) => {
-        fn.loancards.print(req.params.id)
-        .then(result => res.send({success: true, message: 'Loancard sent to printer'}))
-        .catch(err => fn.sendError(res, err));
-    });
 
     app.get('/count/loancards',        fn.loggedIn(), fn.permissions.check('issuer',        true), (req, res) => {
         if (!req.allowed) req.query.where.user_id_loancard = req.user.user_id;

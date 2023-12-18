@@ -15,19 +15,19 @@ module.exports = (m, fn) => {
                         next();
                     } else {
                         req.flash('danger', `Permission denied - ${permission}`);
-                        res.redirect('/resources');
+                        res.redirect('/');
                     };
                 })
                 .catch(err => {
-                    console.log(err);
+                    console.error(err);
                     req.flash('danger', `Error getting permissions: ${err.message}`);
-                    res.redirect('/resources');
+                    res.redirect('/');
                 });
             } else if (allow === true) next()
             else {
-                console.log('No user');
+                console.error('No user');
                 req.flash('danger', 'No user!');
-                res.redirect('/resources');
+                res.redirect('/');
             };
         };
     };
@@ -47,7 +47,7 @@ module.exports = (m, fn) => {
                 } else res.send({success: false, message: `Permission denied - ${_permission}`});
             })
             .catch(err => {
-                console.log(err);
+                console.error(err);
                 res.send({success: false, message: `Error getting permission - ${err.message}`})
             });
         };

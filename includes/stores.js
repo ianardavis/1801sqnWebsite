@@ -87,12 +87,6 @@ module.exports = (m, fn) => {
             as: 'details'
         };
     };
-    fn.inc.stores.gender = () => {
-        return {
-            model: m.genders,
-            as:    'gender'
-        };
-    };
     fn.inc.stores.issue = () => {
         let include = [];
         include.push(fn.inc.users.user({as: 'user_issue'}));

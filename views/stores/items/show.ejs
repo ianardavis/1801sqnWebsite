@@ -17,7 +17,6 @@
             <%- include(`${partials}/inputs/display`, {id: 'item_size_text1',  title: 'Size Text 1'}) %>
             <%- include(`${partials}/inputs/display`, {id: 'item_size_text2',  title: 'Size Text 2'}) %>
             <%- include(`${partials}/inputs/display`, {id: 'item_size_text3',  title: 'Size Text 3'}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'item_gender',      title: 'Gender'}) %>
         </div>
         <div class="tab-pane fade" id="sizes" role="tabpanel" aria-labelledby="sizes-tab">
             <div class="row justify-content-between">
@@ -130,11 +129,10 @@
                     </div>
                     <div class="modal-body">
                         <datalist id="list_descriptions"></datalist>
-                        <%- include(`${partials}/inputs/text`,   {id: 'description_edit', title: 'Description', name: 'item[description]', required: true}) %>
-                        <%- include(`${partials}/inputs/text`,   {id: 'size_text1_edit',  title: 'Size Text 1', name: 'item[size_text1]',  list_id: 'list_descriptions', required: true}) %>
-                        <%- include(`${partials}/inputs/text`,   {id: 'size_text2_edit',  title: 'Size Text 2', name: 'item[size_text2]',  list_id: 'list_descriptions'}) %>
-                        <%- include(`${partials}/inputs/text`,   {id: 'size_text3_edit',  title: 'Size Text 3', name: 'item[size_text3]',  list_id: 'list_descriptions'}) %>
-                        <%- include(`${partials}/inputs/select`, {id: 'sel_genders',      title: 'Gender',      spinner_id: 'genders'}) %>
+                        <%- include(`${partials}/inputs/text`, {id: 'description_edit', title: 'Description', name: 'item[description]', required: true}) %>
+                        <%- include(`${partials}/inputs/text`, {id: 'size_text1_edit',  title: 'Size Text 1', name: 'item[size_text1]',  list_id: 'list_descriptions', required: true}) %>
+                        <%- include(`${partials}/inputs/text`, {id: 'size_text2_edit',  title: 'Size Text 2', name: 'item[size_text2]',  list_id: 'list_descriptions'}) %>
+                        <%- include(`${partials}/inputs/text`, {id: 'size_text3_edit',  title: 'Size Text 3', name: 'item[size_text3]',  list_id: 'list_descriptions'}) %>
                     </div>
                     <div class="modal-footer">
 						<%- include(`${partials}/button/save`) %>
@@ -174,7 +172,6 @@
 <script src='/js/stores/items/show/view.js'></script>
 <% if (permissions.stores_stock_admin) { %>
 	<script src="/js/stores/items/size_descriptions.js"></script>
-    <script src='/js/utils/list/genders.js'></script>
     <script src='/js/stores/items/show/edit.js'></script>
     <script src="/js/stores/items/show/delete.js"></script>
 <% } %>

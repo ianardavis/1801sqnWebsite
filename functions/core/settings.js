@@ -1,8 +1,6 @@
-const ptp = require('pdf-to-printer');
 const fs = require("fs");
 module.exports = function (m, fn) {
     fn.settings = {
-        printers: {},
         logs: {}
     };
     fn.settings.find = function (where) {
@@ -88,14 +86,6 @@ module.exports = function (m, fn) {
                 })
                 .catch(reject);
             })
-            .catch(reject);
-        });
-    };
-
-    fn.settings.printers.find = function () {
-        return new Promise((resolve, reject) => {
-            ptp.getPrinters()
-            .then(printers => resolve(printers))
             .catch(reject);
         });
     };

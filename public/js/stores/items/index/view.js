@@ -1,4 +1,3 @@
-const get_genders = listGenders();
 function get_items() {
     Promise.all([
         clear('tbl_items'),
@@ -30,9 +29,7 @@ function get_items() {
 };
 window.addEventListener('load', function () {
     addListener('reload', get_items);
-    addListener('sel_genders',      get_items, 'input');
     addListener('item_description', get_items, 'input');
-    addListener('reload_genders',   get_genders);
     addSortListeners('items', get_items);
     get_items();
 });

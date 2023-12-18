@@ -7,11 +7,6 @@ module.exports = (app, fn) => {
         fn.scraps.download(req.params.id, res)
         .catch(err => fn.sendError(res, err));
     });
-    app.get('/scraps/:id/print',    fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
-        fn.scraps.print(req.params.id)
-        .then(result => res.send({success: true, message: 'Scrap sent to printer'}))
-        .catch(err => fn.sendError(res, err));
-    });
 
     app.get('/count/scraps',        fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
         fn.scraps.count(req.query.where)
