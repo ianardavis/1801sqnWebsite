@@ -35,6 +35,11 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       comment: "null"
     },
+    'site_id': {
+      type: DataTypes.UUIDV4,
+      allowNull: true,
+      comment: "null"
+    },
     'createdAt': {
       type: DataTypes.DATE,
       allowNull: true,

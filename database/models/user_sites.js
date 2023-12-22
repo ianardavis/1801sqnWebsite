@@ -28,6 +28,11 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.DATE,
       allowNull: true,
       comment: "null"
+    },
+    'is_default': {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
+      comment: "null"
     }
   }, {
     tableName: 'user_sites',

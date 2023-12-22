@@ -1,33 +1,42 @@
 /* jshint indent: 2 */
 
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('notifications', {
-    'notification_id': {
+  return sequelize.define('receipts', {
+    'receipt_id': {
       type: DataTypes.UUIDV4,
       allowNull: false,
       defaultValue: sequelize.fn('stores.uuid_generate_v1'),
       comment: "null",
       primaryKey: true
     },
-    'title': {
-      type: DataTypes.TEXT,
+    'site_id': {
+      type: DataTypes.UUIDV4,
       allowNull: false,
       comment: "null"
     },
-    'notification': {
-      type: DataTypes.TEXT,
+    'line_id': {
+      type: DataTypes.UUIDV4,
       allowNull: false,
       comment: "null"
     },
-    'urgency': {
+    'stock_id': {
+      type: DataTypes.UUIDV4,
+      allowNull: true,
+      comment: "null"
+    },
+    'serial_id': {
+      type: DataTypes.UUIDV4,
+      allowNull: true,
+      comment: "null"
+    },
+    'nsn_id': {
+      type: DataTypes.UUIDV4,
+      allowNull: true,
+      comment: "null"
+    },
+    'qty': {
       type: DataTypes.INTEGER,
       allowNull: false,
-      defaultValue: '1',
-      comment: "null"
-    },
-    'active': {
-      type: DataTypes.BOOLEAN,
-      allowNull: true,
       comment: "null"
     },
     'user_id': {
@@ -46,7 +55,7 @@ module.exports = function(sequelize, DataTypes) {
       comment: "null"
     }
   }, {
-    tableName: 'notifications',
-    schema: 'users'
+    tableName: 'receipts',
+    schema: 'stores'
   });
 };

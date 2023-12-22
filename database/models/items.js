@@ -11,7 +11,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     'site_id': {
       type: DataTypes.UUIDV4,
-      allowNull: false,
+      allowNull: true,
       comment: "null"
     },
     'description': {

@@ -18,5 +18,5 @@ module.exports = (app, fn) => {
         });
     });
 
-    app.post('/login', passport.authenticate('local', {failureRedirect: `/login`}), (req, res) => res.redirect(`${req.body.redirect || '/stores'}`));
+    app.post('/login', passport.authenticate('local', {failureRedirect: `/`}), (req, res) => res.redirect(`${req.body.redirect || '/stores'}`));
 };

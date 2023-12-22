@@ -69,15 +69,14 @@ module.exports = function (m) {
     );
     
     m.demand_lines.hasMany(
-        m.demand_line_receipts,
+        m.receipts,
         {
             foreignKey: 'line_id',
-            targetKey:  'line_id',
-            as: 'receipts'
+            targetKey:  'line_id'
         }
     );
 
-    m.demand_line_receipts.hasOne(
+    m.receipts.hasOne(
         m.users,
         {
             foreignKey: 'user_id',
@@ -86,7 +85,7 @@ module.exports = function (m) {
         }
     );
 
-    m.demand_line_receipts.hasOne(
+    m.receipts.hasOne(
         m.serials,
         {
             foreignKey: 'serial_id',
@@ -95,7 +94,7 @@ module.exports = function (m) {
         }
     );
 
-    m.demand_line_receipts.hasOne(
+    m.receipts.hasOne(
         m.stocks,
         {
             foreignKey: 'stock_id',
@@ -104,7 +103,7 @@ module.exports = function (m) {
         }
     );
 
-    m.demand_line_receipts.hasOne(
+    m.receipts.hasOne(
         m.nsns,
         {
             foreignKey: 'nsn_id',
@@ -113,7 +112,7 @@ module.exports = function (m) {
         }
     );
 
-    m.demand_line_receipts.belongsTo(
+    m.receipts.belongsTo(
         m.demand_lines,
         {
             foreignKey: 'line_id',

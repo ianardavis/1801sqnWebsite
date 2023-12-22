@@ -13,7 +13,7 @@ module.exports = fn => {
                 };
             } else {
                 req.flash('danger', 'You need to be signed in to do that!');
-                res.redirect(`/login?redirect=${req._parsedUrl.pathname}`);
+                res.redirect(`/?redirect=${req._parsedUrl.pathname}`);
             };
         };
     };

@@ -25,7 +25,7 @@ module.exports = function (m) {
     );
     
     m.stocks.hasMany(
-        m.demand_line_receipts,
+        m.receipts,
         {
             foreignKey: 'stock_id',
             targetKey:  'stock_id'

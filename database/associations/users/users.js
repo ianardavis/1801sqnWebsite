@@ -2,8 +2,8 @@ module.exports = function (m) {
     m.users.hasOne(
         m.ranks,
         {
-            foreignKey: 'rank_id',
-            sourceKey:  'rank_id',
+            foreignKey:  'rank_id',
+            sourceKey:   'rank_id',
             constraints: false
         }
     );
@@ -11,8 +11,8 @@ module.exports = function (m) {
     m.users.hasOne(
         m.statuses,
         {
-            foreignKey: 'status_id',
-            sourceKey:  'status_id',
+            foreignKey:  'status_id',
+            sourceKey:   'status_id',
             constraints: false
         }
     );
@@ -50,7 +50,7 @@ module.exports = function (m) {
     );
     
     m.users.hasMany(
-        m.demand_line_receipts,
+        m.receipts,
         {
             foreignKey: 'user_id',
             targetKey:  'user_id'
@@ -61,7 +61,8 @@ module.exports = function (m) {
         m.sites, 
         {
             through: m.user_sites,
-            foreignKey:'user_id'
+            foreignKey: 'user_id',
+            otherKey: 'site_id'
         }
     );
 };

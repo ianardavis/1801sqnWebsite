@@ -99,7 +99,7 @@ module.exports = function (m) {
     );
     
     m.nsns.hasMany(
-        m.demand_line_receipts,
+        m.receipts,
         {
             foreignKey: 'nsn_id',
             targetKey:  'nsn_id'

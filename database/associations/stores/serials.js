@@ -42,7 +42,7 @@ module.exports = function (m) {
     );
     
     m.serials.hasMany(
-        m.demand_line_receipts,
+        m.receipts,
         {
             foreignKey: 'serial_id',
             targetKey:  'serial_id'

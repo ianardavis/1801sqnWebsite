@@ -7,21 +7,19 @@
             setHREF('login_link', `/login?redirect=${window.location.pathname}`)
         </script>
     <% } else { %>
-        <li class="nav-item dropleft">
-            <a class="nav-link dropdown-toggle" href="#" id="dd_notification" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <%- include(`${partials}/spinner`, {id: 'notifications', float_start: true}) %>
-                <i class='fas fa-bell'></i>
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="dd_sites" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Sites
             </a>
-            <ul class="dropdown-menu" aria-labelledby="dd_notification" id='ul_notifications'></ul>
+            <ul class="dropdown-menu" aria-labelledby="dd_sites">
+            </ul>
         </li>
-        <script src="/js/common/notifications/show.js"></script>
-        <script async>window.addEventListener('load', getNotifications)</script>
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="dd_user" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <%= user.rank.rank %> <%= user.full_name %>
             </a>
             <ul class="dropdown-menu" aria-labelledby="dd_user">
-                <li><a class="dropdown-item" href="/users/<%= user.user_id %>">Profile</a></li>
+                <li><a class="dropdown-item" href="/users/<%= user.user_id %>">My Profile</a></li>
                 <li><hr class="dropdown-divider"></li>
                 <li><a class="dropdown-item" href="/logout">Logout</a></li>
             </ul>
