@@ -35,36 +35,36 @@ module.exports = (passport, m) => {
             .then(user => {
                 if (!user) {
                     req.flash('danger', 'Invalid username or password!');
-                    done(null, false, {message: 'Invalid username or password!'});
+                    done(null, false, { message: 'Invalid username or password!' });
                     
                 } else if (scryptSync(password, user.salt, 128).toString('hex') !== user.password) {
                     req.flash('danger', 'Invalid username or password!');
-                    done(null, false, {message: 'Invalid username or password!'});
+                    done(null, false, { message: 'Invalid username or password!' });
                     
+                } else if (!user.sites || user.sites.length == 0) {
+                    req.flash('danger', 'This user is not allocated to any sites!');
+                    done(null, false, { message: 'This user is not allocated to any sites' });
+
                 } else {
                     let site_id;
-                    if (user.sites && user.sites.length > 0) {
-                        site_id = user.sites[0].site_id;
-                        user.sites.forEach(site => {
-                            if (site.is_default) {
-                                site_id = site.site_id;
-                            };
-                        });
+                    let default_site = user.sites.find(e => e.user_sites.is_default);
+                    if (default_site) site_id = default_site.site_id
+                    else              site_id = user.sites[0].site_id;
 
-                    } else {
-                        site_id = `user: ${user.user_id}`;
-
-                    };
                     user.update({last_login: Date.now()})
-                    .then(result => done(null, {user_id: user.user_id, site_id: site_id}))
-                    .catch(err => done(null, false, {message: `Error setting last login: ${err.message}`}));
+                    .then(result => done(null, { user_id: user.user_id, site_id: site_id }))
+                    .catch(err => {
+                        console.error(err);
+                        req.flash('danger', `Error setting last login: ${err.message}`);
+                        done(null, false, { message: `Error setting last login: ${err.message}` });
+                    });
                     
                 };
             })
             .catch(err => {
                 console.error(err);
                 req.flash('danger', 'Something went wrong with your signin!');
-                done(null, false, {message: 'Something went wrong with your signin!'});
+                done(null, false, { message: 'Something went wrong with your signin!' });
             });
         }
     ));

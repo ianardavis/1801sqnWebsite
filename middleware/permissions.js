@@ -5,10 +5,14 @@ module.exports = (m, fn) => {
             res.locals.permissions = {};
             if (req.user) {
                 return m.findAll({
-                    where:      {user_id: req.user.user_id},
+                    where:      {
+                        user_id: req.user.user_id,
+                        site_id: req.session.site_id
+                    },
                     attributes: ['permission']
                 })
                 .then(permissions => {
+                    console.log(permissions);
                     permissions.forEach(e => res.locals.permissions[e.permission] = true);
                     if (allow === true || res.locals.permissions[permission]) {
                         req.allowed = (res.locals.permissions[permission] ? true : false);
@@ -36,6 +40,7 @@ module.exports = (m, fn) => {
             return m.findOne({
                 where: {
                     user_id:    req.user.user_id,
+                    site_id:    req.session.site_id,
                     permission: _permission
                 },
                 attributes: ['permission']

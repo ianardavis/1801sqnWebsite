@@ -2,7 +2,7 @@ const statuses = {0: 'cancelled', 1: 'requested', 2: 'approved', 3: 'ordered', 4
 module.exports = function (m, fn) {
     fn.issues = {};
     
-    fn.issues.find = function (where, include = {}) {
+    fn.issues.find = function (where, site_id, include = {}) {
         let includes = [
             fn.inc.stores.size(),
             fn.inc.users.user(),
@@ -13,10 +13,24 @@ module.exports = function (m, fn) {
             include: [m.loancards]
         });
         if (include.order) includes.push(m.orders);
-        return fn.find(m.issues, where, includes);
+
+        return fn.find(
+            m.issues, 
+            {
+                ...where,
+                site_id: site_id
+            },
+            includes
+        );
     };
-    fn.issues.count = function (where) {return m.issues.count({where: where})};
-    fn.issues.sum = function (where) {return m.issues.sum('qty', {where: where})};
+    fn.issues.count = function (where, site_id) {
+        where.site_id = site_id;
+        return m.issues.count({where: where});
+    };
+    fn.issues.sum = function (where, site_id) {
+        where.site_id = site_id;
+        return m.issues.sum('qty', {where: where});
+    };
     fn.issues.increment = function (issue, qty, user_id) {
         return new Promise((resolve, reject) => {
             issue.increment('qty', {by: qty})
@@ -39,7 +53,7 @@ module.exports = function (m, fn) {
         });
     };
 
-    fn.issues.findAll = function (allowed, query, user_id) {
+    fn.issues.findAll = function (site_id, allowed, query, user_id) {
         function issuerAllowed(issuer_permission, user_id_issue, user_id) {
             return new Promise(resolve => {
                 if (issuer_permission) {
@@ -71,10 +85,13 @@ module.exports = function (m, fn) {
                 if ( query.limit  && isNaN(query.limit))  delete query.limit;
 
                 m.issues.findAndCountAll({
-                    where: fn.buildQuery(query),
+                    where: {
+                        ...fn.buildQuery(query),
+                        site_id: site_id
+                    },
                     include: [
                         fn.inc.stores.size_filter(query),
-                        fn.inc.users.user({as: 'user_issue', ...user_filter})
+                        fn.inc.users.user({ as: 'user_issue', ...user_filter })
                     ],
                     ...fn.pagination(query)
                 })
@@ -85,9 +102,9 @@ module.exports = function (m, fn) {
         });
     };
 
-    function checkIssueStatus(issue_id, statuses = []) {
+    function checkIssueStatus(issue_id, site_id, statuses = []) {
         return new Promise((resolve, reject) => {
-            fn.issues.find({issue_id: issue_id})
+            fn.issues.find({issue_id: issue_id}, site_id)
             .then(issue => {
                 if (statuses.includes(Number(issue.status))) {
                     resolve(issue);
@@ -115,11 +132,11 @@ module.exports = function (m, fn) {
         });
     };
 
-    fn.issues.markAs = function (issue_id, status, user_id) {
+    fn.issues.markAs = function (issue_id, site_id, status, user_id) {
         function check() {
             return new Promise((resolve, reject) => {
                 if (status in statuses) {
-                    fn.issues.find({issue_id: issue_id})
+                    fn.issues.find({issue_id: issue_id}, site_id)
                     .then(issue => {
                         if (Number(issue.status) === Number(status)) {
                             reject(new Error('Status has not changed'));
@@ -150,35 +167,35 @@ module.exports = function (m, fn) {
         });
     };
 
-    fn.issues.update = function (lines, user_id) {
+    fn.issues.update = function (lines, site_id, user_id) {
         function filterIssues([issues, submitted]) {
             return new Promise((resolve, reject) => {
                 let actions = [];
                 
                 issues.filter(e => e.status === '-1').forEach(issue => {
-                    actions.push(fn.issues.decline(issue.issue_id, user_id));
+                    actions.push(fn.issues.decline(issue.issue_id, site_id, user_id));
                 });
     
                 issues.filter(e => e.status ===  '2').forEach(issue => {
-                    actions.push(fn.issues.approve(issue.issue_id, user_id));
+                    actions.push(fn.issues.approve(issue.issue_id, site_id, user_id));
                 });
     
                 const to_order = issues.filter(e => e.status === '3');
                 if (to_order.length > 0) {
-                    actions.push(fn.issues.order(to_order, user_id));
+                    actions.push(fn.issues.order(to_order, site_id, user_id));
                 };
     
                 issues.filter(e => e.status ===  '-3' || e.status ===  '-2').forEach(issue => {
-                    actions.push(fn.issues.cancel(issue.issue_id, issue.status, user_id));
+                    actions.push(fn.issues.cancel(issue.issue_id, site_id, issue.status, user_id));
                 });
     
                 issues.filter(e => e.status === '0').forEach(issue => {
-                    actions.push(fn.issues.restore(issue.issue_id, user_id));
+                    actions.push(fn.issues.restore(issue.issue_id, site_id, user_id));
                 });
     
                 const to_issue = issues.filter(e => e.status === '4')
                 if (to_issue.length > 0) {
-                    actions.push(fn.issues.addToLoancard(to_issue, user_id));
+                    actions.push(fn.issues.addToLoancard(to_issue, site_id, user_id));
                 };
 
                 if (actions.length > 0) {
@@ -200,7 +217,7 @@ module.exports = function (m, fn) {
     };
 
     // Specific functions
-    fn.issues.create = function (issues, user_id, status) {
+    fn.issues.create = function (site_id, issues, user_id, status) {
         function checkUsersAndSizesPresent () {
             return new Promise((resolve, reject) => {
                 if (!issues) {
@@ -225,7 +242,8 @@ module.exports = function (m, fn) {
                         where: {
                             user_id_issue: user_id_issue,
                             size_id:       size_id,
-                            status:        status
+                            status:        status,
+                            site_id:       site_id
                         },
                         defaults: {
                             user_id: user_id,
@@ -297,9 +315,9 @@ module.exports = function (m, fn) {
     };
 
     // Functions whilst issue is pending
-    fn.issues.decline = function (issue_id, user_id) {
+    fn.issues.decline = function (issue_id, site_id, user_id) {
         return new Promise((resolve, reject) => {
-            checkIssueStatus(issue_id, [1])
+            checkIssueStatus(issue_id, site_id, [1])
             .then(issue => {
                 updateIssueStatus([issue, -1, user_id, 'DECLINED'])
                 .then(action => resolve(true))
@@ -308,9 +326,9 @@ module.exports = function (m, fn) {
             .catch(reject);
         });
     };
-    fn.issues.approve = function (issue_id, user_id) {
+    fn.issues.approve = function (issue_id, site_id, user_id) {
         return new Promise((resolve, reject) => {
-            checkIssueStatus(issue_id, [1])
+            checkIssueStatus(issue_id, site_id, [1])
             .then(issue => {
                 updateIssueStatus([issue, 2, user_id, 'APPROVED'])
                 .then(action => resolve(true))
@@ -319,9 +337,9 @@ module.exports = function (m, fn) {
             .catch(reject);
         });
     };
-    fn.issues.cancelOwn = function (issue_id, user_id) {
+    fn.issues.cancelOwn = function (issue_id, site_id, user_id) {
         return new Promise((resolve, reject) => {
-            checkIssueStatus(issue_id, [1])
+            checkIssueStatus(issue_id, site_id, [1])
             .then(issue => {
                 if (issue.user_id_issue === user_id) {
                     updateIssueStatus([issue, -1, user_id, 'CANCELLED BY REQUESTER'])
@@ -336,9 +354,9 @@ module.exports = function (m, fn) {
     };
 
     // Functions whilst approved or ordered
-    fn.issues.cancel = function (issue_id, status, user_id) {
+    fn.issues.cancel = function (issue_id, site_id, status, user_id) {
         return new Promise((resolve, reject) => {
-            checkIssueStatus(issue_id, [2, 3])
+            checkIssueStatus(issue_id, site_id, [2, 3])
             .then(issue => {
                 updateIssueStatus([issue, status, user_id, 'CANCELLED'])
                 .then(action => resolve(true))
@@ -348,9 +366,9 @@ module.exports = function (m, fn) {
         });
     };
 
-    fn.issues.restore = function (issue_id, user_id) {
+    fn.issues.restore = function (issue_id, site_id, user_id) {
         return new Promise((resolve, reject) => {
-            fn.issues.find({issue_id: issue_id})
+            fn.issues.find({issue_id: issue_id}, site_id)
             .then(issue => {
                 if (issue.status !== 0) {
                     reject(new Error('Issue is not cancelled/declined'));
@@ -366,7 +384,7 @@ module.exports = function (m, fn) {
         });
     };
     
-    fn.issues.order = function (issues, user_id) {
+    fn.issues.order = function (issues, site_id, user_id) {
         function sortIssuesBySize() {
             function getLineIssuesForOrder() {
                 function fulfilled(results) {
@@ -380,7 +398,7 @@ module.exports = function (m, fn) {
                     issues.forEach(issue => {
                         actions.push(
                             new Promise((resolve, reject) => {
-                                fn.issues.find({issue_id: issue.issue_id})
+                                fn.issues.find({issue_id: issue.issue_id}, site_id)
                                 .then(issue => {
                                     if (!issue.size) {
                                         reject(new Error('Size not found'));
@@ -473,11 +491,11 @@ module.exports = function (m, fn) {
         });
     };
 
-    fn.issues.addToLoancard = function (issues, user_id) {
+    fn.issues.addToLoancard = function (issues, site_id, user_id) {
         function sortIssuesByUser() {
             function getIssueForLine(line) {
                 return new Promise((resolve, reject) => {
-                    fn.issues.find({issue_id: line.issue_id})
+                    fn.issues.find({issue_id: line.issue_id}, site_id)
                     .then(issue => {
                         if (!issue.size) {
                             reject(new Error('Size not found'));
@@ -587,9 +605,9 @@ module.exports = function (m, fn) {
         });
     };
 
-    function changeCheck(issue_id) {
+    function changeCheck(issue_id, site_id) {
         return new Promise((resolve, reject) => {
-            fn.issues.find({issue_id: issue_id})
+            fn.issues.find({issue_id: issue_id}, site_id)
             .then(issue => {
                 if (!issue.size) {
                     reject(new Error('Error getting issue size'));
@@ -605,9 +623,9 @@ module.exports = function (m, fn) {
             .catch(reject);
         });
     };
-    fn.issues.changeSize = function (issue_id, size_id, user_id) {
+    fn.issues.changeSize = function (issue_id, site_id, size_id, user_id) {
         return new Promise((resolve, reject) => {
-            changeCheck(issue_id)
+            changeCheck(issue_id, site_id)
             .then(issue => {
                 fn.sizes.find({size_id: size_id})
                 .then(size => {
@@ -635,14 +653,14 @@ module.exports = function (m, fn) {
             .catch(reject);
         });
     };
-    fn.issues.changeQty = function (issue_id, qty, user_id) {
+    fn.issues.changeQty = function (issue_id, site_id, qty, user_id) {
         return new Promise((resolve, reject) => {
             qty = Number(qty);
             if (!qty || !Number.isInteger(qty) || qty < 1) {
                 reject(new Error('Invalid qty'));
 
             } else {
-                changeCheck(issue_id)
+                changeCheck(issue_id, site_id)
                 .then(issue => {
                     const original_qty = issue.qty;
                     fn.update(
