@@ -8,7 +8,7 @@
 <section class='container'>
     <%- include(`${partials}/sidebar/button`, {id: 'actions', text: 'Actions', float: true}) %>
     <ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
-        <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'stock'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details'}) %>
         <%- include(`${partials}/common/actions/tab_head`) %>
         <%- include(`${partials}/common/notes/tab_head`) %>
     </ul>
@@ -67,7 +67,7 @@
                             <h5 class="modal-title">Change Location</h5>
                         </div>
                         <div class="modal-body">
-                            <%- include(`${partials}/inputs/text`, {title: 'Location', name: 'location', id: 'stock_location_edit', spinner_id: 'locations', reload_id: 'reload_locations_edit', list_id: 'locations_list'}) %>
+                            <%- include(`${partials}/inputs/text`, {title: 'Location', name: 'location', id: 'stock_location_edit', reload_id: 'reload_locations_edit', list_id: 'locations_list'}) %>
                         </div>
                         <div class="modal-footer">
                             <%- include(`${partials}/button/save`) %>
@@ -82,7 +82,7 @@
                             <h5 class="modal-title">Transfer Stock</h5>
                         </div>
                         <div class="modal-body">
-                            <%- include(`${partials}/inputs/text`,   {title: 'To Location', name: 'location_to', id: 'transfer_add_location', spinner_id: 'locations_transfer', reload_id: 'reload_locations_transfer', list_id: 'locations_list'}) %>
+                            <%- include(`${partials}/inputs/text`,   {title: 'To Location', name: 'location_to', id: 'transfer_add_location', reload_id: 'reload_locations_transfer', list_id: 'locations_list'}) %>
                             <%- include(`${partials}/inputs/number`, {title: 'Quantity',    name: 'qty',         id: 'transfer_add_qty', min: '0'}) %>
                         </div>
                         <div class="modal-footer">

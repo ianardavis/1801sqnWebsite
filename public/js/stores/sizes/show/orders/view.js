@@ -58,8 +58,7 @@ function viewOrder(order_id) {
     };
     get({
         table: 'order',
-        where: {order_id: order_id},
-        spinner: 'order_view'
+        where: {order_id: order_id}
     })
     .then(display_details)
     .then(set_links)

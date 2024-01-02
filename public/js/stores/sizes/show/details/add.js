@@ -4,8 +4,7 @@ function getDetailOptions() {
     .then(list => {
         get({
             table: 'settings',
-            where: {name: 'detail_option'},
-            spinner: 'detail_options'
+            where: {name: 'detail_option'}
         })
         .then(function ([settings, options]) {
             settings.forEach(setting => {

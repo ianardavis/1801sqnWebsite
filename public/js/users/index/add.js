@@ -4,14 +4,12 @@ function addUserReset() {
 function getStatusesAdd() {
     listStatuses({
         select:  'sel_statuses_add',
-        spinner: 'statuses_add',
         id_only: true
     });
 };
 function getRanksAdd() {
     listRanks({
         select:  'sel_ranks_add',
-        spinner: 'ranks_add',
         id_only: true
     });
 };

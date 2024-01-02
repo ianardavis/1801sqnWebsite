@@ -6,7 +6,6 @@
 	</li>
 <% } %>
 <%- include(`${partials}/reload`) %>
-<%- include(`${partials}/spinner`, {id: 'canteen_items'}) %>
 <%- include(`${partials}/head/components/close`) %>
 <section class='container'>
     <%- include(`${partials}/inputs/select`, {title: 'Non-Current Items', id: 'current', options: [{value:'', text: 'Include', selected: true}, {value:'"current":1', text: 'Exclude'}, {value:'"current":0', text: 'Only'}]}) %>

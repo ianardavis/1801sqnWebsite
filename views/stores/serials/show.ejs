@@ -6,8 +6,8 @@
 <section class='container'>
     <%- include(`${partials}/sidebar/button`, {id: 'actions', text: 'Actions', float: true}) %>
     <ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
-        <%- include(`${partials}/tab_head`, {id: 'details',   title: 'Details',   spinner: 'serial'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'loancards', title: 'Loancards', spinner: 'loancards', count_id: 'loancard'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'details',   title: 'Details'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'loancards', title: 'Loancards', count_id: 'loancard'}) %>
         <%- include(`${partials}/common/actions/tab_head`) %>
         <%- include(`${partials}/common/notes/tab_head`) %>
     </ul>
@@ -58,7 +58,7 @@
                         </div>
                         <div class="modal-body">
                             <%- include(`${partials}/inputs/text`, {title: 'Serial #', name: 'serial[serial]', id: 'serial_serial_edit', }) %>
-                            <%- include(`${partials}/inputs/text`, {title: 'Location', name: 'location',       id: 'serial_location_edit', spinner_id: 'locations', reload_id: 'reload_locations', list_id: 'locations_list'}) %>
+                            <%- include(`${partials}/inputs/text`, {title: 'Location', name: 'location',       id: 'serial_location_edit', reload_id: 'reload_locations', list_id: 'locations_list'}) %>
                             <datalist id="locations_list"></datalist>
                         </div>
                         <div class="modal-footer">
@@ -73,7 +73,6 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">Loancard</h5>
-                        <%- include(`${partials}/spinner`, {id: 'loancard_view'}) %>
                         <a class='btn btn-primary float-end' id='btn_loancard_link'><i class="fas fa-search"></i></a>
                     </div>
                     <div class="modal-body">
@@ -108,7 +107,6 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">Action</h5>
-                        <%- include(`${partials}/spinner`, {id: 'action_view'}) %>
                     </div>
                     <div class="modal-body">
                         <%- include(`${partials}/inputs/display`, {id: 'action_createdAt', title: 'Date'}) %>

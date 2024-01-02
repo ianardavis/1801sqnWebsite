@@ -9,7 +9,7 @@ function viewTransferAdd() {
     })
     .then(function ([stock, options]) {
         if (stock.qty <= 0) {
-            alertToast('This stock location has no stock. Transfer is not possible');
+            showToast('Error', 'This stock location has no stock. Transfer is not possible', true);
             modalHide('transfer_add');
         } else {
             setAttribute('transfer_add_qty', 'max', stock.qty);

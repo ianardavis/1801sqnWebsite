@@ -8,9 +8,8 @@ function view_item_edit() {
         return item;
     };
     get({
-        table:   'item',
-        where:   {item_id: path[2]},
-        spinner: 'item_edit'
+        table: 'item',
+        where: {item_id: path[2]}
     })
     .then(display_details);
 };

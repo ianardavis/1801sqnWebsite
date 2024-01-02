@@ -3,8 +3,7 @@ function getPermissionsEdit () {
     .then(() => {
         get({
             table: 'permissions',
-            where: {user_id: path[2]},
-            spinner: 'permission_edit'
+            where: {user_id: path[2]}
         })
         .then(function ([permissions, options]) {
             permissions.permissions.forEach(e => {
@@ -36,7 +35,6 @@ function load_permission_tree() {
             get({
                 location: 'permissions/tree',
                 table:    'permissions', // do i need this????
-                spinner:  'permission_edit'
             })
             .then(function ([tree, options]) {
                 tree.forEach(e => {

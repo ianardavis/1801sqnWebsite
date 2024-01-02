@@ -13,8 +13,7 @@ function selectedSizes(sizes) {
             sizes.forEach(size_id => {
                 get({
                     table: 'size',
-                    where: {size_id: size_id},
-                    spinner: 'line_add'
+                    where: {size_id: size_id}
                 })
                 .then(function([size, options]) {
                     if (size.issueable && !tbl_issue_sizes_add.querySelector(`#size-${size.size_id}`)) {

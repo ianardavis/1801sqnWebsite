@@ -16,7 +16,7 @@ function get_qty() {
             setValue('inp_qty_edit', order.qty);
         } else {
             modalHide('qty_edit');
-            alertToast('Not an editable status');
+            showToast('Error', 'Not an editable status', true);
         };
     })
     .catch(err => console.error(err));
@@ -54,7 +54,7 @@ function get_sizes() {
                 .catch(err => console.error(err));
             } else {
                 modalHide('size_edit');
-                alertToast('Not an editable status');
+                showToast('Error', 'Not an editable status', true);
             };
         })
         .catch(err => console.error(err));

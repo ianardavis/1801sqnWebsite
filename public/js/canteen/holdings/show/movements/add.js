@@ -5,8 +5,7 @@ function getHoldings() {
     .then(sel_holdings => {
         get({
             table: 'holdings_except',
-            where: {holding_id: path[2]},
-            spinner: 'holdings'
+            where: {holding_id: path[2]}
         })
         .then(function ([results, options]) {
             console.log(results);

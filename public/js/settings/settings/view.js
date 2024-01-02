@@ -36,7 +36,6 @@ function getLog(type) {
         get({
             table: 'logs',
             where: {type: type},
-            spinner: `log_${type}`,
             streamAction: function (char) {
                 log.innerText += char;
             }

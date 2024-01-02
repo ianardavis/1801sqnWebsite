@@ -1,10 +1,6 @@
-function get_items() {
-    Promise.all([
-        clear('tbl_items'),
-        filterGender('item')
-    ])
-    
-    .then(([tbl_items, filterGenders]) => {
+function getItems() {
+    clear('tbl_items')
+    .then(tbl_items => {
         function add_line(item) {
             let row = tbl_items.insertRow(-1);
             addCell(row, {text: item.description});
@@ -12,13 +8,8 @@ function get_items() {
         };
         get({
             table: 'items',
-            where: {
-                ...filterGenders
-            },
-            like: {
-                ...filterItem('item')
-            },
-            func: get_items
+            like: filterItem('item'),
+            func: getItems
         })
         .then(function ([result, options]) {
             result.items.forEach(item => {
@@ -28,8 +19,8 @@ function get_items() {
     });
 };
 window.addEventListener('load', function () {
-    addListener('reload', get_items);
-    addListener('item_description', get_items, 'input');
-    addSortListeners('items', get_items);
-    get_items();
+    addListener('reload', getItems);
+    addListener('filter_item_description', getItems, 'input');
+    addSortListeners('items', getItems);
+    getItems();
 });

@@ -11,7 +11,6 @@
         >
             <%= title %>
             <% if (locals.count_id) { %>(<span id='<%= count_id %>_count'></span>)<% } %>
-            <% if (locals.spinner)  { %><%- include(`${partials}/spinner`, {id: spinner, small: true}) %><% } %>
         </a>
     </li>
 <% } %>

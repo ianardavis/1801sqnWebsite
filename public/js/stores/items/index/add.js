@@ -5,6 +5,6 @@ window.addEventListener( "load", function () {
         'item_add',
         'POST',
         '/items',
-        {onComplete: get_items}
+        {onComplete: getItems}
     );
 });

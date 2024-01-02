@@ -1,9 +1,9 @@
 const path = window.location.pathname.toString().split('/');
 function getElement(id) {
     return new Promise((resolve, reject) => {
-        const select = document.getElementById(id);
-        if (select) {
-            resolve(select);
+        const element = document.getElementById(id);
+        if (element) {
+            resolve(element);
 
         } else {
             reject(new Error(`Element not found: ${id}`));
@@ -17,7 +17,6 @@ function removeID(id) {
         .then(e => e.remove())
         .catch(err => {
             console.error(`common.js | removeID | ${err.message}`);
-            reject(err);
         });
     } else id.remove();
 };
@@ -280,20 +279,6 @@ function showTab(tab) {
         reject(err);
     });
 };
-function showSpinner(id) {
-    getElement(`spn_${id}`)
-    .then(e => e.classList.remove('hidden'))
-    .catch(err => {
-        console.error(`common.js | showSpinner | ${err.message}`);
-    });
-};
-function hideSpinner(id) {
-    getElement(`spn_${id}`)
-    .then(e => e.classList.add('hidden'))
-    .catch(err => {
-        console.error(`common.js | hideSpinner | ${err.message}`);
-    });
-};
 function removeSpinner(id) {
     removeID(`spn_${id}`)
     .catch(err => {
@@ -547,6 +532,6 @@ function redirectOnError(err, path) {
 window.addEventListener('load', function() {
     let headers = [];
     if (path[1]) headers.push(toProperCase(path[1]));
-    headers.push('1801 (Alnwick) Sqn ATC');
+    headers.push('Stores Management');
     document.title = headers.join(" | ");
 });

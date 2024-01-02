@@ -32,9 +32,8 @@ function getNotes() {
 };
 function viewNote(note_id) {
     get({
-        table:   'note',
-        where:   {note_id: note_id},
-        spinner: 'note_view'
+        table: 'note',
+        where: {note_id: note_id}
     })
     .then(function ([note, options]) {
         setInnerText('note_id_view',   note.note_id);

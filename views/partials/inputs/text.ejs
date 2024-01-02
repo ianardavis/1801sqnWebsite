@@ -1,10 +1,5 @@
 <div class="input-group mb-1">
-    <span class="input-group-text w-30">
-        <%= title %>
-        <% if (locals.spinner_id) { %>
-            <%- include(`${partials}/spinner`, {id: spinner_id, small: true}) %>
-        <% } %>
-    </span>
+    <span class="input-group-text w-30"><%= title %></span>
     <input
         class="form-control mb-0"
         type="text"

@@ -25,8 +25,7 @@ function getAddresses() {
 function viewAddress(supplier_address_id) {
     get({
         table: 'address',
-        where: {supplier_address_id: supplier_address_id},
-        spinner: 'address_view'
+        where: {supplier_address_id: supplier_address_id}
     })
     .then(function ([address, options]) {
         setInnerText('supplier_address_id', address.supplier_address_id);

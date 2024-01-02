@@ -179,7 +179,7 @@ module.exports = function (m, fn) {
         });
     };
 
-    fn.demands.lines.update = function (lines, user_id) {
+    fn.demands.lines.update = function (site_id, lines, user_id) {
         return new Promise((resolve, reject) => {
             if (!lines || lines.length === 0) {
                 fn.sendError(res, 'No lines submitted');
@@ -198,7 +198,7 @@ module.exports = function (m, fn) {
                 // });
                 lines.filter(e => e.status === '3').forEach(line => {
                     actions.push(
-                        fn.demands.lines.receive(line, user_id)
+                        fn.demands.lines.receive(site_id, line, user_id)
                     );
                 });
                 Promise.all(actions)
@@ -277,7 +277,7 @@ module.exports = function (m, fn) {
         });
     };
 
-    fn.demands.lines.receive = function (line, user_id) {
+    fn.demands.lines.receive = function (site_id, line, user_id) {
         function check(details, user_id) {
             return new Promise((resolve, reject) => {
                 fn.demands.lines.find(
@@ -313,6 +313,7 @@ module.exports = function (m, fn) {
                         };
                         actions.push(
                             fn.orders.receive(
+                                site_id,
                                 order.order_id,
                                 receipt,
                                 user_id,
@@ -345,6 +346,7 @@ module.exports = function (m, fn) {
                         qty_left -= receipt.qty;
                         actions.push(
                             fn.orders.receive(
+                                site_id,
                                 order.order_id,
                                 receipt,
                                 user_id,
@@ -385,12 +387,14 @@ module.exports = function (m, fn) {
             return new Promise((resolve, reject) => {
                 if (order_qty > 0) {
                     fn.orders.create(
+                        site_id,
                         size_id,
                         order_qty,
                         user_id,
                     )
                     .then(order => {
                         fn.orders.receive(
+                            site_id,
                             order.order_id,
                             receipt,
                             user_id,

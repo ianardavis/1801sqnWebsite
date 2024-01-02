@@ -7,12 +7,12 @@
     <%- include(`${partials}/sidebar/button`, {id: 'actions', text: 'Actions', float: true}) %>
 
     <ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
-        <%- include(`${partials}/tab_head`, {id: 'details',   title: 'Details',   spinner: 'supplier'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'files',     title: 'Files',     spinner: 'files',     count_id: 'file'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'addresses', title: 'Addresses', spinner: 'addresses', count_id: 'address'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'contacts',  title: 'Contacts',  spinner: 'contacts',  count_id: 'contact'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'items',     title: 'Items',     spinner: 'items',     count_id: 'item'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'demands',   title: 'Demands',   spinner: 'demands',   count_id: 'demand',  permission: 'authorised_demander'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'details',   title: 'Details'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'files',     title: 'Files',     count_id: 'file'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'addresses', title: 'Addresses', count_id: 'address'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'contacts',  title: 'Contacts',  count_id: 'contact'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'items',     title: 'Items',     count_id: 'item'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'demands',   title: 'Demands',   count_id: 'demand',  permission: 'authorised_demander'}) %>
         <%- include(`${partials}/common/notes/tab_head`) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
@@ -151,11 +151,10 @@
                 <form class="modal-content" id='form_supplier_edit'>
                     <div class="modal-header">
                         <h5 class="modal-title">Edit Supplier</h5>
-                        <%- include(`${partials}/spinner`, {id: 'supplier_edit'}) %>
                     </div>
                     <div class="modal-body">
                         <%- include(`${partials}/inputs/text`,   {id: 'supplier_name_edit',      title: 'Name',        name: 'supplier[name]',       required: true}) %>
-                        <%- include(`${partials}/inputs/select`, {id: 'sel_accounts',            title: 'Account',     name: 'supplier[account_id]', spinner_id: 'accounts', reload_id: 'reload_accounts'}) %>
+                        <%- include(`${partials}/inputs/select`, {id: 'sel_accounts',            title: 'Account',     name: 'supplier[account_id]', reload_id: 'reload_accounts'}) %>
                         <%- include(`${partials}/inputs/select`, {id: 'supplier_is_stores_edit', title: 'RAF Stores?', name: 'supplier[stores]',     options: [{text: 'No', value: '0'}, {text: 'Yes', value: '1'}]}) %>
                     </div>
                     <div class="modal-footer">
@@ -170,7 +169,6 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">Account</h5>
-                        <%- include(`${partials}/spinner`, {id: 'account_view'}) %>
                     </div>
                     <div class="modal-body">
                         <%- include(`${partials}/inputs/display`, {id:'account_name',      title: 'Name'}) %>
@@ -193,7 +191,6 @@
                     <div class="modal-header">
                         <h5 class="modal-title">File</h5>
                         <%- include(`${partials}/modals/edit_delete_btns`, {id: 'file'}) %>
-                        <%- include(`${partials}/spinner`, {id: 'file_view'}) %>
                     </div>
                     <div class="modal-body">
                         <form id="form_file_download" method='GET'>
@@ -252,7 +249,6 @@
                 <form class="modal-content" id='form_file_edit'>
                     <div class="modal-header">
                         <h5 class="modal-title">Edit File</h5>
-                        <%- include(`${partials}/spinner`, {id: 'file_edit'}) %>
                     </div>
                     <div class="modal-body">
                         <input type="hidden" id='file_id_edit' name='file_id'>
@@ -270,7 +266,6 @@
                 <form class="modal-content" id='form_file_detail_edit'>
                     <div class="modal-header">
                         <h5 class="modal-title">Edit Detail</h5>
-                        <%- include(`${partials}/spinner`, {id: 'file_detail_edit'}) %>
                     </div>
                     <div class="modal-body">
                         <input type="hidden" id='file_detail_id_edit' name='file_detail_id'>
@@ -289,7 +284,6 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">Address: <span id="file_id_view"></span></h5>
-                        <%- include(`${partials}/spinner`, {id: 'address_view'}) %>
                         <%- include(`${partials}/modals/edit_delete_btns`, {id: 'address'}) %>
                     </div>
                     <div class="modal-body">
@@ -363,7 +357,6 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">Contact</h5>
-                        <%- include(`${partials}/spinner`, {id: 'contact_view'}) %>
                         <%- include(`${partials}/modals/edit_delete_btns`, {id: 'contact'}) %>
                     </div>
                     <div class="modal-body">

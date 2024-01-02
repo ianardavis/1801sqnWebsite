@@ -1,10 +1,7 @@
 function getCredits() {
     clear('sel_credits')
     .then(sel_credits => {
-        get({
-            table: 'credits',
-            spinner: 'users_debit'
-        })
+        get({table: 'credits'})
         .then(function ([results, options]) {
             sel_credits.appendChild(new Option({value: '', text: 'Select Account'}).e)
             results.credits.forEach(credit => {

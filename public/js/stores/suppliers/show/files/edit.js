@@ -2,8 +2,7 @@ function viewFileEdit(file_id) {
     modalHide('file_view');
     get({
         table: 'file',
-        where: {file_id: file_id},
-        spinner: 'file_edit'
+        where: {file_id: file_id}
     })
     .then(function ([file, options]) {
         setAttribute('file_id_edit', 'value', file.file_id);

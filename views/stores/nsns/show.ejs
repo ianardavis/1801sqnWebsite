@@ -6,8 +6,8 @@
 <section class='container'>
     <%- include(`${partials}/sidebar/button`, {id: 'actions', text: 'Actions', float: true}) %>
     <ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
-        <%- include(`${partials}/tab_head`, {id: 'details',   title: 'Details',   spinner: 'nsn'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'loancards', title: 'Loancards', spinner: 'loancards', count_id: 'loancard'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'details',   title: 'Details'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'loancards', title: 'Loancards', count_id: 'loancard'}) %>
         <%- include(`${partials}/common/actions/tab_head`) %>
         <%- include(`${partials}/common/notes/tab_head`) %>
     </ul>
@@ -74,7 +74,6 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">Loancard Line</h5>
-                        <%- include(`${partials}/spinner`, {id: 'loancard_view'}) %>
                         <a id="btn_loancard_link" class='btn btn-primary float-end'><i class="fas fa-search"></i></a>
                     </div>
                     <div class="modal-body">

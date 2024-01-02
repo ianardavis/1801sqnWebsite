@@ -63,8 +63,7 @@ function viewIssue(issue_id) {
     };
     get({
         table: 'issue',
-        where: {issue_id: issue_id},
-        spinner: 'issue_view'
+        where: {issue_id: issue_id}
     })
     .then(display_details)
     .then(set_links)

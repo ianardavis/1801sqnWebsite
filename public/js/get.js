@@ -59,7 +59,7 @@ function parseEvent(event) {
 };
 function printError(message, error) {
     console.error(`get.js | printError | ${error}`);
-    alertToast(message);
+    showToast('Notification', message, true);
 };
 function getStream(streamAction) {
     return function (event) {
@@ -72,23 +72,13 @@ function getStream(streamAction) {
         };
     };
 };
-function showToast() {
-    const toast_form = document.getElementById('toast_form');
-    const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toast_form);
-    toastBootstrap.show();
-};
-function hideToast() {
-    const toast_form = document.getElementById('toast_form');
-    const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toast_form);
-    toastBootstrap.hide();
-};
 function get(options) {
     return new Promise((resolve, reject) => {
-        showSpinner(options.spinner || options.table || '');
-        showToast();
+        const toastID = showToast(options.location || options.table);
         const XHR = new XMLHttpRequest();
-        XHR.addEventListener("loadend", (event) => hideSpinner(options.spinner || options.table || ''));
-        XHR.addEventListener("error",   (event) => reject());
+        XHR.addEventListener("loadend",  (event) => hideToast(toastID));
+        XHR.addEventListener("progress", (event) => updateToast(toastID, event));
+        XHR.addEventListener("error",    (event) => reject());
 
         if (options.streamAction) {
             XHR.addEventListener("load", getStream(options.streamAction));
@@ -114,8 +104,8 @@ function get(options) {
 
                     };
                 })
-                .catch(err => reject(err))
-                .finally(hideToast);
+                .catch(err => reject(err));
+                // .finally(() => hideToast(toastID));
             });
 
         };
@@ -133,8 +123,6 @@ function addFormListener(form_id, method, location, options) {
     .then(form => {
         form.addEventListener("submit", function (event) {
             event.preventDefault();
-            if (options.spinner) showSpinner(options.spinner);
-
             if (
                 method.toUpperCase() === 'GET' ||
                 options.noConfirm    === true  ||
@@ -145,14 +133,14 @@ function addFormListener(form_id, method, location, options) {
     .catch(err => console.error(`get.js | addFormListener | ${ err.message }`));
 };
 function sendData(method, location, options, form = null) {
-    showToast();
+    const toastID = showToast(location);
     const XHR = new XMLHttpRequest();
-    XHR.addEventListener("loadend", (event) => hideSpinner(options.spinner || options.table || ''));
+    XHR.addEventListener("loadend", (event) => hideToast(toastID));
     XHR.addEventListener("load",    (event) => {
         parseEvent(event)
         .then(response => {
             if (response.success) {
-                if (!options.noConfirmAlert) alertToast(response.message);
+                if (!options.noConfirmAlert) showToast('Notification', response.message, true);
                 
                 if ( options.onComplete) {
                     if (Array.isArray(options.onComplete)) {
@@ -171,14 +159,14 @@ function sendData(method, location, options, form = null) {
                 };
             } else {
                 console.error(`get.js | sendData | ${response}`);
-                alertToast(response.message || 'Ooooopsie');
+                showToast('Error', response.message || 'Ooooopsie', true);
 
             };
         })
         .catch(err => {
             printError('Error parsing response', err);
-        })
-        .finally(hideToast);
+        });
+        // .finally(() => hideToast(toastID));
     });
     
     sendXHR(XHR, method, location, (form ? { form: form } : null));
@@ -186,7 +174,7 @@ function sendData(method, location, options, form = null) {
 function sendXHR(XHR, method, path, options = {}) {
     XHR.addEventListener("error", function (event) {
         printError('Error with request', event);
-        alertToast('Error with request');
+        showToast('Error', 'Error with request', true);
     });
     XHR.open(method, `${path}?${ options.params || '' }`);
 

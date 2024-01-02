@@ -43,8 +43,7 @@ function viewNSN(event) {
     };
     get({
         table: 'nsn',
-        where: {nsn_id: event.relatedTarget.dataset.nsn_id},
-        spinner: 'nsn_view'
+        where: {nsn_id: event.relatedTarget.dataset.nsn_id}
     })
     .then(display_details)
     .then(set_links)

@@ -1,9 +1,8 @@
 function viewDetailEdit(file_detail_id) {
     modalHide('file_view');
     get({
-        table:   'file_detail',
-        where:   {file_detail_id: file_detail_id},
-        spinner: 'file_detail_edit'
+        table: 'file_detail',
+        where: {file_detail_id: file_detail_id}
     })
     .then(function ([detail, options]) {
         setAttribute('file_detail_id_edit', 'value', detail.file_detail_id);

@@ -4,10 +4,10 @@
 <section class="container">
     <ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
         <%- include(`${partials}/tab_head`, {id: 'server',     title: 'Server'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'files',      title: 'Files',        spinner: 'files',      permission: 'supplier_admin'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'accounts',   title: 'Accounts',     spinner: 'accounts',   permission: 'supplier_admin'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'categories', title: 'Categories',   spinner: 'categories', permission: 'stores_stock_admin'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'settings',   title: 'All Settings', spinner: 'settings'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'files',      title: 'Files',      permission: 'supplier_admin'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'accounts',   title: 'Accounts',   permission: 'supplier_admin'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'categories', title: 'Categories', permission: 'stores_stock_admin'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'settings',   title: 'All Settings'}) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="server"     role="tabpanel" aria-labelledby="server-tab">
@@ -24,8 +24,8 @@
                 <%- include(`${partials}/inputs/text`, {title: 'Command', name: 'command', button: {text: 'Run Command', colour: 'primary'}}) %>
             </form>
             <ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
-                <%- include(`${partials}/tab_head`, {id: 'log-out',   title: 'Out',   spinner: 'log_out', active: true}) %>
-                <%- include(`${partials}/tab_head`, {id: 'log-error', title: 'Error', spinner: 'log_error'}) %>
+                <%- include(`${partials}/tab_head`, {id: 'log-out',   title: 'Out',   active: true}) %>
+                <%- include(`${partials}/tab_head`, {id: 'log-error', title: 'Error'}) %>
             </ul>
             <div class="tab-content pt-3" id="myTabContent">
                 <div class="tab-pane fade active show" id="log-out" role="tabpanel" aria-labelledby="log-out-tab">
@@ -38,7 +38,6 @@
         </div>
 <% if (permissions.supplier_admin) { %>
         <div class="tab-pane fade" id="files"      role="tabpanel" aria-labelledby="files-tab">
-            <%- include(`${partials}/spinner`, {id: 'fs_files'}) %>
             <table class="table table-sm table-hover">
                 <thead class="thead-dark" id="tbl_files_head">
                     <th class='w-20' data-column='["file_id"]'>File ID </th>
@@ -174,7 +173,7 @@
             <div class="modal-dialog">
                 <form class="modal-content" id='form_account_add'>
                     <div class="modal-header">
-                        <h5 class="modal-title">Gender</h5>
+                        <h5 class="modal-title">Account</h5>
                     </div>
                     <div class="modal-body">
                         <%- include(`${partials}/inputs/text`,   {title: 'Name',   name: 'account[name]',            required: true}) %>

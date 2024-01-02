@@ -1,8 +1,7 @@
 function viewDetailEdit(detail_id) {
     get({
-        table:   'detail',
-        where: {detail_id: detail_id},
-        spinner: 'detail_edit'
+        table: 'detail',
+        where: {detail_id: detail_id}
     })
     .then(function ([detail, options]) {
         setAttribute('detail_id_edit', 'value', detail.detail_id);

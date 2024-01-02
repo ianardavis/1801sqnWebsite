@@ -1,8 +1,11 @@
 function issue_options() {
     if (this.dataset.id) {
         clear(`details_${this.dataset.id}`)
-        .then(divDetails => {
+        .then(div_details => {
             divDetails.appendChild(new Spinner(this.dataset.id).e);
+            return div_details;
+        })
+        .then(divDetails => {
             if (this.value === '4') {
                 get({
                     table: 'issue',
@@ -24,14 +27,15 @@ function issue_options() {
 
                         };
                     };
-                    removeSpinner(issue.issue_id);
+                    // removeSpinner(issue.issue_id);
                 });
 
-            } else {
-                removeSpinner(this.dataset.id);
+            // } else {
+            //     removeSpinner(this.dataset.id);
             };
         })
-        .catch(err => removeSpinner(this.dataset.id));
+        // .catch(err => removeSpinner(this.dataset.id))
+        .finally(() => removeSpinner(this.dataset.id));
     };
 };
 function add_nsn_select(divDetails, index, size_id) {

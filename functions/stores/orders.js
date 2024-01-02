@@ -22,7 +22,7 @@ module.exports = function (m, fn) {
         });
     };
     fn.orders.count = function (where) {return m.orders.count({where: where})};
-    fn.orders.sum = function (where) {return m.orders.sum('qty', {where: where})};
+    fn.orders.sum   = function (where) {return m.orders.sum('qty', {where: where})};
     
     function updateOrderStatus([order, status, user_id, action, links = []]) {
         return new Promise((resolve, reject) => {
@@ -47,11 +47,14 @@ module.exports = function (m, fn) {
         });
     };
     
-    fn.orders.markAs = function (order_id, status, user_id) {
+    fn.orders.markAs = function (site_id, order_id, status, user_id) {
         function check() {
             if (status in statuses) {
                 return new Promise((resolve, reject) => {
-                    fn.orders.find({order_id: order_id})
+                    fn.orders.find({
+                        order_id: order_id,
+                        site_id:  site_id
+                    })
                     .then(order => {
                         if (order.status === Number(status)) {
                             reject(new Error('Status has not changed'));
@@ -82,7 +85,7 @@ module.exports = function (m, fn) {
         });
     };
 
-    fn.orders.createBulk = function (orders, user_id) {
+    fn.orders.createBulk = function (site_id, orders, user_id) {
         if (!orders || orders.length === 0) {
             return Promise.reject(new Error('No orders'));
 
@@ -114,7 +117,7 @@ module.exports = function (m, fn) {
                     let order_actions = [];
                     sizes.forEach(size => {
                         order_actions.push(
-                            fn.orders.create(size.size_id, size.qty, user_id)
+                            fn.orders.create(site_id, size.size_id, size.qty, user_id)
                         );
                     });
                     Promise.allSettled(order_actions)
@@ -126,11 +129,12 @@ module.exports = function (m, fn) {
         };
     };
 
-    fn.orders.create = function (size_id, qty, user_id, issues = []) {
+    fn.orders.create = function (site_id, size_id, qty, user_id, issues = []) {
         function createOrIncrementOrder(size_id) {
             return new Promise((resolve, reject) => {
                 m.orders.findOrCreate({
                     where: {
+                        site_id: site_id,
                         size_id: size_id,
                         status:  1
                     },
@@ -187,25 +191,25 @@ module.exports = function (m, fn) {
         });
     };
 
-    fn.orders.update = function (lines, user_id) {
+    fn.orders.update = function (site_id, lines, user_id) {
         function filterOrders([orders, submitted]) {
             return new Promise((resolve, reject) => {
                 let actions = [];
                 orders.filter(e => e.status === '-3').forEach(order => {
-                    actions.push(fn.orders.restore(order.order_id, user_id));
+                    actions.push(fn.orders.restore(site_id, order.order_id, user_id));
                 })
 
                 orders.filter(e => e.status === '0').forEach(order => {
-                    actions.push(fn.orders.cancel( order.order_id, user_id));
+                    actions.push(fn.orders.cancel( site_id, order.order_id, user_id));
                 });
     
                 orders.filter(e => e.status === '3').forEach(order => {
-                    actions.push(fn.orders.receive(order.order_id, order, user_id));
+                    actions.push(fn.orders.receive(site_id, order.order_id, order, user_id));
                 });
     
                 const to_demand = orders.filter(e => e.status === '2');
                 if (to_demand.length > 0) {
-                    actions.push(fn.orders.demand(to_demand, user_id));
+                    actions.push(fn.orders.demand( site_id, to_demand, user_id));
                 };
     
                 if (actions.length > 0) {
@@ -226,10 +230,10 @@ module.exports = function (m, fn) {
         });
     };
 
-    fn.orders.cancel = function (order_id, user_id) {
+    fn.orders.cancel = function (site_id, order_id, user_id) {
         function check() {
             return new Promise((resolve, reject) => {
-                fn.orders.find({order_id: order_id})
+                fn.orders.find({order_id: order_id, site_id: site_id})
                 .then(order => {
                     if (order.status === 0) {
                         reject(new Error('Order has already been cancelled'));
@@ -285,10 +289,10 @@ module.exports = function (m, fn) {
         });
     };
 
-    fn.orders.restore = function (order_id, user_id) {
+    fn.orders.restore = function (site_id, order_id, user_id) {
         function check() {
             return new Promise((resolve, reject) => {
-                fn.orders.find({order_id: order_id})
+                fn.orders.find({order_id: order_id, site_id: site_id})
                 .then(order => {
                     if (order.status !== 0) {
                         reject(new Error('Order is not cancelled'));
@@ -316,7 +320,7 @@ module.exports = function (m, fn) {
         });
     };
 
-    fn.orders.demand = function (orders, user_id) {
+    fn.orders.demand = function (site_id, orders, user_id) {
         function sortOrdersBySupplier(orders) {
             function getOrders() {
                 function checkOrder(order) {
@@ -343,7 +347,7 @@ module.exports = function (m, fn) {
                     let actions = [];
                     orders.forEach(order => {
                         actions.push(new Promise((resolve, reject) => {
-                            fn.orders.find({order_id: order.order_id})
+                            fn.orders.find({order_id: order.order_id, site_id: site_id})
                             .then(checkOrder)
                             .then(resolve)
                             .catch(reject);
@@ -450,10 +454,10 @@ module.exports = function (m, fn) {
         });
     };
 
-    fn.orders.receive = function (order_id, receipt, user_id, links = []) {
+    fn.orders.receive = function (site_id, order_id, receipt, user_id, links = []) {
         function checkOrder(allowed) {
             return new Promise((resolve, reject) => {
-                fn.orders.find({order_id: order_id})
+                fn.orders.find({order_id: order_id, site_id: site_id})
                 .then(order => {
                     if (!order.size) {
                         reject(new Error('Could not find size'));
@@ -629,9 +633,9 @@ module.exports = function (m, fn) {
         .catch(reject);
     };
     
-    function changeCheck(order_id) {
+    function changeCheck(site_id, order_id) {
         return new Promise((resolve, reject) => {
-            fn.orders.find({order_id: order_id})
+            fn.orders.find({order_id: order_id, site_id: site_id})
             .then(order => {
                 if (!order.size) {
                     reject(new Error('Error getting order size'));
@@ -647,9 +651,9 @@ module.exports = function (m, fn) {
             .catch(reject);
         });
     };
-    fn.orders.changeSize = function (order_id, size_id, user_id) {
+    fn.orders.changeSize = function (site_id, order_id, size_id, user_id) {
         return new Promise((resolve, reject) => {
-            changeCheck(order_id)
+            changeCheck(site_id, order_id)
             .then(order => {
                 fn.sizes.find({size_id: size_id})
                 .then(size => {
@@ -675,14 +679,14 @@ module.exports = function (m, fn) {
             .catch(reject);
         });
     };
-    fn.orders.changeQty = function (order_id, qty, user_id) {
+    fn.orders.changeQty = function (site_id, order_id, qty, user_id) {
         return new Promise((resolve, reject) => {
             qty = Number(qty);
             if (!qty || !Number.isInteger(qty) || qty < 1) {
                 reject(new Error('Invalid qty'));
 
             } else {
-                changeCheck(order_id)
+                changeCheck(site_id, order_id)
                 .then(order => {
                     let original_qty = order.qty;
                     fn.update(order, {qty: qty})

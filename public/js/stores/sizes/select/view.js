@@ -56,7 +56,7 @@ function selectSizes() {
             e.checked = false;
         });
         window.opener.selectedSizes(sizes);
-    } else alertToast('Source window not found');
+    } else showToast('Error', 'Source window not found', true);
 };
 window.addEventListener('load', function () {
     addListener('tbl_sizes', toggleCheckboxOnRowClick);

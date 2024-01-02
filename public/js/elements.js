@@ -395,3 +395,35 @@ function Link_Section(id, title) {
     // div.appendChild(card);
     this.e.appendChild(div);
 };
+function Toast(id, title, text, closeBtn = false) {
+    this.e = new Div({
+        attributes: [
+            {field: 'id',          value: `toast_${id}`},
+            {field: 'role',        value: 'alert'},
+            {field: 'aria-live',   value: 'assertive'},
+            {field: 'aria-atomic', value: 'true'}
+        ],
+        data: [{field: 'bs-autohide', value: 'false'}],
+        classes: ['toast']
+    }).e;
+    
+    let header = new Div({classes: ['toast-header']}).e;
+    let strong = document.createElement('strong');
+    strong.classList.add('me-auto');
+    strong.innerText = title;
+    header.appendChild(strong);
+    header.appendChild(new Spinner(id).e);
+    if (closeBtn) header.appendChild(
+        new Button({
+            attributes: [{field: 'aria-label', value: 'Close'}],
+            classes: ['btn-close'], 
+            data: [{field: 'bs-dismiss', value: 'toast'}]
+        }).e
+    );
+
+    let body = new Div({classes: ['toast-body']}).e;
+    body.innerText = text;
+    
+    this.e.appendChild(header);
+    this.e.appendChild(body);
+};

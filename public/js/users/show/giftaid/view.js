@@ -23,9 +23,8 @@ function getGiftaids() {
 };
 function viewGiftaid(giftaid_id) {
     get({
-        table:   'giftaid',
-        where:   {giftaid_id: giftaid_id},
-        spinner: 'giftaid_view'
+        table: 'giftaid',
+        where: {giftaid_id: giftaid_id}
     })
     .then(function ([giftaid, options]) {
         setInnerText('giftaid_view_startDate', printDate(giftaid.startDate));

@@ -5,7 +5,7 @@
 		<%- include(`${partials}/card`, {id: 'suppliers', href: '/suppliers', title: 'Suppliers', image: 'warehouse', permission: 'supplier_admin'}) %>
 		<%- include(`${partials}/card`, {id: 'items', 	  href: '/items', 	  title: 'Items', 	  image: 'tshirt'}) %>
 		<%- include(`${partials}/card`, {id: 'issues', 	  href: '/issues', 	  title: 'Issues', 	  image: 'address-card'}) %>
-		<%- include(`${partials}/card`, {id: 'scraps', 	  href: '/scraps', 	  title: 'Scraps', 	  image: 'trash-alt'}) %>
+		<%- include(`${partials}/card`, {id: 'scraps', 	  href: '/scraps', 	  title: 'Scraps', 	  image: 'trash-alt', permission: 'stores_stock_admin'}) %>
 		<%- include(`${partials}/card`, {id: 'orders', 	  href: '/orders', 	  title: 'Orders', 	  image: 'list', 	  permission: 'stores_stock_admin'}) %>
 		<%- include(`${partials}/card`, {id: 'demands',   href: '/demands',   title: 'Demands',   image: 'stream', 	  permission: 'authorised_demander'}) %>
 		<%- include(`${partials}/card`, {id: 'loancards', href: '/loancards', title: 'Loancards', image: 'address-card'}) %>

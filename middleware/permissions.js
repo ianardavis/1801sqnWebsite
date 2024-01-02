@@ -12,7 +12,6 @@ module.exports = (m, fn) => {
                     attributes: ['permission']
                 })
                 .then(permissions => {
-                    console.log(permissions);
                     permissions.forEach(e => res.locals.permissions[e.permission] = true);
                     if (allow === true || res.locals.permissions[permission]) {
                         req.allowed = (res.locals.permissions[permission] ? true : false);

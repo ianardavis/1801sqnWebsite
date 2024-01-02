@@ -1,7 +1,6 @@
 <%- include(`${partials}/head/app`,   {text: 'Stores'}) %>
 <%- include(`${partials}/breadcrumb`, {text: 'Suppliers'}) %>
 <%- include(`${partials}/reload`) %>
-<%- include(`${partials}/spinner`, {id: 'suppliers'}) %>
 <%- include(`${partials}/head/components/close`) %>
 <section class="container">
 
@@ -27,7 +26,7 @@
 					</div>
 					<div class="modal-body">
 						<%- include(`${partials}/inputs/text`,   {title: 'Supplier Name', name: 'supplier[name]',       required: true}) %>
-						<%- include(`${partials}/inputs/select`, {title: 'Account',   	  name: 'supplier[account_id]', id: 'sel_accounts', spinner_id: 'accounts', reload_id: 'reload_accounts'}) %>
+						<%- include(`${partials}/inputs/select`, {title: 'Account',   	  name: 'supplier[account_id]', id: 'sel_accounts', reload_id: 'reload_accounts'}) %>
 						<%- include(`${partials}/inputs/select`, {title: 'RAF Stores?',   name: 'supplier[is_stores]',  options: [{value: '0', text: 'No', selected: true}, {value: '1', text: 'Yes'}]}) %>
 					</div>
 					<div class="modal-footer">

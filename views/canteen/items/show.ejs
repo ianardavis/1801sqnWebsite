@@ -17,10 +17,10 @@
 				<%- include(`${partials}/menu/button`, {id: 'delete',	    text: 'Delete',         btn_form: {permission: 'canteen_stock_admin'}}) %>
             </div>
         </li>
-        <%- include(`${partials}/tab_head`, {id: 'details',   title: 'Details',  spinner: 'canteen_item'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'receipts',  title: 'Receipts', spinner: 'receipts',   count_id: 'receipt',  permission: 'canteen_stock_admin'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'writeoffs', title: 'Writeoff', spinner: 'writeoffs',  count_id: 'writeoff', permission: 'canteen_stock_admin'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'sales',     title: 'Sales',    spinner: 'sale_lines', count_id: 'sale',     permission: 'pos_user'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'details',   title: 'Details'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'receipts',  title: 'Receipts', count_id: 'receipt',  permission: 'canteen_stock_admin'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'writeoffs', title: 'Writeoff', count_id: 'writeoff', permission: 'canteen_stock_admin'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'sales',     title: 'Sales',    count_id: 'sale',     permission: 'pos_user'}) %>
         <%- include(`${partials}/common/notes/tab_head`) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">

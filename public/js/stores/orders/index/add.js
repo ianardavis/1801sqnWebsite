@@ -10,8 +10,7 @@ function selectedSizes(sizes) {
             sizes.forEach(size => {
                 get({
                     table: 'size',
-                    where: {size_id: size},
-                    spinner: 'line_add'
+                    where: {size_id: size}
                 })
                 .then(function([size, options]) {
                     if (size.orderable && !tbl_order_add.querySelector(`#size-${size.size_id}`)) {

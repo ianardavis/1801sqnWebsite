@@ -140,12 +140,6 @@ ul.navbar-nav li.nav-item a.nav-link {
 	padding: 0 8px !important;
 	margin: 0 2px !important;
 }
-.toast {
-	z-index: 9999;
-	position: absolute;
-	top: 0;
-	right: 0;
-}
 .div_toasts {
 	position: relative;
 }

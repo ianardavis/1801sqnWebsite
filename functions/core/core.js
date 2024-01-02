@@ -98,7 +98,7 @@ module.exports = function (m, fn) {
                 )
             };
         };
-        
+        if (query.where.site_id)       where.site_id       = query.where.site_id;
         if (query.where.scrap_id)      where.scrap_id      = query.where.scrap_id;
         if (query.where.supplier_id)   where.supplier_id   = query.where.supplier_id;
         if (query.where.user_id_issue) where.user_id_issue = query.where.user_id_issue;

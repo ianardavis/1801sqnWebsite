@@ -25,8 +25,7 @@ function getContacts() {
 function viewContact(supplier_contact_id) {
     get({
         table: 'contact',
-        where: {supplier_contact_id: supplier_contact_id},
-        spinner: 'contact_view'
+        where: {supplier_contact_id: supplier_contact_id}
     })
     .then(function ([contact, options]) {
         setInnerText('supplier_contact_id', contact.supplier_contact_id);

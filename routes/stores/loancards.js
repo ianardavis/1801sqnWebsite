@@ -3,18 +3,19 @@ module.exports = (app, fn) => {
     app.get('/loancards/:id',          fn.loggedIn(), fn.permissions.get(  'access_stores'),       (req, res) => res.render('stores/loancards/show'));
     app.get('/loancard_lines/:id',     fn.loggedIn(), fn.permissions.get(  'access_stores'),       (req, res) => res.render('stores/loancard_lines/show'));
     app.get('/loancards/:id/download', fn.loggedIn(), fn.permissions.check('access_stores'),       (req, res) => {
-        fn.loancards.download(req.params.id, res)
+        fn.loancards.download(req.session.site_id, req.params.id, res)
         .catch(err => fn.sendError(res, err));
     });
 
     app.get('/count/loancards',        fn.loggedIn(), fn.permissions.check('issuer',        true), (req, res) => {
         if (!req.allowed) req.query.where.user_id_loancard = req.user.user_id;
-        fn.loancards.count(req.query.where)
+        fn.loancards.count(req.session.site_id, req.query.where)
         .then(count => res.send({success: true, result: count}))
         .catch(err => fn.sendError(res, err));
     });
     app.get('/get/loancard',           fn.loggedIn(), fn.permissions.check('access_stores', true), (req, res) => {
         if (!req.allowed) req.query.where['user_id_loancard'] = req.user.user_id;
+        req.query.where.site_id = req.session.site_id;
         fn.loancards.find(
             req.query.where,
             [fn.inc.stores.loancard_lines()]
@@ -23,7 +24,12 @@ module.exports = (app, fn) => {
         .catch(err => fn.sendError(res, err));
     });
     app.get('/get/loancards',          fn.loggedIn(), fn.permissions.check('issuer',        true), (req, res) => {
-        fn.loancards.findAll(req.allowed, req.query, req.user.user_id)
+        req.query.where.site_id = req.session.site_id;
+        fn.loancards.findAll(
+            req.allowed,
+            req.query,
+            req.user.user_id
+        )
         .then(results => fn.sendRes('loancards', res, results, req.query))
         .catch(err => fn.sendError(res, err));
     });
@@ -84,12 +90,11 @@ module.exports = (app, fn) => {
     });
 
     app.post('/loancards',             fn.loggedIn(), fn.permissions.check('issuer'),              (req, res) => {
-        fn.loancards.create({
-            loancard: {
-                user_id_loancard: req.body.supplier_id,
-                user_id:          req.user.user_id
-            }
-        })
+        fn.loancards.create(
+            req.session.site_id,
+            req.body.user_id_loancard,
+            req.user.user_id
+        )
         .then(loancard => {
             if (loancard.created) {
                 res.send({success: true, message: 'There is already a loancard open for this user'});
@@ -103,7 +108,11 @@ module.exports = (app, fn) => {
     });
 
     app.put('/loancards/:id',          fn.loggedIn(), fn.permissions.check('issuer'),              (req, res) => {
-        fn.loancards.edit(req.params.id, req.body.loancard)
+        fn.loancards.edit(
+            req.session.site_id,
+            req.params.id,
+            req.body.loancard
+        )
         .then(result => res.send({success: result, message: `Loancard ${(result ? '' : 'not ')}updated`}))
         .catch(err => fn.sendError(res, err));
     });
@@ -112,11 +121,12 @@ module.exports = (app, fn) => {
         return new Date(now.getFullYear() + years, now.getMonth(), now.getDate());
     };
     app.put('/loancards/:id/complete', fn.loggedIn(), fn.permissions.check('issuer'),              (req, res) => {
-        fn.loancards.complete({
-            loancard_id: req.params.id,
-            user_id: req.user.user_id,
-            date_due: req.body.date_due || add_years(7)
-        })
+        fn.loancards.complete(
+            req.session.site_id,
+            req.params.id,
+            req.user.user_id,
+            req.body.date_due || add_years(7)
+        )
         .then(fn.loancards.pdf.create)
         .then(filename => res.send({success: true, message: 'Loancard completed.'}))
         .catch(err => fn.sendError(res, err));
@@ -128,10 +138,11 @@ module.exports = (app, fn) => {
     });
     
     app.delete('/loancards/:id',       fn.loggedIn(), fn.permissions.check('issuer'),              (req, res) => {
-        fn.loancards.cancel({
-            loancard_id: req.params.id,
-            user_id: req.user.user_id
-        })
+        fn.loancards.cancel(
+            req.session.site_id,
+            req.params.id,
+            req.user.user_id
+        )
         .then(result => res.send({success: true, message: `Loancard cancelled${(result ? '' : ', action not created')}.`}))
         .catch(err => fn.sendError(res, err));
     });

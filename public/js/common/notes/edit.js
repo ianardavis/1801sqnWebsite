@@ -1,8 +1,7 @@
 function viewNoteEdit(note_id) {
     get({
-        table:   'note',
-        where:   {note_id: note_id},
-        spinner: 'note_edit'
+        table: 'note',
+        where: {note_id: note_id}
     })
     .then(function ([note, options]) {
         setAttribute('note_id_edit', 'value', note.note_id);

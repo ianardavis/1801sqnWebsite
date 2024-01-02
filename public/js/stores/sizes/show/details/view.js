@@ -22,9 +22,8 @@ function get_details() {
 };
 function viewDetail(detail_id) {
     get({
-        table:   'detail',
-        where:   {detail_id: detail_id},
-        spinner: 'detail_view'
+        table: 'detail',
+        where: {detail_id: detail_id}
     })
     .then(function ([detail, options]) {
         setInnerText('detail_id',        detail.detail_id);

@@ -82,7 +82,6 @@ function get_issues() {
                 add_line(issue, index);
                 index ++;
             });
-            hideSpinner('issues');
         });
     });
 };

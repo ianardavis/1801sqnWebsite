@@ -8,12 +8,12 @@
     <%- include(`${partials}/sidebar/button`, {id: 'menu', text: 'Menu', float: true}) %>
 
     <ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
-        <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'size'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'nsns',    title: 'NSNs',    spinner: 'nsns',    count_id: 'nsn',    _class: 'has_nsns_element'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'serials', title: 'Serials', spinner: 'serials', count_id: 'serial', _class: 'serial_element'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'stocks',  title: 'Stocks',  spinner: 'stocks',  count_id: 'stock',  _class: 'stock_element'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'orders',  title: 'Orders',  spinner: 'orders',  count_id: 'order',  _class: 'orderable_element', permission: 'stores_stock_admin'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'issues',  title: 'Issues',  spinner: 'issues',  count_id: 'issue',  _class: 'issueable_element'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'nsns',    title: 'NSNs',    count_id: 'nsn',    _class: 'has_nsns_element'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'serials', title: 'Serials', count_id: 'serial', _class: 'serial_element'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'stocks',  title: 'Stocks',  count_id: 'stock',  _class: 'stock_element'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'orders',  title: 'Orders',  count_id: 'order',  _class: 'orderable_element', permission: 'stores_stock_admin'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'issues',  title: 'Issues',  count_id: 'issue',  _class: 'issueable_element'}) %>
         <%- include(`${partials}/common/notes/tab_head`) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
@@ -150,7 +150,6 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">Detail</h5>
-                        <%- include(`${partials}/spinner`, {id: 'detail_view'}) %>
                         <%- include(`${partials}/modals/edit_delete_btns`, {id: 'detail'}) %>
                     </div>
                     <div class="modal-body">
@@ -171,7 +170,6 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">Issue</h5>
-                        <%- include(`${partials}/spinner`, {id: 'issue_view'}) %>
                         <a id="btn_issue_link" class='btn btn-primary float-end'><i class="fas fa-search"></i></a>
                     </div>
                     <div class="modal-body">
@@ -198,7 +196,6 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5   class="modal-title">NSN: <span id="nsn_view"></span></h5>
-                        <%- include(`${partials}/spinner`, {id: 'nsn_view'}) %>
                         <a class='btn btn-primary float-end' id='btn_nsn_link'><i class="fas fa-search"></i></a>
                     </div>
                     <div class="modal-body">
@@ -245,7 +242,7 @@
                     <div class="modal-body">
                         <input type="hidden" class='size_id' name='serial[size_id]'>
                         <%- include(`${partials}/inputs/text`, {title: 'Serial #', id: 'serial_serial',   name: 'serial[serial]', required: true}) %>
-                        <%- include(`${partials}/inputs/text`, {title: 'Location', id: 'serial_location', name: 'location',       required: true, list_id: 'locations_list', spinner_id: 'locations', reload_id: 'reload_locations_serial'}) %>
+                        <%- include(`${partials}/inputs/text`, {title: 'Location', id: 'serial_location', name: 'location',       required: true, list_id: 'locations_list', reload_id: 'reload_locations_serial'}) %>
                     </div>
                     <div class="modal-footer">
                         <%- include(`${partials}/button/save`) %>
@@ -261,7 +258,7 @@
                     </div>
                     <div class="modal-body">
                         <input type="hidden" class='size_id' name='stock[size_id]'>
-                        <%- include(`${partials}/inputs/text`, {title: 'Location', id: 'stock_locations', name: 'location', required: true, list_id: 'locations_list', spinner_id: 'locations', reload_id: 'reload_locations_stock'}) %>
+                        <%- include(`${partials}/inputs/text`, {title: 'Location', id: 'stock_locations', name: 'location', required: true, list_id: 'locations_list', reload_id: 'reload_locations_stock'}) %>
                     </div>
                     <div class="modal-footer">
                         <%- include(`${partials}/button/save`) %>
@@ -276,7 +273,7 @@
                         <h5 class="modal-title">Receive Stock</h5>
                     </div>
                     <div class="modal-body">
-                        <%- include(`${partials}/inputs/select`, {title: 'Location', id: 'receipt_stock', name: 'receipt[stock_id]', required: true, spinner_id: 'receipt', reload_id: 'reload_locations_receipt'}) %>
+                        <%- include(`${partials}/inputs/select`, {title: 'Location', id: 'receipt_stock', name: 'receipt[stock_id]', required: true, reload_id: 'reload_locations_receipt'}) %>
                         <%- include(`${partials}/inputs/number`, {title: 'Quantity', id: 'receipt_qty',   name: 'receipt[qty]',      required: true}) %>
                     </div>
                     <div class="modal-footer">
@@ -294,7 +291,7 @@
                     </div>
                     <div class="modal-body">
                         <input type="hidden" class='size_id' name='detail[size_id]'>
-                        <%- include(`${partials}/inputs/text`,     {title: 'Detail', id: 'detail_name_add',  name: 'detail[name]',  required: true, list_id: 'list_detail_options', spinner_id: 'detail_options', reload_id: 'reload_options'}) %>
+                        <%- include(`${partials}/inputs/text`,     {title: 'Detail', id: 'detail_name_add',  name: 'detail[name]',  required: true, list_id: 'list_detail_options', reload_id: 'reload_options'}) %>
                         <%- include(`${partials}/inputs/textarea`, {title: 'Value',  id: 'detail_value_add', name: 'detail[value]', required: true}) %>
                     </div>
                     <div class="modal-footer">
@@ -331,7 +328,7 @@
                         <%- include(`${partials}/inputs/select`, {name: 'size[orderable]',   title: 'Orderable',    id: 'sel_orderable', options: [{value: '0', text: 'No'}, {value: '1', text: 'Yes'}]}) %>
                         <%- include(`${partials}/inputs/select`, {name: 'size[has_serials]', title: 'Has Serial #', id: 'sel_serials',   options: [{value: '0', text: 'No'}, {value: '1', text: 'Yes'}]}) %>
                         <%- include(`${partials}/inputs/select`, {name: 'size[has_nsns]',    title: 'Has NSNs',     id: 'sel_nsns',      options: [{value: '0', text: 'No'}, {value: '1', text: 'Yes'}]}) %>
-                        <%- include(`${partials}/inputs/select`, {name: 'size[supplier_id]', title: 'Supplier',     id: 'sel_suppliers', spinner_id: 'suppliers', reload_id: 'reload_suppliers', permission: 'supplier_admin'}) %>
+                        <%- include(`${partials}/inputs/select`, {name: 'size[supplier_id]', title: 'Supplier',     id: 'sel_suppliers', reload_id: 'reload_suppliers', permission: 'supplier_admin'}) %>
                         <%- include(`${partials}/inputs/text`,   {name: 'size[size1]',       title: 'Size 1',       id: 'size1_edit',    required: true}) %>
                         <%- include(`${partials}/inputs/text`,   {name: 'size[size2]',       title: 'Size 2',       id: 'size2_edit'}) %>
                         <%- include(`${partials}/inputs/text`,   {name: 'size[size3]',       title: 'Size 3',       id: 'size3_edit'}) %>
@@ -348,7 +345,6 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">Order</h5>
-                        <%- include(`${partials}/spinner`, {id: 'order_view'}) %>
                         <a id="btn_order_link" class='btn btn-primary float-end'><i class="fas fa-search"></i></a>
                     </div>
                     <div class="modal-body">

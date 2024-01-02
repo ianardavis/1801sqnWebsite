@@ -4,11 +4,11 @@ module.exports = function (m, fn) {
     // string height @ 10: 12.7299999
     // A4 (595.28 x 841.89)
 
-    fn.loancards.pdf.create = function (loancard_id) {
+    fn.loancards.pdf.create = function ([site_id, loancard_id]) {
         function check(loancard_id) {
             return new Promise((resolve, reject) => {
                 fn.loancards.find(
-                    {loancard_id: loancard_id},
+                    {loancard_id: loancard_id, site_id: site_id},
                     [{
                         model: m.loancard_lines,
                         as: 'lines',

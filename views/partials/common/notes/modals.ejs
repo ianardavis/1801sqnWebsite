@@ -2,10 +2,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">
-                    Note
-                    <%- include(`${partials}/spinner`, {id: 'note_view'}) %>
-                </h5>
+                <h5 class="modal-title">Note</h5>
                 <%- include(`${partials}/modals/edit_delete_btns`, {id: 'note'}) %>
             </div>
             <div class="modal-body">
@@ -24,10 +21,7 @@
     <div class="modal-dialog" role="document">
         <form class="modal-content" id='form_note_edit'>
             <div class="modal-header">
-                <h5 class="modal-title">
-                    Note
-                    <%- include(`${partials}/spinner`, {id: 'note_edit'}) %>
-                </h5>
+                <h5 class="modal-title">Note</h5>
             </div>
             <div class="modal-body">
                 <input type="hidden" id='note_id_edit' name='note_id'>

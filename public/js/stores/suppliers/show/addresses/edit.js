@@ -1,8 +1,7 @@
 function viewAddressEdit(address_id) {
     get({
-        table:   'address',
-        where: {supplier_address_id: address_id},
-        spinner: 'address_edit'
+        table: 'address',
+        where: {supplier_address_id: address_id}
     })
     .then(function ([address, options]) {
         setAttribute('supplier_address_id_edit', 'value', address.address_id);

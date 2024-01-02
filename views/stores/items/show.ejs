@@ -6,9 +6,9 @@
 <section class='container'>
     <%- include(`${partials}/sidebar/button`, {id: 'menu', text: 'Menu', float: true}) %>
     <ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
-        <%- include(`${partials}/tab_head`, {id: 'details',    title: 'Details',    spinner: 'item'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'sizes',      title: 'Sizes',      spinner: 'sizes',      count_id: 'size'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'categories', title: 'Categories', spinner: 'categories', count_id: 'category'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'details',    title: 'Details'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'sizes',      title: 'Sizes',      count_id: 'size'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'categories', title: 'Categories', count_id: 'category'}) %>
         <%- include(`${partials}/common/notes/tab_head`) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
@@ -83,7 +83,6 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">Category</h5>
-                        <%- include(`${partials}/spinner`, {id: 'category_view'}) %>
                         <%- include(`${partials}/modals/edit_delete_btns`, {id: 'category', deleteOnly: true}) %>
                     </div>
                     <div class="modal-body">
@@ -122,10 +121,7 @@
             <div class="modal-dialog" role="document">
                 <form class="modal-content" id='form_item_edit'>
                     <div class="modal-header">
-                        <h5 class="modal-title">
-                            Edit Item
-                            <%- include(`${partials}/spinner`, {id: 'item_edit'}) %>
-                        </h5>
+                        <h5 class="modal-title">Edit Item</h5>
                     </div>
                     <div class="modal-body">
                         <datalist id="list_descriptions"></datalist>
@@ -155,7 +151,7 @@
                         <%- include(`${partials}/inputs/select`, {name: 'size[orderable]',   title: 'Orderable',    id: 'size_orderable',   options: [{value: '0', text: 'No'}, {value: '1', text: 'Yes'}]}) %>
                         <%- include(`${partials}/inputs/select`, {name: 'size[has_serials]', title: 'Has Serial #', id: 'size_has_serials', options: [{value: '0', text: 'No'}, {value: '1', text: 'Yes'}]}) %>
                         <%- include(`${partials}/inputs/select`, {name: 'size[has_nsns]',    title: 'Has NSNs',     id: 'size_has_nsns',    options: [{value: '0', text: 'No'}, {value: '1', text: 'Yes'}]}) %>
-                        <%- include(`${partials}/inputs/select`, {name: 'size[supplier_id]', title: 'Supplier',     id: 'size_supplier',    spinner_id: 'suppliers', reload_id: 'reload_suppliers', permission: 'supplier_admin'}) %>
+                        <%- include(`${partials}/inputs/select`, {name: 'size[supplier_id]', title: 'Supplier',     id: 'size_supplier',    reload_id: 'reload_suppliers', permission: 'supplier_admin'}) %>
                     </div>
                     <div class="modal-footer">
 						<%- include(`${partials}/button/save`) %>

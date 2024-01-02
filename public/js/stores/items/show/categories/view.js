@@ -25,9 +25,8 @@ function get_categories() {
 };
 function viewCategory(category_id) {
     get({
-        table:   'item_category',
-        where:   {item_category_id: category_id},
-        spinner: 'category_view'
+        table: 'item_category',
+        where: {item_category_id: category_id}
     })
     .then(function ([category, options]) {
         setInnerText('category_id',        category.category_id);

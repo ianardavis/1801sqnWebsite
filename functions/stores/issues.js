@@ -2,7 +2,7 @@ const statuses = {0: 'cancelled', 1: 'requested', 2: 'approved', 3: 'ordered', 4
 module.exports = function (m, fn) {
     fn.issues = {};
     
-    fn.issues.find = function (where, site_id, include = {}) {
+    fn.issues.find = function (where, include = {}) {
         let includes = [
             fn.inc.stores.size(),
             fn.inc.users.user(),
@@ -16,21 +16,12 @@ module.exports = function (m, fn) {
 
         return fn.find(
             m.issues, 
-            {
-                ...where,
-                site_id: site_id
-            },
+            where,
             includes
         );
     };
-    fn.issues.count = function (where, site_id) {
-        where.site_id = site_id;
-        return m.issues.count({where: where});
-    };
-    fn.issues.sum = function (where, site_id) {
-        where.site_id = site_id;
-        return m.issues.sum('qty', {where: where});
-    };
+    fn.issues.count = function (where) { return m.issues.count({where: where}); };
+    fn.issues.sum = function (where) { return m.issues.sum('qty', {where: where}); };
     fn.issues.increment = function (issue, qty, user_id) {
         return new Promise((resolve, reject) => {
             issue.increment('qty', {by: qty})
@@ -53,7 +44,7 @@ module.exports = function (m, fn) {
         });
     };
 
-    fn.issues.findAll = function (site_id, allowed, query, user_id) {
+    fn.issues.findAll = function (allowed, query, user_id) {
         function issuerAllowed(issuer_permission, user_id_issue, user_id) {
             return new Promise(resolve => {
                 if (issuer_permission) {
@@ -85,10 +76,7 @@ module.exports = function (m, fn) {
                 if ( query.limit  && isNaN(query.limit))  delete query.limit;
 
                 m.issues.findAndCountAll({
-                    where: {
-                        ...fn.buildQuery(query),
-                        site_id: site_id
-                    },
+                    where: fn.buildQuery(query),
                     include: [
                         fn.inc.stores.size_filter(query),
                         fn.inc.users.user({ as: 'user_issue', ...user_filter })
@@ -104,7 +92,10 @@ module.exports = function (m, fn) {
 
     function checkIssueStatus(issue_id, site_id, statuses = []) {
         return new Promise((resolve, reject) => {
-            fn.issues.find({issue_id: issue_id}, site_id)
+            fn.issues.find({
+                issue_id: issue_id,
+                site_id: site_id
+            })
             .then(issue => {
                 if (statuses.includes(Number(issue.status))) {
                     resolve(issue);
@@ -136,7 +127,10 @@ module.exports = function (m, fn) {
         function check() {
             return new Promise((resolve, reject) => {
                 if (status in statuses) {
-                    fn.issues.find({issue_id: issue_id}, site_id)
+                    fn.issues.find({
+                        issue_id: issue_id,
+                        site_id: site_id
+                    })
                     .then(issue => {
                         if (Number(issue.status) === Number(status)) {
                             reject(new Error('Status has not changed'));
@@ -368,7 +362,10 @@ module.exports = function (m, fn) {
 
     fn.issues.restore = function (issue_id, site_id, user_id) {
         return new Promise((resolve, reject) => {
-            fn.issues.find({issue_id: issue_id}, site_id)
+            fn.issues.find({
+                issue_id: issue_id,
+                site_id: site_id
+            })
             .then(issue => {
                 if (issue.status !== 0) {
                     reject(new Error('Issue is not cancelled/declined'));
@@ -398,7 +395,10 @@ module.exports = function (m, fn) {
                     issues.forEach(issue => {
                         actions.push(
                             new Promise((resolve, reject) => {
-                                fn.issues.find({issue_id: issue.issue_id}, site_id)
+                                fn.issues.find({
+                                    issue_id: issue.issue_id,
+                                    site_id: site_id
+                                })
                                 .then(issue => {
                                     if (!issue.size) {
                                         reject(new Error('Size not found'));
@@ -458,6 +458,7 @@ module.exports = function (m, fn) {
                 sizes.forEach(size => {
                     actions.push(new Promise((resolve, reject) => {
                         fn.orders.create(
+                            site_id,
                             size.size_id,
                             size.qty,
                             user_id,
@@ -495,7 +496,10 @@ module.exports = function (m, fn) {
         function sortIssuesByUser() {
             function getIssueForLine(line) {
                 return new Promise((resolve, reject) => {
-                    fn.issues.find({issue_id: line.issue_id}, site_id)
+                    fn.issues.find({
+                        issue_id: line.issue_id,
+                        site_id: site_id
+                    })
                     .then(issue => {
                         if (!issue.size) {
                             reject(new Error('Size not found'));
@@ -555,10 +559,11 @@ module.exports = function (m, fn) {
         };
         function addIssuesToLoancards(user) {
             return new Promise((resolve, reject) => {
-                fn.loancards.create({
-                    user_id_loancard: user.user_id,
-                    user_id: user_id
-                })
+                fn.loancards.create(
+                    site_id,
+                    user.user_id,
+                    user_id
+                )
                 .then(loancard_id => {
                     let issue_actions = [];
                     user.issues.forEach(issue => {
@@ -607,7 +612,10 @@ module.exports = function (m, fn) {
 
     function changeCheck(issue_id, site_id) {
         return new Promise((resolve, reject) => {
-            fn.issues.find({issue_id: issue_id}, site_id)
+            fn.issues.find({
+                issue_id: issue_id,
+                site_id: site_id
+            })
             .then(issue => {
                 if (!issue.size) {
                     reject(new Error('Error getting issue size'));

@@ -15,8 +15,8 @@
                 <%- include(`${partials}/menu/button`, {id: 'holding_count', modal: 'holding_count', text: 'Count'}) %>
             </div>
         </li>
-        <%- include(`${partials}/tab_head`, {id: 'details',   title: 'Details',   spinner: 'holding'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'movements', title: 'Movements', spinner: 'movements', count_id: 'movement'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'details',   title: 'Details'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'movements', title: 'Movements', count_id: 'movement'}) %>
         <%- include(`${partials}/common/actions/tab_head`) %>
         <%- include(`${partials}/common/notes/tab_head`) %>
     </ul>
@@ -58,7 +58,7 @@
                     </div>
                     <div class="modal-body">
                         <input type="hidden" class='holding_id' name='movement[holding_id_from]'>
-                        <%- include(`${partials}/inputs/select`, {title: 'To Holding',  name: 'movement[holding_id_to]', required: true, id: 'sel_holdings', spinner_id: 'holdings'}) %>
+                        <%- include(`${partials}/inputs/select`, {title: 'To Holding',  name: 'movement[holding_id_to]', required: true, id: 'sel_holdings'}) %>
                         <%- include(`${partials}/inputs/text`,   {title: 'Description', name: 'movement[description]',   required: true, id: 'movement_add_description'}) %>
                         <%- include(`${partials}/inputs/number`, {title: 'Amount',      name: 'movement[amount]',        required: true, id: 'movement_add_amount', value: '0.00', step: '0.01', min: '0'}) %>
                     </div>

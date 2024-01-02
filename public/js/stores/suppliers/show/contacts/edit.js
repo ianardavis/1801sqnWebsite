@@ -1,8 +1,7 @@
 function viewContactEdit(contact_id) {
     get({
-        table:   'contact',
-        where:   {supplier_contact_id: contact_id},
-        spinner: 'contact_edit'
+        table: 'contact',
+        where: {supplier_contact_id: contact_id}
     })
     .then(function ([contact, options]) {
         setAttribute('supplier_contact_id_edit', 'value', contact.supplier_contact_id);

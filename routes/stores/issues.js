@@ -4,24 +4,27 @@ module.exports = (app, fn) => {
 
     app.get('/count/issues',    fn.loggedIn(), fn.permissions.check('issuer',        true), (req, res) => {
         if (!req.allowed) req.query.where.user_id_issue = req.user.user_id;
-        fn.issues.count(req.query.where, req.session.site_id)
+        req.query.where.site_id = req.session.site_id;
+        fn.issues.count(req.query.where)
         .then(count => res.send({success: true, result: count}))
         .catch(err => fn.sendError(res, err));
     });
     app.get('/sum/issues',      fn.loggedIn(), fn.permissions.check('issuer'),              (req, res) => {
-        fn.issues.sum(req.query.where, req.session.site_id)
+        req.query.where.site_id = req.session.site_id;
+        fn.issues.sum(req.query.where)
         .then(sum => res.send({success: true, result: sum}))
         .catch(err => fn.sendError(res, err));
     });
 
     app.get('/get/issues',      fn.loggedIn(), fn.permissions.check('issuer',        true), (req, res) => {
-        fn.issues.findAll(req.session.site_id, req.allowed, req.query, req.user.user_id)
+        req.query.where.site_id = req.session.site_id;
+        fn.issues.findAll(req.allowed, req.query, req.user.user_id)
         .then(results => fn.sendRes('issues', res, results, req.query))
         .catch(err => fn.sendError(res, err));
     });
     app.get('/get/issue',       fn.loggedIn(), fn.permissions.check('issuer',        true), (req, res) => {
         if (!req.allowed) req.query.where["user_id_issue"] = req.user.user_id;
-        fn.issues.find(req.query.where, req.session.site_id, {order: true, loancard_lines: true})
+        fn.issues.find({...req.query.where, site_id: req.session.site_id}, {order: true, loancard_lines: true})
         .then(issue => res.send({success: true, result: issue}))
         .catch(err => fn.sendError(res, err));
     });

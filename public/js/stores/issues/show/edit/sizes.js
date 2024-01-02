@@ -39,7 +39,7 @@ function show_sizes() {
         .then(display_sizes)
         .catch(err => {
             modalHide('size_edit');
-            alertToast(err.message);
+            showToast('Error', err.message, true);
             console.error(err);
         });
     });

@@ -3,7 +3,6 @@ function getMovements() {
     .then(tbl_movements => {
         get({
             table: 'movements_holding',
-            spinner: 'movements',
             where: {holding_id: path[2]},
             func: getMovements
         })

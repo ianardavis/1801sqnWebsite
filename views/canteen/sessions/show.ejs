@@ -13,10 +13,10 @@
 				<%- include(`${partials}/menu/button`, {id: 'session_close', modal: 'session_close', text: 'Close'}) %>
             </div>
         </li>
-        <%- include(`${partials}/tab_head`, {id: 'details',  title: 'Details',  spinner: 'session'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'sales',    title: 'Sales',    spinner: 'sales',            count_id: 'sale'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'payments', title: 'Payments', spinner: 'payments_session', count_id: 'payment'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'items',    title: 'Items',    spinner: 'items',            count_id: 'item'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'details',  title: 'Details'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'sales',    title: 'Sales',    count_id: 'sale'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'payments', title: 'Payments', count_id: 'payment'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'items',    title: 'Items',    count_id: 'item'}) %>
         <%- include(`${partials}/common/notes/tab_head`) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">

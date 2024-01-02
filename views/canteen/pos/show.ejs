@@ -3,7 +3,6 @@
 <%- include(`${partials}/breadcrumb`, {text: 'Go To Session', id: 'btn_session'}) %>
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/breadcrumb`, {id: 'alert_main', classes: ['alert']}) %>
-<%- include(`${partials}/spinner`,    {id: 'current_sale'}) %>
 <%- include(`${partials}/head/components/close`) %>
 <section class='container mx-auto'>
 	<button id='btn_finish' class='btn btn-lg btn-success w-100 mb-2' data-bs-toggle="modal" data-bs-target="#mdl_sale_complete">Finish</button>
@@ -38,9 +37,9 @@
                         <%- include(`${partials}/inputs/display`,  {id: 'total',   title: 'Total (£)',      classes: ['total']}) %>
                         <form id='form_sale_complete'>
                             <input type="hidden" class='sale_id' name='sale_id'>
-                            <%- include(`${partials}/inputs/select`,  {id: 'sel_credits',       title: 'Debit from',       name: 'sale[user_id_debit]',   spinner_id: 'users_debit',   reload_id: 'reload_debit'}) %>
-                            <%- include(`${partials}/inputs/select`,  {id: 'sel_users',         title: 'Credit change to', name: 'sale[user_id_credit]',  spinner_id: 'users_credit',  reload_id: 'reload_credit'}) %>
-                            <%- include(`${partials}/inputs/select`,  {id: 'sel_users_payment', title: 'Buyer',            name: 'sale[user_id_payment]', spinner_id: 'users_payment', reload_id: 'reload_payment', required: true}) %>
+                            <%- include(`${partials}/inputs/select`,  {id: 'sel_credits',       title: 'Debit from',       name: 'sale[user_id_debit]',   reload_id: 'reload_debit'}) %>
+                            <%- include(`${partials}/inputs/select`,  {id: 'sel_users',         title: 'Credit change to', name: 'sale[user_id_credit]',  reload_id: 'reload_credit'}) %>
+                            <%- include(`${partials}/inputs/select`,  {id: 'sel_users_payment', title: 'Buyer',            name: 'sale[user_id_payment]', reload_id: 'reload_payment', required: true}) %>
                             <%- include(`${partials}/inputs/number`,  {id: 'tendered',          title: 'Tendered (£)',     name: 'sale[tendered]', step: '0.01', value: '0.00', required: true}) %>
                             <%- include(`${partials}/inputs/display`, {id: 'change',            title: 'Change (£)',       classes: ['f-20']}) %>
                         </form>

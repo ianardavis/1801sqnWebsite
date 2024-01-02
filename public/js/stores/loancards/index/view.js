@@ -1,10 +1,10 @@
 const loancard_statuses = {
-    "0": "Cancelled", 
-    "1": "Draft", 
-    "2": "Complete", 
-    "3": "Closed"
+    0: "Cancelled", 
+    1: "Draft", 
+    2: "Complete", 
+    3: "Closed"
 };
-function get_loancards() {
+function getLoancards() {
     Promise.all([
         clear('tbl_loancards'),
         filterStatus('loancard')
@@ -26,7 +26,7 @@ function get_loancards() {
             },
             gt: filterDateFrom('loancard'),
             lt: filterDateTo('loancard'),
-            func: get_loancards
+            func: getLoancards
         })
         .then(function ([results, options]) {
             results.loancards.forEach(loancard => {
@@ -35,7 +35,7 @@ function get_loancards() {
         })
     });
 };
-function get_users() {
+function getUsers() {
     listCurrentUsers({
         select: 'filter_loancard_user',
         blank: {text: 'All'}
@@ -56,17 +56,17 @@ window.addEventListener('load', function () {
         {value: '3', text: 'Closed'}
     ]);
 
-    addListener('reload', get_loancards);
+    addListener('reload', getLoancards);
     addListener('goto_loancard_id', );
     modalOnShow('loancard_open', function () {StartScanning(gotoLoancard)});
     modalOnHide('loancard_open', StopScanning);
     
-    get_users();
-    addListener('reload_users', get_users);
-    addListener('sel_loancard_statuses', get_loancards, 'input');
-    addListener('filter_loancard_user', get_loancards, 'change');
-    addListener('createdAt_from', function (){filter()}, 'change');
-    addListener('createdAt_to',   function (){filter()}, 'change');
-    addSortListeners('loancards', get_loancards);
-    get_loancards();
+    getUsers();
+    addListener('btn_users_reload', getUsers);
+    addListener('filter_loancard_status', getLoancards, 'input');
+    addListener('filter_loancard_user',   getLoancards, 'change');
+    addListener('filter_loancard_createdAt_from', function (){filter()}, 'change');
+    addListener('filter_loancard_createdAt_to',   function (){filter()}, 'change');
+    addSortListeners('loancards', getLoancards);
+    getLoancards();
 });

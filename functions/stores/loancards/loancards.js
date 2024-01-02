@@ -10,9 +10,9 @@ module.exports = function (m, fn) {
         );
     };
     fn.loancards.findAll = function (allowed, query, user_id) {
-        function issuerAllowed(issuer_permission, user_id_loancard, user_id) {
+        function issuerAllowed(user_id_loancard, user_id) {
             return new Promise(resolve => {
-                if (issuer_permission) {
+                if (allowed) {
                     if (user_id_loancard && user_id_loancard !== '') {
                         resolve({where: {user_id: user_id_loancard}});
     
@@ -23,7 +23,7 @@ module.exports = function (m, fn) {
     
                 } else {
                     if (!user_id_loancard || user_id_loancard === user_id) {
-                        resolve({where: {user_id: user_id_loancard}});
+                        resolve({where: {user_id: user_id}});
     
                     } else {
                         reject(new Error('Permission denied'));
@@ -35,7 +35,7 @@ module.exports = function (m, fn) {
         };
         return new Promise((resolve, reject) => {
             if (!query.where) query.where = {};
-            issuerAllowed(allowed, query.where.user_id_loancard, user_id)
+            issuerAllowed(query.where.user_id_loancard, user_id)
             .then(user_filter => {
                 if (!query.offset || isNaN(query.offset)) query.offset = 0;
                 if ( query.limit  && isNaN(query.limit))  delete query.limit;
@@ -50,7 +50,6 @@ module.exports = function (m, fn) {
                     fn.inc.users.user(),
                     fn.inc.users.user({as: 'user_loancard', ...user_filter})
                 ];
-
                 m.loancards.findAndCountAll({
                     where: fn.buildQuery(query),
                     include: include,
@@ -62,9 +61,9 @@ module.exports = function (m, fn) {
             .catch(reject);
         });
     };
-    fn.loancards.edit = function (loancard_id, details) {
+    fn.loancards.edit = function (site_id, loancard_id, details) {
         return new Promise((resolve, reject) => {
-            fn.loancards.find({loancard_id: loancard_id})
+            fn.loancards.find({loancard_id: loancard_id, site_id: site_id})
             .then(loancard => {
                 fn.update(loancard, details)
                 .then(result => resolve(true))
@@ -73,13 +72,16 @@ module.exports = function (m, fn) {
             .catch(reject);
         });
     };
-    fn.loancards.count = function (where) { return m.loancards.count({where: where}) };
+    fn.loancards.count = function (site_id, where) {
+        where.site_id = site_id;
+        return m.loancards.count({where: where})
+    };
     
-    fn.loancards.cancel = function (options = {}) {
+    fn.loancards.cancel = function (site_id, loancard_id, user_id) {
         function check(loancard_id) {
             return new Promise((resolve, reject) => {
                 fn.loancards.find(
-                    {loancard_id: loancard_id},
+                    {loancard_id: loancard_id, site_id: site_id},
                     [{
                         model: m.loancard_lines,
                         as: 'lines',
@@ -113,13 +115,13 @@ module.exports = function (m, fn) {
             });
         };
         return new Promise((resolve, reject) => {
-            check(options.loancard_id)
+            check(loancard_id)
             .then(loancard => {
                 fn.update(loancard, {status: 0})
                 .then(result => {
                     fn.actions.create([
                         'LOANCARD | CANCELLED',
-                        options.user_id,
+                        user_id,
                         [{_table: 'loancards', id: loancard.loancard_id}]
                     ])
                     .then(action => resolve(true));
@@ -129,25 +131,26 @@ module.exports = function (m, fn) {
             .catch(reject);
         });
     };
-    fn.loancards.create = function (options = {}) {
+    fn.loancards.create = function (site_id, user_id_loancard, user_id) {
         return new Promise((resolve, reject) => {
             m.loancards.findOrCreate({
                 where: {
-                    user_id_loancard: options.user_id_loancard,
-                    status:           1
+                    site_id: site_id,
+                    user_id_loancard: user_id_loancard,
+                    status: 1
                 },
-                defaults: {user_id: options.user_id}
+                defaults: {user_id: user_id}
             })
             .then(([loancard, created]) => resolve(loancard.loancard_id))
             .catch(reject);
         });
     };
 
-    fn.loancards.complete = function (options = {}) {
+    fn.loancards.complete = function (site_id, loancard_id, user_id, date_due) {
         function check(loancard_id) {
             return new Promise((resolve, reject) => {
-                fn.loancards.find(
-                    {loancard_id: loancard_id},
+                fn.loancards.find( 
+                    {loancard_id: loancard_id, site_id: site_id},
                     [{
                         model: m.loancard_lines,
                         as: 'lines',
@@ -186,7 +189,7 @@ module.exports = function (m, fn) {
             });
         };
         return new Promise((resolve, reject) => {
-            check(options.loancard_id)
+            check(loancard_id)
             .then(loancard => {
                 updateLines(loancard.lines)
                 .then(line_links => {
@@ -194,16 +197,16 @@ module.exports = function (m, fn) {
                         loancard,
                         {
                             status:   2,
-                            date_due: options.date_due
+                            date_due: date_due
                         }
                     )
                     .then(result => {
                         fn.actions.create([
                             'LOANCARD | COMPLETED',
-                            options.user_id,
+                            user_id,
                             [{_table: 'loancards', id: loancard.loancard_id}].concat(line_links)
                         ])
-                        .then(action => resolve(loancard.loancard_id));
+                        .then(action => resolve([loancard.loancard_id, site_id]));
                     })
                     .catch(reject);
                 })
@@ -213,12 +216,12 @@ module.exports = function (m, fn) {
         });
     };
 
-    function getFilename(loancard_id) {
+    function getFilename(loancard_id, site_id) {
         return new Promise((resolve, reject) => {
-            fn.loancards.find({loancard_id: loancard_id})
+            fn.loancards.find({loancard_id: loancard_id, site_id: site_id})
             .then(loancard => {
                 if (!loancard.filename) {
-                    fn.loancards.pdf.create(loancard.loancard_id)
+                    fn.loancards.pdf.create([site_id, loancard.loancard_id])
                     .then(filename => resolve(filename))
                     .catch(reject);
 
@@ -230,9 +233,9 @@ module.exports = function (m, fn) {
             .catch(reject);
         });
     };
-    fn.loancards.download = function (loancard_id, res) {
+    fn.loancards.download = function (site_id, loancard_id, res) {
         return new Promise((resolve, reject) => {
-            getFilename(loancard_id)
+            getFilename(loancard_id, site_id)
             .then(filename => {
                 fn.fs.download('loancards', filename, res)
                 .catch(reject);
@@ -241,11 +244,11 @@ module.exports = function (m, fn) {
         });
     };
 
-    fn.loancards.close = function (options = {}) {
+    fn.loancards.close = function (site_id, loancard_id, user_id) {
         function check(loancard_id) {
             return new Promise((resolve, reject) => {
                 fn.loancards.find(
-                    {loancard_id: loancard_id},
+                    {loancard_id: loancard_id, site_id: site_id},
                     [{
                         model: m.loancard_lines,
                         as: 'lines',
@@ -266,13 +269,13 @@ module.exports = function (m, fn) {
             });
         };
         return new Promise((resolve, reject) => {
-            check(options.loancard_id)
+            check(loancard_id)
             .then(loancard => {
                 fn.update(loancard, {status: 3})
                 .then(result => {
                     fn.actions.create([
                         'LOANCARD | CLOSED',
-                        options.user_id,
+                        user_id,
                         [{_table: 'loancards', id: loancard.loancard_id}]
                     ])
                     .then(action => resolve(true));

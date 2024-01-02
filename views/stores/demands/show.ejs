@@ -11,9 +11,9 @@
         <span class="badge text-bg-secondary w-34" id="bdg_status_3">Closed</span>
     </div>
 	<ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
-        <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'demand'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'lines',   title: 'Lines',	  spinner: 'demand_lines', count_id: 'line'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'users',   title: 'Users',	  spinner: 'users',  	   count_id: 'user'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'lines',   title: 'Lines', count_id: 'line'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'users',   title: 'Users', count_id: 'user'}) %>
         <%- include(`${partials}/common/actions/tab_head`) %>
         <%- include(`${partials}/common/notes/tab_head`) %>
     </ul>

@@ -29,7 +29,7 @@ module.exports = function (m, fn) {
         });
     };
     
-    fn.loancards.lines.process = function (lines, user_id) {
+    fn.loancards.lines.process = function (site_id, lines, user_id) {
         function actionLines() {
             return new Promise((resolve, reject) => {
                 let actions = [];
@@ -124,12 +124,12 @@ module.exports = function (m, fn) {
                                 resolve(true);
         
                             } else if (loancard.status === 1) {
-                                fn.loancards.cancel({loancard_id: loancard.loancard_id, user_id: user_id, noforce: true})
+                                fn.loancards.cancel(site_id, loancard.loancard_id, user_id)
                                 .then(resolve)
                                 .catch(reject);
         
                             } else if (loancard.status === 2) {
-                                fn.loancards.close({loancard_id: loancard.loancard_id, user_id: user_id})
+                                fn.loancards.close(site_id, loancard.loancard_id, user_id)
                                 .then(resolve)
                                 .catch(reject);
         
@@ -174,7 +174,7 @@ module.exports = function (m, fn) {
         });
     };
 
-    fn.loancards.lines.create = function(loancard_id, issue, user_id, line) {
+    fn.loancards.lines.create = function(site_id, loancard_id, issue, user_id, line) {
         function check_nsn(size) {
             return new Promise((resolve, reject) => {
                 if (size.has_nsns) {
@@ -359,8 +359,8 @@ module.exports = function (m, fn) {
         };
         return new Promise((resolve, reject) => {
             Promise.all([
-                fn.loancards.find({loancard_id: loancard_id}),
-                fn.sizes    .get ({size_id:     issue.size_id})
+                fn.loancards.find({loancard_id: loancard_id, site_id: site_id}),
+                fn.sizes.get({size_id: issue.size_id})
             ])
             .then(([loancard, size]) => {
                 check_nsn(size)
