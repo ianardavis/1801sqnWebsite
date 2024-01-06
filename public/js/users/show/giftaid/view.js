@@ -7,7 +7,7 @@ function getGiftaids() {
         })
         .then(function ([results, options]) {
             if (results.giftaid && results.giftaid.count > 0) {
-                results.giftaid.forEach(giftaid => {
+                results.giftaid.rows.forEach(giftaid => {
                     let row = tbl_giftaid.insertRow(-1);
                     addCell(row, tableDate(giftaid.startDate));
                     addCell(row, tableDate(giftaid.endDate));

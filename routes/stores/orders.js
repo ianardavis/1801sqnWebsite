@@ -16,7 +16,8 @@ module.exports = (app, fn) => {
     });
 
     app.get('/get/orders',      fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
-        query.where.site_id = req.session.site_id;
+        if (!req.query.where) req.query.where = {};
+        req.query.where.site_id = req.session.site_id;
         fn.orders.findAll(req.query)
         .then(results => fn.sendRes('orders', res, results, req.query))
         .catch(err => fn.sendError(res, err));

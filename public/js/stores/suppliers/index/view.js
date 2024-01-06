@@ -1,11 +1,12 @@
-let inp_supplier_name = document.querySelector('#inp_supplier_name');
 function getSuppliers() {
-    clear('tbl_suppliers')
-    .then(tbl_suppliers => {
+    Promise.all([
+        clear('tbl_suppliers'),
+        getElement('inp_supplier_name')
+    ])
+    .then(([tbl_suppliers, inp_supplier_name]) => {
         let like = {};
-        if (inp_supplier_name.value.trim() != "") {
-            like.name = inp_supplier_name.value
-        }
+        if (inp_supplier_name.value.trim() != "") like.name = inp_supplier_name.value;
+
         get({
             table: 'suppliers',
             like:  like
@@ -26,7 +27,7 @@ function getSuppliers() {
 };
 window.addEventListener('load', function () {
     addListener('reload', getSuppliers);
-    inp_supplier_name.addEventListener('input', getSuppliers);
+    addListener('inp_supplier_name', getSuppliers, 'input');
     addSortListeners('suppliers', getSuppliers);
     getSuppliers();
 });

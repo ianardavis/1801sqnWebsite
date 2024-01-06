@@ -13,8 +13,8 @@ function getSites() {
                 );
             });
         })
-        .then(getCurrentSite)
-    })
+        .then(getCurrentSite);
+    });
 };
 function getCurrentSite() {
     clear('dd_sites')

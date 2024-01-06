@@ -115,8 +115,8 @@ function get_sizes(event) {
                         ],
                         options: [{text: 'Select Size...', selected: true}]
                     }).e
-                    let measurements = get_measurements(),
-                        recommended  = false;
+                    let measurements = get_measurements();
+                    let recommended  = false;
                     result.sizes.forEach(size => {
                         sel_sizes.appendChild(new Option({value: size.size_id, text: printSize(size)}).e);
                     })
