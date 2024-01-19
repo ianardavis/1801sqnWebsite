@@ -6,6 +6,7 @@
     <%- include(`${partials}/sidebar/button`, {id: 'actions', text: 'Actions', float: true}) %>
     <ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
         <%- include(`${partials}/tab_head`, {id: 'details',     title: 'Details'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'sites',       title: 'Sites',       count_id: 'site'}) %>
         <%- include(`${partials}/tab_head`, {id: 'permissions', title: 'Permissions', count_id: 'permission'}) %>
         <%- include(`${partials}/tab_head`, {id: 'issues',      title: 'Issues',      count_id: 'issue'}) %>
         <%- include(`${partials}/tab_head`, {id: 'loancards',   title: 'Loancards',   count_id: 'loancards'}) %>
@@ -32,7 +33,7 @@
                         <th class='w-50' data-column='["endDate"]'>To</th>
                         <th></th>
                     </thead>
-                    <% if (permissions.user_admin) { %>
+<% if (permissions.user_admin) { %>
                         <form id='form_giftaid_add'>
                             <input class='user_id' type="hidden" name='giftaid[user_id]'>
                             <tbody>
@@ -43,10 +44,20 @@
                                 </tr>
                             </tbody>
                         </form>
-                    <% } %>
+<% } %>
                     <tbody id="tbl_giftaid"></tbody>
                 </table>
             </div>
+        </div>
+        <div class="tab-pane fade" id="sites"       role="tabpanel" aria-labelledby="sites-tab">
+            <table class="table table-sm table-hover">
+                <thead class="thead-dark" id="tbl_sites_head">
+                    <th class='w-90' data-column='["site","name"]' data-dir="ASC">Site</th>
+                    <th class='w-10' data-column='["is_default"]'>Default</th>
+                </thead>
+                <tbody id="tbl_sites"></tbody>
+            </table>
+            <%- include(`${partials}/limit`, {table: 'sites'}) %>
         </div>
         <div class="tab-pane fade" id="permissions" role="tabpanel" aria-labelledby="permissions-tab">
             <table class="table table-sm table-hover">
@@ -338,8 +349,8 @@
 <%- include(`${partials}/common/notes/scripts`) %>
 <script>showTab('<%= tab %>');</script>
 <script src='/js/users/show/view.js'></script>
-<script async>getUser()</script>
 <script src='/js/users/show/giftaid/view.js'></script>
+<script src='/js/users/show/sites/view.js'></script>
 <% if (permissions.user_admin) { %>
     <script src="/js/users/show/edit.js"></script>
     <script src="/js/utils/list/statuses.js"></script>

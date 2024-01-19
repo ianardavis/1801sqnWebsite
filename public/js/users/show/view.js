@@ -31,4 +31,5 @@ window.addEventListener('load', function () {
             ]
         }
     );
+    getUser();
 });
