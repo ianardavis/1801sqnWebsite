@@ -98,7 +98,7 @@ module.exports = (app, fn) => {
         .catch(err => fn.sendError(res, err));
     });
     app.put('/demand_lines',         fn.loggedIn(), fn.permissions.check('authorised_demander'), (req, res) => {
-        fn.demands.lines.update(req.session.site_id, req.body.lines, req.user.user_id)
+        fn.demands.lines.update(req.session.site.site_id, req.body.lines, req.user.user_id)
         .then(results => res.send({success: true, message: 'Lines actioned'}))
         .catch(err => fn.sendError(res, err));
     });

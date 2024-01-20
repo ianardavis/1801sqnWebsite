@@ -33,7 +33,7 @@ module.exports = function (m, fn) {
             })
             .then(user_site => {
                 if (user_site) {
-                    req.session.site_id = user_site.site_id;
+                    req.session.site = user_site.dataValues;
                     req.session.save();
                     resolve(true);
                 } else {
@@ -55,19 +55,41 @@ module.exports = function (m, fn) {
     //     });
     // };
 
-    // fn.notes.create = function (note, user_id, id, table, system = true) {
-    //     return new Promise((resolve, reject) => {
-    //         m.notes.create({
-    //             note:    note,
-    //             id:      id,
-    //             _table:  table,
-    //             system:  system,
-    //             user_id: user_id
-    //         })
-    //         .then(note => resolve(true))
-    //         .catch(reject);
-    //     });
-    // };
+    fn.sites.create = function (name, user_id_creator) {
+        function createPermission(pm_details, permission) {
+            return new Promise((resolve, reject) => {
+                m.permissions.create({
+                    ...pm_details,
+                    permission: permission
+                })
+                .then(resolve)
+                .catch(reject);
+            });
+        };
+        return new Promise((resolve, reject) => {
+            m.sites.create({ name: name })
+            .then(site => {
+                m.user_sites.create({
+                    user_id: user_id_creator,
+                    site_id: site.site_id
+                })
+                .then(user_site => {
+                    const pm_details = {site_id: site.site_id, user_id: user_id_creator};
+                    Promise.allSettled([
+                        createPermission(pm_details, 'site_admin'),
+                        createPermission(pm_details, 'access_users'),
+                        createPermission(pm_details, 'user_admin'),
+                        createPermission(pm_details, 'access_settings')
+                    ])
+                    .then(results => resolve(true))
+                    .catch(reject);
+                })
+                .catch(reject);
+                // grant site_admin, access_users, user_admin, access_settings
+            })
+            .catch(reject);
+        });
+    };
 
     // fn.notes.edit = function (note_id, note_text) {
     //     return new Promise((resolve, reject) => {

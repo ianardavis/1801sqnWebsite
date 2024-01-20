@@ -1,10 +1,10 @@
-var express  = require('express'),
-    app      = express(),
-    passport = require('passport'),
-    session  = require('express-session'),
-    flash    = require('connect-flash'),
-    bb       = require('express-busboy'),
-    memStore = require('memorystore')(session);
+let express  = require('express');
+let app      = express();
+let passport = require('passport');
+let session  = require('express-session');
+let flash    = require('connect-flash');
+let bb       = require('express-busboy');
+let memStore = require('memorystore')(session);
 require('dotenv').config();
 if (!process.env.NODE_ENV) process.env.NODE_ENV = 'development';
 const port_check = require(`${process.env.ROOT}/functions/port_check.js`);

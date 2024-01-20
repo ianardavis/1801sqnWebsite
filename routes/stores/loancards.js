@@ -3,19 +3,19 @@ module.exports = (app, fn) => {
     app.get('/loancards/:id',          fn.loggedIn(), fn.permissions.get(  'access_stores'),       (req, res) => res.render('stores/loancards/show'));
     app.get('/loancard_lines/:id',     fn.loggedIn(), fn.permissions.get(  'access_stores'),       (req, res) => res.render('stores/loancard_lines/show'));
     app.get('/loancards/:id/download', fn.loggedIn(), fn.permissions.check('access_stores'),       (req, res) => {
-        fn.loancards.download(req.session.site_id, req.params.id, res)
+        fn.loancards.download(req.session.site.site_id, req.params.id, res)
         .catch(err => fn.sendError(res, err));
     });
 
     app.get('/count/loancards',        fn.loggedIn(), fn.permissions.check('issuer',        true), (req, res) => {
         if (!req.allowed) req.query.where.user_id_loancard = req.user.user_id;
-        fn.loancards.count(req.session.site_id, req.query.where)
+        fn.loancards.count(req.session.site.site_id, req.query.where)
         .then(count => res.send({success: true, result: count}))
         .catch(err => fn.sendError(res, err));
     });
     app.get('/get/loancard',           fn.loggedIn(), fn.permissions.check('access_stores', true), (req, res) => {
         if (!req.allowed) req.query.where['user_id_loancard'] = req.user.user_id;
-        req.query.where.site_id = req.session.site_id;
+        req.query.where.site_id = req.session.site.site_id;
         fn.loancards.find(
             req.query.where,
             [fn.inc.stores.loancard_lines()]
@@ -24,7 +24,7 @@ module.exports = (app, fn) => {
         .catch(err => fn.sendError(res, err));
     });
     app.get('/get/loancards',          fn.loggedIn(), fn.permissions.check('issuer',        true), (req, res) => {
-        req.query.where.site_id = req.session.site_id;
+        req.query.where.site_id = req.session.site.site_id;
         fn.loancards.findAll(
             req.allowed,
             req.query,
@@ -91,7 +91,7 @@ module.exports = (app, fn) => {
 
     app.post('/loancards',             fn.loggedIn(), fn.permissions.check('issuer'),              (req, res) => {
         fn.loancards.create(
-            req.session.site_id,
+            req.session.site.site_id,
             req.body.user_id_loancard,
             req.user.user_id
         )
@@ -109,7 +109,7 @@ module.exports = (app, fn) => {
 
     app.put('/loancards/:id',          fn.loggedIn(), fn.permissions.check('issuer'),              (req, res) => {
         fn.loancards.edit(
-            req.session.site_id,
+            req.session.site.site_id,
             req.params.id,
             req.body.loancard
         )
@@ -122,7 +122,7 @@ module.exports = (app, fn) => {
     };
     app.put('/loancards/:id/complete', fn.loggedIn(), fn.permissions.check('issuer'),              (req, res) => {
         fn.loancards.complete(
-            req.session.site_id,
+            req.session.site.site_id,
             req.params.id,
             req.user.user_id,
             req.body.date_due || add_years(7)
@@ -139,7 +139,7 @@ module.exports = (app, fn) => {
     
     app.delete('/loancards/:id',       fn.loggedIn(), fn.permissions.check('issuer'),              (req, res) => {
         fn.loancards.cancel(
-            req.session.site_id,
+            req.session.site.site_id,
             req.params.id,
             req.user.user_id
         )

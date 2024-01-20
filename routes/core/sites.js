@@ -1,5 +1,5 @@
 module.exports = (app, fn) => {
-    app.get('/get/sites/own', fn.loggedIn(), (req, res) => {
+    app.get('/get/sites/own',      fn.loggedIn(), (req, res) => {
         fn.sites.findForUser(req.user.user_id)
         .then(sites => res.send({success: true, result: sites}))
         .catch(err => fn.sendError(res, err));
@@ -10,20 +10,28 @@ module.exports = (app, fn) => {
         .catch(err => fn.sendError(res, err));
     });
     app.get('/get/site/current',   fn.loggedIn(), (req, res) => {
-        fn.sites.findCurrent(req.session.site_id)
+        fn.sites.findCurrent(req.session.site.site_id)
         .then(site => res.send({success: true, result: site}))
         .catch(err => fn.sendError(res, err));
     });
 
-    app.put('/sites/switch/:id', fn.loggedIn(), (req, res) => {
+    app.put('/sites/switch/:id',   fn.loggedIn(), (req, res) => {
         fn.sites.switch(req, req.params.id)
         .then(result => res.send({success: true, result: true}))
         .catch(err => fn.sendError(res, err));
     });
     
-    // app.delete('/sites',  fn.loggedIn(), (req, res) => {
-    //     fn.notes.delete(req.body.note_id_delete)
-    //     .then(note => res.send({success: true, message: 'Note deleted'}))
-    //     .catch(err => fn.sendError(res, err));
-    // });
+    app.post('/sites',             fn.loggedIn(), fn.permissions.check('site_admin'), (req, res) => {
+        if (req.session.site.site_id) {
+            fn.sites.create(req.body.site.name, req.user.user_id)
+            .then(result => res.send({success: true, result: true}))
+            .catch(err => fn.sendError(res, err));
+        };
+    });
+    
+    app.delete('/sites/:id',       fn.loggedIn(), fn.permissions.check('site_admin'), (req, res) => {
+        fn.sites.delete(req.params.id)
+        .then(note => res.send({success: true, message: 'Site deleted'}))
+        .catch(err => fn.sendError(res, err));
+    });
 };

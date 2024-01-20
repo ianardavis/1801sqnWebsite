@@ -19,8 +19,13 @@ module.exports = (app, fn) => {
     });
 
     function setSiteID(req, res, next) {
-        req.session.site_id = req.user.site_id;
-        next();
+        m.sites.findOne({where: {site_id: req.user.site_id}})
+        .then(site => {
+            if (site) {
+                req.session.site = site.dataValues;
+                next();
+            };
+        })
     };
     app.post('/login', passport.authenticate('local', {failureRedirect: `/`}), setSiteID, (req, res) => res.redirect(`${req.body.redirect || '/stores'}`));
 };

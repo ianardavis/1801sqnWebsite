@@ -7,7 +7,7 @@ module.exports = (m, fn) => {
                 return m.findAll({
                     where:      {
                         user_id: req.user.user_id,
-                        site_id: req.session.site_id
+                        site_id: req.session.site.site_id
                     },
                     attributes: ['permission']
                 })
@@ -39,7 +39,7 @@ module.exports = (m, fn) => {
             return m.findOne({
                 where: {
                     user_id:    req.user.user_id,
-                    site_id:    req.session.site_id,
+                    site_id:    req.session.site.site_id,
                     permission: _permission
                 },
                 attributes: ['permission']
