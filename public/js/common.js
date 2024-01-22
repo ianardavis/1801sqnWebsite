@@ -436,7 +436,7 @@ function filterSupplier(id) {
         console.error(`common.js | filterSupplier | ${err.message}`);
     });
 };
-function filterSite(id) {
+function filterSite() {
     try {
         const e = getElementSync('filter_site_name')
         if (e.value) return {name: e.value};
