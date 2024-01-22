@@ -1,7 +1,7 @@
 function getItems() {
     clear('tbl_items')
     .then(tbl_items => {
-        function add_line(item) {
+        function addLine(item) {
             let row = tbl_items.insertRow(-1);
             addCell(row, {text: item.description});
             addCell(row, {append: new Link(`/items/${item.item_id}`).e});
@@ -12,9 +12,7 @@ function getItems() {
             func: getItems
         })
         .then(function ([result, options]) {
-            result.items.forEach(item => {
-                add_line(item);
-            });
+            result.items.forEach(addLine);
         });
     });
 };

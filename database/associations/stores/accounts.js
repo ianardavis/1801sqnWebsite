@@ -1,6 +1,6 @@
 module.exports = function (m) {
     m.accounts.belongsTo(
-        m.suppliers, 
+        m.site_suppliers, 
         {
             foreignKey: 'account_id',
             targetKey:  'account_id'

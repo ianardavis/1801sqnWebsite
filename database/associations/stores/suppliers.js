@@ -15,7 +15,7 @@ module.exports = function (m) {
         }
     );
     
-    m.suppliers.hasOne(
+    m.site_suppliers.hasOne(
         m.accounts,
         {
             foreignKey: 'account_id',

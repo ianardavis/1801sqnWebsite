@@ -1,4 +1,4 @@
-function getSites() {
+function getSitesDD() {
     clear('dd_sites_list')
     .then(dd_sites_list => {
         get({location: 'sites/own'})
@@ -26,7 +26,7 @@ function getCurrentSite() {
     })
 };
 window.addEventListener('load', function () {
-    getSites();
+    getSitesDD();
 });
 
 function Site_Button(site) {

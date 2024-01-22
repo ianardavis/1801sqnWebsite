@@ -65,4 +65,12 @@ module.exports = function (m) {
             otherKey: 'site_id'
         }
     );
+    m.sites.belongsToMany(
+        m.users, 
+        {
+            through: m.user_sites,
+            foreignKey: 'site_id',
+            otherKey: 'user_id'
+        }
+    );
 };

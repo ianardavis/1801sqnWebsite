@@ -11,21 +11,12 @@ module.exports = (app, fn) => {
         };
     });
     
-    app.get('/logout', fn.loggedIn(), (req, res) => {
+    app.get('/logout', fn.loggedIn, (req, res) => {
         req.logout(function(err) {
             if (err) return next(err);
             res.redirect('/');
         });
     });
 
-    function setSiteID(req, res, next) {
-        m.sites.findOne({where: {site_id: req.user.site_id}})
-        .then(site => {
-            if (site) {
-                req.session.site = site.dataValues;
-                next();
-            };
-        })
-    };
-    app.post('/login', passport.authenticate('local', {failureRedirect: `/`}), setSiteID, (req, res) => res.redirect(`${req.body.redirect || '/stores'}`));
+    app.post('/login', passport.authenticate('local', {failureRedirect: `/`}), fn.setSiteID, (req, res) => res.redirect(`${req.body.redirect || '/stores'}`));
 };

@@ -1,10 +1,43 @@
 module.exports = (m, fn) => {
     fn.permissions = {};
+    fn.setSiteID = function(req, res, next) {
+        m.sites.findOne({where: {site_id: req.user.site_id}})
+        .then(site => {
+            if (site) {
+                req.session.site = site.dataValues;
+                next();
+            };
+        })
+    };
+    fn.adminSiteOnly = function(req, res, next) {
+        if (req.session.site.is_admin) {
+            next();
+        } else {
+            req.flash('danger', 'Page only accessible from the admin site!');
+            res.redirect('/stores');
+        };
+    };
+    fn.loggedIn = function (req, res, next) {
+        if (req.isAuthenticated()) {
+            if (
+                !req.user.reset ||
+                req._parsedUrl.pathname === `/password/${req.user.user_id}`
+            ) {
+                next();
+            } else {
+                if (req.user.reset) req.flash('info', 'You must change your password before you can continue');
+                res.redirect(`/password/${req.user.user_id}`);
+            };
+        } else {
+            req.flash('danger', 'You need to be signed in to do that!');
+            res.redirect(`/?redirect=${req._parsedUrl.pathname}`);
+        };
+    };
     fn.permissions.get = function (permission = '', allow = false) {
         return function (req, res, next) {
             res.locals.permissions = {};
             if (req.user) {
-                return m.findAll({
+                return m.permissions.findAll({
                     where:      {
                         user_id: req.user.user_id,
                         site_id: req.session.site.site_id
@@ -36,7 +69,7 @@ module.exports = (m, fn) => {
     };
     fn.permissions.check = function (_permission, allow = false) {
         return function (req, res, next) {
-            return m.findOne({
+            return m.permissions.findOne({
                 where: {
                     user_id:    req.user.user_id,
                     site_id:    req.session.site.site_id,

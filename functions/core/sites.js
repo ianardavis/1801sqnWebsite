@@ -6,6 +6,18 @@ module.exports = function (m, fn) {
             where
         );
     };
+    fn.sites.findAll = function (query) {
+        return new Promise((resolve, reject) => {
+            let where = query.where || {};
+            if (query.like) where.name = {[fn.op.substring]: query.like.name || ''};
+            m.sites.findAndCountAll({
+                where: where,
+                ...fn.pagination(query)
+            })
+            .then(sites => resolve(sites))
+            .catch(reject);
+        });
+    };
     fn.sites.findForUser = function (user_id) {
         return new Promise((resolve, reject) => {
             m.users.findOne({
@@ -23,17 +35,19 @@ module.exports = function (m, fn) {
             .catch(reject);
         });
     };
-    fn.sites.switch = function (req, site_id) {
+    fn.sites.switch = function (req) {
         return new Promise((resolve, reject) => {
-            m.user_sites.findOne({
-                where: {
-                    user_id: req.user.user_id,
-                    site_id: site_id
-                }
+            m.sites.findOne({
+                where: {site_id: req.params.id},
+                include: [{
+                    model: m.users,
+                    where: {user_id: req.user.user_id},
+                    required: true
+                }]
             })
-            .then(user_site => {
-                if (user_site) {
-                    req.session.site = user_site.dataValues;
+            .then(site => {
+                if (site) {
+                    req.session.site = site.dataValues;
                     req.session.save();
                     resolve(true);
                 } else {
@@ -43,17 +57,6 @@ module.exports = function (m, fn) {
             .catch(reject);
         });
     };
-    // fn.notes.findAll = function (query) {
-    //     return new Promise((resolve, reject) => {
-    //         m.notes.findAndCountAll({
-    //             where:   query.where,
-    //             include: [fn.inc.users.user()],
-    //             ...fn.pagination(query)
-    //         })
-    //         .then(results => resolve(results))
-    //         .catch(reject);
-    //     });
-    // };
 
     fn.sites.create = function (name, user_id_creator) {
         function createPermission(pm_details, permission) {
@@ -79,13 +82,13 @@ module.exports = function (m, fn) {
                         createPermission(pm_details, 'site_admin'),
                         createPermission(pm_details, 'access_users'),
                         createPermission(pm_details, 'user_admin'),
-                        createPermission(pm_details, 'access_settings')
+                        createPermission(pm_details, 'access_settings'),
+                        createPermission(pm_details, 'edit_own_permissions')
                     ])
                     .then(results => resolve(true))
                     .catch(reject);
                 })
                 .catch(reject);
-                // grant site_admin, access_users, user_admin, access_settings
             })
             .catch(reject);
         });

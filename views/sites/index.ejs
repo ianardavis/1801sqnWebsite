@@ -1,0 +1,55 @@
+<%- include(`${partials}/head/app`,	  {text: 'Stores'}) %>
+<%- include(`${partials}/breadcrumb`, {text: 'Sites'}) %>
+<%- include(`${partials}/reload`) %>
+<%- include(`${partials}/head/components/close`) %>
+<section class='container'>
+    <%- include(`${partials}/sidebar/button`, {id: 'menu', text: 'Menu', float: true}) %>
+
+	<div class='row'>
+		<div class='col-12 col-lg-5 mx-auto'>
+	        <table class='table table-sm table-hover'>
+				<thead class='thead-dark' id='tbl_sites_head'>
+					<th class='w-90' data-column='["name"]' data-dir='ASC'>Name</th>
+					<th class='w-10' data-column='["is_admin"]'>Admin</th>
+					<th><i class='fas fa-search'></i></th>
+				</thead>
+				<tbody id='tbl_sites'></tbody>
+			</table>
+			<%- include(`${partials}/limit`, {table: 'sites'}) %>
+		</div>
+	</div>
+
+	<div id="sidebars">
+		<div class="offcanvas offcanvas-start" tabindex="-1" id="sdb_menu" aria-labelledby="sdb_menu_label">
+			<%- include(`${partials}/sidebar/header`, {id: 'menu', text: 'Menu'}) %>
+			<div class="offcanvas-body d-flex flex-column">
+				<h5>Filter</h5>
+				<%- include(`${partials}/filter/site`) %>
+				<h5>Actions</h5>
+				<%- include(`${partials}/button/modal`, {id: 'site_add', text: 'New Site', type: 'success'}) %>
+			</div>
+		</div>
+	</div>
+	<div id='modals'>
+		<% if (permissions.stores_stock_admin) { %>
+			<div id='mdl_size_add' class='modal fade' tabindex='-1' role='dialog'>
+				<div class='modal-dialog' role='document'>
+					<form class='modal-content' id='form_site_add'>
+						<div class='modal-header'>
+							<h5 class='modal-title'>Add Site</h5>
+						</div>
+						<div class='modal-body'>
+							<%- include(`${partials}/inputs/text`, {title: 'Name', name: 'site[name]', required: true}) %>
+						</div>
+						<div class='modal-footer'>
+							<%- include(`${partials}/button/save`) %>
+						</div>
+					</form>
+				</div>
+			</div>
+		<% } %>
+	</div>
+</section>
+<%- include(`${partials}/foot/app`) %>
+<script src='/js/sites/index/view.js'></script>
+<%- include(`${partials}/foot/components/htmlClose`) %>

@@ -4,5 +4,5 @@ module.exports = (fs, app, fn) => {
     .filter(e => e !== "index.js")
     .forEach(file => require(`./${file}`)(app, fn));
 
-    app.get('/stores', fn.loggedIn(), fn.permissions.get('access_stores'), (req, res) => res.render('stores/index'));
+    app.get('/stores', fn.loggedIn, fn.permissions.get('access_stores'), (req, res) => res.render('stores/index'));
 };

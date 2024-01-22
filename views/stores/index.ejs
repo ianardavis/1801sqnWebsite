@@ -2,24 +2,28 @@
 <%- include(`${partials}/head/components/close`) %>
 <section>
 	<div class="row container menu mx-auto">
-		<%- include(`${partials}/card`, {id: 'suppliers', href: '/suppliers', title: 'Suppliers', image: 'warehouse', permission: 'supplier_admin'}) %>
-		<%- include(`${partials}/card`, {id: 'items', 	  href: '/items', 	  title: 'Items', 	  image: 'tshirt'}) %>
-		<%- include(`${partials}/card`, {id: 'issues', 	  href: '/issues', 	  title: 'Issues', 	  image: 'address-card'}) %>
-		<%- include(`${partials}/card`, {id: 'scraps', 	  href: '/scraps', 	  title: 'Scraps', 	  image: 'trash-alt', permission: 'stores_stock_admin'}) %>
-		<%- include(`${partials}/card`, {id: 'orders', 	  href: '/orders', 	  title: 'Orders', 	  image: 'list', 	  permission: 'stores_stock_admin'}) %>
-		<%- include(`${partials}/card`, {id: 'demands',   href: '/demands',   title: 'Demands',   image: 'stream', 	  permission: 'authorised_demander'}) %>
-		<%- include(`${partials}/card`, {id: 'loancards', href: '/loancards', title: 'Loancards', image: 'address-card'}) %>
-		<%- include(`${partials}/card`, {id: 'reports',   href: '/reports',   title: 'Reports',   image: 'chart-pie'}) %>
-	</div>
-</section>
-<%- include(`${partials}/foot/app`) %>
-<script src="/js/stores/index/view.js"></script>
+	<%- include(`${partials}/card`, {id: 'suppliers', href: '/suppliers', title: 'Suppliers', image: 'warehouse', permission: 'supplier_admin'}) %>
+	<%- include(`${partials}/card`, {id: 'items', 	  href: '/items', 	  title: 'Items', 	  image: 'tshirt'}) %>
+<% if (site.is_admin) { %>
+	<%- include(`${partials}/card`, {id: 'sites', 	  href: '/sites', 	  title: 'Sites', 	  image: 'city'}) %>
+<% } else { %>
+	<%- include(`${partials}/card`, {id: 'issues', 	  href: '/issues', 	  title: 'Issues', 	  image: 'address-card'}) %>
+	<%- include(`${partials}/card`, {id: 'scraps', 	  href: '/scraps', 	  title: 'Scraps', 	  image: 'trash-alt', permission: 'stores_stock_admin'}) %>
+	<%- include(`${partials}/card`, {id: 'orders', 	  href: '/orders', 	  title: 'Orders', 	  image: 'list', 	  permission: 'stores_stock_admin'}) %>
+	<%- include(`${partials}/card`, {id: 'demands',   href: '/demands',   title: 'Demands',   image: 'stream', 	  permission: 'authorised_demander'}) %>
+	<%- include(`${partials}/card`, {id: 'loancards', href: '/loancards', title: 'Loancards', image: 'address-card'}) %>
+	<%- include(`${partials}/card`, {id: 'reports',   href: '/reports',   title: 'Reports',   image: 'chart-pie'}) %>
 <% if (permissions.stores_stock_admin) { %>
 	<script src="/js/stores/index/orders.js"></script>
 <% } %>
 <% if (permissions.authorised_demander) { %>
 	<script src="/js/stores/index/demands.js"></script>
 <% } %>
-<script src="/js/stores/index/issues.js"></script>
-<script src="/js/stores/index/loancards.js"></script>
+	<script src="/js/stores/index/issues.js"></script>
+	<script src="/js/stores/index/loancards.js"></script>
+<% } %>
+	</div>
+</section>
+<%- include(`${partials}/foot/app`) %>
+<script src="/js/stores/index/view.js"></script>
 <%- include(`${partials}/foot/components/htmlClose`) %>

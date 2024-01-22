@@ -11,6 +11,20 @@ function getElement(id) {
         };
     });
 };
+function getElementSync(id) {
+    try {
+        const element = document.getElementById(id);
+        if (element) {
+            return element;
+    
+        } else {
+            throw new Error(`Element not found: ${id}`);
+    
+        };
+    } catch (error) {
+        throw error;
+    }
+};
 function removeID(id) {
     if (typeof id === 'string') {
         getElement(id)
@@ -360,7 +374,6 @@ function setStatusFilterOptions(id, options) {
     })
     .catch(err => {
         console.error(`common.js | setStatusFilterOptions | ${err.message}`);
-        reject(err);
     });
 };
 function getSelectedOptions(id) {
@@ -378,14 +391,13 @@ function getSelectedOptions(id) {
     });
 };
 function filterItem(id) {
-    getElement(`filter_${id}_description`)
-    .then(e => {
-        if (e.value) return {description: e.value}
-    })
-    .catch(err => {
-        console.error(`common.js | filterItem | ${err.message}`);
-        reject(err);
-    });
+    try {
+        const e = getElementSync(`filter_${id}_description`)
+        if (e.value) return {description: e.value};
+    } catch (error) {
+        console.error(`common.js | filterItem | ${error.message}`);
+        throw error;
+    }
 };
 function filterSize(id) {
     Promise.all(
@@ -402,7 +414,6 @@ function filterSize(id) {
     })
     .catch(err => {
         console.error(`common.js | filterItem | ${err.message}`);
-        reject(err);
     });
 };
 function filterStatus(id) {
@@ -423,8 +434,16 @@ function filterSupplier(id) {
     })
     .catch(err => {
         console.error(`common.js | filterSupplier | ${err.message}`);
-        reject(err);
     });
+};
+function filterSite(id) {
+    try {
+        const e = getElementSync('filter_site_name')
+        if (e.value) return {name: e.value};
+    } catch (error) {
+        console.error(`common.js | filterName | ${error.message}`);
+        throw error;
+    }
 };
 function filterDateFrom(id) {
     getElement(`filter_${id}_createdAt_from`)
@@ -434,7 +453,6 @@ function filterDateFrom(id) {
     })
     .catch(err => {
         console.error(`common.js | filterDateFrom | ${err.message}`);
-        reject(err);
     });
 };
 function filterDateTo(id) {
@@ -445,7 +463,6 @@ function filterDateTo(id) {
     })
     .catch(err => {
         console.error(`common.js | filterDateTo | ${err.message}`);
-        reject(err);
     });
 };
 function filterUser(id) {
@@ -457,7 +474,6 @@ function filterUser(id) {
     })
     .catch(err => {
         console.error(`common.js | filterUser | ${err.message}`);
-        reject(err);
     });
 };
 
