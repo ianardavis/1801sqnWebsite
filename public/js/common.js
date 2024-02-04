@@ -381,7 +381,7 @@ function getSelectedOptions(id) {
         getElement(id)
         .then(select => {
             if (select.selectedOptions) {
-                resolve(Array.from(select.selectedOptions).map(({ value }) => value))
+                resolve(Array.from(select.selectedOptions).map(({ value }) => value));
             } else resolve([]);
         })
         .catch(err => {
@@ -390,31 +390,32 @@ function getSelectedOptions(id) {
         });
     });
 };
+
 function filterItem(id) {
     try {
-        const e = getElementSync(`filter_${id}_description`)
+        const e = getElementSync(`filter_${id}_description`);
         if (e.value) return {description: e.value};
+
     } catch (error) {
         console.error(`common.js | filterItem | ${error.message}`);
         throw error;
-    }
+
+    };
 };
 function filterSize(id) {
-    Promise.all(
-        getElement(`filter_${id}_size_1`),
-        getElement(`filter_${id}_size_2`),
-        getElement(`filter_${id}_size_3`)
-    )
-    .then(([size1, size2, size3]) => {
+    try {
         let like = {};
-        if (size1 && size1.value) like.size1 = size1.value;
-        if (size2 && size2.value) like.size2 = size2.value;
-        if (size3 && size3.value) like.size3 = size3.value;
+        ['1', '2', '3'].forEach(s => {
+            const e = getElementSync(`filter_${id}_size_${s}`);
+            if (e && e.value) like[`size${s}`] = e.value;
+        });
         return like;
-    })
-    .catch(err => {
-        console.error(`common.js | filterItem | ${err.message}`);
-    });
+
+    } catch (error) {
+        console.error(`common.js | filterSize | ${error.message}`);
+        throw error;
+
+    };
 };
 function filterStatus(id) {
     return new Promise((resolve, reject) => {
@@ -427,54 +428,64 @@ function filterStatus(id) {
     });
 };
 function filterSupplier(id) {
-    getElement(`filter_${id}_supplier`)
-    .then(e => {
-        if (e.value !== '') return {supplier_id: e.value}
+    try {
+        const e = getElementSync(`filter_${id}_supplier`);
+        if (e.value) return {supplier_id: e.value}
         else return {};
-    })
-    .catch(err => {
+
+    } catch (error) {
         console.error(`common.js | filterSupplier | ${err.message}`);
-    });
+        throw error;
+
+    };
 };
 function filterSite() {
     try {
-        const e = getElementSync('filter_site_name')
+        const e = getElementSync('filter_site_name');
         if (e.value) return {name: e.value};
+
     } catch (error) {
         console.error(`common.js | filterName | ${error.message}`);
         throw error;
-    }
+
+    };
 };
 function filterDateFrom(id) {
-    getElement(`filter_${id}_createdAt_from`)
-    .then(e => {
-        if (e.value !== '') return {column: 'createdAt', value: e.value}
+    try {
+        const e = getElementSync(`filter_${id}_createdAt_from`);
+        if (e.value) return {column: 'createdAt', value: e.value}
         else return null;
-    })
-    .catch(err => {
+
+    } catch (error) {
         console.error(`common.js | filterDateFrom | ${err.message}`);
-    });
+        throw error;
+
+    };
 };
 function filterDateTo(id) {
-    getElement(`filter_${id}_createdAt_to`)
-    .then(e => {
-        if (e.value !== '') return {column: 'createdAt', value: e.value}
+    try {
+        const e = getElementSync(`filter_${id}_createdAt_to`);
+        if (e.value) return {column: 'createdAt', value: e.value}
         else return null;
-    })
-    .catch(err => {
+
+    } catch (error) {
         console.error(`common.js | filterDateTo | ${err.message}`);
-    });
+        throw error;
+
+    };
 };
 function filterUser(id) {
-    getElement(`filter_${id}_user`)
-    .then(e => {
+    try {
+        const e = getElementSync(`filter_${id}_user`);
         let where = {};
         if (e.value) where[`user_id_${id}`] = e.value;
         return where;
-    })
-    .catch(err => {
+
+    } catch (error) {
         console.error(`common.js | filterUser | ${err.message}`);
-    });
+        throw error;
+
+    };
 };
 
 function addSortListeners(table, func) {

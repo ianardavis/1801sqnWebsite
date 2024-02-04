@@ -4,7 +4,6 @@ function get_scraps() {
         clear('tbl_scraps'),
         filterStatus('scrap')
     ])
-    
     .then(([tbl_scraps, filterStatuses]) => {
         function add_line(scrap) {
             let row = tbl_scraps.insertRow(-1);

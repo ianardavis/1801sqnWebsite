@@ -11,7 +11,6 @@ function get_issues() {
         clear('tbl_issues'),
         filterStatus('issue')
     ])
-    
     .then(([tbl_issues, filterStatuses]) => {
         function add_line(issue) {
             try {

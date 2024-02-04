@@ -4,7 +4,6 @@ function get_lines() {
         clear('tbl_lines'),
         filterStatus('demand_lines')
     ])
-    
     .then(([tbl_lines, filterStatuses]) => {
         function add_line(line, index) {
             try {

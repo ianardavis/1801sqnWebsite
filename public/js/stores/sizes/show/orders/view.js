@@ -9,7 +9,6 @@ function get_orders() {
         clear('tbl_orders'),
         filterStatus('order')
     ])
-    
     .then(([tbl_orders, filterStatuses]) => {
         function add_line(order) {
             try {
