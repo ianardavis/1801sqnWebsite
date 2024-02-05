@@ -32,7 +32,7 @@
 	</div>
 	<div id='modals'>
 		<% if (permissions.stores_stock_admin) { %>
-			<div id='mdl_size_add' class='modal fade' tabindex='-1' role='dialog'>
+			<div id='mdl_site_add' class='modal fade' tabindex='-1' role='dialog'>
 				<div class='modal-dialog' role='document'>
 					<form class='modal-content' id='form_site_add'>
 						<div class='modal-header'>
@@ -52,4 +52,5 @@
 </section>
 <%- include(`${partials}/foot/app`) %>
 <script src='/js/sites/index/view.js'></script>
+<script src='/js/sites/index/add.js'></script>
 <%- include(`${partials}/foot/components/htmlClose`) %>

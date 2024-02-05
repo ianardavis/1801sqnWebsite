@@ -38,16 +38,17 @@ function yesno(boolean) {
     if (boolean) return 'Yes'
     else return 'No'
 };
-function enableButton(id, pretext = 'btn_') {
-    getElement(`${pretext}${id}`)
-    .then(button => button.removeAttribute('disabled'))
+function enableButton(id) {
+    getElement(`btn_${id}`)
+    .then(e => e.removeAttribute('disabled'))
     .catch(err => {
         console.error(`common.js | enableButton | ${err.message}`);
+        reject(err);
     });
 };
-function disableButton(id, pretext = 'btn_') {
-    getElement(`${pretext}${id}`)
-    .then(button => button.setAttribute('disabled', true))
+function disableButton(id) {
+    getElement(`btn_${id}`)
+    .then(e => e.setAttribute('disabled', true))
     .catch(err => {
         console.error(`common.js | disableButton | ${err.message}`);
         reject(err);
