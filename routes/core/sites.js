@@ -11,7 +11,7 @@ module.exports = (app, fn) => {
         .then(sites => res.send({success: true, result: sites}))
         .catch(err => fn.sendError(res, err));
     });
-    app.get('/get/sites/user/:id', fn.loggedIn, (req, res) => {
+    app.get('/get/sites/user/:id', fn.loggedIn, fn.permissions.check('site_admin'), (req, res) => {
         fn.sites.findForUser(req.params.id)
         .then(sites => res.send({success: true, result: sites}))
         .catch(err => fn.sendError(res, err));

@@ -301,7 +301,7 @@ function removeSpinner(id) {
         reject(err);
     });
 };
-function getStock(size_id) {
+function getStockQty(size_id) {
     return new Promise(resolve => {
         get({
             action: 'sum',

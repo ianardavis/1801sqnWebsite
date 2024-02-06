@@ -1,13 +1,13 @@
 function getUsers() {
     Promise.all([
         clear('tbl_users'),
-        getSelectedOptions('sel_statuses'),
-        getSelectedOptions('sel_ranks')
+        getSelectedOptions('sel_ranks'),
+        getSelectedOptions('sel_statuses')
     ])
-    .then(([tbl, statuses, ranks]) => {
-        let where  = {};
-        if (statuses.length > 0) where.status_id = statuses;
+    .then(([tbl_users, ranks, statuses]) => {
+        let where = {};
         if (ranks   .length > 0) where.rank_id   = ranks;
+        if (statuses.length > 0) where.status_id = statuses;
         get({
             table: 'users',
             where: where,
@@ -15,7 +15,7 @@ function getUsers() {
         })
         .then(function ([result, options]) {
             result.users.forEach(user => {
-                let row = tbl.insertRow(-1);
+                let row = tbl_users.insertRow(-1);
                 addCell(row, {text: user.service_number});
                 addCell(row, {text: user.rank.rank});
                 addCell(row, {text: user.surname});

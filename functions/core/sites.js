@@ -111,7 +111,7 @@ module.exports = function (m, fn) {
     //     });
     // };
 
-    // fn.notes.delete = function (note_id) {
+    // fn.sites.delete = function (site_id) {
     //     return new Promise((resolve, reject) => {
     //         fn.notes.find({note_id: note_id})
     //         .then(note => {

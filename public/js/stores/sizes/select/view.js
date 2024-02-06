@@ -22,7 +22,7 @@ function getSizes() {
             })
             .then(function ([result, options]) {
                 result.sizes.forEach(size => {
-                    getStock(size.size_id)
+                    getStockQty(size.size_id)
                     .then(stock => {
                         let row = tbl_sizes.insertRow(-1);
                         addCell(row, {append: new Checkbox({

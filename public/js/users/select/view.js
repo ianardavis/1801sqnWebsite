@@ -4,14 +4,14 @@ function getUsers() {
         getSelectedOptions('sel_ranks'),
         getSelectedOptions('sel_statuses')
     ])
-    
     .then(([tbl_users, ranks, statuses]) => {
         let where = {};
         if (ranks   .length > 0) where.rank_id   = ranks;
         if (statuses.length > 0) where.status_id = statuses;
         get({
             table: 'users',
-            where: where
+            where: where,
+            func:  getUsers
         })
         .then(function ([result, options]) {
             result.users.forEach(user => {

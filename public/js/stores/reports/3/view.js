@@ -38,7 +38,7 @@ function getSizes() {
             addCell(row, {append: new Link(`/sizes/${size.size_id}`).e});
         };
         function getStock_count(size_id) {
-            getStock(size_id)
+            getStockQty(size_id)
             .then(stock => setInnerText(`${size_id}_stocks`, stock || '0'));
         };
         function get_order_sum(size_id) {
