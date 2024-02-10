@@ -77,7 +77,7 @@ module.exports = function (m, fn) {
                     site_id: site.site_id
                 })
                 .then(user_site => {
-                    const pm_details = {site_id: site.site_id, user_id: user_id_creator};
+                    const pm_details = { site_id: site.site_id, user_id: user_id_creator };
                     Promise.allSettled([
                         createPermission(pm_details, 'site_admin'),
                         createPermission(pm_details, 'access_users'),
@@ -85,7 +85,10 @@ module.exports = function (m, fn) {
                         createPermission(pm_details, 'access_settings'),
                         createPermission(pm_details, 'edit_own_permissions')
                     ])
-                    .then(results => resolve(true))
+                    .then(results => {
+
+                        resolve(`${results.filter(e => e.status === 'fulfilled').length} permissions successfully created`);
+                    })
                     .catch(reject);
                 })
                 .catch(reject);

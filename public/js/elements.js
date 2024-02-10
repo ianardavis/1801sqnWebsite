@@ -260,6 +260,7 @@ function Button(options = {}) {
     else if (options.type === 'edit')   this.e.innerHTML = _edit()
     else if (options.type === 'move')   this.e.innerHTML = _move(options.type_attribute || '')
     else if (options.type === 'delete') this.e.innerHTML = _delete()
+    else if (options.type === 'close')  this.e,innerText = ''
     else                                this.e.innerHTML = _search();
 
     if      (options.colour)                                     this.e.classList.add(`btn-${options.colour}`)
@@ -416,8 +417,9 @@ function Toast(id, title, text, closeBtn = false) {
     if (closeBtn) header.appendChild(
         new Button({
             attributes: [{field: 'aria-label', value: 'Close'}],
-            classes: ['btn-close'], 
-            data: [{field: 'bs-dismiss', value: 'toast'}]
+            classes: ['btn-close'],
+            data: [{field: 'bs-dismiss', value: 'toast'}],
+            type: 'close'
         }).e
     );
 
