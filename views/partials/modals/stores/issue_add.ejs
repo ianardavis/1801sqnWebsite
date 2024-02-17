@@ -3,30 +3,12 @@
         <form class="modal-content" id='form_issue_add'>
             <div class="modal-header">
                 <h5 class="modal-title">Add Issue(s)</h5>
+                <h4>This will issue ALL the items selected to ALL the users selected!</h4>
             </div>
             <div class="modal-body">
-                <button class='btn btn-success mb-1 w-100' type='button' id='btn_issue_users'>Add User(s)</button>
-                <table class="table table-sm table-hover">
-                    <thead class="thead-dark">
-                        <th class="w-40">Service #</th>
-                        <th class="w-60">User</th>
-                        <th><i class="fas fa-trash-alt"></i></th>
-                    </thead>
-                    <tbody id="tbl_issue_users_add"></tbody>
-                </table>
+                <%- include(`${partials}/users/select`, {id: 'issue_users'}) %>
                 <%- include(`${partials}/inputs/number`, {title: 'Quantity', value: '1', min: '1', id: 'issue_add_qty'}) %>
-                <button class='btn btn-success mb-1 w-100' type='button' id='btn_issue_sizes'>Add Item(s)</button>
-                <table class="table table-sm table-hover">
-                    <thead class="thead-dark">
-                        <th class="w-30">Item</th>
-                        <th class="w-20">Size 1</th>
-                        <th class="w-20">Size 2</th>
-                        <th class="w-20">Size 3</th>
-                        <th class="w-10">Quantity</th>
-                        <th><i class="fas fa-trash-alt"></i></th>
-                    </thead>
-                    <tbody id="tbl_issue_sizes_add"></tbody>
-                </table>
+                <%- include(`${partials}/sizes/select`, {id: 'issue_sizes'}) %>
             </div>
             <div class="modal-footer">
                 <input type="submit" class="btn btn-success w-100" value='Add Issues'>

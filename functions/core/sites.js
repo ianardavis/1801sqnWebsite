@@ -1,18 +1,20 @@
 module.exports = function (m, fn) {
     fn.sites = {};
-    fn.sites.find = function (where) {
+    fn.sites.find = function (where, include = []) {
         return fn.find(
             m.sites,
-            where
+            where,
+            include
         );
     };
-    fn.sites.findAll = function (query) {
+    fn.sites.findAll = function (query, include = []) {
         return new Promise((resolve, reject) => {
             let where = query.where || {};
             if (query.like) where.name = {[fn.op.substring]: query.like.name || ''};
             m.sites.findAndCountAll({
                 where: where,
-                ...fn.pagination(query)
+                ...fn.pagination(query),
+                include: include
             })
             .then(sites => resolve(sites))
             .catch(reject);

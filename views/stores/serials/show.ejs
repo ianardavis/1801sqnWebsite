@@ -39,9 +39,7 @@
             <%- include(`${partials}/sidebar/header`, {id: 'actions', text: 'Actions'}) %>
             <div class="offcanvas-body d-flex flex-column">
                 <%- include(`${partials}/button/modal`, {id: 'serial_edit', text: 'Edit', type: 'warning'}) %>
-                <form id="form_delete" class="mt-auto">
-                    <button id='btn_delete' type='button' class="btn btn-danger w-100" disabled>Delete</button>
-                </form>
+                <%- include(`${partials}/button/delete`) %>
             </div>
         </div>
         <%- include(`${partials}/common/notes/sidebar`) %>

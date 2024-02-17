@@ -66,9 +66,7 @@
 				<form id="form_loancard_file_delete">
 					<button id='btn_loancard_file_delete' class="btn btn-danger w-100 mb-1" disabled>Delete File</button>
 				</form>
-				<form id="form_delete" class="mt-auto">
-					<button id='btn_delete' type='button' class="btn btn-danger w-100 mb-1" disabled>Cancel</button>
-				</form>
+                <%- include(`${partials}/button/delete`, {text: 'Cancel'}) %>
 			</div>
 		</div>
 		<div id="sdb_lines"   class="offcanvas offcanvas-start" tabindex="-1" aria-labelledby="sdb_lines_label">

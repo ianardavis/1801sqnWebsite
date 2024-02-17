@@ -63,9 +63,7 @@
                 <%- include(`${partials}/button/modal`, {id: 'item_edit',    text: 'Edit',         type: 'warning'}) %>
                 <%- include(`${partials}/button/modal`, {id: 'category_add', text: 'New Category', type: 'success'}) %>
                 <%- include(`${partials}/button/modal`, {id: 'size_add',     text: 'New Size',     type: 'success'}) %>
-                <form id="form_delete" class="mt-auto">
-                    <button id='btn_delete' type='button' class="btn btn-danger w-100" disabled>Delete</button>
-                </form>
+                <%- include(`${partials}/button/delete`) %>
             </div>
         </div>
         <div class="offcanvas offcanvas-start" tabindex="-1" id="sdb_sizes" aria-labelledby="sdb_sizes_label">

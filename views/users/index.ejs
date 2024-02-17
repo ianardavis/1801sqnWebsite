@@ -24,35 +24,15 @@
 			<%- include(`${partials}/sidebar/header`, {id: 'filter', text: 'Filter Users'}) %>
 			<div class="offcanvas-body d-flex flex-column">
 				<%- include(`${partials}/button/modal`, {id: 'user_add', text: 'New User', type: 'success'}) %>
-				<%- include(`${partials}/inputs/select`, 	 {id: 'sel_statuses', title: 'Statuses', reload_id: 'reload_statuses', multiple: true, size: 4}) %>
-				<%- include(`${partials}/inputs/select`, 	 {id: 'sel_ranks',    title: 'Ranks', 	 reload_id: 'reload_ranks',    multiple: true, size: 10}) %>
+				<%- include(`${partials}/inputs/select`, {id: 'sel_statuses', title: 'Statuses', reload_id: 'reload_statuses', multiple: true, size: 4}) %>
+				<%- include(`${partials}/inputs/select`, {id: 'sel_ranks',    title: 'Ranks', 	 reload_id: 'reload_ranks',    multiple: true, size: 10}) %>
 			</div>
 		</div>
 	</div>
 	<div id="modals">
-		<% if (permissions.user_admin) { %>
-			<div id='mdl_user_add' class="modal fade" tabindex="-1" role="dialog">
-				<div class="modal-dialog" role="document">
-					<form class="modal-content" id='form_user_add'>
-						<div class="modal-header">
-							<h5 class="modal-title">Add User</h5>
-						</div>
-						<div class="modal-body">
-							<%- include(`${partials}/inputs/text`,   {title: 'Service #',  name: 'user[service_number]', required: true, id: 'inp_service_number'}) %>
-							<%- include(`${partials}/inputs/select`, {title: 'Rank',       name: 'user[rank_id]',   	 required: true, id: 'sel_ranks_add',  	 reload_id: 'reload_ranks_add'}) %>
-							<%- include(`${partials}/inputs/text`,   {title: 'Surname',    name: 'user[surname]', 	   	 required: true, id: 'inp_surname'}) %>
-							<%- include(`${partials}/inputs/text`,   {title: 'First Name', name: 'user[first_name]', 	 required: true, id: 'inp_first_name'}) %>
-							<%- include(`${partials}/inputs/select`, {title: 'Status',     name: 'user[status_id]', 	 required: true, id: 'sel_statuses_add', reload_id: 'reload_statuses_add'}) %>
-							<%- include(`${partials}/inputs/text`,   {title: 'Login ID',   name: 'user[login_id]',  	 required: true, id: 'inp_login_id'}) %>
-						</div>
-						<div class="modal-footer">
-							<input type="submit" id='save_user' class="btn btn-success w-100" value='Save User' disabled>
-							<button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-						</div>
-					</form>
-				</div>
-			</div>
-		<% } %>
+<% if (permissions.user_admin) { %>
+		<%- include(`${partials}/users/new`, {id: 'user'}) %>
+<% } %>
 	</div>
 </section>
 <%- include(`${partials}/foot/app`) %>
