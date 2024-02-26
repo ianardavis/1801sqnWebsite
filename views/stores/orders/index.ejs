@@ -47,9 +47,7 @@
 			<div class="modal fade" id="mdl_order_add" tabindex="-1" aria-hidden="true">
 				<div class="modal-dialog">
 					<form class="modal-content" id='form_order_add'>
-						<div class="modal-header">
-							<h5 class="modal-title">Add Order</h5>
-						</div>
+						<%- include(`${partials}/modals/header`, {title: 'Add Order'}) %>
 						<div class="modal-body">
 							<%- include(`${partials}/inputs/number`, {title: 'Quantity', value: '1', min: '1', id: 'order_add_qty'}) %>
 							<button type='button' class='btn btn-success w-100 mb-1' id='btn_order_sizes'>Add Item(s)</button>
@@ -63,10 +61,7 @@
 								<tbody id="tbl_order_add"></tbody>
 							</table>
 						</div>
-						<div class="modal-footer">
-							<input type="submit" class="btn btn-success w-100" value='Add Orders'>
-							<button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-						</div>
+						<%- include(`${partials}/modals/footer`, {submit: {text: 'Add Orders'}}) %>
 					</form>
 				</div>
 			</div>

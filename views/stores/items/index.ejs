@@ -34,9 +34,7 @@
 			<div id='mdl_item_add' class='modal fade' tabindex='-1' role='dialog'>
 				<div class='modal-dialog' role='document'>
 					<form class='modal-content' id='form_item_add'>
-						<div class='modal-header'>
-							<h5 class='modal-title'>Add Item</h5>
-						</div>
+						<%- include(`${partials}/modals/header`, {title: 'Add Item'}) %>
 						<div class='modal-body'>
                             <datalist id='list_descriptions'></datalist>
 							<%- include(`${partials}/inputs/text`, {title: 'Description', name: 'item[description]', required: true}) %>
@@ -44,9 +42,7 @@
 							<%- include(`${partials}/inputs/text`, {title: 'Size Text 2', name: 'item[size_text2]',  list_id: 'list_descriptions'}) %>
 							<%- include(`${partials}/inputs/text`, {title: 'Size Text 3', name: 'item[size_text3]',  list_id: 'list_descriptions'}) %>
 						</div>
-						<div class='modal-footer'>
-							<%- include(`${partials}/button/save`) %>
-						</div>
+						<%- include(`${partials}/modals/footer`, {submit: {text: 'Save'}}) %>
 					</form>
 				</div>
 			</div>

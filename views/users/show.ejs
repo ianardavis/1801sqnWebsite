@@ -195,9 +195,7 @@
         <div id='mdl_user_edit'         class="modal fade" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
                 <form class="modal-content" id='form_user_edit'>
-                    <div class="modal-header">
-                        <h5 class="modal-title">Edit User</h5>
-                    </div>
+                    <%- include(`${partials}/modals/header`, {title: 'Edit User'}) %>
                     <div class="modal-body">
                         <%- include(`${partials}/inputs/text`,   {title: 'Service #',  name: 'user[service_number]', required: true, id: 'inp_service_number'}) %>
                         <%- include(`${partials}/inputs/select`, {title: 'Rank',       name: 'user[rank_id]',        required: true, id: 'sel_ranks'}) %>
@@ -206,25 +204,19 @@
                         <%- include(`${partials}/inputs/select`, {title: 'Status',     name: 'user[status_id]',      required: true, id: 'sel_statuses'}) %>
                         <%- include(`${partials}/inputs/text`,   {title: 'Login ID',   name: 'user[login_id]',       required: true, id: 'inp_login_id'}) %>
                     </div>
-                    <div class="modal-footer">
-                        <%- include(`${partials}/button/save`) %>
-                    </div>
+                    <%- include(`${partials}/modals/footer`, {submit: {text: 'Save'}}) %>
                 </form>
             </div>
         </div>
         <div id='mdl_giftaid_edit'      class="modal fade" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
                 <form class="modal-content" id='form_giftaid_edit'>
-                    <div class="modal-header">
-                        <h5 class="modal-title">Edit Giftaid Record</h5>
-                    </div>
+                    <%- include(`${partials}/modals/header`, {title: 'Edit Giftaid Record'}) %>
                     <div class="modal-body">
                         <%- include(`${partials}/inputs/date`, {id: 'giftaid_edit_start', title: 'Start Date', name: 'giftaid[startDate]'}) %>
                         <%- include(`${partials}/inputs/date`, {id: 'giftaid_edit_end',   title: 'End Date',   name: 'giftaid[endDate]'}) %>
                     </div>
-                    <div class="modal-footer">
-                        <%- include(`${partials}/button/save`) %>
-                    </div>
+                    <%- include(`${partials}/modals/footer`, {submit: {text: 'Save'}}) %>
                 </form>
             </div>
         </div>
@@ -251,9 +243,7 @@
                         <%- include(`${partials}/inputs/display`, {id: 'giftaid_view_createdAt', title: 'Created'}) %>
                         <%- include(`${partials}/inputs/display`, {id: 'giftaid_view_updatedAt', title: 'Updated'}) %>
                     </div>
-                    <div class="modal-footer">
-                        <%- include(`${partials}/button/save`) %>
-                    </div>
+                    <%- include(`${partials}/modals/footer`, {submit: {text: 'Save'}}) %>
                 </div>
             </div>
         </div>
@@ -266,10 +256,7 @@
                     <div class="modal-body">
                         <%- include(`${partials}/users/change_password`) %>
                     </div>
-                    <div class="modal-footer">
-                        <input type="submit" id='save_password' class="btn btn-success w-100" value='Save Password' disabled>
-                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                    </div>
+                    <%- include(`${partials}/modals/footer`, {submit: {text: 'Save Password', id: 'save_password', disabled: true}}) %>
                 </form>
             </div>
         </div>
@@ -298,9 +285,7 @@
                     <div class="modal-body">
                         <ul id="ul_tree" class='list-group'></ul>
                     </div>
-                    <div class="modal-footer">
-                        <%- include(`${partials}/button/save`) %>
-                    </div>
+                    <%- include(`${partials}/modals/footer`, {submit: {text: 'Save'}}) %>
                 </form>
             </div>
         </div>
@@ -310,9 +295,7 @@
         <div id='mdl_issue_measurement' class="modal fade" tabindex="-1" role="dialog">
             <div class="modal-dialog modal-xl" role="document">
                 <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Issue by Measurement</h5>
-                    </div>
+                    <%- include(`${partials}/modals/header`, {title: 'Issue by Measurement'}) %>
                     <form class="modal-body" id='form_issue_measurement'>
                         <input type="hidden" class='user_id' name='issues[users][][0][user_id_issue]'>
                         <h5>Enter Measurements (in cm)</h5>

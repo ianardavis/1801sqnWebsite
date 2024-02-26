@@ -147,17 +147,13 @@
         <div id='mdl_supplier_edit'    class="modal fade" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
                 <form class="modal-content" id='form_supplier_edit'>
-                    <div class="modal-header">
-                        <h5 class="modal-title">Edit Supplier</h5>
-                    </div>
+                    <%- include(`${partials}/modals/header`, {title: 'Edit Supplier'}) %>
                     <div class="modal-body">
                         <%- include(`${partials}/inputs/text`,   {id: 'supplier_name_edit',      title: 'Name',        name: 'supplier[name]',       required: true}) %>
                         <%- include(`${partials}/inputs/select`, {id: 'sel_accounts',            title: 'Account',     name: 'supplier[account_id]', reload_id: 'reload_accounts'}) %>
                         <%- include(`${partials}/inputs/select`, {id: 'supplier_is_stores_edit', title: 'RAF Stores?', name: 'supplier[stores]',     options: [{text: 'No', value: '0'}, {text: 'Yes', value: '1'}]}) %>
                     </div>
-                    <div class="modal-footer">
-                        <%- include(`${partials}/button/save`) %>
-                    </div>
+                    <%- include(`${partials}/modals/footer`, {submit: {text: 'Save'}}) %>
                 </form>
             </div>
         </div>
@@ -165,9 +161,7 @@
         <div id='mdl_account_view'     class="modal fade" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Account</h5>
-                    </div>
+                    <%- include(`${partials}/modals/header`, {title: 'Account'}) %>
                     <div class="modal-body">
                         <%- include(`${partials}/inputs/display`, {id:'account_name',      title: 'Name'}) %>
                         <%- include(`${partials}/inputs/display`, {id:'account_number',    title: 'Number'}) %>
@@ -175,10 +169,7 @@
                         <%- include(`${partials}/inputs/display`, {id:'account_createdAt', title: 'Created'}) %>
                         <%- include(`${partials}/inputs/display`, {id:'account_updatedAt', title: 'Updated'}) %>
                     </div>
-                    <div class="modal-footer">
-                        <p class='me-auto text-start'>ID: <span id='account_id'></span></p>
-                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                    </div>
+                    <%- include(`${partials}/modals/footer`, {link_id: 'account_id'}) %>
                 </div>
             </div>
         </div>
@@ -217,44 +208,33 @@
                             <tbody id="tbl_file_details"></tbody>
                         </table>
                     </div>
-                    <div class="modal-footer">
-                        <p class='me-auto text-start'>ID: <span id='file_id'></span></p>
-                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                    </div>
+                    <%- include(`${partials}/modals/footer`, {link_id: 'file_id'}) %>
                 </div>
             </div>
         </div>
         <div id='mdl_file_add'         class="modal fade" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
                 <form class="modal-content" id="form_file_add">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Add File</h5>
-                    </div>
+                    <%- include(`${partials}/modals/header`, {title: 'Add File'}) %>
                     <div class="modal-body">
                         <input class='supplier_id' type="hidden" name='file[supplier_id]'>
                         <%- include(`${partials}/inputs/text`, {id: 'file_description_add', name: 'file[description]', title: 'Type', required: true, list_id: 'file_descriptions'}) %>
                         <%- include(`${partials}/inputs/file`, {id: 'file_upload',          name: 'uploaded',          title: 'File'}) %>
                         <datalist id="file_descriptions"></datalist>
                     </div>
-                    <div class="modal-footer">
-                        <%- include(`${partials}/button/save`) %>
-                    </div>
+                    <%- include(`${partials}/modals/footer`, {submit: {text: 'Save'}}) %>
                 </form>
             </div>
         </div>
         <div id='mdl_file_edit'        class="modal fade" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
                 <form class="modal-content" id='form_file_edit'>
-                    <div class="modal-header">
-                        <h5 class="modal-title">Edit File</h5>
-                    </div>
+                    <%- include(`${partials}/modals/header`, {title: 'Edit File'}) %>
                     <div class="modal-body">
                         <input type="hidden" id='file_id_edit' name='file_id'>
                         <%- include(`${partials}/inputs/text`, {id: 'file_description_edit', title: 'Description', name: 'file[description]', required: true}) %>
                     </div>
-                    <div class="modal-footer">
-                        <%- include(`${partials}/button/save`) %>
-                    </div>
+                    <%- include(`${partials}/modals/footer`, {submit: {text: 'Save'}}) %>
                 </form>
             </div>
         </div>
@@ -262,17 +242,13 @@
         <div id='mdl_file_detail_edit' class="modal fade" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
                 <form class="modal-content" id='form_file_detail_edit'>
-                    <div class="modal-header">
-                        <h5 class="modal-title">Edit Detail</h5>
-                    </div>
+                    <%- include(`${partials}/modals/header`, {title: 'Edit Detail'}) %>
                     <div class="modal-body">
                         <input type="hidden" id='file_detail_id_edit' name='file_detail_id'>
                         <%- include(`${partials}/inputs/text`, {id: 'file_detail_name_edit',  title: 'Name',  name: 'detail[name]',  required: true}) %>
                         <%- include(`${partials}/inputs/text`, {id: 'file_detail_value_edit', title: 'Value', name: 'detail[value]', required: true}) %>
                     </div>
-                    <div class="modal-footer">
-                        <%- include(`${partials}/button/save`) %>
-                    </div>
+                    <%- include(`${partials}/modals/footer`, {submit: {text: 'Save'}}) %>
                 </form>
             </div>
         </div>
@@ -308,9 +284,7 @@
         <div id='mdl_address_add'      class="modal fade" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
                 <form class="modal-content" id="form_address_add">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Add Address</h5>
-                    </div>
+                    <%- include(`${partials}/modals/header`, {title: 'Add Address'}) %>
                     <div class="modal-body">
                         <input class='supplier_id' type="hidden" name='supplier_id'>
                         <%- include(`${partials}/inputs/text`, {id: 'address_type_add',        name: 'type',                 title: 'Type',        required: true}) %>
@@ -321,18 +295,14 @@
                         <%- include(`${partials}/inputs/text`, {id: 'address_country_add',     name: 'address[country]',     title: 'Country'}) %>
                         <%- include(`${partials}/inputs/text`, {id: 'address_postcode_add',    name: 'address[postcode]',    title: 'Postcode'}) %>
                     </div>
-                    <div class="modal-footer">
-                        <%- include(`${partials}/button/save`) %>
-                    </div>
+                    <%- include(`${partials}/modals/footer`, {submit: {text: 'Save'}}) %>
                 </form>
             </div>
         </div>
         <div id='mdl_address_edit'     class="modal fade" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
                 <form class="modal-content" id='form_address_edit'>
-                    <div class="modal-header">
-                        <h5 class="modal-title">Edit Address</h5>
-                    </div>
+                    <%- include(`${partials}/modals/header`, {title: 'Edit Address'}) %>
                     <div class="modal-body">
                         <input type="hidden" id='supplier_address_id_edit' name='address_id'>
                         <%- include(`${partials}/inputs/text`, {id: 'address_type_edit',        name: 'address[type]',        title: 'Type',        required: true}) %>
@@ -343,9 +313,7 @@
                         <%- include(`${partials}/inputs/text`, {id: 'address_country_edit',     name: 'address[country]',     title: 'Country'}) %>
                         <%- include(`${partials}/inputs/text`, {id: 'address_postcode_edit',    name: 'address[postcode]',    title: 'Postcode'}) %>
                     </div>
-                    <div class="modal-footer">
-                        <%- include(`${partials}/button/save`) %>
-                    </div>
+                    <%- include(`${partials}/modals/footer`, {submit: {text: 'Save'}}) %>
                 </form>
             </div>
         </div>
@@ -377,36 +345,28 @@
         <div id='mdl_contact_add'      class="modal fade" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
                 <form class="modal-content" id="form_contact_add">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Add Address</h5>
-                    </div>
+                    <%- include(`${partials}/modals/header`, {title: 'Add Address'}) %>
                     <div class="modal-body">
                         <input class='supplier_id' type="hidden" name='supplier_id'>
                         <%- include(`${partials}/inputs/text`, {id: 'contact_type_add',        name: 'type',                 title: 'Type',        required: true}) %>
                         <%- include(`${partials}/inputs/text`, {id: 'contact_description_add', name: 'contact[description]', title: 'Description', required: true}) %>
                         <%- include(`${partials}/inputs/text`, {id: 'contact_contact_add',     name: 'contact[contact]',     title: 'Contact',     required: true}) %>
                     </div>
-                    <div class="modal-footer">
-                        <%- include(`${partials}/button/save`) %>
-                    </div>
+                    <%- include(`${partials}/modals/footer`, {submit: {text: 'Save'}}) %>
                 </form>
             </div>
         </div>
         <div id='mdl_contact_edit'     class="modal fade" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
                 <form class="modal-content" id='form_contact_edit'>
-                    <div class="modal-header">
-                        <h5 class="modal-title">Edit Contact</h5>
-                    </div>
+                    <%- include(`${partials}/modals/header`, {title: 'Edit Contact'}) %>
                     <div class="modal-body">
                         <input type="hidden" id='supplier_contact_id_edit' name='contact_id'>
                         <%- include(`${partials}/inputs/text`, {id: 'contact_type_edit',        name: 'contact[type]',        title: 'Type',        required: true}) %>
                         <%- include(`${partials}/inputs/text`, {id: 'contact_description_edit', name: 'contact[description]', title: 'Description', required: true}) %>
                         <%- include(`${partials}/inputs/text`, {id: 'contact_contact_edit',     name: 'contact[contact]',     title: 'Contact',     required: true}) %>
                     </div>
-                    <div class="modal-footer">
-                        <%- include(`${partials}/button/save`) %>
-                    </div>
+                    <%- include(`${partials}/modals/footer`, {submit: {text: 'Save'}}) %>
                 </form>
             </div>
         </div>

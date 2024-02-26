@@ -6,7 +6,11 @@
         class="form-control"
         type="date"
         required
-        <% if (locals.id)   { %>id='<%= id %>'<% } %>
-        <% if (locals.name) { %>name='<%= name %>'<% } %>
+<% if (locals.id) { %>
+        id='<%= id %>'
+<% } %>
+<% if (locals.name) { %>
+        name='<%= name %>'
+<% } %>
     >
 </div>

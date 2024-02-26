@@ -73,24 +73,9 @@
     </div>
     <div id="modals">
         <%- include(`${partials}/common/notes/modals`) %>
-        <% if (permissions.pos_supervisor) { %>
-            <div id='mdl_session_close' class="modal" tabindex="-1" role="dialog">
-                <div class="modal-dialog" role="document">
-                    <form class="modal-content" id='form_session_close'>
-                        <div class="modal-header">
-                            <h5 class="modal-title">Close Session</h5>
-                        </div>
-                        <div class="modal-body">
-                            <%- include(`${partials}/canteen/count_form`) %>
-                        </div>
-                        <div class="modal-footer">
-                            <input  type="submit" class="btn btn-success w-100" value='Close Session'>
-                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        <% } %>
+<% if (permissions.pos_supervisor) { %>
+        <%- include(`${partials}/modals/canteen/count`, {id: 'session_close', title: 'Close Session', submit_text: 'Close Session'}) %>
+<% } %>
     </div>
 </section>
 <%- include(`${partials}/foot/app`) %>
@@ -103,6 +88,6 @@
 <script src="/js/canteen/sessions/show/payments/view.js"></script>
 <script async>getPayments()</script>
 <% if (permissions.pos_supervisor) { %>
-    <script src="/js/canteen/sessions/show/edit.js"></script>
+<script src="/js/canteen/sessions/show/edit.js"></script>
 <% } %>
 <%- include(`${partials}/foot/components/htmlClose`) %>

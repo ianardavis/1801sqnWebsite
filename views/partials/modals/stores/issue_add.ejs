@@ -3,17 +3,14 @@
         <form class="modal-content" id='form_issue_add'>
             <div class="modal-header">
                 <h5 class="modal-title">Add Issue(s)</h5>
-                <h4>This will issue ALL the items selected to ALL the users selected!</h4>
+                <h6>This will issue ALL the items selected to ALL the users selected!</h6>
             </div>
             <div class="modal-body">
                 <%- include(`${partials}/users/select`, {id: 'issue_users'}) %>
                 <%- include(`${partials}/inputs/number`, {title: 'Quantity', value: '1', min: '1', id: 'issue_add_qty'}) %>
                 <%- include(`${partials}/sizes/select`, {id: 'issue_sizes'}) %>
             </div>
-            <div class="modal-footer">
-                <input type="submit" class="btn btn-success w-100" value='Add Issues'>
-                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-            </div>
+            <%- include(`${partials}/modals/footer`, {submit: {text: 'Add Issues'}}) %>
         </form>
     </div>
     <script src='/js/stores/issues/add.js'></script>

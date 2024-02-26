@@ -101,26 +101,20 @@
         <div id='mdl_category_add'  class="modal fade" tabindex="-1" role="dialog">
             <div class="modal-dialog modal-lg" role="document">
                 <form class="modal-content" id='form_category_add'>
-                    <div class="modal-header">
-                        <h5 class="modal-title">Add Category</h5>
-                    </div>
+                    <%- include(`${partials}/modals/header`, {title: 'Add Category'}) %>
                     <div class="modal-body">
                         <input type="hidden" class='item_id' name='category[item_id]'>
                         <select name="category[category_id][]" id="sel_category_1" class='form-control sel_category' required></select>
                         <div id="sub_categories"></div>
                     </div>
-                    <div class="modal-footer">
-						<%- include(`${partials}/button/save`) %>
-                    </div>
+                    <%- include(`${partials}/modals/footer`, {submit: {text: 'Save'}}) %>
                 </form>
             </div>
         </div>
         <div id='mdl_item_edit'     class="modal fade" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
                 <form class="modal-content" id='form_item_edit'>
-                    <div class="modal-header">
-                        <h5 class="modal-title">Edit Item</h5>
-                    </div>
+                    <%- include(`${partials}/modals/header`, {title: 'Edit Item'}) %>
                     <div class="modal-body">
                         <datalist id="list_descriptions"></datalist>
                         <%- include(`${partials}/inputs/text`, {id: 'description_edit', title: 'Description', name: 'item[description]', required: true}) %>
@@ -128,18 +122,14 @@
                         <%- include(`${partials}/inputs/text`, {id: 'size_text2_edit',  title: 'Size Text 2', name: 'item[size_text2]',  list_id: 'list_descriptions'}) %>
                         <%- include(`${partials}/inputs/text`, {id: 'size_text3_edit',  title: 'Size Text 3', name: 'item[size_text3]',  list_id: 'list_descriptions'}) %>
                     </div>
-                    <div class="modal-footer">
-						<%- include(`${partials}/button/save`) %>
-                    </div>
+                    <%- include(`${partials}/modals/footer`, {submit: {text: 'Save'}}) %>
                 </form>
             </div>
         </div>  
         <div id='mdl_size_add'      class="modal fade" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
                 <form class="modal-content" id='form_size_add'>
-                    <div class="modal-header">
-                        <h5 class="modal-title">Add Size</h5>
-                    </div>
+                    <%- include(`${partials}/modals/header`, {title: 'Add Size'}) %>
                     <div class="modal-body">
                         <input type="hidden" class='item_id' name='size[item_id]'>
                         <%- include(`${partials}/inputs/text`,   {name: 'size[size1]',       title: 'Size 1',       id: 'size_size1',       required: true}) %>
@@ -151,9 +141,7 @@
                         <%- include(`${partials}/inputs/select`, {name: 'size[has_nsns]',    title: 'Has NSNs',     id: 'size_has_nsns',    options: [{value: '0', text: 'No'}, {value: '1', text: 'Yes'}]}) %>
                         <%- include(`${partials}/inputs/select`, {name: 'size[supplier_id]', title: 'Supplier',     id: 'size_supplier',    reload_id: 'reload_suppliers', permission: 'supplier_admin'}) %>
                     </div>
-                    <div class="modal-footer">
-						<%- include(`${partials}/button/save`) %>
-                    </div>
+                    <%- include(`${partials}/modals/footer`, {submit: {text: 'Save'}}) %>
                 </form>
             </div>
         </div>

@@ -51,18 +51,14 @@
             <div id='mdl_nsn_edit'      class="modal fade" tabindex="-1" role="dialog">
                 <div class="modal-dialog" role="document">
                     <form class="modal-content" id='form_nsn_edit'>
-                        <div class="modal-header">
-                            <h5 class="modal-title">Edit NSN</h5>
-                        </div>
+                        <%- include(`${partials}/modals/header`, {title: 'Edit NSN'}) %>
                         <div class="modal-body">
                             <%- include(`${partials}/inputs/select`, {title: 'Group',          name: 'nsn[nsn_group_id]',   required: true, id: 'sel_nsn_groups'}) %>
                             <%- include(`${partials}/inputs/select`, {title: 'Classification', name: 'nsn[nsn_class_id]',   required: true, id: 'sel_nsn_classes'}) %>
                             <%- include(`${partials}/inputs/select`, {title: 'Country',        name: 'nsn[nsn_country_id]', required: true, id: 'sel_nsn_countries'}) %>
                             <%- include(`${partials}/inputs/text`,   {title: 'Item Number',    name: 'nsn[item_number]',    required: true, id: 'nsn_item_number_edit'}) %>
                         </div>
-                        <div class="modal-footer">
-                            <%- include(`${partials}/button/save`) %>
-                        </div>
+                        <%- include(`${partials}/modals/footer`, {submit: {text: 'Save'}}) %>
                     </form>
                 </div>
             </div>

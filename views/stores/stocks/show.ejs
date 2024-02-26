@@ -45,82 +45,59 @@
             <div id='mdl_receipt_add' class="modal fade" tabindex="-1" role="dialog">
                 <div class="modal-dialog modal-lg" role="document">
                     <form class="modal-content" id='form_receipt_add'>
-                        <div class="modal-header">
-                            <h5 class="modal-title">Receive Stock</h5>
-                        </div>
+                        <%- include(`${partials}/modals/header`, {title: 'Receive Stock'}) %>
                         <div class="modal-body">
                             <input type="hidden" class="stock_id" name='receipt[stock_id]'>
                             <%- include(`${partials}/inputs/number`, {title: 'Quantity', id: 'receipt_qty', name: 'receipt[qty]', required: true}) %>
                         </div>
-                        <div class="modal-footer">
-                            <%- include(`${partials}/button/save`) %>
-                        </div>
+                        <%- include(`${partials}/modals/footer`, {submit: {text: 'Save'}}) %>
                     </form>
                 </div>
             </div>
             <div id='mdl_stock_edit'     class="modal fade" tabindex="-1" role="dialog">
                 <div class="modal-dialog" role="document">
                     <form class="modal-content" id='form_stock_edit'>
-                        <div class="modal-header">
-                            <h5 class="modal-title">Change Location</h5>
-                        </div>
+                        <%- include(`${partials}/modals/header`, {title: 'Change Location'}) %>
                         <div class="modal-body">
                             <%- include(`${partials}/inputs/text`, {title: 'Location', name: 'location', id: 'stock_location_edit', reload_id: 'reload_locations_edit', list_id: 'locations_list'}) %>
                         </div>
-                        <div class="modal-footer">
-                            <%- include(`${partials}/button/save`) %>
-                        </div>
+                        <%- include(`${partials}/modals/footer`, {submit: {text: 'Save'}}) %>
                     </form>
                 </div>
             </div>
             <div id='mdl_transfer_add'   class="modal fade" tabindex="-1" role="dialog">
                 <div class="modal-dialog" role="document">
                     <form class="modal-content" id='form_transfer_add'>
-                        <div class="modal-header">
-                            <h5 class="modal-title">Transfer Stock</h5>
-                        </div>
+                        <%- include(`${partials}/modals/header`, {title: 'Transfer Stock'}) %>
                         <div class="modal-body">
                             <%- include(`${partials}/inputs/text`,   {title: 'To Location', name: 'location_to', id: 'transfer_add_location', reload_id: 'reload_locations_transfer', list_id: 'locations_list'}) %>
                             <%- include(`${partials}/inputs/number`, {title: 'Quantity',    name: 'qty',         id: 'transfer_add_qty', min: '0'}) %>
                         </div>
-                        <div class="modal-footer">
-                            <input type="submit"  class="btn btn-success w-100" value='Transfer'>
-                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                        </div>
+                        <%- include(`${partials}/modals/footer`, {submit: {text: 'Transfer'}}) %>
                     </form>
                 </div>
             </div>
             <div id='mdl_count_add'      class="modal fade" tabindex="-1" role="dialog">
                 <div class="modal-dialog modal-lg" role="document">
                     <form class="modal-content" id='form_count_add'>
-                        <div class="modal-header">
-                            <h5 class="modal-title">Count</h5>
-                        </div>
+                        <%- include(`${partials}/modals/header`, {title: 'Count'}) %>
                         <div class="modal-body">
                             <%- include(`${partials}/inputs/number`, {title: 'Quantity', name: 'count[qty]', id: 'adjustment_qty_count', required: true}) %>
                         </div>
-                        <div class="modal-footer">
-                            <input type="submit" class="btn btn-success w-100" value='Count Stock'>
-                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                        </div>
+                        <%- include(`${partials}/modals/footer`, {submit: {text: 'Count Stock'}}) %>
                     </form>
                 </div>
             </div>
             <div id='mdl_scrap_add'      class="modal fade" tabindex="-1" role="dialog">
                 <div class="modal-dialog modal-lg" role="document">
                     <form class="modal-content" id='form_scrap_add'>
-                        <div class="modal-header">
-                            <h5 class="modal-title">Scrap</h5>
-                        </div>
+                        <%- include(`${partials}/modals/header`, {title: 'Scrap'}) %>
                         <div class="modal-body">
                             <%- include(`${partials}/inputs/select`, {title: 'Serial',   name: 'scrap[serial_id]', id: 'scrap_add_serial'}) %>
                             <%- include(`${partials}/inputs/select`, {title: 'NSN',      name: 'scrap[nsn_id]',    id: 'scrap_add_nsn'}) %>
                             <%- include(`${partials}/inputs/number`, {title: 'Quantity', name: 'scrap[qty]',       id: 'scrap_add_qty', required: true}) %>
                         </div>
-                        <div class="modal-footer">
-                            <input type="submit" class="btn btn-success w-100" value='Scrap Stock'>
-                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                        </div>
+                        <%- include(`${partials}/modals/footer`, {submit: {text: 'Scrap Stock'}}) %>
                     </form>
                 </div>
             </div>

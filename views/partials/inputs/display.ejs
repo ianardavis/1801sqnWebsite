@@ -1,25 +1,30 @@
 <% if (!locals.permission || permissions[permission]) { %>
-    <div class="input-group mb-1">
-        <span class="input-group-text w-30"><%= title %></span>
-        <p
-            class="form-control mb-0<% if (locals.classes) { locals.classes.forEach(e => {%> <%= e %><% })%><% } %>"
-            <% if (locals.id)   { %>id='<%= id %>'<% } %>
-        ></p>
-        <% if (locals.link) { %>
-            <a
-                class='btn btn-primary'
-                id='<%= id %>_link'
-                <% if (link.modal) { %>
-                    data-bs-toggle="modal"
-                    data-bs-target="#mdl_<%= link.modal %>"
-                <% } %>
-            >
-                <i class="fas fa-search"></i>
-            </a>
-        <% } else if (locals.reload_id) { %>
-            <a class='btn btn-primary' id='<%= reload_id %>'>
-                <i class="fas fa-redo"></i>
-            </a>
-        <% } %>
-    </div>
+
+<div class="input-group mb-1">
+    <span class="input-group-text w-30"><%= title %></span>
+    <p
+        class="form-control mb-0<% if (locals.classes) { locals.classes.forEach(c => {%> <%= c %><% })%><% } %>"
+        <% if (locals.id) { %>id='<%= id %>'<% } %>
+    ></p>
+
+<% if (locals.link) { %>
+    <a
+        class='btn btn-primary'
+        id='<%= id %>_link'
+<% if (link.modal) { %>
+        data-bs-toggle="modal"
+        data-bs-target="#mdl_<%= link.modal %>"
+<% } %>
+    >
+        <i class="fas fa-search"></i>
+    </a>
+    
+<% } else if (locals.reload_id) { %>
+    <a class='btn btn-primary' id='<%= reload_id %>'>
+        <i class="fas fa-redo"></i>
+    </a>
+    
+<% } %>
+</div>
+
 <% } %>

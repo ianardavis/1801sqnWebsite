@@ -1,9 +1,7 @@
 <div id='mdl_movement_view' class="modal fade" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Movement</h5>
-            </div>
+            <%- include(`${partials}/modals/header`, {title: 'Movement'}) %>
             <div class="modal-body">
                 <%- include(`${partials}/inputs/display`, {id: 'movement_createdAt',    title: 'Created'}) %>
                 <%- include(`${partials}/inputs/display`, {id: 'movement_description',  title: 'Description'}) %>
@@ -14,10 +12,7 @@
                 <%- include(`${partials}/inputs/display`, {id: 'movement_user',         title: 'By'}) %>
                 <%- include(`${partials}/inputs/display`, {id: 'movement_user_confirm', title: 'Confirmed By'}) %>
             </div>
-            <div class="modal-footer">
-                <p class='me-auto'>ID: <span id='movement_id'></span></p>
-                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-            </div>
+            <%- include(`${partials}/modals/footer`, {link_id: 'movement_id'}) %>
         </div>
     </div>
 </div>

@@ -21,17 +21,13 @@
 		<div id='mdl_supplier_add' class="modal fade" tabindex="-1" role="dialog">
 			<div class="modal-dialog" role="document">
 				<form class="modal-content" id='form_supplier_add'>
-					<div class="modal-header">
-						<h5 class="modal-title">Add Supplier</h5>
-					</div>
+                    <%- include(`${partials}/modals/header`, {title: 'Add Supplier'}) %>
 					<div class="modal-body">
 						<%- include(`${partials}/inputs/text`,   {title: 'Supplier Name', name: 'supplier[name]',       required: true}) %>
 						<%- include(`${partials}/inputs/select`, {title: 'Account',   	  name: 'supplier[account_id]', id: 'sel_accounts', reload_id: 'reload_accounts'}) %>
 						<%- include(`${partials}/inputs/select`, {title: 'RAF Stores?',   name: 'supplier[is_stores]',  options: [{value: '0', text: 'No', selected: true}, {value: '1', text: 'Yes'}]}) %>
 					</div>
-					<div class="modal-footer">
-                        <%- include(`${partials}/button/save`) %>
-					</div>
+                    <%- include(`${partials}/modals/footer`, {submit: {text: 'Save'}}) %>
 				</form>
 			</div>
 		</div>

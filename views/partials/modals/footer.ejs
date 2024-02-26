@@ -1,0 +1,22 @@
+<div class="modal-footer">
+
+<% if (locals.link_id) { %>
+    <p class='me-auto'>ID: <span id='<%= link_id %>'></span></p>
+<% } %>
+
+<% if (locals.submit) { %>
+    <button
+        class="btn btn-success w-100"
+<% if (submit.id) { %>
+        id="<%- submit.id %>"
+<% } %>
+<% if (submit.disabled) { %>
+        disabled
+<% } %>
+    >
+        <%= submit.text %>
+    </button>
+<% } %>
+
+    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+</div>

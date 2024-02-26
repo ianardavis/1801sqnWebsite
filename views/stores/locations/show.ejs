@@ -62,15 +62,11 @@
             <div id='mdl_location_edit' class="modal fade" tabindex="-1" role="dialog">
                 <div class="modal-dialog" role="document">
                     <form class="modal-content" id='form_location_edit'>
-                        <div class="modal-header">
-                            <h5 class="modal-title">Edit Location</h5>
-                        </div>
+                        <%- include(`${partials}/modals/header`, {title: 'Edit Location'}) %>
                         <div class="modal-body">
                             <%- include(`${partials}/inputs/text`, {title: 'Location', name: 'location', id: 'location_location_edit'}) %>
                         </div>
-                        <div class="modal-footer">
-							<%- include(`${partials}/button/save`) %>
-                        </div>
+                        <%- include(`${partials}/modals/footer`, {submit: {text: 'Save'}}) %>
                     </form>
                 </div>
             </div>
@@ -89,10 +85,7 @@
                         <%- include(`${partials}/inputs/display`, {id: 'stock_createdAt', title: 'Created'}) %>
                         <%- include(`${partials}/inputs/display`, {id: 'stock_updatedAt', title: 'Updated'}) %>
                     </div>
-                    <div class="modal-footer">
-                        <p class='me-auto'>ID: <span id='stock_id'></span></p>
-                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                    </div>
+                    <%- include(`${partials}/modals/footer`, {link_id: 'stock_id'}) %>
                 </div>
             </div>
         </div>
@@ -110,10 +103,7 @@
                         <%- include(`${partials}/inputs/display`, {id: 'serial_createdAt', title: 'Created'}) %>
                         <%- include(`${partials}/inputs/display`, {id: 'serial_updatedAt', title: 'Updated'}) %>
                     </div>
-                    <div class="modal-footer">
-                        <p class='me-auto'>ID: <span id='serial_id'></span></p>
-                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                    </div>
+                    <%- include(`${partials}/modals/footer`, {link_id: 'serial_id'}) %>
                 </div>
             </div>
         </div>

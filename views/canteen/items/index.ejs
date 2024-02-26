@@ -25,9 +25,7 @@
             <div id='mdl_item_add' class="modal" tabindex="-1" role="dialog">
                 <div class="modal-dialog" role="document">
                     <form class="modal-content" id='form_item_add'>
-                        <div class="modal-header">
-                            <h5 class="modal-title">Add Item</h5>
-                        </div>
+                        <%- include(`${partials}/modals/header`, {title: 'Add Item'}) %>
                         <div class="modal-body">
                             <%- include(`${partials}/inputs/text`,   {title: 'Name',    name: 'item[name]',    required: true}) %>
                             <%- include(`${partials}/inputs/number`, {title: 'Price',   name: 'item[price]',   required: true, value: '0.50', step: '0.01', min: '0'}) %>
@@ -35,9 +33,7 @@
                             <%- include(`${partials}/inputs/number`, {title: 'Stock',   name: 'item[qty]',     required: true, value: '0',                  min: '0'}) %>
                             <%- include(`${partials}/inputs/select`, {title: 'Current', name: 'item[current]', options: [{value: '1', text: 'Yes', selected: true}, {value: '0', text: 'No'}]}) %>
                         </div>
-                        <div class="modal-footer">
-                            <input type="submit" class="btn btn-success w-100" value='Save Item'>
-                        </div>
+                        <%- include(`${partials}/modals/footer`, {submit: {text: 'Save Item'}}) %>
                     </form>
                 </div>
             </div>

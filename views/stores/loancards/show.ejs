@@ -84,31 +84,22 @@
 			<div id='mdl_loancard_complete' class="modal fade" tabindex="-1" role="dialog">
 				<div class="modal-dialog modal-lg" role="document">
 					<form id='form_complete' class="modal-content">
-						<div class="modal-header">
-							<h5 class="modal-title">Complete Loancard</h5>
-						</div>
+						<%- include(`${partials}/modals/header`, {title: 'Complete Loancard'}) %>
 						<div class="modal-body">
 							<%- include(`${partials}/inputs/date`, {id: 'date_due_complete', title: 'Due Date', name: 'date_due'}) %>
 						</div>
-						<div class="modal-footer">
-							<button class="btn btn-success w-100">Complete</button>
-							<button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-						</div>
+						<%- include(`${partials}/modals/footer`, {submit: {text: 'Complete'}}) %>
 					</form>
 				</div>
 			</div>
 			<div id='mdl_due_edit' 			class="modal fade" tabindex="-1" role="dialog">
 				<div class="modal-dialog modal-lg" role="document">
 					<form id='form_due_edit' class="modal-content">
-						<div class="modal-header">
-							<h5 class="modal-title">Change due date</h5>
-						</div>
+						<%- include(`${partials}/modals/header`, {title: 'Change due date'}) %>
 						<div class="modal-body">
 							<input type="date" class="form-control" id='date_due_edit' name='loancard[date_due]'>
 						</div>
-						<div class="modal-footer">
-							<%- include(`${partials}/button/save`) %>
-						</div>
+						<%- include(`${partials}/modals/footer`, {submit: {text: 'Save'}}) %>
 					</form>
 				</div>
 			</div>

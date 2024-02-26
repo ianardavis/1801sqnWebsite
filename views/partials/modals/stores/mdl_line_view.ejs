@@ -13,9 +13,7 @@
                 <%- include(`${partials}/inputs/display`, {id: 'line_createdAt', title: 'Created'}) %>
                 <%- include(`${partials}/inputs/display`, {id: 'line_updatedAt', title: 'Updated'}) %>
             </div>
-            <div class="modal-footer">
-                <p class='me-auto'>ID: <span id='line_id'></span></p>
-            </div>
+            <%- include(`${partials}/modals/footer`, {link_id: 'line_id'}) %>
         </div>
     </div>
 </div>

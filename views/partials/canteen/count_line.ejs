@@ -1,0 +1,19 @@
+<div class="input-group mb-1">
+    <span class="input-group-text w-30"><%= text %></span>
+    <input
+        class="form-control balance"
+        type="number"
+        name='balance[<%= name %>][b]'
+        step='<%= step %>'
+        min='0'
+        placeholder="Bagged"
+    >
+    <input
+        class="form-control balance"
+        type="number"
+        name='balance[<%= name %>][l]'
+        step='<%= step %>'
+        min='0'
+        placeholder="Loose"
+    >
+</div>

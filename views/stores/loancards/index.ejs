@@ -37,14 +37,12 @@
 		<div id='mdl_loancard_open' class="modal fade" tabindex="-1" role="dialog">
 			<div class="modal-dialog modal-lg" role="document">
 				<div class="modal-content">
-					<div class="modal-header">
-						<h5 class="modal-title">View Loancard</h5>
-					</div>
+                    <%- include(`${partials}/modals/header`, {title: 'View Loancard'}) %>
 					<div class="modal-body">
 						<%- include(`${partials}/inputs/text`, {id: 'goto_loancard_id', title: 'Loancard ID', onkeydown: 'GoToEnter(this)'}) %>
 						<div id="scannerWindow" width="600px"></div>
 					</div>
-					<div class="modal-footer"></div>
+					<%- include(`${partials}/modals/footer`) %>
 				</div>
 			</div>
 		</div>

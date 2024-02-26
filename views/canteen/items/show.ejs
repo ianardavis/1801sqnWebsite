@@ -92,18 +92,14 @@
             <div id='mdl_item_edit'    class="modal" tabindex="-1" role="dialog">
                 <div class="modal-dialog" role="document">
                     <form class="modal-content" id='form_item_edit'>
-                        <div class="modal-header">
-                            <h5 class="modal-title">Edit Item</h5>
-                        </div>
+                        <%- include(`${partials}/modals/header`, {title: 'Edit Item'}) %>
                         <div class="modal-body">
                             <%- include(`${partials}/inputs/text`,   {title: 'Name',    name: 'item[name]',    id: 'item_name_edit',    required: true}) %>
                             <%- include(`${partials}/inputs/number`, {title: 'Price',   name: 'item[price]',   id: 'item_price_edit',   required: true, step: '0.01', min: '0'}) %>
                             <%- include(`${partials}/inputs/number`, {title: 'Cost',    name: 'item[cost]',    id: 'item_cost_edit',    required: true, step: '0.01', min: '0'}) %>
                             <%- include(`${partials}/inputs/select`, {title: 'Current', name: 'item[current]', id: 'item_current_edit', options: [{value: '1', text: 'Yes'}, {value: '0', text: 'No'}]}) %>
                         </div>
-                        <div class="modal-footer">
-                            <input type="submit" class="btn btn-success w-100" value='Save Item'>
-                        </div>
+                        <%- include(`${partials}/modals/footer`, {submit: {text: 'Save Item'}}) %>
                     </form>
                 </div>
             </div>
@@ -112,18 +108,14 @@
             <div id='mdl_receipt_add'  class="modal" tabindex="-1" role="dialog">
                 <div class="modal-dialog" role="document">
                     <form class="modal-content" id='form_receipt_add'>
-                        <div class="modal-header">
-                            <h5 class="modal-title">Receive Stock</h5>
-                        </div>
+                        <%- include(`${partials}/modals/header`, {title: 'Receive Stock'}) %>
                         <div class="modal-body">
                             <input type="hidden" class='item_id' name='receipts[][0][item_id]'>
                             <%- include(`${partials}/inputs/number`, {title: 'Cost (Total)', id: 'cost_total',  step: '0.01', min: '0.01'}) %>
                             <%- include(`${partials}/inputs/number`, {title: 'Cost (Each)',  id: 'cost_each',   name: 'receipts[][0][cost]', required: true, min: '0.01', step: '0.01'}) %>
                             <%- include(`${partials}/inputs/number`, {title: 'Quantity',     id: 'qty_receipt', name: 'receipts[][0][qty]',  required: true, min: '1'}) %>
                         </div>
-                        <div class="modal-footer">
-                            <input type="submit" class="btn btn-success w-100" value='Save Item'>
-                        </div>
+                        <%- include(`${partials}/modals/footer`, {submit: {text: 'Save Item'}}) %>
                     </form>
                 </div>
             </div>
@@ -132,34 +124,26 @@
             <div id='mdl_writeoff_add' class="modal" tabindex="-1" role="dialog">
                 <div class="modal-dialog" role="document">
                     <form class="modal-content" id='form_writeoff_add'>
-                        <div class="modal-header">
-                            <h5 class="modal-title">Writeoff Stock</h5>
-                        </div>
+                        <%- include(`${partials}/modals/header`, {title: 'Writeoff Stock'}) %>
                         <div class="modal-body">
                             <input type="hidden" class='item_id' name='writeoff[item_id]'>
                             <%- include(`${partials}/inputs/text`,   {title: 'Reason',   name: 'writeoff[reason]', required: true}) %>
                             <%- include(`${partials}/inputs/number`, {title: 'Quantity', name: 'writeoff[qty]',    required: true, min: '1'}) %>
                         </div>
-                        <div class="modal-footer">
-                            <input type="submit" class="btn btn-success w-100" value='Save Item'>
-                        </div>
+                        <%- include(`${partials}/modals/footer`, {submit: {text: 'Save Item'}}) %>
                     </form>
                 </div>
             </div>
             <div id='mdl_ean_add' class="modal fade" tabindex="-1" role="dialog">
                 <div class="modal-dialog modal-lg" role="document">
                     <form class="modal-content" id="form_ean_add">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Add EAN</h5>
-                        </div>
+                        <%- include(`${partials}/modals/header`, {title: 'Add EAN'}) %>
                         <div class="modal-body">
                             <input type="hidden" class='item_id' name='ean[item_id]'>
                             <%- include(`${partials}/inputs/text`, {id: 'inp_ean_add', title: 'EAN', name: 'ean[ean]', required: true}) %>
                             <div id="scannerWindow" width="600px" height="600px"></div>
                         </div>
-                        <div class="modal-footer">
-                            <input type="submit" class="btn btn-success w-100" value='Save EAN'>
-                        </div>
+                        <%- include(`${partials}/modals/footer`, {submit: {text: 'Save EAN'}}) %>
                     </form>
                 </div>
             </div>

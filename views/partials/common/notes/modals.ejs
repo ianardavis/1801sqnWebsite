@@ -11,36 +11,26 @@
                 <%- include(`${partials}/inputs/display`,  {id: 'note_system',    title: 'System'}) %>
                 <%- include(`${partials}/inputs/textarea`, {id: 'note_note',      title: 'Note',     rows: 5, readonly: true}) %>
             </div>
-            <div class="modal-footer">
-                <p class='me-auto'>ID: <span id='note_id_view'></span></p>
-            </div>
+            <%- include(`${partials}/modals/footer`, {link_id: 'note_id_view'}) %>
         </div>
     </div>
 </div>
 <div id='mdl_note_edit' class="modal fade" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
         <form class="modal-content" id='form_note_edit'>
-            <div class="modal-header">
-                <h5 class="modal-title">Note</h5>
-            </div>
+            <%- include(`${partials}/modals/header`, {title: 'Note'}) %>
             <div class="modal-body">
                 <input type="hidden" id='note_id_edit' name='note_id'>
                 <%- include(`${partials}/inputs/textarea`, {name: 'note[note]', id: 'note_edit', title: 'Note', rows: 5, required: true}) %>
             </div>
-            <div class="modal-footer">
-                <input type="submit" class="btn btn-success w-100" value='Save Note'>
-            </div>
+            <%- include(`${partials}/modals/footer`, {submit: {text: 'Save Note'}}) %>
         </form>
     </div>
 </div>
 <div id='mdl_note_add' class="modal fade" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
         <form class="modal-content" id='form_note_add'>
-            <div class="modal-header">
-                <h5 class="modal-title">
-                    Note
-                </h5>
-            </div>
+            <%- include(`${partials}/modals/header`, {title: 'Note'}) %>
             <div class="modal-body">
                 <input type="hidden" name='note[_table]' id="note_add_table">
                 <input type="hidden" name='note[id]'     id="note_add_id">
@@ -57,9 +47,7 @@
                     required
                 ></textarea>
             </div>
-            <div class="modal-footer">
-                <input type="submit" class="btn btn-success w-100" value='Save Note'>
-            </div>
+            <%- include(`${partials}/modals/footer`, {submit: {text: 'Save Note'}}) %>
         </form>
     </div>
 </div>

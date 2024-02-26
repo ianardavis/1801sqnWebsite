@@ -156,10 +156,7 @@
                         <%- include(`${partials}/inputs/display`,  {id: 'detail_createdAt', title: 'Created'}) %>
                         <%- include(`${partials}/inputs/display`,  {id: 'detail_updatedAt', title: 'Updated'}) %>
                     </div>
-                    <div class="modal-footer">
-                        <p class='me-auto'>ID: <span id='detail_id'></span></p>
-                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                    </div>
+                    <%- include(`${partials}/modals/footer`, {link_id: 'detail_id'}) %>
                 </div>
             </div>
         </div>
@@ -178,10 +175,7 @@
                         <%- include(`${partials}/inputs/display`, {id: 'issue_createdAt', title: 'Issued'}) %>
                         <%- include(`${partials}/inputs/display`, {id: 'issue_updatedAt', title: 'Updated'}) %>
                     </div>
-                    <div class="modal-footer">
-                        <p class='me-auto'>ID: <span id='issue_id'></span></p>
-                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                    </div>
+                    <%- include(`${partials}/modals/footer`, {link_id: 'issue_id'}) %>
                 </div>
             </div>
         </div>
@@ -193,7 +187,7 @@
             <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5   class="modal-title">NSN: <span id="nsn_view"></span></h5>
+                        <h5 class="modal-title">NSN: <span id="nsn_view"></span></h5>
                         <a class='btn btn-primary float-end' id='btn_nsn_link'><i class="fas fa-search"></i></a>
                     </div>
                     <div class="modal-body">
@@ -203,10 +197,7 @@
                         <%- include(`${partials}/inputs/display`, {id: 'item_number',    title: 'Item Number',    classes: ['text-start']}) %>
                         <%- include(`${partials}/inputs/display`, {id: '_default',       title: 'Is Default?',    classes: ['text-start']}) %>
                     </div>
-                    <div class="modal-footer">
-                        <p class='me-auto'>ID: <span id='nsn_id'></span></p>
-                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                    </div>
+                    <%- include(`${partials}/modals/footer`, {link_id: 'nsn_id'}) %>
                 </div>
             </div>
         </div>
@@ -214,9 +205,7 @@
         <div id='mdl_nsn_add'     class="modal fade" tabindex="-1" role="dialog">
             <div class="modal-dialog modal-lg" role="document">
                 <form class="modal-content" id='form_nsn_add'>
-                    <div class="modal-header">
-                        <h5 class="modal-title">Add NSN</h5>
-                    </div>
+                    <%- include(`${partials}/modals/header`, {title: 'Add NSN'}) %>
                     <div class="modal-body">
                         <input type="hidden" class='size_id' name='nsn[size_id]'>
                         <%- include(`${partials}/inputs/select`, {title: 'Group',          name: 'nsn[nsn_group_id]',   required: true, id: 'sel_nsn_groups'}) %>
@@ -225,58 +214,44 @@
                         <%- include(`${partials}/inputs/text`,   {title: 'Item Number',    name: 'nsn[item_number]',    required: true}) %>
                         <%- include(`${partials}/inputs/select`, {title: 'Default?',       name: 'default', options: [{text: 'Yes', value: '1'}, {text: 'No', value: '0', selected: true}]}) %>
                     </div>
-                    <div class="modal-footer">
-                        <%- include(`${partials}/button/save`) %>
-                    </div>
+                    <%- include(`${partials}/modals/footer`, {submit: {text: 'Save'}}) %>
                 </form>
             </div>
         </div>
         <div id='mdl_serial_add'  class="modal fade" tabindex="-1" role="dialog">
             <div class="modal-dialog modal-lg" role="document">
                 <form class="modal-content" id='form_serial_add'>
-                    <div class="modal-header">
-                        <h5 class="modal-title">Add Serial</h5>
-                    </div>
+                    <%- include(`${partials}/modals/header`, {title: 'Add Serial'}) %>
                     <div class="modal-body">
                         <input type="hidden" class='size_id' name='serial[size_id]'>
                         <%- include(`${partials}/inputs/text`, {title: 'Serial #', id: 'serial_serial',   name: 'serial[serial]', required: true}) %>
                         <%- include(`${partials}/inputs/text`, {title: 'Location', id: 'serial_location', name: 'location',       required: true, list_id: 'locations_list', reload_id: 'reload_locations_serial'}) %>
                     </div>
-                    <div class="modal-footer">
-                        <%- include(`${partials}/button/save`) %>
-                    </div>
+                    <%- include(`${partials}/modals/footer`, {submit: {text: 'Save'}}) %>
                 </form>
             </div>
         </div>
         <div id='mdl_stock_add'   class="modal fade" tabindex="-1" role="dialog">
             <div class="modal-dialog modal-lg" role="document">
                 <form class="modal-content" id='form_stock_add'>
-                    <div class="modal-header">
-                        <h5 class="modal-title">Add Stock Location</h5>
-                    </div>
+                    <%- include(`${partials}/modals/header`, {title: 'Add Stock Location'}) %>
                     <div class="modal-body">
                         <input type="hidden" class='size_id' name='stock[size_id]'>
                         <%- include(`${partials}/inputs/text`, {title: 'Location', id: 'stock_locations', name: 'location', required: true, list_id: 'locations_list', reload_id: 'reload_locations_stock'}) %>
                     </div>
-                    <div class="modal-footer">
-                        <%- include(`${partials}/button/save`) %>
-                    </div>
+                    <%- include(`${partials}/modals/footer`, {submit: {text: 'Save'}}) %>
                 </form>
             </div>
         </div>
         <div id='mdl_receipt_add' class="modal fade" tabindex="-1" role="dialog">
             <div class="modal-dialog modal-lg" role="document">
                 <form class="modal-content" id='form_receipt_add'>
-                    <div class="modal-header">
-                        <h5 class="modal-title">Receive Stock</h5>
-                    </div>
+                    <%- include(`${partials}/modals/header`, {title: 'Receive Stock'}) %>
                     <div class="modal-body">
                         <%- include(`${partials}/inputs/select`, {title: 'Location', id: 'receipt_stock', name: 'receipt[stock_id]', required: true, reload_id: 'reload_locations_receipt'}) %>
                         <%- include(`${partials}/inputs/number`, {title: 'Quantity', id: 'receipt_qty',   name: 'receipt[qty]',      required: true}) %>
                     </div>
-                    <div class="modal-footer">
-                        <%- include(`${partials}/button/save`) %>
-                    </div>
+                    <%- include(`${partials}/modals/footer`, {submit: {text: 'Save'}}) %>
                 </form>
             </div>
         </div>
@@ -284,43 +259,33 @@
         <div id='mdl_detail_add'  class="modal fade" tabindex="-1" role="dialog">
             <div class="modal-dialog modal-lg" role="document">
                 <form class="modal-content" id='form_detail_add'>
-                    <div class="modal-header">
-                        <h5 class="modal-title">Add Detail</h5>
-                    </div>
+                    <%- include(`${partials}/modals/header`, {title: 'Add Detail'}) %>
                     <div class="modal-body">
                         <input type="hidden" class='size_id' name='detail[size_id]'>
                         <%- include(`${partials}/inputs/text`,     {title: 'Detail', id: 'detail_name_add',  name: 'detail[name]',  required: true, list_id: 'list_detail_options', reload_id: 'reload_options'}) %>
                         <%- include(`${partials}/inputs/textarea`, {title: 'Value',  id: 'detail_value_add', name: 'detail[value]', required: true}) %>
                     </div>
-                    <div class="modal-footer">
-                        <%- include(`${partials}/button/save`) %>
-                    </div>
+                    <%- include(`${partials}/modals/footer`, {submit: {text: 'Save'}}) %>
                 </form>
             </div>
         </div>
         <div id='mdl_detail_edit' class="modal fade" tabindex="-1" role="dialog">
             <div class="modal-dialog modal-lg" role="document">
                 <form class="modal-content" id='form_detail_edit'>
-                    <div class="modal-header">
-                        <h5 class="modal-title">Edit Detail</h5>
-                    </div>
+                    <%- include(`${partials}/modals/header`, {title: 'Edit Detail'}) %>
                     <div class="modal-body">
                         <input type="hidden" id='detail_id_edit' name='detail_id'>
                         <%- include(`${partials}/inputs/text`,     {title: 'Detail', id: 'detail_name_edit',  name: 'detail[name]',  required: true, list_id: 'list_detail_options'}) %>
                         <%- include(`${partials}/inputs/textarea`, {title: 'Value',  id: 'detail_value_edit', name: 'detail[value]', required: true}) %>
                     </div>
-                    <div class="modal-footer">
-                        <%- include(`${partials}/button/save`) %>
-                    </div>
+                    <%- include(`${partials}/modals/footer`, {submit: {text: 'Save'}}) %>
                 </form>
             </div>
         </div>
         <div id='mdl_size_edit'   class="modal fade" tabindex="-1" role="dialog">
             <div class="modal-dialog modal-lg" role="document">
                 <form class="modal-content" id='form_size_edit'>
-                    <div class="modal-header">
-                        <h5 class="modal-title">Edit Size</h5>
-                    </div>
+                    <%- include(`${partials}/modals/header`, {title: 'Edit Size'}) %>
                     <div class="modal-body">
                         <%- include(`${partials}/inputs/select`, {name: 'size[issueable]',   title: 'Issueable',    id: 'sel_issueable', options: [{value: '0', text: 'No'}, {value: '1', text: 'Yes'}]}) %>
                         <%- include(`${partials}/inputs/select`, {name: 'size[orderable]',   title: 'Orderable',    id: 'sel_orderable', options: [{value: '0', text: 'No'}, {value: '1', text: 'Yes'}]}) %>
@@ -331,9 +296,7 @@
                         <%- include(`${partials}/inputs/text`,   {name: 'size[size2]',       title: 'Size 2',       id: 'size2_edit'}) %>
                         <%- include(`${partials}/inputs/text`,   {name: 'size[size3]',       title: 'Size 3',       id: 'size3_edit'}) %>
                     </div>
-                    <div class="modal-footer">
-                        <%- include(`${partials}/button/save`) %>
-                    </div>
+                    <%- include(`${partials}/modals/footer`, {submit: {text: 'Save'}}) %>
                 </form>
             </div>
         </div>
@@ -352,27 +315,19 @@
                         <%- include(`${partials}/inputs/display`, {id: 'order_createdAt', title: 'Ordered'}) %>
                         <%- include(`${partials}/inputs/display`, {id: 'order_updatedAt', title: 'Updated'}) %>
                     </div>
-                    <div class="modal-footer">
-                        <p class='me-auto'>ID: <span id='order_id'></span></p>
-                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                    </div>
+                    <%- include(`${partials}/modals/footer`, {link_id: 'order_id'}) %>
                 </div>
             </div>
         </div>
         <div id='mdl_order_add'   class="modal fade" tabindex="-1" role="dialog">
             <div class="modal-dialog modal-lg" role="document">
                 <form class="modal-content" id='form_order_add'>
-                    <div class="modal-header">
-                        <h5 class="modal-title">Order Item</h5>
-                    </div>
+                    <%- include(`${partials}/modals/header`, {title: 'Order Item'}) %>
                     <div class="modal-body">
                         <input type="hidden" name='line[size_id]' class='size_id'>
                         <%- include(`${partials}/inputs/number`, {name: 'line[qty]', title: 'Quantity', value: '1', required: true}) %>
                     </div>
-                    <div class="modal-footer">
-                        <input type="submit" class="btn btn-success w-100" value='Order'>
-                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                    </div>
+                    <%- include(`${partials}/modals/footer`, {submit: {text: 'Order'}}) %>
                 </form>
             </div>
         </div>

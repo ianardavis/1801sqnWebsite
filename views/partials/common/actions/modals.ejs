@@ -1,9 +1,7 @@
 <div id='mdl_action_view' class="modal fade" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Action</h5>
-            </div>
+            <%- include(`${partials}/modals/header`, {title: 'Action'}) %>
             <div class="modal-body">
                 <%- include(`${partials}/inputs/display`, {id: 'action_action',    title: 'Action'}) %>
                 <%- include(`${partials}/inputs/display`, {id: 'action_createdAt', title: 'Created'}) %>
@@ -17,10 +15,7 @@
                     <tbody id='tbl_links'></tbody>
                 </table>
             </div>
-            <div class="modal-footer">
-                <p class='me-auto'>ID: <span id='action_id'></span></p>
-                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-            </div>
+            <%- include(`${partials}/modals/footer`, {link_id: 'action_id'}) %>
         </div>
     </div>
 </div>

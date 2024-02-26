@@ -1,9 +1,7 @@
 <div id='mdl_<%- id %>_add' class="modal fade" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
         <form class="modal-content" id='form_<%- id %>_add'>
-            <div class="modal-header">
-                <h5 class="modal-title">Add User</h5>
-            </div>
+            <%- include(`${partials}/modals/header`, {title: 'Add User'}) %>
             <div class="modal-body">
                 <%- include(`${partials}/inputs/text`,   {title: 'Service #',  name: 'user[service_number]', required: true, id: 'inp_service_number'}) %>
                 <%- include(`${partials}/inputs/select`, {title: 'Rank',       name: 'user[rank_id]',   	 required: true, id: 'sel_ranks_add',  	 reload_id: 'reload_ranks_add'}) %>
@@ -12,10 +10,7 @@
                 <%- include(`${partials}/inputs/select`, {title: 'Status',     name: 'user[status_id]', 	 required: true, id: 'sel_statuses_add', reload_id: 'reload_statuses_add'}) %>
                 <%- include(`${partials}/inputs/text`,   {title: 'Login ID',   name: 'user[login_id]',  	 required: true, id: 'inp_login_id'}) %>
             </div>
-            <div class="modal-footer">
-                <input type="submit" id='save_user' class="btn btn-success w-100" value='Save User' disabled>
-                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-            </div>
+            <%- include(`${partials}/modals/footer`, {submit: {text: 'Save', disabled: true}}) %>
         </form>
     </div>
 </div>

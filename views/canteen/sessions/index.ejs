@@ -1,9 +1,9 @@
 <%- include(`${partials}/head/app`, {text: 'Canteen'}) %>
 <%- include(`${partials}/breadcrumb`, {text: 'Sessions'}) %>
 <% if (permissions.pos_supervisor) { %>
-	<li class="nav-item">
-		<a class='nav-link' data-bs-toggle="modal" data-bs-target="#mdl_session_add"><i class="fas fa-plus"></i></a>
-	</li>
+<li class="nav-item">
+    <a class='nav-link' data-bs-toggle="modal" data-bs-target="#mdl_session_add"><i class="fas fa-plus"></i></a>
+</li>
 <% } %>
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/head/components/close`) %>
@@ -19,29 +19,14 @@
     </table>
 	<%- include(`${partials}/limit`, {table: 'sessions'}) %>
     <div id="modals">
-        <% if (permissions.pos_supervisor) { %>
-            <div id='mdl_session_add' class="modal" tabindex="-1" role="dialog">
-                <div class="modal-dialog" role="document">
-                    <form class="modal-content" id='form_session_add'>
-                        <div class="modal-header">
-                            <h5 class="modal-title">Open Session</h5>
-                        </div>
-                        <div class="modal-body">
-                            <%- include(`${partials}/canteen/count_form`) %>
-                        </div>
-                        <div class="modal-footer">
-                            <input  type="submit" class="btn btn-success w-100" value='Open'>
-                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        <% } %>
+<% if (permissions.pos_supervisor) { %>
+        <%- include(`${partials}/modals/canteen/count`, {id: 'session_add', title: 'Open Session', submit_text: 'Open'}) %>
+<% } %>
     </div>
 </section>
 <%- include(`${partials}/foot/app`) %>
 <script src='/js/canteen/sessions/index/view.js'></script>
 <% if (permissions.pos_supervisor) { %>
-    <script src='/js/canteen/sessions/index/add.js'></script>
+<script src='/js/canteen/sessions/index/add.js'></script>
 <% } %>
 <%- include(`${partials}/foot/components/htmlClose`) %>

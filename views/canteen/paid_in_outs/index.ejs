@@ -24,9 +24,7 @@
         <div id='mdl_paid_in_out_add' class="modal" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
                 <form class="modal-content" id='form_paid_in_out_add'>
-                    <div class="modal-header">
-                        <h5 class="modal-title">Pay In/Out</h5>
-                    </div>
+                    <%- include(`${partials}/modals/header`, {title: 'Pay In/Out'}) %>
                     <div class="modal-body">
                         <%- include(`${partials}/inputs/select`, {title: 'Pay In/Out?', name: 'paid_in_out[paid_in]',             id: 'paid_in_out_paid_in', options: [{value: '1', text: 'Pay In', selected: true}, {value: '0', text: 'Pay Out'}]}) %>
                         <%- include(`${partials}/inputs/select`, {title: 'Holding',     name: 'paid_in_out[holding_id]',          id: 'sel_holdings'}) %>
@@ -34,9 +32,7 @@
                         <%- include(`${partials}/inputs/text`,   {title: 'Reason',      name: 'paid_in_out[reason]',              id: 'paid_in_out_reason', required: true}) %>
                         <%- include(`${partials}/inputs/number`, {title: 'Amount',      name: 'paid_in_out[amount]',              id: 'paid_in_out_amount', required: true, step: '0.01', min: '0'}) %>
                     </div>
-                    <div class="modal-footer">
-                        <input type="submit" class="btn btn-success w-100" value='Save Item'>
-                    </div>
+                    <%- include(`${partials}/modals/footer`, {submit: {text: 'Save Item'}}) %>
                 </form>
             </div>
         </div>

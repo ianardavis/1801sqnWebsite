@@ -53,50 +53,26 @@
         <div id='mdl_movement_add' class="modal fade" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
                 <form class="modal-content" id='form_movement_add'>
-                    <div class="modal-header">
-                        <h5 class="modal-title">Transfer Cash</h5>
-                    </div>
+                    <%- include(`${partials}/modals/header`, {title: 'Transfer Cash'}) %>
                     <div class="modal-body">
                         <input type="hidden" class='holding_id' name='movement[holding_id_from]'>
                         <%- include(`${partials}/inputs/select`, {title: 'To Holding',  name: 'movement[holding_id_to]', required: true, id: 'sel_holdings'}) %>
                         <%- include(`${partials}/inputs/text`,   {title: 'Description', name: 'movement[description]',   required: true, id: 'movement_add_description'}) %>
                         <%- include(`${partials}/inputs/number`, {title: 'Amount',      name: 'movement[amount]',        required: true, id: 'movement_add_amount', value: '0.00', step: '0.01', min: '0'}) %>
                     </div>
-                    <div class="modal-footer">
-                        <input type="submit" class="btn btn-success w-100" value='Save Transfer'>
-                    </div>
+                    <%- include(`${partials}/modals/footer`, {submit: {text: 'Save Transfer'}}) %>
                 </form>
             </div>
         </div>
-        <div id='mdl_holding_count' class="modal" tabindex="-1" role="dialog">
-            <div class="modal-dialog" role="document">
-                <form class="modal-content" id='form_holding_count'>
-                    <div class="modal-header">
-                        <h5 class="modal-title">Count Holding</h5>
-                    </div>
-                    <div class="modal-body">
-                        <%- include(`${partials}/canteen/count_form`) %>
-                    </div>
-                    <div class="modal-footer">
-                        <input  type="submit" class="btn btn-success w-100" value='Count'>
-                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                    </div>
-                </form>
-            </div>
-        </div>
+        <%- include(`${partials}/modals/canteen/count`, {id: 'holding_count', title: 'Count Holding', submit_text: 'Count'}) %>
         <div id='mdl_holding_edit' class="modal" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
                 <form class="modal-content" id='form_holding_edit'>
-                    <div class="modal-header">
-                        <h5 class="modal-title">Edit Holding</h5>
-                    </div>
+                    <%- include(`${partials}/modals/header`, {title: 'Edit Holding'}) %>
                     <div class="modal-body">
                         <%- include(`${partials}/inputs/text`, {title: 'Description', name: 'holding[description]', id: 'holding_description_edit'}) %>
                     </div>
-                    <div class="modal-footer">
-                        <input  type="submit" class="btn btn-success w-100" value='Count'>
-                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                    </div>
+                    <%- include(`${partials}/modals/footer`, {submit: {text: 'Count'}}) %>
                 </form>
             </div>
         </div>
