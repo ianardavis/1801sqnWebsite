@@ -11,7 +11,7 @@ function getSite() {
         return site;
     };
     function setSiteIDValues(site) {
-        document.querySelectorAll('.site_id').forEach(e => e.setAttribute('value', site.site_id));
+        document.querySelectorAll('.site_id').forEach(e => {console.log(e);e.setAttribute('value', site.site_id)});
         return site;
     };
 

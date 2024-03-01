@@ -19,21 +19,23 @@ module.exports = function (m, fn) {
         });
     };
 
-    fn.items.find = function (where) {
+    fn.items.find = function (where, site_id) {
+        where.site_id = {[fn.op.or]: [null, site_id]};
         return fn.find(
             m.items,
             where
         );
     };
-    fn.items.findAll = function (query) {
+    fn.items.findAll = function (query, site_id) {
         return new Promise((resolve, reject) => {
             let where = query.where || {};
+            where.site_id = {[fn.op.or]: [null, site_id]};
             if (query.like) where.description = {[fn.op.substring]: query.like.description || ''};
             m.items.findAndCountAll({
                 where: where,
                 ...fn.pagination(query)
             })
-            .then(items => resolve(items))
+            .then(resolve)
             .catch(reject);
         });
     };
@@ -51,7 +53,7 @@ module.exports = function (m, fn) {
                 }],
                 ...pagination
             })
-            .then(items => resolve(items))
+            .then(resolve)
             .catch(reject);
         });
     };
@@ -67,14 +69,14 @@ module.exports = function (m, fn) {
                 }],
                 ...pagination
             })
-            .then(items => resolve(items))
+            .then(resolve)
             .catch(reject);
         });
     };
 
-    fn.items.edit = function (item_id, details) {
+    fn.items.edit = function (item_id, details, site_id) {
         return new Promise((resolve, reject) => {
-            fn.items.find({item_id: item_id})
+            fn.items.find({item_id: item_id}, site_id)
             .then(item => {
                 fn.update(item, details)
                 .then(result => resolve(true))

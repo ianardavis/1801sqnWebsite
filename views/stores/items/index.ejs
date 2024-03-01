@@ -30,29 +30,32 @@
 		</div>
 	</div>
 	<div id='modals'>
-		<% if (permissions.stores_stock_admin) { %>
-			<div id='mdl_item_add' class='modal fade' tabindex='-1' role='dialog'>
-				<div class='modal-dialog' role='document'>
-					<form class='modal-content' id='form_item_add'>
-						<%- include(`${partials}/modals/header`, {title: 'Add Item'}) %>
-						<div class='modal-body'>
-                            <datalist id='list_descriptions'></datalist>
-							<%- include(`${partials}/inputs/text`, {title: 'Description', name: 'item[description]', required: true}) %>
-							<%- include(`${partials}/inputs/text`, {title: 'Size Text 1', name: 'item[size_text1]',  list_id: 'list_descriptions', required: true}) %>
-							<%- include(`${partials}/inputs/text`, {title: 'Size Text 2', name: 'item[size_text2]',  list_id: 'list_descriptions'}) %>
-							<%- include(`${partials}/inputs/text`, {title: 'Size Text 3', name: 'item[size_text3]',  list_id: 'list_descriptions'}) %>
-						</div>
-						<%- include(`${partials}/modals/footer`, {submit: {text: 'Save'}}) %>
-					</form>
-				</div>
+<% if (permissions.stores_stock_admin) { %>
+		<div id='mdl_item_add' class='modal fade' tabindex='-1' role='dialog'>
+			<div class='modal-dialog' role='document'>
+				<form class='modal-content' id='form_item_add'>
+					<%- include(`${partials}/modals/header`, {title: 'Add Item'}) %>
+					<div class='modal-body'>
+						<datalist id='list_descriptions'></datalist>
+						<%- include(`${partials}/inputs/text`, {title: 'Description', name: 'item[description]', required: true}) %>
+						<%- include(`${partials}/inputs/text`, {title: 'Size Text 1', name: 'item[size_text1]',  list_id: 'list_descriptions', required: true}) %>
+						<%- include(`${partials}/inputs/text`, {title: 'Size Text 2', name: 'item[size_text2]',  list_id: 'list_descriptions'}) %>
+						<%- include(`${partials}/inputs/text`, {title: 'Size Text 3', name: 'item[size_text3]',  list_id: 'list_descriptions'}) %>
+						<%- include(`${partials}/inputs/checkbox`, {title: 'Visible to this site only?', id: 'chk_item_add_site_id', classes: ['site_id'], name: 'item[site_id]', checked: true}) %>
+					</div>
+					<%- include(`${partials}/modals/footer`, {submit: {text: 'Save'}}) %>
+				</form>
 			</div>
-		<% } %>
+		</div>
+<% } %>
 	</div>
 </section>
 <%- include(`${partials}/foot/app`) %>
 <script src='/js/stores/items/index/view.js'></script>
+
 <% if (permissions.stores_stock_admin) { %>
-	<script src='/js/stores/items/size_descriptions.js'></script>
-	<script src='/js/stores/items/index/add.js'></script>
+<script src='/js/stores/items/size_descriptions.js'></script>
+<script src='/js/stores/items/index/add.js'></script>
 <% } %>
+
 <%- include(`${partials}/foot/components/htmlClose`) %>

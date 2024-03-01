@@ -4,9 +4,7 @@
 	<div class="row container menu mx-auto">
 	<%- include(`${partials}/card`, {id: 'suppliers', href: '/suppliers', title: 'Suppliers', image: 'warehouse', permission: 'supplier_admin'}) %>
 	<%- include(`${partials}/card`, {id: 'items', 	  href: '/items', 	  title: 'Items', 	  image: 'tshirt'}) %>
-<% if (site.is_admin) { %>
-	<%- include(`${partials}/card`, {id: 'sites', 	  href: '/sites', 	  title: 'Sites', 	  image: 'city'}) %>
-<% } else { %>
+<% if (!site.is_admin) { %>
 	<%- include(`${partials}/card`, {id: 'issues', 	  href: '/issues', 	  title: 'Issues', 	  image: 'address-card'}) %>
 	<%- include(`${partials}/card`, {id: 'scraps', 	  href: '/scraps', 	  title: 'Scraps', 	  image: 'trash-alt', permission: 'stores_stock_admin'}) %>
 	<%- include(`${partials}/card`, {id: 'orders', 	  href: '/orders', 	  title: 'Orders', 	  image: 'list', 	  permission: 'stores_stock_admin'}) %>

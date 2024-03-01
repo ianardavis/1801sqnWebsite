@@ -16,12 +16,12 @@ module.exports = (app, fn) => {
         .catch(err => fn.sendError(res, err));
     });
     app.get('/get/items',           fn.loggedIn, fn.permissions.check('access_stores'),      (req, res) => {
-        fn.items.findAll(req.query)
+        fn.items.findAll(req.query, req.session.site.site_id)
         .then(items => fn.sendRes('items', res, items, req.query))
         .catch(err => fn.sendError(res, err));
     });
     app.get('/get/item',            fn.loggedIn, fn.permissions.check('access_stores'),      (req, res) => {
-        fn.items.find(req.query.where)
+        fn.items.find(req.query.where, req.session.site.site_id)
         .then(item => res.send({success: true, result: item}))
         .catch(err => fn.sendError(res, err));
     });
@@ -52,7 +52,7 @@ module.exports = (app, fn) => {
     });
 
     app.put('/items/:id',           fn.loggedIn, fn.permissions.check('stores_stock_admin'), (req, res) => {
-        fn.items.edit(req.params.id, req.body.item)
+        fn.items.edit(req.params.id, req.body.item, req.session.site.site_id)
         .then(result => res.send({success: result, message: `Item ${(result ? '' : 'not ')}saved`}))
         .catch(err => fn.sendError(res, err));
     });
