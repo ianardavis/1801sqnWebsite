@@ -3,103 +3,101 @@
 <%- include(`${partials}/breadcrumb`) %>
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/head/components/close`) %>
-<section class='container'>
-    <%- include(`${partials}/sidebar/button`, {id: 'actions', text: 'Actions', float: true}) %>
-    <ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
-        <%- include(`${partials}/tab_head`, {id: 'details',   title: 'Details'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'loancards', title: 'Loancards', count_id: 'loancard'}) %>
-        <%- include(`${partials}/common/actions/tab_head`) %>
-        <%- include(`${partials}/common/notes/tab_head`) %>
-    </ul>
-    <div class="tab-content pt-3" id="myTabContent">
-        <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
-            <%- include(`${partials}/inputs/display`, {id: 'nsn_group',   title: 'Group'}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'nsn_class',   title: 'Classification'}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'nsn_country', title: 'Country'}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'item_number', title: 'Item Number'}) %>
-        </div>
-        <div class="tab-pane fade" id="loancards" role="tabpanel" aria-labelledby="loancards-tab">
-	        <table class='table table-sm table-hover w-100'>
-                <thead class='thead-dark' id="tbl_loancards_head">
-					<th class='w-40' data-column='["createdAt"]' data-dir="DESC">Date</th>
-					<th class='w-40' data-column='["user_loancard","surname"]'  >Issued TO</th>
-					<th class='w-20' data-column='["status"]'                   >Status</th>
-                    <th><i class='fas fa-search'></i></th>
-                </thead>
-                <tbody id='tbl_loancards'></tbody>
-            </table>
-            <%- include(`${partials}/limit`, {table: 'loancard_lines'}) %>
-        </div>
-        <%- include(`${partials}/common/actions/tab_body`) %>
-        <%- include(`${partials}/common/notes/tab_body`) %>
+<%- include(`${partials}/sidebar/button`, {id: 'actions', text: 'Actions', float: true}) %>
+<ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
+    <%- include(`${partials}/tab_head`, {id: 'details',   title: 'Details'}) %>
+    <%- include(`${partials}/tab_head`, {id: 'loancards', title: 'Loancards', count_id: 'loancard'}) %>
+    <%- include(`${partials}/common/actions/tab_head`) %>
+    <%- include(`${partials}/common/notes/tab_head`) %>
+</ul>
+<div class="tab-content pt-3" id="myTabContent">
+    <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
+        <%- include(`${partials}/inputs/display`, {id: 'nsn_group',   title: 'Group'}) %>
+        <%- include(`${partials}/inputs/display`, {id: 'nsn_class',   title: 'Classification'}) %>
+        <%- include(`${partials}/inputs/display`, {id: 'nsn_country', title: 'Country'}) %>
+        <%- include(`${partials}/inputs/display`, {id: 'item_number', title: 'Item Number'}) %>
     </div>
+    <div class="tab-pane fade" id="loancards" role="tabpanel" aria-labelledby="loancards-tab">
+        <table class='table table-sm table-hover w-100'>
+            <thead class='thead-dark' id="tbl_loancards_head">
+                <th class='w-40' data-column='["createdAt"]' data-dir="DESC">Date</th>
+                <th class='w-40' data-column='["user_loancard","surname"]'  >Issued TO</th>
+                <th class='w-20' data-column='["status"]'                   >Status</th>
+                <th><i class='fas fa-search'></i></th>
+            </thead>
+            <tbody id='tbl_loancards'></tbody>
+        </table>
+        <%- include(`${partials}/limit`, {table: 'loancard_lines'}) %>
+    </div>
+    <%- include(`${partials}/common/actions/tab_body`) %>
+    <%- include(`${partials}/common/notes/tab_body`) %>
+</div>
 
-    <div id="sidebars">
-        <div class="offcanvas offcanvas-start" tabindex="-1" id="sdb_actions" aria-labelledby="sdb_actions_label">
-            <%- include(`${partials}/sidebar/header`, {id: 'actions', text: 'Actions'}) %>
-            <div class="offcanvas-body d-flex flex-column">
-                <%- include(`${partials}/button/modal`, {id: 'nsn_edit', text: 'Edit', type: 'warning'}) %>
-                <%- include(`${partials}/button/delete`) %>
-            </div>
-        </div>
-        <%- include(`${partials}/common/notes/sidebar`) %>
-    </div>
-    <div id="modals">
-        <%- include(`${partials}/common/notes/modals`) %>
-        <%- include(`${partials}/common/actions/modals`) %>
-        <% if (permissions.stores_stock_admin) { %>
-            <div id='mdl_nsn_edit'      class="modal fade" tabindex="-1" role="dialog">
-                <div class="modal-dialog" role="document">
-                    <form class="modal-content" id='form_nsn_edit'>
-                        <%- include(`${partials}/modals/header`, {title: 'Edit NSN'}) %>
-                        <div class="modal-body">
-                            <%- include(`${partials}/inputs/select`, {title: 'Group',          name: 'nsn[nsn_group_id]',   required: true, id: 'sel_nsn_groups'}) %>
-                            <%- include(`${partials}/inputs/select`, {title: 'Classification', name: 'nsn[nsn_class_id]',   required: true, id: 'sel_nsn_classes'}) %>
-                            <%- include(`${partials}/inputs/select`, {title: 'Country',        name: 'nsn[nsn_country_id]', required: true, id: 'sel_nsn_countries'}) %>
-                            <%- include(`${partials}/inputs/text`,   {title: 'Item Number',    name: 'nsn[item_number]',    required: true, id: 'nsn_item_number_edit'}) %>
-                        </div>
-                        <%- include(`${partials}/modals/footer`, {submit: {text: 'Save'}}) %>
-                    </form>
-                </div>
-            </div>
-        <% } %>
-        <div     id='mdl_loancard_view' class="modal fade" tabindex="-1" role="dialog">
-            <div class="modal-dialog modal-lg" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Loancard Line</h5>
-                        <a id="btn_loancard_link" class='btn btn-primary float-end'><i class="fas fa-search"></i></a>
-                    </div>
-                    <div class="modal-body">
-                        <h5>Loancard</h5>
-                        <%- include(`${partials}/inputs/display`, {id: 'loancard_user_to',   title: 'Issued To',  link: true}) %>
-                        <%- include(`${partials}/inputs/display`, {id: 'loancard_user_by',   title: 'Issued By',  link: true}) %>
-                        <%- include(`${partials}/inputs/display`, {id: 'loancard_status',    title: 'Status'}) %>
-                        <%- include(`${partials}/inputs/display`, {id: 'loancard_date_due',  title: 'Due Back'}) %>
-                        <%- include(`${partials}/inputs/display`, {id: 'loancard_createdAt', title: 'Created'}) %>
-                        <%- include(`${partials}/inputs/display`, {id: 'loancard_updatedAt', title: 'Updated'}) %>
-                        <h5>Line</h5>
-                        <%- include(`${partials}/inputs/display`, {id: 'loancard_line_qty',       title: 'Quantity'}) %>
-                        <%- include(`${partials}/inputs/display`, {id: 'loancard_line_item',      title: 'Item',       link: true}) %>
-                        <%- include(`${partials}/inputs/display`, {id: 'loancard_line_size',      title: 'Size',       link: true}) %>
-                        <%- include(`${partials}/inputs/display`, {id: 'loancard_line_serial',    title: 'Serial #',   link: true}) %>
-                        <%- include(`${partials}/inputs/display`, {id: 'loancard_line_status',    title: 'Status'}) %>
-                        <%- include(`${partials}/inputs/display`, {id: 'loancard_line_user',      title: 'Created By', link: true}) %>
-                        <%- include(`${partials}/inputs/display`, {id: 'loancard_line_createdAt', title: 'Created'}) %>
-                        <%- include(`${partials}/inputs/display`, {id: 'loancard_line_updatedAt', title: 'Updated'}) %>
-                    </div>
-                    <div class="modal-footer">
-                        <p class='me-auto text-start'>
-                            Loancard ID: <span id='loancard_id'></span><br>
-                            Line ID: <span id='line_id'></span>
-                        </p>
-                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                    </div>
-                </div>
-            </div>
+<div id="sidebars">
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="sdb_actions" aria-labelledby="sdb_actions_label">
+        <%- include(`${partials}/sidebar/header`, {id: 'actions', text: 'Actions'}) %>
+        <div class="offcanvas-body d-flex flex-column">
+            <%- include(`${partials}/button/modal`, {id: 'nsn_edit', text: 'Edit', type: 'warning'}) %>
+            <%- include(`${partials}/button/delete`) %>
         </div>
     </div>
-</section>
+    <%- include(`${partials}/common/notes/sidebar`) %>
+</div>
+<div id="modals">
+    <%- include(`${partials}/common/notes/modals`) %>
+    <%- include(`${partials}/common/actions/modals`) %>
+<% if (permissions.stores_stock_admin) { %>
+    <div id='mdl_nsn_edit'      class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <form class="modal-content" id='form_nsn_edit'>
+                <%- include(`${partials}/modals/header`, {title: 'Edit NSN'}) %>
+                <div class="modal-body">
+                    <%- include(`${partials}/inputs/select`, {title: 'Group',          name: 'nsn[nsn_group_id]',   required: true, id: 'sel_nsn_groups'}) %>
+                    <%- include(`${partials}/inputs/select`, {title: 'Classification', name: 'nsn[nsn_class_id]',   required: true, id: 'sel_nsn_classes'}) %>
+                    <%- include(`${partials}/inputs/select`, {title: 'Country',        name: 'nsn[nsn_country_id]', required: true, id: 'sel_nsn_countries'}) %>
+                    <%- include(`${partials}/inputs/text`,   {title: 'Item Number',    name: 'nsn[item_number]',    required: true, id: 'nsn_item_number_edit'}) %>
+                </div>
+                <%- include(`${partials}/modals/footer`, {submit: {text: 'Save'}}) %>
+            </form>
+        </div>
+    </div>
+<% } %>
+    <div id='mdl_loancard_view' class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Loancard Line</h5>
+                    <a id="btn_loancard_link" class='btn btn-primary float-end'><i class="fas fa-search"></i></a>
+                </div>
+                <div class="modal-body">
+                    <h5>Loancard</h5>
+                    <%- include(`${partials}/inputs/display`, {id: 'loancard_user_to',   title: 'Issued To',  link: true}) %>
+                    <%- include(`${partials}/inputs/display`, {id: 'loancard_user_by',   title: 'Issued By',  link: true}) %>
+                    <%- include(`${partials}/inputs/display`, {id: 'loancard_status',    title: 'Status'}) %>
+                    <%- include(`${partials}/inputs/display`, {id: 'loancard_date_due',  title: 'Due Back'}) %>
+                    <%- include(`${partials}/inputs/display`, {id: 'loancard_createdAt', title: 'Created'}) %>
+                    <%- include(`${partials}/inputs/display`, {id: 'loancard_updatedAt', title: 'Updated'}) %>
+                    <h5>Line</h5>
+                    <%- include(`${partials}/inputs/display`, {id: 'loancard_line_qty',       title: 'Quantity'}) %>
+                    <%- include(`${partials}/inputs/display`, {id: 'loancard_line_item',      title: 'Item',       link: true}) %>
+                    <%- include(`${partials}/inputs/display`, {id: 'loancard_line_size',      title: 'Size',       link: true}) %>
+                    <%- include(`${partials}/inputs/display`, {id: 'loancard_line_serial',    title: 'Serial #',   link: true}) %>
+                    <%- include(`${partials}/inputs/display`, {id: 'loancard_line_status',    title: 'Status'}) %>
+                    <%- include(`${partials}/inputs/display`, {id: 'loancard_line_user',      title: 'Created By', link: true}) %>
+                    <%- include(`${partials}/inputs/display`, {id: 'loancard_line_createdAt', title: 'Created'}) %>
+                    <%- include(`${partials}/inputs/display`, {id: 'loancard_line_updatedAt', title: 'Updated'}) %>
+                </div>
+                <div class="modal-footer">
+                    <p class='me-auto text-start'>
+                        Loancard ID: <span id='loancard_id'></span><br>
+                        Line ID: <span id='line_id'></span>
+                    </p>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <%- include(`${partials}/foot/app`) %>
 <script>showTab('<%= tab %>')</script>
 <%- include(`${partials}/common/notes/scripts`) %>

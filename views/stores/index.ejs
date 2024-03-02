@@ -1,7 +1,6 @@
 <%- include(`${partials}/head/app`, {text: 'Stores'}) %>
 <%- include(`${partials}/head/components/close`) %>
-<section>
-	<div class="row container menu mx-auto">
+<div class="row menu mx-auto">
 	<%- include(`${partials}/card`, {id: 'suppliers', href: '/suppliers', title: 'Suppliers', image: 'warehouse', permission: 'supplier_admin'}) %>
 	<%- include(`${partials}/card`, {id: 'items', 	  href: '/items', 	  title: 'Items', 	  image: 'tshirt'}) %>
 <% if (!site.is_admin) { %>
@@ -20,8 +19,7 @@
 	<script src="/js/stores/index/issues.js"></script>
 	<script src="/js/stores/index/loancards.js"></script>
 <% } %>
-	</div>
-</section>
+</div>
 <%- include(`${partials}/foot/app`) %>
 <script src="/js/stores/index/view.js"></script>
 <%- include(`${partials}/foot/components/htmlClose`) %>

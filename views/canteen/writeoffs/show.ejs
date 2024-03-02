@@ -3,29 +3,27 @@
 <%- include(`${partials}/breadcrumb`) %>
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/head/components/close`) %>
-<section class='container'>
-    <ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
-        <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details'}) %>
-        <%- include(`${partials}/common/notes/tab_head`) %>
-    </ul>
-    <div class="tab-content pt-3" id="myTabContent">
-        <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
-            <%- include(`${partials}/inputs/display`, {id: 'writeoff_item',      title: 'Item'}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'writeoff_qty',       title: 'Quantity'}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'writeoff_cost',      title: 'Cost (Each)'}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'writeoff_reason',    title: 'Reason'}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'writeoff_createdAt', title: 'Date'}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'writeoff_user',      title: 'Writeen Off By', link: true}) %>
-        </div>
-        <%- include(`${partials}/common/notes/tab_body`) %>
+<ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
+    <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details'}) %>
+    <%- include(`${partials}/common/notes/tab_head`) %>
+</ul>
+<div class="tab-content pt-3" id="myTabContent">
+    <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
+        <%- include(`${partials}/inputs/display`, {id: 'writeoff_item',      title: 'Item'}) %>
+        <%- include(`${partials}/inputs/display`, {id: 'writeoff_qty',       title: 'Quantity'}) %>
+        <%- include(`${partials}/inputs/display`, {id: 'writeoff_cost',      title: 'Cost (Each)'}) %>
+        <%- include(`${partials}/inputs/display`, {id: 'writeoff_reason',    title: 'Reason'}) %>
+        <%- include(`${partials}/inputs/display`, {id: 'writeoff_createdAt', title: 'Date'}) %>
+        <%- include(`${partials}/inputs/display`, {id: 'writeoff_user',      title: 'Writeen Off By', link: true}) %>
     </div>
-    <div id="sidebars">
-        <%- include(`${partials}/common/notes/sidebar`) %>
-    </div>
-    <div id="modals">
-        <%- include(`${partials}/common/notes/modals`) %>
-    </div>
-</section>
+    <%- include(`${partials}/common/notes/tab_body`) %>
+</div>
+<div id="sidebars">
+    <%- include(`${partials}/common/notes/sidebar`) %>
+</div>
+<div id="modals">
+    <%- include(`${partials}/common/notes/modals`) %>
+</div>
 <%- include(`${partials}/foot/app`) %>
 <script src="/js/canteen/writeoffs/show/view.js"></script>
 <script>showTab('<%= tab %>')</script>

@@ -3,81 +3,79 @@
 <%- include(`${partials}/breadcrumb`) %>
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/head/components/close`) %>
-<section class='container'>
-    <ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
-        <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Menu
-            </a>
-            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <%- include(`${partials}/menu/button`, {id: 'movement_add',  modal: 'movement_add',  text: 'Transfer'}) %>
-                <%- include(`${partials}/menu/button`, {id: 'holding_edit',  modal: 'holding_edit',  text: 'Edit'}) %>
-                <%- include(`${partials}/menu/button`, {id: 'holding_count', modal: 'holding_count', text: 'Count'}) %>
-            </div>
-        </li>
-        <%- include(`${partials}/tab_head`, {id: 'details',   title: 'Details'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'movements', title: 'Movements', count_id: 'movement'}) %>
-        <%- include(`${partials}/common/actions/tab_head`) %>
-        <%- include(`${partials}/common/notes/tab_head`) %>
-    </ul>
-    <div class="tab-content pt-3" id="myTabContent">
-        <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
-            <%- include(`${partials}/inputs/display`, {id: 'holding_cash',      title: 'Cash'}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'holding_createdAt', title: 'Created'}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'holding_updatedAt', title: 'Updated'}) %>
+<ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Menu
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <%- include(`${partials}/menu/button`, {id: 'movement_add',  modal: 'movement_add',  text: 'Transfer'}) %>
+            <%- include(`${partials}/menu/button`, {id: 'holding_edit',  modal: 'holding_edit',  text: 'Edit'}) %>
+            <%- include(`${partials}/menu/button`, {id: 'holding_count', modal: 'holding_count', text: 'Count'}) %>
         </div>
-        <div class="tab-pane fade" id="movements" role="tabpanel" aria-labelledby="movements-tab">
-	        <table class="table table-sm table-hover mt-1">
-                <thead class="thead-dark" id="tbl_movements_head">
-					<th class='w-25' data-column='["createdAt"]' data-dir="DESC">Date</th>
-					<th class='w-10'>In/Out</th>
-					<th class='w-20' data-column='["type"]'>Type</th>
-					<th class='w-15' data-column='["amount"]'>Amount</th>
-					<th class='w-30' data-column='["description"]'>Description</th>
-                    <th><i class='fas fa-search'></i></th>
-                </thead>
-                <tbody id="tbl_movements"></tbody>
-            </table>
-            <%- include(`${partials}/limit`, {table: 'movements_holding'}) %>
-        </div>
-        <%- include(`${partials}/common/actions/tab_body`) %>
-        <%- include(`${partials}/common/notes/tab_body`) %>
+    </li>
+    <%- include(`${partials}/tab_head`, {id: 'details',   title: 'Details'}) %>
+    <%- include(`${partials}/tab_head`, {id: 'movements', title: 'Movements', count_id: 'movement'}) %>
+    <%- include(`${partials}/common/actions/tab_head`) %>
+    <%- include(`${partials}/common/notes/tab_head`) %>
+</ul>
+<div class="tab-content pt-3" id="myTabContent">
+    <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
+        <%- include(`${partials}/inputs/display`, {id: 'holding_cash',      title: 'Cash'}) %>
+        <%- include(`${partials}/inputs/display`, {id: 'holding_createdAt', title: 'Created'}) %>
+        <%- include(`${partials}/inputs/display`, {id: 'holding_updatedAt', title: 'Updated'}) %>
     </div>
-    <dive id="sidebars">
-        <%- include(`${partials}/common/notes/sidebar`) %>
-    </dive>
-    <div id="modals">
-        <%- include(`${partials}/common/movements/modals`) %>
-        <%- include(`${partials}/common/actions/modals`) %>
-        <%- include(`${partials}/common/notes/modals`) %>
-        <div id='mdl_movement_add' class="modal fade" tabindex="-1" role="dialog">
-            <div class="modal-dialog" role="document">
-                <form class="modal-content" id='form_movement_add'>
-                    <%- include(`${partials}/modals/header`, {title: 'Transfer Cash'}) %>
-                    <div class="modal-body">
-                        <input type="hidden" class='holding_id' name='movement[holding_id_from]'>
-                        <%- include(`${partials}/inputs/select`, {title: 'To Holding',  name: 'movement[holding_id_to]', required: true, id: 'sel_holdings'}) %>
-                        <%- include(`${partials}/inputs/text`,   {title: 'Description', name: 'movement[description]',   required: true, id: 'movement_add_description'}) %>
-                        <%- include(`${partials}/inputs/number`, {title: 'Amount',      name: 'movement[amount]',        required: true, id: 'movement_add_amount', value: '0.00', step: '0.01', min: '0'}) %>
-                    </div>
-                    <%- include(`${partials}/modals/footer`, {submit: {text: 'Save Transfer'}}) %>
-                </form>
-            </div>
-        </div>
-        <%- include(`${partials}/modals/canteen/count`, {id: 'holding_count', title: 'Count Holding', submit_text: 'Count'}) %>
-        <div id='mdl_holding_edit' class="modal" tabindex="-1" role="dialog">
-            <div class="modal-dialog" role="document">
-                <form class="modal-content" id='form_holding_edit'>
-                    <%- include(`${partials}/modals/header`, {title: 'Edit Holding'}) %>
-                    <div class="modal-body">
-                        <%- include(`${partials}/inputs/text`, {title: 'Description', name: 'holding[description]', id: 'holding_description_edit'}) %>
-                    </div>
-                    <%- include(`${partials}/modals/footer`, {submit: {text: 'Count'}}) %>
-                </form>
-            </div>
+    <div class="tab-pane fade" id="movements" role="tabpanel" aria-labelledby="movements-tab">
+        <table class="table table-sm table-hover mt-1">
+            <thead class="thead-dark" id="tbl_movements_head">
+                <th class='w-25' data-column='["createdAt"]' data-dir="DESC">Date</th>
+                <th class='w-10'>In/Out</th>
+                <th class='w-20' data-column='["type"]'>Type</th>
+                <th class='w-15' data-column='["amount"]'>Amount</th>
+                <th class='w-30' data-column='["description"]'>Description</th>
+                <th><i class='fas fa-search'></i></th>
+            </thead>
+            <tbody id="tbl_movements"></tbody>
+        </table>
+        <%- include(`${partials}/limit`, {table: 'movements_holding'}) %>
+    </div>
+    <%- include(`${partials}/common/actions/tab_body`) %>
+    <%- include(`${partials}/common/notes/tab_body`) %>
+</div>
+<dive id="sidebars">
+    <%- include(`${partials}/common/notes/sidebar`) %>
+</dive>
+<div id="modals">
+    <%- include(`${partials}/common/movements/modals`) %>
+    <%- include(`${partials}/common/actions/modals`) %>
+    <%- include(`${partials}/common/notes/modals`) %>
+    <div id='mdl_movement_add' class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <form class="modal-content" id='form_movement_add'>
+                <%- include(`${partials}/modals/header`, {title: 'Transfer Cash'}) %>
+                <div class="modal-body">
+                    <input type="hidden" class='holding_id' name='movement[holding_id_from]'>
+                    <%- include(`${partials}/inputs/select`, {title: 'To Holding',  name: 'movement[holding_id_to]', required: true, id: 'sel_holdings'}) %>
+                    <%- include(`${partials}/inputs/text`,   {title: 'Description', name: 'movement[description]',   required: true, id: 'movement_add_description'}) %>
+                    <%- include(`${partials}/inputs/number`, {title: 'Amount',      name: 'movement[amount]',        required: true, id: 'movement_add_amount', value: '0.00', step: '0.01', min: '0'}) %>
+                </div>
+                <%- include(`${partials}/modals/footer`, {submit: {text: 'Save Transfer'}}) %>
+            </form>
         </div>
     </div>
-</section>
+    <%- include(`${partials}/modals/canteen/count`, {id: 'holding_count', title: 'Count Holding', submit_text: 'Count'}) %>
+    <div id='mdl_holding_edit' class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <form class="modal-content" id='form_holding_edit'>
+                <%- include(`${partials}/modals/header`, {title: 'Edit Holding'}) %>
+                <div class="modal-body">
+                    <%- include(`${partials}/inputs/text`, {title: 'Description', name: 'holding[description]', id: 'holding_description_edit'}) %>
+                </div>
+                <%- include(`${partials}/modals/footer`, {submit: {text: 'Count'}}) %>
+            </form>
+        </div>
+    </div>
+</div>
 <%- include(`${partials}/foot/app`) %>
 <script src="/js/canteen/holdings/show/view.js"></script>
 <%- include(`${partials}/common/actions/scripts`) %>

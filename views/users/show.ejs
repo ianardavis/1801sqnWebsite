@@ -2,330 +2,328 @@
 <%- include(`${partials}/breadcrumb`) %>
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/head/components/close`) %>
-<section class="container">
-    <%- include(`${partials}/sidebar/button`, {id: 'actions', text: 'Actions', float: true}) %>
-    <ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
-        <%- include(`${partials}/tab_head`, {id: 'details',     title: 'Details'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'sites',       title: 'Sites',       count_id: 'site'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'permissions', title: 'Permissions', count_id: 'permission'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'issues',      title: 'Issues',      count_id: 'issue'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'loancards',   title: 'Loancards',   count_id: 'loancards'}) %>
-        <%- include(`${partials}/common/notes/tab_head`) %>
-    </ul>
-    <div class="tab-content pt-3" id="myTabContent">
-        <div class="tab-pane fade" id="details"     role="tabpanel" aria-labelledby="details-tab">
-            <%- include(`${partials}/inputs/display`, {id: 'service_number', title: 'Service #'}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'rank',           title: 'Rank'}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'surname',        title: 'Surname'}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'first_name',     title: 'First Name'}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'status',         title: 'Status'}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'login_id',       title: 'Login ID'}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'last_login',     title: 'Last Login'}) %>
-            <div class="input-group mb-1">
-                <span class="input-group-text w-30">Change password on next login</span>
-                <p class="form-control mb-0" id='reset'></p>
-            </div>
-            <div>
-                <h5 class="text-start">Giftaid Registrations</h5>
-                <table class="table table-sm table-hover">
-                    <thead class="thead-dark" id="tbl_giftaid_head">
-                        <th class='w-50' data-column='["startDate"]' data-dir="DESC">From</th>
-                        <th class='w-50' data-column='["endDate"]'>To</th>
-                        <th></th>
-                    </thead>
+<%- include(`${partials}/sidebar/button`, {id: 'actions', text: 'Actions', float: true}) %>
+<ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
+    <%- include(`${partials}/tab_head`, {id: 'details',     title: 'Details'}) %>
+    <%- include(`${partials}/tab_head`, {id: 'sites',       title: 'Sites',       count_id: 'site'}) %>
+    <%- include(`${partials}/tab_head`, {id: 'permissions', title: 'Permissions', count_id: 'permission'}) %>
+    <%- include(`${partials}/tab_head`, {id: 'issues',      title: 'Issues',      count_id: 'issue'}) %>
+    <%- include(`${partials}/tab_head`, {id: 'loancards',   title: 'Loancards',   count_id: 'loancards'}) %>
+    <%- include(`${partials}/common/notes/tab_head`) %>
+</ul>
+<div class="tab-content pt-3" id="myTabContent">
+    <div class="tab-pane fade" id="details"     role="tabpanel" aria-labelledby="details-tab">
+        <%- include(`${partials}/inputs/display`, {id: 'service_number', title: 'Service #'}) %>
+        <%- include(`${partials}/inputs/display`, {id: 'rank',           title: 'Rank'}) %>
+        <%- include(`${partials}/inputs/display`, {id: 'surname',        title: 'Surname'}) %>
+        <%- include(`${partials}/inputs/display`, {id: 'first_name',     title: 'First Name'}) %>
+        <%- include(`${partials}/inputs/display`, {id: 'status',         title: 'Status'}) %>
+        <%- include(`${partials}/inputs/display`, {id: 'login_id',       title: 'Login ID'}) %>
+        <%- include(`${partials}/inputs/display`, {id: 'last_login',     title: 'Last Login'}) %>
+        <div class="input-group mb-1">
+            <span class="input-group-text w-30">Change password on next login</span>
+            <p class="form-control mb-0" id='reset'></p>
+        </div>
+        <div>
+            <h5 class="text-start">Giftaid Registrations</h5>
+            <table class="table table-sm table-hover">
+                <thead class="thead-dark" id="tbl_giftaid_head">
+                    <th class='w-50' data-column='["startDate"]' data-dir="DESC">From</th>
+                    <th class='w-50' data-column='["endDate"]'>To</th>
+                    <th></th>
+                </thead>
 <% if (permissions.user_admin) { %>
-                        <form id='form_giftaid_add'>
-                            <input class='user_id' type="hidden" name='giftaid[user_id]'>
-                            <tbody>
-                                <tr>
-                                    <td><input class="form-control form-control-sm" type="date" name="giftaid[startDate]"></td>
-                                    <td></td>
-                                    <td><button class='btn btn-sm btn-success'><i class="fas fa-plus"></i></button></td>
-                                </tr>
-                            </tbody>
-                        </form>
+                    <form id='form_giftaid_add'>
+                        <input class='user_id' type="hidden" name='giftaid[user_id]'>
+                        <tbody>
+                            <tr>
+                                <td><input class="form-control form-control-sm" type="date" name="giftaid[startDate]"></td>
+                                <td></td>
+                                <td><button class='btn btn-sm btn-success'><i class="fas fa-plus"></i></button></td>
+                            </tr>
+                        </tbody>
+                    </form>
 <% } %>
-                    <tbody id="tbl_giftaid"></tbody>
-                </table>
-            </div>
-        </div>
-        <div class="tab-pane fade" id="sites"       role="tabpanel" aria-labelledby="sites-tab">
-            <table class="table table-sm table-hover">
-                <thead class="thead-dark" id="tbl_sites_head">
-                    <th class='w-90' data-column='["site","name"]' data-dir="ASC">Site</th>
-                    <th class='w-10' data-column='["is_default"]'>Default</th>
-                </thead>
-                <tbody id="tbl_sites"></tbody>
+                <tbody id="tbl_giftaid"></tbody>
             </table>
-            <%- include(`${partials}/limit`, {table: 'sites'}) %>
         </div>
-        <div class="tab-pane fade" id="permissions" role="tabpanel" aria-labelledby="permissions-tab">
-            <table class="table table-sm table-hover">
-                <thead class="thead-dark" id="tbl_permissions_head">
-                    <th class='w-100' data-column='["permission"]' data-dir="ASC">Permission</th>
-                </thead>
-                <tbody id="tbl_permissions"></tbody>
-            </table>
-            <%- include(`${partials}/limit`, {table: 'permissions'}) %>
-        </div>
-        <div class="tab-pane fade" id="issues"      role="tabpanel" aria-labelledby="issues-tab">
-            <div class="row justify-content-between">
-                <div class="col-12 col-md-4 mb-1">
-                    <%- include(`${partials}/sidebar/button`, {id: 'issues_filter', text: 'Filter'}) %>
-                </div>
-            </div>
-            <% if (permissions.issuer) { %><form id='form_issue_edit'><% } %>
-	        <table class='table table-sm table-hover'>
-                <thead class="thead-dark" id="tbl_issues_head">
-                    <th class="w-20" data-column='["createdAt"]' data-dir="DESC">Date</th>
-                    <th class="w-30" data-column='["size","item","description"]'>Item</th>
-                    <th class="w-20" data-column='["size","size1"]'>Size</th>
-                    <th class="w-10" data-column='["qty"]'>Qty</th>
-                    <th class="w-20" data-column='["status"]'>Status</th>
-                    <th><i class="fas fa-search"></i></th>
-                </thead>
-                <tbody id="tbl_issues"></tbody>
-            </table>
-            <%- include(`${partials}/limit`, {table: 'issues'}) %>
-            <% if (permissions.issuer) { %></form><% } %>
-        </div>
-        <div class="tab-pane fade" id="loancards"   role="tabpanel" aria-labelledby="loancards-tab">
-            <div class="row justify-content-between">
-                <div class="col-12 col-md-4 mb-1">
-                    <%- include(`${partials}/sidebar/button`, {id: 'loancards_filter', text: 'Filter'}) %>
-                </div>
-            </div>
-	        <table class='table table-sm table-hover'>
-                <thead class="thead-dark" id="tbl_loancards_head">
-                    <th class="w-40" data-column='["createdAt"]' data-dir="DESC">Date</th>
-                    <th class="w-20" data-column='["lines"]'>Lines</th>
-                    <th class="w-40" data-column='["status"]'>Status</th>
-                    <th><i class="fas fa-search"></i></th>
-                </thead>
-                <tbody id="tbl_loancards"></tbody>
-            </table>
-            <%- include(`${partials}/limit`, {table: 'loancards'}) %>
-        </div>
-        <%- include(`${partials}/common/notes/tab_body`) %>
     </div>
+    <div class="tab-pane fade" id="sites"       role="tabpanel" aria-labelledby="sites-tab">
+        <table class="table table-sm table-hover">
+            <thead class="thead-dark" id="tbl_sites_head">
+                <th class='w-90' data-column='["site","name"]' data-dir="ASC">Site</th>
+                <th class='w-10' data-column='["is_default"]'>Default</th>
+            </thead>
+            <tbody id="tbl_sites"></tbody>
+        </table>
+        <%- include(`${partials}/limit`, {table: 'sites'}) %>
+    </div>
+    <div class="tab-pane fade" id="permissions" role="tabpanel" aria-labelledby="permissions-tab">
+        <table class="table table-sm table-hover">
+            <thead class="thead-dark" id="tbl_permissions_head">
+                <th class='w-100' data-column='["permission"]' data-dir="ASC">Permission</th>
+            </thead>
+            <tbody id="tbl_permissions"></tbody>
+        </table>
+        <%- include(`${partials}/limit`, {table: 'permissions'}) %>
+    </div>
+    <div class="tab-pane fade" id="issues"      role="tabpanel" aria-labelledby="issues-tab">
+        <div class="row justify-content-between">
+            <div class="col-12 col-md-4 mb-1">
+                <%- include(`${partials}/sidebar/button`, {id: 'issues_filter', text: 'Filter'}) %>
+            </div>
+        </div>
+        <% if (permissions.issuer) { %><form id='form_issue_edit'><% } %>
+        <table class='table table-sm table-hover'>
+            <thead class="thead-dark" id="tbl_issues_head">
+                <th class="w-20" data-column='["createdAt"]' data-dir="DESC">Date</th>
+                <th class="w-30" data-column='["size","item","description"]'>Item</th>
+                <th class="w-20" data-column='["size","size1"]'>Size</th>
+                <th class="w-10" data-column='["qty"]'>Qty</th>
+                <th class="w-20" data-column='["status"]'>Status</th>
+                <th><i class="fas fa-search"></i></th>
+            </thead>
+            <tbody id="tbl_issues"></tbody>
+        </table>
+        <%- include(`${partials}/limit`, {table: 'issues'}) %>
+        <% if (permissions.issuer) { %></form><% } %>
+    </div>
+    <div class="tab-pane fade" id="loancards"   role="tabpanel" aria-labelledby="loancards-tab">
+        <div class="row justify-content-between">
+            <div class="col-12 col-md-4 mb-1">
+                <%- include(`${partials}/sidebar/button`, {id: 'loancards_filter', text: 'Filter'}) %>
+            </div>
+        </div>
+        <table class='table table-sm table-hover'>
+            <thead class="thead-dark" id="tbl_loancards_head">
+                <th class="w-40" data-column='["createdAt"]' data-dir="DESC">Date</th>
+                <th class="w-20" data-column='["lines"]'>Lines</th>
+                <th class="w-40" data-column='["status"]'>Status</th>
+                <th><i class="fas fa-search"></i></th>
+            </thead>
+            <tbody id="tbl_loancards"></tbody>
+        </table>
+        <%- include(`${partials}/limit`, {table: 'loancards'}) %>
+    </div>
+    <%- include(`${partials}/common/notes/tab_body`) %>
+</div>
 
-    <div id="sidebars">
-        <div class="offcanvas offcanvas-start" tabindex="-1" id="sdb_actions"          aria-labelledby="sdb_actions_label">
-            <%- include(`${partials}/sidebar/header`, {id: 'actions', text: 'Actions'}) %>
-            <div class="offcanvas-body d-flex flex-column">
-                <%- include(`${partials}/button/modal`, {id: 'user_edit',         text: 'Edit User',                type: 'warning'}) %>
-                <%- include(`${partials}/button/modal`, {id: 'permissions_edit',  text: 'Edit Permissions',         type: 'warning'}) %>
-                <%- include(`${partials}/button/modal`, {id: 'user_password',     text: 'Change Password',          type: 'warning'}) %>
-                <%- include(`${partials}/button/modal`, {id: 'issue_add',         text: 'New Issue',                type: 'success'}) %>
-                <%- include(`${partials}/button/modal`, {id: 'issue_measurement', text: 'New Issue (Measurements)', type: 'success'}) %>
-                <%- include(`${partials}/button/modal`, {id: 'issues_action',     text: 'Action Lines',             type: 'warning'}) %>
-                <form id="form_password_reset">
-                    <button class='btn btn-success w-100' id='btn_password_reset' disabled>
-                        Toggle Change Password
-                    </button>
-                </form>
-                <%- include(`${partials}/button/delete`) %>
-            </div>
+<div id="sidebars">
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="sdb_actions"          aria-labelledby="sdb_actions_label">
+        <%- include(`${partials}/sidebar/header`, {id: 'actions', text: 'Actions'}) %>
+        <div class="offcanvas-body d-flex flex-column">
+            <%- include(`${partials}/button/modal`, {id: 'user_edit',         text: 'Edit User',                type: 'warning'}) %>
+            <%- include(`${partials}/button/modal`, {id: 'permissions_edit',  text: 'Edit Permissions',         type: 'warning'}) %>
+            <%- include(`${partials}/button/modal`, {id: 'user_password',     text: 'Change Password',          type: 'warning'}) %>
+            <%- include(`${partials}/button/modal`, {id: 'issue_add',         text: 'New Issue',                type: 'success'}) %>
+            <%- include(`${partials}/button/modal`, {id: 'issue_measurement', text: 'New Issue (Measurements)', type: 'success'}) %>
+            <%- include(`${partials}/button/modal`, {id: 'issues_action',     text: 'Action Lines',             type: 'warning'}) %>
+            <form id="form_password_reset">
+                <button class='btn btn-success w-100' id='btn_password_reset' disabled>
+                    Toggle Change Password
+                </button>
+            </form>
+            <%- include(`${partials}/button/delete`) %>
         </div>
-        <div class="offcanvas offcanvas-start" tabindex="-1" id="sdb_issues_filter"    aria-labelledby="sdb_issues_filter_label">
-            <%- include(`${partials}/sidebar/header`, {id: 'issues_filter', text: 'Filter Issues'}) %>
-            <div class="offcanvas-body d-flex flex-column">
-                <div class="input-group mb-1">
-                    <span class="input-group-text w-30">Status</span>
-                    <select id="sel_issue_statuses" class="form-select" multiple size="6">
-                        <option value="0">Cancelled</option>
-                        <option value="1" selected>Requested</option>
-                        <option value="2" selected>Approved </option>
-                        <option value="3" selected>Ordered  </option>
-                        <option value="4" selected>Issued   </option>
-                        <option value="5">Returned </option>
-                    </select>
-                </div>
-                <div class="row">
-                    <div class="col-sm-6">
-                        <h5 class='text-start'>Date From:</h5>
-                        <input type="date" class='form-control' id='issue_createdAt_from'>
-                    </div>
-                    <div class="col-sm-6">
-                        <h5 class='text-start'>Date To:</h5>
-                        <input type="date" class='form-control' id='issue_createdAt_to'>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-12">
-                        <h5 class='text-start'>Item:</h5>
-                        <input type="text" class='form-control' id='item'>
-                    </div>
-                    <div class="col-sm-12">
-                        <h5 class='text-start'>Size:</h5>
-                        <input type="text" class='form-control' id='size'>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="offcanvas offcanvas-start" tabindex="-1" id="sdb_loancards_filter" aria-labelledby="sdb_loancards_filter_label">
-            <%- include(`${partials}/sidebar/header`, {id: 'loancards_filter', text: 'Filter Loancards'}) %>
-            <div class="offcanvas-body d-flex flex-column">
-                <div class="input-group mb-1">
-                    <span class="input-group-text w-30">Status</span>
-                    <select id="sel_loancard_statuses" class="form-select" multiple size="4">
-                        <option value="0">Cancelled</option>
-                        <option value="1" selected>Draft</option>
-                        <option value="2" selected>Open </option>
-                        <option value="3">Closed  </option>
-                    </select>
-                </div>
-                <div class="row">
-                    <div class="col-sm-6">
-                        <h5 class='text-start'>Date From:</h5>
-                        <input type="date" class='form-control' id='loancard_createdAt_from'>
-                    </div>
-                    <div class="col-sm-6">
-                        <h5 class='text-start'>Date To:</h5>
-                        <input type="date" class='form-control' id='loancard_createdAt_to'>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <%- include(`${partials}/common/notes/sidebar`) %>
     </div>
-    <div id="modals">
-        <%- include(`${partials}/common/notes/modals`) %>
-<% if (permissions.user_admin) { %>
-        <div id='mdl_user_edit'         class="modal fade" tabindex="-1" role="dialog">
-            <div class="modal-dialog" role="document">
-                <form class="modal-content" id='form_user_edit'>
-                    <%- include(`${partials}/modals/header`, {title: 'Edit User'}) %>
-                    <div class="modal-body">
-                        <%- include(`${partials}/inputs/text`,   {title: 'Service #',  name: 'user[service_number]', required: true, id: 'inp_service_number'}) %>
-                        <%- include(`${partials}/inputs/select`, {title: 'Rank',       name: 'user[rank_id]',        required: true, id: 'sel_ranks'}) %>
-                        <%- include(`${partials}/inputs/text`,   {title: 'Surname',    name: 'user[surname]', 	     required: true, id: 'inp_surname'}) %>
-                        <%- include(`${partials}/inputs/text`,   {title: 'First Name', name: 'user[first_name]',     required: true, id: 'inp_first_name'}) %>
-                        <%- include(`${partials}/inputs/select`, {title: 'Status',     name: 'user[status_id]',      required: true, id: 'sel_statuses'}) %>
-                        <%- include(`${partials}/inputs/text`,   {title: 'Login ID',   name: 'user[login_id]',       required: true, id: 'inp_login_id'}) %>
-                    </div>
-                    <%- include(`${partials}/modals/footer`, {submit: {text: 'Save'}}) %>
-                </form>
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="sdb_issues_filter"    aria-labelledby="sdb_issues_filter_label">
+        <%- include(`${partials}/sidebar/header`, {id: 'issues_filter', text: 'Filter Issues'}) %>
+        <div class="offcanvas-body d-flex flex-column">
+            <div class="input-group mb-1">
+                <span class="input-group-text w-30">Status</span>
+                <select id="sel_issue_statuses" class="form-select" multiple size="6">
+                    <option value="0">Cancelled</option>
+                    <option value="1" selected>Requested</option>
+                    <option value="2" selected>Approved </option>
+                    <option value="3" selected>Ordered  </option>
+                    <option value="4" selected>Issued   </option>
+                    <option value="5">Returned </option>
+                </select>
             </div>
-        </div>
-        <div id='mdl_giftaid_edit'      class="modal fade" tabindex="-1" role="dialog">
-            <div class="modal-dialog" role="document">
-                <form class="modal-content" id='form_giftaid_edit'>
-                    <%- include(`${partials}/modals/header`, {title: 'Edit Giftaid Record'}) %>
-                    <div class="modal-body">
-                        <%- include(`${partials}/inputs/date`, {id: 'giftaid_edit_start', title: 'Start Date', name: 'giftaid[startDate]'}) %>
-                        <%- include(`${partials}/inputs/date`, {id: 'giftaid_edit_end',   title: 'End Date',   name: 'giftaid[endDate]'}) %>
-                    </div>
-                    <%- include(`${partials}/modals/footer`, {submit: {text: 'Save'}}) %>
-                </form>
+            <div class="row">
+                <div class="col-sm-6">
+                    <h5 class='text-start'>Date From:</h5>
+                    <input type="date" class='form-control' id='issue_createdAt_from'>
+                </div>
+                <div class="col-sm-6">
+                    <h5 class='text-start'>Date To:</h5>
+                    <input type="date" class='form-control' id='issue_createdAt_to'>
+                </div>
             </div>
-        </div>
-<% } %>
-        <div id='mdl_giftaid_view'      class="modal fade" tabindex="-1" role="dialog">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">View Giftaid Record</h5>
-                        <span class='float-end'>
-                            <span id='giftaid_delete_btn' class='float-end me-1'>
-                                <form id="form_giftaid_delete">
-                                    <button class="btn btn-sm btn-danger"  id='btn_giftaid_delete' disabled><i class="fas fa-trash-alt" ></i></button>
-                                </form>
-                            </span>
-                            <span id='giftaid_edit_btn'   class='float-end me-1'>
-                                <button class="btn btn-sm btn-warning" id='btn_giftaid_edit'   disabled><i class="fas fa-pencil-alt"></i></button>
-                            </span>
-                        </span>
-                    </div>
-                    <div class="modal-body">
-                        <%- include(`${partials}/inputs/display`, {id: 'giftaid_view_startDate', title: 'Start Date'}) %>
-                        <%- include(`${partials}/inputs/display`, {id: 'giftaid_view_endDate',   title: 'End Date'}) %>
-                        <%- include(`${partials}/inputs/display`, {id: 'giftaid_view_createdAt', title: 'Created'}) %>
-                        <%- include(`${partials}/inputs/display`, {id: 'giftaid_view_updatedAt', title: 'Updated'}) %>
-                    </div>
-                    <%- include(`${partials}/modals/footer`, {submit: {text: 'Save'}}) %>
+            <div class="row">
+                <div class="col-12">
+                    <h5 class='text-start'>Item:</h5>
+                    <input type="text" class='form-control' id='item'>
+                </div>
+                <div class="col-sm-12">
+                    <h5 class='text-start'>Size:</h5>
+                    <input type="text" class='form-control' id='size'>
                 </div>
             </div>
         </div>
-        <div id='mdl_user_password'     class="modal fade" tabindex="-1" role="dialog">
-            <div class="modal-dialog" role="document">
-                <form class="modal-content" id='form_user_password'>
-                    <div class="modal-header">
-                        <h5 class="modal-title">Change Password: <span class="full_name"></span></h5>
-                    </div>
-                    <div class="modal-body">
-                        <%- include(`${partials}/users/change_password`) %>
-                    </div>
-                    <%- include(`${partials}/modals/footer`, {submit: {text: 'Save Password', id: 'save_password', disabled: true}}) %>
-                </form>
+    </div>
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="sdb_loancards_filter" aria-labelledby="sdb_loancards_filter_label">
+        <%- include(`${partials}/sidebar/header`, {id: 'loancards_filter', text: 'Filter Loancards'}) %>
+        <div class="offcanvas-body d-flex flex-column">
+            <div class="input-group mb-1">
+                <span class="input-group-text w-30">Status</span>
+                <select id="sel_loancard_statuses" class="form-select" multiple size="4">
+                    <option value="0">Cancelled</option>
+                    <option value="1" selected>Draft</option>
+                    <option value="2" selected>Open </option>
+                    <option value="3">Closed  </option>
+                </select>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <h5 class='text-start'>Date From:</h5>
+                    <input type="date" class='form-control' id='loancard_createdAt_from'>
+                </div>
+                <div class="col-sm-6">
+                    <h5 class='text-start'>Date To:</h5>
+                    <input type="date" class='form-control' id='loancard_createdAt_to'>
+                </div>
             </div>
         </div>
+    </div>
+    <%- include(`${partials}/common/notes/sidebar`) %>
+</div>
+<div id="modals">
+    <%- include(`${partials}/common/notes/modals`) %>
+<% if (permissions.user_admin) { %>
+    <div id='mdl_user_edit'         class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <form class="modal-content" id='form_user_edit'>
+                <%- include(`${partials}/modals/header`, {title: 'Edit User'}) %>
+                <div class="modal-body">
+                    <%- include(`${partials}/inputs/text`,   {title: 'Service #',  name: 'user[service_number]', required: true, id: 'inp_service_number'}) %>
+                    <%- include(`${partials}/inputs/select`, {title: 'Rank',       name: 'user[rank_id]',        required: true, id: 'sel_ranks'}) %>
+                    <%- include(`${partials}/inputs/text`,   {title: 'Surname',    name: 'user[surname]', 	     required: true, id: 'inp_surname'}) %>
+                    <%- include(`${partials}/inputs/text`,   {title: 'First Name', name: 'user[first_name]',     required: true, id: 'inp_first_name'}) %>
+                    <%- include(`${partials}/inputs/select`, {title: 'Status',     name: 'user[status_id]',      required: true, id: 'sel_statuses'}) %>
+                    <%- include(`${partials}/inputs/text`,   {title: 'Login ID',   name: 'user[login_id]',       required: true, id: 'inp_login_id'}) %>
+                </div>
+                <%- include(`${partials}/modals/footer`, {submit: {text: 'Save'}}) %>
+            </form>
+        </div>
+    </div>
+    <div id='mdl_giftaid_edit'      class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <form class="modal-content" id='form_giftaid_edit'>
+                <%- include(`${partials}/modals/header`, {title: 'Edit Giftaid Record'}) %>
+                <div class="modal-body">
+                    <%- include(`${partials}/inputs/date`, {id: 'giftaid_edit_start', title: 'Start Date', name: 'giftaid[startDate]'}) %>
+                    <%- include(`${partials}/inputs/date`, {id: 'giftaid_edit_end',   title: 'End Date',   name: 'giftaid[endDate]'}) %>
+                </div>
+                <%- include(`${partials}/modals/footer`, {submit: {text: 'Save'}}) %>
+            </form>
+        </div>
+    </div>
+<% } %>
+    <div id='mdl_giftaid_view'      class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">View Giftaid Record</h5>
+                    <span class='float-end'>
+                        <span id='giftaid_delete_btn' class='float-end me-1'>
+                            <form id="form_giftaid_delete">
+                                <button class="btn btn-sm btn-danger"  id='btn_giftaid_delete' disabled><i class="fas fa-trash-alt" ></i></button>
+                            </form>
+                        </span>
+                        <span id='giftaid_edit_btn'   class='float-end me-1'>
+                            <button class="btn btn-sm btn-warning" id='btn_giftaid_edit'   disabled><i class="fas fa-pencil-alt"></i></button>
+                        </span>
+                    </span>
+                </div>
+                <div class="modal-body">
+                    <%- include(`${partials}/inputs/display`, {id: 'giftaid_view_startDate', title: 'Start Date'}) %>
+                    <%- include(`${partials}/inputs/display`, {id: 'giftaid_view_endDate',   title: 'End Date'}) %>
+                    <%- include(`${partials}/inputs/display`, {id: 'giftaid_view_createdAt', title: 'Created'}) %>
+                    <%- include(`${partials}/inputs/display`, {id: 'giftaid_view_updatedAt', title: 'Updated'}) %>
+                </div>
+                <%- include(`${partials}/modals/footer`, {submit: {text: 'Save'}}) %>
+            </div>
+        </div>
+    </div>
+    <div id='mdl_user_password'     class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <form class="modal-content" id='form_user_password'>
+                <div class="modal-header">
+                    <h5 class="modal-title">Change Password: <span class="full_name"></span></h5>
+                </div>
+                <div class="modal-body">
+                    <%- include(`${partials}/users/change_password`) %>
+                </div>
+                <%- include(`${partials}/modals/footer`, {submit: {text: 'Save Password', id: 'save_password', disabled: true}}) %>
+            </form>
+        </div>
+    </div>
 <% if (permissions.user_admin || permissions.edit_own_permissions) { %>
-        <div id='mdl_permissions_edit'  class="modal fade" tabindex="-1" role="dialog">
-            <div class="modal-dialog" role="document">
-                <form class="modal-content" id='form_permissions_edit'>
-                    <div class="modal-header">
-                        <h5 class="modal-title">Edit Permissions</h5>
-                        <div class="float-end">
-                            <span class="dropdown">
-                                <button class="btn btn-primary dropdown-toggle" type="button" id="btn_grant_permissions" data-bs-toggle="dropdown" aria-expanded="false">
-                                    Grant ...
-                                </button>
-                                <ul class="dropdown-menu" aria-labelledby="btn_grant_permissions">
-                                    <li><button type='button' class="dropdown-item" id='btn_permissions_storeman'>Storeman</button></li>
-                                    <li><button type='button' class="dropdown-item" id='btn_permissions_canteen' >Canteen </button></li>
-                                </ul>
-                            </span>
-                            <button type='button' class="btn btn-success" id='btn_select_all'>Select All</button>
-                            <a class="btn btn-primary" id='reload_permission_edit'>
-                                <i class='fas fa-redo'></i>
-                            </a>
-                        </div>
+    <div id='mdl_permissions_edit'  class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <form class="modal-content" id='form_permissions_edit'>
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Permissions</h5>
+                    <div class="float-end">
+                        <span class="dropdown">
+                            <button class="btn btn-primary dropdown-toggle" type="button" id="btn_grant_permissions" data-bs-toggle="dropdown" aria-expanded="false">
+                                Grant ...
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="btn_grant_permissions">
+                                <li><button type='button' class="dropdown-item" id='btn_permissions_storeman'>Storeman</button></li>
+                                <li><button type='button' class="dropdown-item" id='btn_permissions_canteen' >Canteen </button></li>
+                            </ul>
+                        </span>
+                        <button type='button' class="btn btn-success" id='btn_select_all'>Select All</button>
+                        <a class="btn btn-primary" id='reload_permission_edit'>
+                            <i class='fas fa-redo'></i>
+                        </a>
                     </div>
-                    <div class="modal-body">
-                        <ul id="ul_tree" class='list-group'></ul>
-                    </div>
-                    <%- include(`${partials}/modals/footer`, {submit: {text: 'Save'}}) %>
-                </form>
-            </div>
+                </div>
+                <div class="modal-body">
+                    <ul id="ul_tree" class='list-group'></ul>
+                </div>
+                <%- include(`${partials}/modals/footer`, {submit: {text: 'Save'}}) %>
+            </form>
         </div>
+    </div>
 <% } %>
 <% if (permissions.issuer) { %>
-        <%- include(`${partials}/modals/stores/issue_add`) %>
-        <div id='mdl_issue_measurement' class="modal fade" tabindex="-1" role="dialog">
-            <div class="modal-dialog modal-xl" role="document">
-                <div class="modal-content">
-                    <%- include(`${partials}/modals/header`, {title: 'Issue by Measurement'}) %>
-                    <form class="modal-body" id='form_issue_measurement'>
-                        <input type="hidden" class='user_id' name='issues[users][][0][user_id_issue]'>
-                        <h5>Enter Measurements (in cm)</h5>
-                        <%- include(`${partials}/inputs/number`, {title: 'Head',         classes:['measurement'], data: {field: 'measurement', value: 'Head'}}) %>
-                        <%- include(`${partials}/inputs/number`, {title: 'Collar',       classes:['measurement'], data: {field: 'measurement', value: 'Collar'}}) %>
-                        <%- include(`${partials}/inputs/number`, {title: 'Chest',        classes:['measurement'], data: {field: 'measurement', value: 'Chest'}}) %>
-                        <%- include(`${partials}/inputs/number`, {title: 'Waist',        classes:['measurement'], data: {field: 'measurement', value: 'Waist'}}) %>
-                        <%- include(`${partials}/inputs/number`, {title: 'Inside Leg',   classes:['measurement'], data: {field: 'measurement', value: 'Inside Leg'}}) %>
-                        <%- include(`${partials}/inputs/number`, {title: 'Skirt Length', classes:['measurement'], data: {field: 'measurement', value: 'Skirt Length'}}) %>
-                        <%- include(`${partials}/inputs/number`, {title: 'Height',       classes:['measurement'], data: {field: 'measurement', value: 'Height'}}) %>
-                        <div id="div_select_items">
-                            <h5>Select Items</h5>
-                            <table class='table table-sm table-hover'>
-                                <thead class="thead-dark">
-                                    <th><i class="fas fa-check"></i></th>
-                                    <th class="w-50">Item</th>
-                                    <th class="w-30">Size</th>
-                                    <th class="w-20">Qty</th>
-                                </thead>
-                                <tbody id="tbl_items"></tbody>
-                            </table>
-                        </div>
-                        <button id='btn_select' class='btn btn-success w-100 m-1'>Add Issues</button>
-                    </form>
-                </div>
+    <%- include(`${partials}/modals/stores/issue_add`) %>
+    <div id='mdl_issue_measurement' class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+                <%- include(`${partials}/modals/header`, {title: 'Issue by Measurement'}) %>
+                <form class="modal-body" id='form_issue_measurement'>
+                    <input type="hidden" class='user_id' name='issues[users][][0][user_id_issue]'>
+                    <h5>Enter Measurements (in cm)</h5>
+                    <%- include(`${partials}/inputs/number`, {title: 'Head',         classes:['measurement'], data: {field: 'measurement', value: 'Head'}}) %>
+                    <%- include(`${partials}/inputs/number`, {title: 'Collar',       classes:['measurement'], data: {field: 'measurement', value: 'Collar'}}) %>
+                    <%- include(`${partials}/inputs/number`, {title: 'Chest',        classes:['measurement'], data: {field: 'measurement', value: 'Chest'}}) %>
+                    <%- include(`${partials}/inputs/number`, {title: 'Waist',        classes:['measurement'], data: {field: 'measurement', value: 'Waist'}}) %>
+                    <%- include(`${partials}/inputs/number`, {title: 'Inside Leg',   classes:['measurement'], data: {field: 'measurement', value: 'Inside Leg'}}) %>
+                    <%- include(`${partials}/inputs/number`, {title: 'Skirt Length', classes:['measurement'], data: {field: 'measurement', value: 'Skirt Length'}}) %>
+                    <%- include(`${partials}/inputs/number`, {title: 'Height',       classes:['measurement'], data: {field: 'measurement', value: 'Height'}}) %>
+                    <div id="div_select_items">
+                        <h5>Select Items</h5>
+                        <table class='table table-sm table-hover'>
+                            <thead class="thead-dark">
+                                <th><i class="fas fa-check"></i></th>
+                                <th class="w-50">Item</th>
+                                <th class="w-30">Size</th>
+                                <th class="w-20">Qty</th>
+                            </thead>
+                            <tbody id="tbl_items"></tbody>
+                        </table>
+                    </div>
+                    <button id='btn_select' class='btn btn-success w-100 m-1'>Add Issues</button>
+                </form>
             </div>
         </div>
-<% } %>
     </div>
-</section>
+<% } %>
+</div>
 <%- include(`${partials}/foot/app`) %>
 <%- include(`${partials}/common/notes/scripts`) %>
 <script>showTab('<%= tab %>');</script>
@@ -333,23 +331,23 @@
 <script src='/js/users/show/giftaid/view.js'></script>
 <script src='/js/users/show/sites/view.js'></script>
 <% if (permissions.user_admin) { %>
-    <script src="/js/users/show/edit.js"></script>
-    <script src="/js/utils/list/statuses.js"></script>
-    <script src="/js/utils/list/ranks.js"></script>
-    <script src="/js/users/show/delete.js"></script>
-    <script src='/js/users/show/giftaid/add.js'></script>
-    <script src='/js/users/show/giftaid/edit.js'></script>
-    <script src='/js/users/show/giftaid/delete.js'></script>
+<script src="/js/users/show/edit.js"></script>
+<script src="/js/utils/list/statuses.js"></script>
+<script src="/js/utils/list/ranks.js"></script>
+<script src="/js/users/show/delete.js"></script>
+<script src='/js/users/show/giftaid/add.js'></script>
+<script src='/js/users/show/giftaid/edit.js'></script>
+<script src='/js/users/show/giftaid/delete.js'></script>
 <% } %>
 <script src='/js/users/show/permissions/view.js'></script>
 <script src='/js/tree.js'></script>
 <% if (permissions.user_admin || permissions.edit_own_permissions) { %>
-    <script src='/js/users/show/permissions/edit.js'></script>
+<script src='/js/users/show/permissions/edit.js'></script>
 <% } %>
 <script src='/js/users/show/issues/view.js'></script>
 <% if (permissions.issuer) { %>
-    <script src='/js/users/show/issues/add.js'></script>
-    <script src='/js/users/show/issues/measurement.js'></script>
+<script src='/js/users/show/issues/add.js'></script>
+<script src='/js/users/show/issues/measurement.js'></script>
 <% } %>
 <script src='/js/users/show/loancards/view.js'></script>
 

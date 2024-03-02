@@ -3,153 +3,151 @@
 <%- include(`${partials}/breadcrumb`) %>
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/head/components/close`) %>
-<section class='container'>
-    <ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
-        <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Menu
-            </a>
-            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <%- include(`${partials}/menu/button`, {id: 'item_edit',    text: 'Edit',           modal: 'item_edit'}) %>
-                <%- include(`${partials}/menu/button`, {id: 'writeoff_add', text: 'Writeoff Stock', modal: 'writeoff_add'}) %>
-                <%- include(`${partials}/menu/button`, {id: 'receipt_add',  text: 'Receive Stock',  modal: 'receipt_add'}) %>
-                <%- include(`${partials}/menu/button`, {id: 'ean_add',      text: 'Add EAN',        modal: 'ean_add'}) %>
-				<%- include(`${partials}/menu/button`, {id: 'delete',	    text: 'Delete',         btn_form: {permission: 'canteen_stock_admin'}}) %>
-            </div>
-        </li>
-        <%- include(`${partials}/tab_head`, {id: 'details',   title: 'Details'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'receipts',  title: 'Receipts', count_id: 'receipt',  permission: 'canteen_stock_admin'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'writeoffs', title: 'Writeoff', count_id: 'writeoff', permission: 'canteen_stock_admin'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'sales',     title: 'Sales',    count_id: 'sale',     permission: 'pos_user'}) %>
-        <%- include(`${partials}/common/notes/tab_head`) %>
-    </ul>
-    <div class="tab-content pt-3" id="myTabContent">
-        <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
-            <%- include(`${partials}/inputs/display`, {id: 'item_name',    title: 'Name'}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'item_price',   title: 'Price'}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'item_cost',    title: 'Cost'}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'item_qty',     title: 'Stock'}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'item_current', title: 'Current Item'}) %>
-            <table class="table table-sm table-hover mt-1">
-                <thead class="thead-dark" id="tbl_eans_head">
-                    <th class='w-60' data-column='["ean"]' data-dir="DESC">EAN</th>
-                    <th class='w-40' data-column='["createdAt"]'>Added</th>
-                    <th><i class='fas fa-trash-alt'></i></th>
-                    <th><i class='fas fa-print'></i></th>
-                </thead>
-                <tbody id="tbl_eans"></tbody>
-            </table>
-            <%- include(`${partials}/limit`, {table: 'nsns'}) %>
+<ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Menu
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <%- include(`${partials}/menu/button`, {id: 'item_edit',    text: 'Edit',           modal: 'item_edit'}) %>
+            <%- include(`${partials}/menu/button`, {id: 'writeoff_add', text: 'Writeoff Stock', modal: 'writeoff_add'}) %>
+            <%- include(`${partials}/menu/button`, {id: 'receipt_add',  text: 'Receive Stock',  modal: 'receipt_add'}) %>
+            <%- include(`${partials}/menu/button`, {id: 'ean_add',      text: 'Add EAN',        modal: 'ean_add'}) %>
+            <%- include(`${partials}/menu/button`, {id: 'delete',	    text: 'Delete',         btn_form: {permission: 'canteen_stock_admin'}}) %>
         </div>
-        <% if (permissions.canteen_stock_admin) { %>
-            <div class="tab-pane fade" id="receipts"  role="tabpanel" aria-labelledby="receipts-tab">
-	            <table class="table table-sm table-hover mt-1">
-                    <thead class="thead-dark" id="tbl_receipts_head">
-                        <th class='w-80' data-column='["createdAt"]' data-dir="DESC">Date</th>
-                        <th class='w-20' data-column='["qty"]'>Qty</th>
-                        <th><i class='fas fa-search'></i></th>
-                    </thead>
-                    <tbody id="tbl_receipts"></tbody>
-                </table>
-                <%- include(`${partials}/limit`, {table: 'receipts'}) %>
-            </div>
-        <% } %>
-        <% if (permissions.canteen_stock_admin) { %>
-            <div class="tab-pane fade" id="writeoffs" role="tabpanel" aria-labelledby="writeoffs-tab">
-	            <table class="table table-sm table-hover mt-1">
-                    <thead class="thead-dark" id="tbl_writeoffs_head">
-                        <th class='w-30' data-column='["createdAt"]' data-dir="DESC">Date</th>
-                        <th class='w-40' data-column='["reason"]'>Reason</th>
-                        <th class='w-30' data-column='["qty"]'>Qty</th>
-                        <th><i class='fas fa-search'></i></th>
-                    </thead>
-                    <tbody id="tbl_writeoffs"></tbody>
-                </table>
-                <%- include(`${partials}/limit`, {table: 'writeoffs'}) %>
-            </div>
-        <% } %>
-        <% if (permissions.pos_user) { %>
-            <div class="tab-pane fade" id="sales"     role="tabpanel" aria-labelledby="sales-tab">
-	            <table class="table table-sm table-hover mt-1">
-                    <thead class="thead-dark" id="tbl_sales_head">
-                        <th class='w-80' data-column='["createdAt"]' data-dir="DESC">Date</th>
-                        <th class='w-20' data-column='["qty"]'>Qty</th>
-                        <th><i class='fas fa-search'></i></th>
-                    </thead>
-                    <tbody id="tbl_sales"></tbody>
-                </table>
-                <%- include(`${partials}/limit`, {table: 'sale_lines'}) %>
-            </div>
-        <% } %>
-        <%- include(`${partials}/common/notes/tab_body`) %>
+    </li>
+    <%- include(`${partials}/tab_head`, {id: 'details',   title: 'Details'}) %>
+    <%- include(`${partials}/tab_head`, {id: 'receipts',  title: 'Receipts', count_id: 'receipt',  permission: 'canteen_stock_admin'}) %>
+    <%- include(`${partials}/tab_head`, {id: 'writeoffs', title: 'Writeoff', count_id: 'writeoff', permission: 'canteen_stock_admin'}) %>
+    <%- include(`${partials}/tab_head`, {id: 'sales',     title: 'Sales',    count_id: 'sale',     permission: 'pos_user'}) %>
+    <%- include(`${partials}/common/notes/tab_head`) %>
+</ul>
+<div class="tab-content pt-3" id="myTabContent">
+    <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
+        <%- include(`${partials}/inputs/display`, {id: 'item_name',    title: 'Name'}) %>
+        <%- include(`${partials}/inputs/display`, {id: 'item_price',   title: 'Price'}) %>
+        <%- include(`${partials}/inputs/display`, {id: 'item_cost',    title: 'Cost'}) %>
+        <%- include(`${partials}/inputs/display`, {id: 'item_qty',     title: 'Stock'}) %>
+        <%- include(`${partials}/inputs/display`, {id: 'item_current', title: 'Current Item'}) %>
+        <table class="table table-sm table-hover mt-1">
+            <thead class="thead-dark" id="tbl_eans_head">
+                <th class='w-60' data-column='["ean"]' data-dir="DESC">EAN</th>
+                <th class='w-40' data-column='["createdAt"]'>Added</th>
+                <th><i class='fas fa-trash-alt'></i></th>
+                <th><i class='fas fa-print'></i></th>
+            </thead>
+            <tbody id="tbl_eans"></tbody>
+        </table>
+        <%- include(`${partials}/limit`, {table: 'nsns'}) %>
     </div>
-    <div id="sidebars">
-        <%- include(`${partials}/common/notes/sidebar`) %>
-    </div>
-    <div id="modals">
-        <%- include(`${partials}/common/notes/modals`) %>
-        <% if (permissions.canteen_stock_admin) { %>
-            <div id='mdl_item_edit'    class="modal" tabindex="-1" role="dialog">
-                <div class="modal-dialog" role="document">
-                    <form class="modal-content" id='form_item_edit'>
-                        <%- include(`${partials}/modals/header`, {title: 'Edit Item'}) %>
-                        <div class="modal-body">
-                            <%- include(`${partials}/inputs/text`,   {title: 'Name',    name: 'item[name]',    id: 'item_name_edit',    required: true}) %>
-                            <%- include(`${partials}/inputs/number`, {title: 'Price',   name: 'item[price]',   id: 'item_price_edit',   required: true, step: '0.01', min: '0'}) %>
-                            <%- include(`${partials}/inputs/number`, {title: 'Cost',    name: 'item[cost]',    id: 'item_cost_edit',    required: true, step: '0.01', min: '0'}) %>
-                            <%- include(`${partials}/inputs/select`, {title: 'Current', name: 'item[current]', id: 'item_current_edit', options: [{value: '1', text: 'Yes'}, {value: '0', text: 'No'}]}) %>
-                        </div>
-                        <%- include(`${partials}/modals/footer`, {submit: {text: 'Save Item'}}) %>
-                    </form>
-                </div>
+    <% if (permissions.canteen_stock_admin) { %>
+        <div class="tab-pane fade" id="receipts"  role="tabpanel" aria-labelledby="receipts-tab">
+            <table class="table table-sm table-hover mt-1">
+                <thead class="thead-dark" id="tbl_receipts_head">
+                    <th class='w-80' data-column='["createdAt"]' data-dir="DESC">Date</th>
+                    <th class='w-20' data-column='["qty"]'>Qty</th>
+                    <th><i class='fas fa-search'></i></th>
+                </thead>
+                <tbody id="tbl_receipts"></tbody>
+            </table>
+            <%- include(`${partials}/limit`, {table: 'receipts'}) %>
+        </div>
+    <% } %>
+    <% if (permissions.canteen_stock_admin) { %>
+        <div class="tab-pane fade" id="writeoffs" role="tabpanel" aria-labelledby="writeoffs-tab">
+            <table class="table table-sm table-hover mt-1">
+                <thead class="thead-dark" id="tbl_writeoffs_head">
+                    <th class='w-30' data-column='["createdAt"]' data-dir="DESC">Date</th>
+                    <th class='w-40' data-column='["reason"]'>Reason</th>
+                    <th class='w-30' data-column='["qty"]'>Qty</th>
+                    <th><i class='fas fa-search'></i></th>
+                </thead>
+                <tbody id="tbl_writeoffs"></tbody>
+            </table>
+            <%- include(`${partials}/limit`, {table: 'writeoffs'}) %>
+        </div>
+    <% } %>
+    <% if (permissions.pos_user) { %>
+        <div class="tab-pane fade" id="sales"     role="tabpanel" aria-labelledby="sales-tab">
+            <table class="table table-sm table-hover mt-1">
+                <thead class="thead-dark" id="tbl_sales_head">
+                    <th class='w-80' data-column='["createdAt"]' data-dir="DESC">Date</th>
+                    <th class='w-20' data-column='["qty"]'>Qty</th>
+                    <th><i class='fas fa-search'></i></th>
+                </thead>
+                <tbody id="tbl_sales"></tbody>
+            </table>
+            <%- include(`${partials}/limit`, {table: 'sale_lines'}) %>
+        </div>
+    <% } %>
+    <%- include(`${partials}/common/notes/tab_body`) %>
+</div>
+<div id="sidebars">
+    <%- include(`${partials}/common/notes/sidebar`) %>
+</div>
+<div id="modals">
+    <%- include(`${partials}/common/notes/modals`) %>
+    <% if (permissions.canteen_stock_admin) { %>
+        <div id='mdl_item_edit'    class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <form class="modal-content" id='form_item_edit'>
+                    <%- include(`${partials}/modals/header`, {title: 'Edit Item'}) %>
+                    <div class="modal-body">
+                        <%- include(`${partials}/inputs/text`,   {title: 'Name',    name: 'item[name]',    id: 'item_name_edit',    required: true}) %>
+                        <%- include(`${partials}/inputs/number`, {title: 'Price',   name: 'item[price]',   id: 'item_price_edit',   required: true, step: '0.01', min: '0'}) %>
+                        <%- include(`${partials}/inputs/number`, {title: 'Cost',    name: 'item[cost]',    id: 'item_cost_edit',    required: true, step: '0.01', min: '0'}) %>
+                        <%- include(`${partials}/inputs/select`, {title: 'Current', name: 'item[current]', id: 'item_current_edit', options: [{value: '1', text: 'Yes'}, {value: '0', text: 'No'}]}) %>
+                    </div>
+                    <%- include(`${partials}/modals/footer`, {submit: {text: 'Save Item'}}) %>
+                </form>
             </div>
-        <% } %>
-        <% if (permissions.canteen_stock_admin) { %>
-            <div id='mdl_receipt_add'  class="modal" tabindex="-1" role="dialog">
-                <div class="modal-dialog" role="document">
-                    <form class="modal-content" id='form_receipt_add'>
-                        <%- include(`${partials}/modals/header`, {title: 'Receive Stock'}) %>
-                        <div class="modal-body">
-                            <input type="hidden" class='item_id' name='receipts[][0][item_id]'>
-                            <%- include(`${partials}/inputs/number`, {title: 'Cost (Total)', id: 'cost_total',  step: '0.01', min: '0.01'}) %>
-                            <%- include(`${partials}/inputs/number`, {title: 'Cost (Each)',  id: 'cost_each',   name: 'receipts[][0][cost]', required: true, min: '0.01', step: '0.01'}) %>
-                            <%- include(`${partials}/inputs/number`, {title: 'Quantity',     id: 'qty_receipt', name: 'receipts[][0][qty]',  required: true, min: '1'}) %>
-                        </div>
-                        <%- include(`${partials}/modals/footer`, {submit: {text: 'Save Item'}}) %>
-                    </form>
-                </div>
+        </div>
+    <% } %>
+    <% if (permissions.canteen_stock_admin) { %>
+        <div id='mdl_receipt_add'  class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <form class="modal-content" id='form_receipt_add'>
+                    <%- include(`${partials}/modals/header`, {title: 'Receive Stock'}) %>
+                    <div class="modal-body">
+                        <input type="hidden" class='item_id' name='receipts[][0][item_id]'>
+                        <%- include(`${partials}/inputs/number`, {title: 'Cost (Total)', id: 'cost_total',  step: '0.01', min: '0.01'}) %>
+                        <%- include(`${partials}/inputs/number`, {title: 'Cost (Each)',  id: 'cost_each',   name: 'receipts[][0][cost]', required: true, min: '0.01', step: '0.01'}) %>
+                        <%- include(`${partials}/inputs/number`, {title: 'Quantity',     id: 'qty_receipt', name: 'receipts[][0][qty]',  required: true, min: '1'}) %>
+                    </div>
+                    <%- include(`${partials}/modals/footer`, {submit: {text: 'Save Item'}}) %>
+                </form>
             </div>
-        <% } %>
-        <% if (permissions.canteen_stock_admin) { %>
-            <div id='mdl_writeoff_add' class="modal" tabindex="-1" role="dialog">
-                <div class="modal-dialog" role="document">
-                    <form class="modal-content" id='form_writeoff_add'>
-                        <%- include(`${partials}/modals/header`, {title: 'Writeoff Stock'}) %>
-                        <div class="modal-body">
-                            <input type="hidden" class='item_id' name='writeoff[item_id]'>
-                            <%- include(`${partials}/inputs/text`,   {title: 'Reason',   name: 'writeoff[reason]', required: true}) %>
-                            <%- include(`${partials}/inputs/number`, {title: 'Quantity', name: 'writeoff[qty]',    required: true, min: '1'}) %>
-                        </div>
-                        <%- include(`${partials}/modals/footer`, {submit: {text: 'Save Item'}}) %>
-                    </form>
-                </div>
+        </div>
+    <% } %>
+    <% if (permissions.canteen_stock_admin) { %>
+        <div id='mdl_writeoff_add' class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <form class="modal-content" id='form_writeoff_add'>
+                    <%- include(`${partials}/modals/header`, {title: 'Writeoff Stock'}) %>
+                    <div class="modal-body">
+                        <input type="hidden" class='item_id' name='writeoff[item_id]'>
+                        <%- include(`${partials}/inputs/text`,   {title: 'Reason',   name: 'writeoff[reason]', required: true}) %>
+                        <%- include(`${partials}/inputs/number`, {title: 'Quantity', name: 'writeoff[qty]',    required: true, min: '1'}) %>
+                    </div>
+                    <%- include(`${partials}/modals/footer`, {submit: {text: 'Save Item'}}) %>
+                </form>
             </div>
-            <div id='mdl_ean_add' class="modal fade" tabindex="-1" role="dialog">
-                <div class="modal-dialog modal-lg" role="document">
-                    <form class="modal-content" id="form_ean_add">
-                        <%- include(`${partials}/modals/header`, {title: 'Add EAN'}) %>
-                        <div class="modal-body">
-                            <input type="hidden" class='item_id' name='ean[item_id]'>
-                            <%- include(`${partials}/inputs/text`, {id: 'inp_ean_add', title: 'EAN', name: 'ean[ean]', required: true}) %>
-                            <div id="scannerWindow" width="600px" height="600px"></div>
-                        </div>
-                        <%- include(`${partials}/modals/footer`, {submit: {text: 'Save EAN'}}) %>
-                    </form>
-                </div>
+        </div>
+        <div id='mdl_ean_add' class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+                <form class="modal-content" id="form_ean_add">
+                    <%- include(`${partials}/modals/header`, {title: 'Add EAN'}) %>
+                    <div class="modal-body">
+                        <input type="hidden" class='item_id' name='ean[item_id]'>
+                        <%- include(`${partials}/inputs/text`, {id: 'inp_ean_add', title: 'EAN', name: 'ean[ean]', required: true}) %>
+                        <div id="scannerWindow" width="600px" height="600px"></div>
+                    </div>
+                    <%- include(`${partials}/modals/footer`, {submit: {text: 'Save EAN'}}) %>
+                </form>
             </div>
-        <% } %>
-    </div>
-</section>
+        </div>
+    <% } %>
+</div>
 <%- include(`${partials}/foot/app`) %>
 <script>showTab('<%= tab %>');</script>
 <script src="/lib/js/html5-qrcode.min.js" type="text/javascript"></script>

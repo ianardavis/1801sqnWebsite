@@ -3,81 +3,79 @@
 <%- include(`${partials}/breadcrumb`) %>
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/head/components/close`) %>
-<section class='container'>
-    <ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
-        <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Menu
-            </a>
-            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-				<%- include(`${partials}/menu/button`, {id: 'session_close', modal: 'session_close', text: 'Close'}) %>
-            </div>
-        </li>
-        <%- include(`${partials}/tab_head`, {id: 'details',  title: 'Details'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'sales',    title: 'Sales',    count_id: 'sale'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'payments', title: 'Payments', count_id: 'payment'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'items',    title: 'Items',    count_id: 'item'}) %>
-        <%- include(`${partials}/common/notes/tab_head`) %>
-    </ul>
-    <div class="tab-content pt-3" id="myTabContent">
-        <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
-            <%- include(`${partials}/inputs/display`, {id: 'session_status',       title: 'Status'}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'session_createdAt',    title: 'Date/Time Opened'}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'session_user_open',    title: 'Opened By'}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'session_datetime_end', title: 'Date/Time Closed'}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'session_user_close',   title: 'Closed By'}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'session_takings',      title: 'Takings'}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'session_paid_in',      title: 'Paid In',  permission: 'pay_in_out'}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'session_paid_out',     title: 'Paid Out', permission: 'pay_in_out'}) %>
+<ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Menu
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <%- include(`${partials}/menu/button`, {id: 'session_close', modal: 'session_close', text: 'Close'}) %>
         </div>
-        <div class="tab-pane fade" id="sales" role="tabpanel" aria-labelledby="sales-tab">
-	        <table class="table table-sm table-hover mt-1">
-                <thead class="thead-dark">
-					<th class='w-30' data-column='["createdAt"]' data-dir="DESC">Time</th>
-					<th class='w-50' data-column='["user_sale","surname"]'>User</th>
-					<th class='w-10' data-column='["lines"]'>Lines</th>
-					<th class='w-10' data-column='["status"]'>Status</th>
-                    <th><i class='fas fa-search'></i></th>
-                </thead>
-                <tbody id="tbl_sales"></tbody>
-            </table>
-            <%- include(`${partials}/limit`, {table: 'sales'}) %>
-        </div>
-        <div class="tab-pane fade" id="payments" role="tabpanel" aria-labelledby="payments-tab">
-	        <table class="table table-sm table-hover mt-1">
-                <thead class="thead-dark" id="tbl_payments_head">
-					<th class='w-50' data-column='["type"]'>Type</th>
-					<th class='w-50' data-column='["amount"]'>Amount</th>
-                    <th><i class='fas fa-search'></i></th>
-                </thead>
-                <tbody id="tbl_payments"></tbody>
-            </table>
-            <%- include(`${partials}/limit`, {table: 'payments_session'}) %>
-        </div>
-        <div class="tab-pane fade" id="items" role="tabpanel" aria-labelledby="items-tab">
-	        <table class="table table-sm table-hover mt-1">
-                <thead class="thead-dark">
-					<th class='w-60'>Name</th>
-					<th class='w-20'>Sales</th>
-					<th class='w-20'>Qty</th>
-                    <th><i class='fas fa-search'></i></th>
-                </thead>
-                <tbody id="tbl_items"></tbody>
-            </table>
-            <%- include(`${partials}/limit`, {table: 'canteen_items'}) %>
-        </div>
-        <%- include(`${partials}/common/notes/tab_body`) %>
+    </li>
+    <%- include(`${partials}/tab_head`, {id: 'details',  title: 'Details'}) %>
+    <%- include(`${partials}/tab_head`, {id: 'sales',    title: 'Sales',    count_id: 'sale'}) %>
+    <%- include(`${partials}/tab_head`, {id: 'payments', title: 'Payments', count_id: 'payment'}) %>
+    <%- include(`${partials}/tab_head`, {id: 'items',    title: 'Items',    count_id: 'item'}) %>
+    <%- include(`${partials}/common/notes/tab_head`) %>
+</ul>
+<div class="tab-content pt-3" id="myTabContent">
+    <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
+        <%- include(`${partials}/inputs/display`, {id: 'session_status',       title: 'Status'}) %>
+        <%- include(`${partials}/inputs/display`, {id: 'session_createdAt',    title: 'Date/Time Opened'}) %>
+        <%- include(`${partials}/inputs/display`, {id: 'session_user_open',    title: 'Opened By'}) %>
+        <%- include(`${partials}/inputs/display`, {id: 'session_datetime_end', title: 'Date/Time Closed'}) %>
+        <%- include(`${partials}/inputs/display`, {id: 'session_user_close',   title: 'Closed By'}) %>
+        <%- include(`${partials}/inputs/display`, {id: 'session_takings',      title: 'Takings'}) %>
+        <%- include(`${partials}/inputs/display`, {id: 'session_paid_in',      title: 'Paid In',  permission: 'pay_in_out'}) %>
+        <%- include(`${partials}/inputs/display`, {id: 'session_paid_out',     title: 'Paid Out', permission: 'pay_in_out'}) %>
     </div>
-    <div id="sidebars">
-        <%- include(`${partials}/common/notes/sidebar`) %>
+    <div class="tab-pane fade" id="sales" role="tabpanel" aria-labelledby="sales-tab">
+        <table class="table table-sm table-hover mt-1">
+            <thead class="thead-dark">
+                <th class='w-30' data-column='["createdAt"]' data-dir="DESC">Time</th>
+                <th class='w-50' data-column='["user_sale","surname"]'>User</th>
+                <th class='w-10' data-column='["lines"]'>Lines</th>
+                <th class='w-10' data-column='["status"]'>Status</th>
+                <th><i class='fas fa-search'></i></th>
+            </thead>
+            <tbody id="tbl_sales"></tbody>
+        </table>
+        <%- include(`${partials}/limit`, {table: 'sales'}) %>
     </div>
-    <div id="modals">
-        <%- include(`${partials}/common/notes/modals`) %>
+    <div class="tab-pane fade" id="payments" role="tabpanel" aria-labelledby="payments-tab">
+        <table class="table table-sm table-hover mt-1">
+            <thead class="thead-dark" id="tbl_payments_head">
+                <th class='w-50' data-column='["type"]'>Type</th>
+                <th class='w-50' data-column='["amount"]'>Amount</th>
+                <th><i class='fas fa-search'></i></th>
+            </thead>
+            <tbody id="tbl_payments"></tbody>
+        </table>
+        <%- include(`${partials}/limit`, {table: 'payments_session'}) %>
+    </div>
+    <div class="tab-pane fade" id="items" role="tabpanel" aria-labelledby="items-tab">
+        <table class="table table-sm table-hover mt-1">
+            <thead class="thead-dark">
+                <th class='w-60'>Name</th>
+                <th class='w-20'>Sales</th>
+                <th class='w-20'>Qty</th>
+                <th><i class='fas fa-search'></i></th>
+            </thead>
+            <tbody id="tbl_items"></tbody>
+        </table>
+        <%- include(`${partials}/limit`, {table: 'canteen_items'}) %>
+    </div>
+    <%- include(`${partials}/common/notes/tab_body`) %>
+</div>
+<div id="sidebars">
+    <%- include(`${partials}/common/notes/sidebar`) %>
+</div>
+<div id="modals">
+    <%- include(`${partials}/common/notes/modals`) %>
 <% if (permissions.pos_supervisor) { %>
-        <%- include(`${partials}/modals/canteen/count`, {id: 'session_close', title: 'Close Session', submit_text: 'Close Session'}) %>
+    <%- include(`${partials}/modals/canteen/count`, {id: 'session_close', title: 'Close Session', submit_text: 'Close Session'}) %>
 <% } %>
-    </div>
-</section>
+</div>
 <%- include(`${partials}/foot/app`) %>
 <script src="/js/canteen/sessions/show/view.js"></script>
 <%- include(`${partials}/common/notes/scripts`) %>

@@ -3,21 +3,19 @@
 <%- include(`${partials}/breadcrumb`, {text: 'Negative Stock'}) %>
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/head/components/close`) %>
-<section class='container'>
-    <form id="form_adjustments">
-        <button id='btn_action' class="btn btn-success w-100 mb-1">Action lines</button>
-        <table class="table table-sm table-hover">
-            <thead class="thead-dark">
-                <th class='w-40'>Description</th>
-                <th class='w-30'>Size</th>
-                <th class='w-10'>Location</th>
-                <th class='w-10'>Qty</th>
-                <th class="w-10"><i class="fas fa-pencil-alt"></i></th>
-            </thead>
-            <tbody id="tbl_stocks"></tbody>
-        </table>
-    </form>
-</section>
+<form id="form_adjustments">
+    <button id='btn_action' class="btn btn-success w-100 mb-1">Action lines</button>
+    <table class="table table-sm table-hover">
+        <thead class="thead-dark">
+            <th class='w-40'>Description</th>
+            <th class='w-30'>Size</th>
+            <th class='w-10'>Location</th>
+            <th class='w-10'>Qty</th>
+            <th class="w-10"><i class="fas fa-pencil-alt"></i></th>
+        </thead>
+        <tbody id="tbl_stocks"></tbody>
+    </table>
+</form>
 <%- include(`${partials}/foot/app`) %>
 <script src="/js/stores/reports/1/view.js"></script>
 <script async>getSizes()</script>

@@ -3,27 +3,25 @@
 <%- include(`${partials}/breadcrumb`, {text: 'Orderable Items'}) %>
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/head/components/close`) %>
-<section class='container'>
-    <button id='btn_action' class='btn btn-success w-100 mb-2' form='form_sizes'>Create Orders</button>
-    <%- include(`${partials}/inputs/select`, {id: 'sel_suppliers', title: 'Supplier'}) %>
-    <%- include(`${partials}/inputs/select`, {id: 'sel_items',     title: 'Items'}) %>
-    <form id="form_sizes">
-        <table class="table table-sm table-hover">
-            <thead class="thead-dark" id="tbl_sizes_head">
-                <th class='w-20' data-column='["size1"]' data-dir="ASC">Size 1</th>
-                <th class='w-15' data-column='["size2"]'>Size 2</th>
-                <th class='w-15' data-column='["size3"]'>Size 3</th>
-                <th class='w-10'>Current Stock</th>
-                <th class='w-10'>Placed Orders</th>
-                <th class='w-10'>Open Demands</th>
-                <th class='w-10'>Open Issues</th>
-                <th class='w-10'>Order Qty</th>
-                <th><i class="fas fa-search"></i></th>
-            </thead>
-            <tbody id="tbl_sizes"></tbody>
-        </table>
-    </form>
-</section>
+<button id='btn_action' class='btn btn-success w-100 mb-2' form='form_sizes'>Create Orders</button>
+<%- include(`${partials}/inputs/select`, {id: 'sel_suppliers', title: 'Supplier'}) %>
+<%- include(`${partials}/inputs/select`, {id: 'sel_items',     title: 'Items'}) %>
+<form id="form_sizes">
+    <table class="table table-sm table-hover">
+        <thead class="thead-dark" id="tbl_sizes_head">
+            <th class='w-20' data-column='["size1"]' data-dir="ASC">Size 1</th>
+            <th class='w-15' data-column='["size2"]'>Size 2</th>
+            <th class='w-15' data-column='["size3"]'>Size 3</th>
+            <th class='w-10'>Current Stock</th>
+            <th class='w-10'>Placed Orders</th>
+            <th class='w-10'>Open Demands</th>
+            <th class='w-10'>Open Issues</th>
+            <th class='w-10'>Order Qty</th>
+            <th><i class="fas fa-search"></i></th>
+        </thead>
+        <tbody id="tbl_sizes"></tbody>
+    </table>
+</form>
 <%- include(`${partials}/foot/app`) %>
 <script src="/js/utils/list/items.js"></script>
 <script src="/js/utils/list/suppliers.js"></script>

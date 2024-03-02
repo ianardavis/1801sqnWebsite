@@ -3,106 +3,104 @@
 <%- include(`${partials}/breadcrumb`) %>
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/head/components/close`) %>
-<section class='container'>
-	<%- include(`${partials}/sidebar/button`, {id: 'actions', text: 'Actions', float: true}) %>
-    <div class="row mb-1">
-        <span class="badge text-bg-secondary w-33" id="bdg_status_1">Draft</span>
-        <span class="badge text-bg-secondary w-33" id="bdg_status_2">Complete</span>
-        <span class="badge text-bg-secondary w-34" id="bdg_status_3">Closed</span>
-    </div>
-	<ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
-        <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'lines',   title: 'Lines', count_id: 'line'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'users',   title: 'Users', count_id: 'user'}) %>
-        <%- include(`${partials}/common/actions/tab_head`) %>
-        <%- include(`${partials}/common/notes/tab_head`) %>
-    </ul>
-    <div class="tab-content pt-3" id="myTabContent">
-        <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
-			<%- include(`${partials}/inputs/display`, {id: 'demand_supplier',  title: 'Supplier',  link: true}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'demand_user',	   title: 'Raised By', link: true}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'demand_createdAt', title: 'Date'}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'demand_updatedAt', title: 'Last Updated'}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'demand_file',      title: 'Filename'}) %>
+<%- include(`${partials}/sidebar/button`, {id: 'actions', text: 'Actions', float: true}) %>
+<div class="row mb-1">
+	<span class="badge text-bg-secondary w-33" id="bdg_status_1">Draft</span>
+	<span class="badge text-bg-secondary w-33" id="bdg_status_2">Complete</span>
+	<span class="badge text-bg-secondary w-34" id="bdg_status_3">Closed</span>
+</div>
+<ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
+	<%- include(`${partials}/tab_head`, {id: 'details', title: 'Details'}) %>
+	<%- include(`${partials}/tab_head`, {id: 'lines',   title: 'Lines', count_id: 'line'}) %>
+	<%- include(`${partials}/tab_head`, {id: 'users',   title: 'Users', count_id: 'user'}) %>
+	<%- include(`${partials}/common/actions/tab_head`) %>
+	<%- include(`${partials}/common/notes/tab_head`) %>
+</ul>
+<div class="tab-content pt-3" id="myTabContent">
+	<div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
+		<%- include(`${partials}/inputs/display`, {id: 'demand_supplier',  title: 'Supplier',  link: true}) %>
+		<%- include(`${partials}/inputs/display`, {id: 'demand_user',	   title: 'Raised By', link: true}) %>
+		<%- include(`${partials}/inputs/display`, {id: 'demand_createdAt', title: 'Date'}) %>
+		<%- include(`${partials}/inputs/display`, {id: 'demand_updatedAt', title: 'Last Updated'}) %>
+		<%- include(`${partials}/inputs/display`, {id: 'demand_file',      title: 'Filename'}) %>
+	</div>
+	<div class="tab-pane fade" id="lines" role="tabpanel" aria-labelledby="lines-tab">
+		<div class="row justify-content-between">
+			<div class="col-12 col-md-4 mb-1">
+				<%- include(`${partials}/sidebar/button`, {id: 'demand_lines', text: 'Filter'}) %>
+			</div>
 		</div>
-		<div class="tab-pane fade" id="lines" role="tabpanel" aria-labelledby="lines-tab">
-			<div class="row justify-content-between">
-                <div class="col-12 col-md-4 mb-1">
-                    <%- include(`${partials}/sidebar/button`, {id: 'demand_lines', text: 'Filter'}) %>
-                </div>
-            </div>
 
-	        <form id='form_lines'>
-				<table class='table table-sm table-hover'>
-					<thead class='thead-dark' id='tbl_demand_lines_head'>
-						<th class='w-25' data-column='["size","item","description"]' data-dir='ASC'>Item</th>
-						<th class='w-30' data-column='["size","size1"]'							   >Size</th>
-						<th class='w-10' data-column='["qty"]'									   >Qty</th>
-						<th class='w-15' data-column='["status"]'								   >Status</th>
-						<th class='w-20'>Action</th>
-						<th><i class='fas fa-search'></i></th>
-					</thead>
-					<tbody id='tbl_lines'></tbody>
-				</table>
-				<%- include(`${partials}/limit`, {table: 'demand_lines'}) %>
-			</form>
-		</div>
-		<div class="tab-pane fade" id="users" role="tabpanel" aria-labelledby="users-tab">
-			<h5>Users For This Demand</h5>
+		<form id='form_lines'>
 			<table class='table table-sm table-hover'>
-				<thead class='thead-dark' id='tbl_users_head'>
-					<th class='w-50' data-column='["surname"]' data-dir='ASC'>Surname</th>
-					<th class='w-50' data-column='["first_name"]'			 >First Name</th>
+				<thead class='thead-dark' id='tbl_demand_lines_head'>
+					<th class='w-25' data-column='["size","item","description"]' data-dir='ASC'>Item</th>
+					<th class='w-30' data-column='["size","size1"]'							   >Size</th>
+					<th class='w-10' data-column='["qty"]'									   >Qty</th>
+					<th class='w-15' data-column='["status"]'								   >Status</th>
+					<th class='w-20'>Action</th>
 					<th><i class='fas fa-search'></i></th>
 				</thead>
-				<tbody id='tbl_users'></tbody>
+				<tbody id='tbl_lines'></tbody>
 			</table>
-			<%- include(`${partials}/limit`, {table: 'users'}) %>
-		</div>
-        <%- include(`${partials}/common/actions/tab_body`) %>
-        <%- include(`${partials}/common/notes/tab_body`) %>
+			<%- include(`${partials}/limit`, {table: 'demand_lines'}) %>
+		</form>
 	</div>
-	<div id="sidebars">
-		<div class="offcanvas offcanvas-start" tabindex="-1" id="sdb_actions" aria-labelledby="sdb_actions_label">
-			<%- include(`${partials}/sidebar/header`, {id: 'actions', text: 'Actions'}) %>
-			<div class="offcanvas-body d-flex flex-column">
-				<form id="form_complete">
-					<button id='btn_complete' class="btn btn-success w-100 mb-1" disabled>Complete</button>
-				</form>
-				<form id="form_close">
-					<button id='btn_close' class="btn btn-warning w-100 mb-1" disabled>Close</button>
-				</form>
-				<form id="form_download">
-					<button id='btn_download' class="btn btn-primary w-100 mb-1" disabled>Download</button>
-				</form>
-				<button id="btn_action" class="btn btn-success w-100 mb-2" form='form_lines' disabled>
-					Action Lines
-				</button>
-                <%- include(`${partials}/button/delete`, {text: 'Cancel'}) %>
+	<div class="tab-pane fade" id="users" role="tabpanel" aria-labelledby="users-tab">
+		<h5>Users For This Demand</h5>
+		<table class='table table-sm table-hover'>
+			<thead class='thead-dark' id='tbl_users_head'>
+				<th class='w-50' data-column='["surname"]' data-dir='ASC'>Surname</th>
+				<th class='w-50' data-column='["first_name"]'			 >First Name</th>
+				<th><i class='fas fa-search'></i></th>
+			</thead>
+			<tbody id='tbl_users'></tbody>
+		</table>
+		<%- include(`${partials}/limit`, {table: 'users'}) %>
+	</div>
+	<%- include(`${partials}/common/actions/tab_body`) %>
+	<%- include(`${partials}/common/notes/tab_body`) %>
+</div>
+<div id="sidebars">
+	<div class="offcanvas offcanvas-start" tabindex="-1" id="sdb_actions" aria-labelledby="sdb_actions_label">
+		<%- include(`${partials}/sidebar/header`, {id: 'actions', text: 'Actions'}) %>
+		<div class="offcanvas-body d-flex flex-column">
+			<form id="form_complete">
+				<button id='btn_complete' class="btn btn-success w-100 mb-1" disabled>Complete</button>
+			</form>
+			<form id="form_close">
+				<button id='btn_close' class="btn btn-warning w-100 mb-1" disabled>Close</button>
+			</form>
+			<form id="form_download">
+				<button id='btn_download' class="btn btn-primary w-100 mb-1" disabled>Download</button>
+			</form>
+			<button id="btn_action" class="btn btn-success w-100 mb-2" form='form_lines' disabled>
+				Action Lines
+			</button>
+			<%- include(`${partials}/button/delete`, {text: 'Cancel'}) %>
+		</div>
+	</div>
+	<div class="offcanvas offcanvas-start" tabindex="-1" id="sdb_demand_lines" aria-labelledby="sdb_demand_lines_label">
+		<%- include(`${partials}/sidebar/header`, {id: 'demand_lines', text: 'Filter Lines'}) %>
+		<div class="offcanvas-body d-flex flex-column">
+			<div class="input-group mb-1">
+				<span class="input-group-text w-30">Status</span>
+				<select id="filter_demand_lines_status" class="form-select" multiple size="4">
+					<option value="0"		  >Cancelled</option>
+					<option value="1" selected>Pending	</option>
+					<option value="2" selected>Open		</option>
+					<option value="3"		  >Received	</option>
+				</select>
 			</div>
 		</div>
-		<div class="offcanvas offcanvas-start" tabindex="-1" id="sdb_demand_lines" aria-labelledby="sdb_demand_lines_label">
-			<%- include(`${partials}/sidebar/header`, {id: 'demand_lines', text: 'Filter Lines'}) %>
-			<div class="offcanvas-body d-flex flex-column">
-				<div class="input-group mb-1">
-					<span class="input-group-text w-30">Status</span>
-					<select id="filter_demand_lines_status" class="form-select" multiple size="4">
-						<option value="0"		  >Cancelled</option>
-						<option value="1" selected>Pending	</option>
-						<option value="2" selected>Open		</option>
-						<option value="3"		  >Received	</option>
-					</select>
-				</div>
-			</div>
-		</div>
-		<%- include(`${partials}/common/notes/sidebar`) %>
 	</div>
-	<div id="modals">
-        <%- include(`${partials}/common/notes/modals`) %>
-        <%- include(`${partials}/common/actions/modals`) %>
-		<%- include(`${partials}/modals/stores/mdl_line_view`, {table: 'Demand'}) %>
-	</div>
-</section>
+	<%- include(`${partials}/common/notes/sidebar`) %>
+</div>
+<div id="modals">
+	<%- include(`${partials}/common/notes/modals`) %>
+	<%- include(`${partials}/common/actions/modals`) %>
+	<%- include(`${partials}/modals/stores/mdl_line_view`, {table: 'Demand'}) %>
+</div>
 <%- include(`${partials}/foot/app`) %>
 <script src="/js/common/receive_options.js"></script>
 <script>receive_option_func('demand_line');</script>

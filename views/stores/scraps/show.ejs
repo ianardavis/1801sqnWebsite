@@ -3,91 +3,89 @@
 <%- include(`${partials}/breadcrumb`) %>
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/head/components/close`) %>
-<section class='container'>
-    <%- include(`${partials}/sidebar/button`, {id: 'actions', text: 'Actions', float: true}) %>
-    <div class="row mb-1">
-        <span class="badge text-bg-secondary w-50" id="bdg_status_1">Draft</span>
-        <span class="badge text-bg-secondary w-50" id="bdg_status_2">Closed</span>
-    </div>
-	<ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
-        <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'lines',   title: 'Lines', count_id: 'line'}) %>
-        <%- include(`${partials}/common/actions/tab_head`) %>
-        <%- include(`${partials}/common/notes/tab_head`) %>
-    </ul>
-    <div class="tab-content pt-3" id="myTabContent">
-        <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
-			<%- include(`${partials}/inputs/display`, {id: 'scrap_supplier',  title: 'Supplier', link: true}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'scrap_createdAt', title: 'Date'}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'scrap_updatedAt', title: 'Last Updated'}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'scrap_status', 	  title: 'Status'}) %>
-			<div class="input-group mb-1">
-				<span class="input-group-text w-30">Filename</span>
-				<p class="form-control mb-0" id='scrap_filename'></p>
-			</div>
+<%- include(`${partials}/sidebar/button`, {id: 'actions', text: 'Actions', float: true}) %>
+<div class="row mb-1">
+	<span class="badge text-bg-secondary w-50" id="bdg_status_1">Draft</span>
+	<span class="badge text-bg-secondary w-50" id="bdg_status_2">Closed</span>
+</div>
+<ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
+	<%- include(`${partials}/tab_head`, {id: 'details', title: 'Details'}) %>
+	<%- include(`${partials}/tab_head`, {id: 'lines',   title: 'Lines', count_id: 'line'}) %>
+	<%- include(`${partials}/common/actions/tab_head`) %>
+	<%- include(`${partials}/common/notes/tab_head`) %>
+</ul>
+<div class="tab-content pt-3" id="myTabContent">
+	<div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
+		<%- include(`${partials}/inputs/display`, {id: 'scrap_supplier',  title: 'Supplier', link: true}) %>
+		<%- include(`${partials}/inputs/display`, {id: 'scrap_createdAt', title: 'Date'}) %>
+		<%- include(`${partials}/inputs/display`, {id: 'scrap_updatedAt', title: 'Last Updated'}) %>
+		<%- include(`${partials}/inputs/display`, {id: 'scrap_status', 	  title: 'Status'}) %>
+		<div class="input-group mb-1">
+			<span class="input-group-text w-30">Filename</span>
+			<p class="form-control mb-0" id='scrap_filename'></p>
 		</div>
-		<div class="tab-pane fade" id="lines" 	role="tabpanel" aria-labelledby="lines-tab">
-			<div class="row justify-content-between">
-				<div class="col-12 col-md-4 mb-1">
-					<%- include(`${partials}/sidebar/button`, {id: 'lines_filter', text: 'Filter'}) %>
-				</div>
-			</div>
-			<form id='form_actions'>
-				<table class='table table-sm table-hover'>
-					<thead class='thead-dark' id="tbl_scrap_lines_head">
-						<th class='w-20' data-column='["size","item","description"]' data-dir="ASC">Item</th>
-						<th class='w-20' data-column='["size","size1"]'							   >Size</th>
-						<th class='w-25'>Serial/NSN</th>
-						<th class='w-10' data-column='["qty"]'									   >Qty</th>
-						<th class='w-15' data-column='["status"]'								   >Status</th>
-						<th class='w-10'>Actions</th>
-						<th><i class='fas fa-search'></i></th>
-					</thead>
-					<tbody id='tbl_lines'></tbody>
-				</table>
-				<%- include(`${partials}/limit`, {table: 'scrap_lines'}) %>
-			</form>
-		</div>
-        <%- include(`${partials}/common/actions/tab_body`) %>
-        <%- include(`${partials}/common/notes/tab_body`) %>
 	</div>
+	<div class="tab-pane fade" id="lines" 	role="tabpanel" aria-labelledby="lines-tab">
+		<div class="row justify-content-between">
+			<div class="col-12 col-md-4 mb-1">
+				<%- include(`${partials}/sidebar/button`, {id: 'lines_filter', text: 'Filter'}) %>
+			</div>
+		</div>
+		<form id='form_actions'>
+			<table class='table table-sm table-hover'>
+				<thead class='thead-dark' id="tbl_scrap_lines_head">
+					<th class='w-20' data-column='["size","item","description"]' data-dir="ASC">Item</th>
+					<th class='w-20' data-column='["size","size1"]'							   >Size</th>
+					<th class='w-25'>Serial/NSN</th>
+					<th class='w-10' data-column='["qty"]'									   >Qty</th>
+					<th class='w-15' data-column='["status"]'								   >Status</th>
+					<th class='w-10'>Actions</th>
+					<th><i class='fas fa-search'></i></th>
+				</thead>
+				<tbody id='tbl_lines'></tbody>
+			</table>
+			<%- include(`${partials}/limit`, {table: 'scrap_lines'}) %>
+		</form>
+	</div>
+	<%- include(`${partials}/common/actions/tab_body`) %>
+	<%- include(`${partials}/common/notes/tab_body`) %>
+</div>
 
-	<div id="sidebars">
-		<div class="offcanvas offcanvas-start" tabindex="-1" id="sdb_actions" aria-labelledby="sdb_actions_label">
-			<%- include(`${partials}/sidebar/header`, {id: 'actions', text: 'Actions'}) %>
-			<div class="offcanvas-body d-flex flex-column">
-				<form id="form_scrap_complete">
-					<button id='btn_scrap_complete' class="btn btn-success w-100 mb-1" disabled>Complete</button>
-				</form>
-				<form id="form_scrap_file_download">
-					<button id='btn_scrap_file_download' class="btn btn-success w-100 mb-1" disabled>Download File</button>
-				</form>
-				<form id="form_scrap_file_print">
-					<button id='btn_scrap_file_print' class="btn btn-primary w-100 mb-1" disabled>Print File</button>
-				</form>
-				<form id="form_scrap_file_delete">
-					<button id='btn_scrap_file_delete' class="btn btn-danger w-100 mb-1" disabled>Delete File</button>
-				</form>
-				<button class='btn btn-success mb-1 w-100' id='btn_lines_action' disabled>Action Lines</button>
-                <%- include(`${partials}/button/delete`, {text: 'Cancel'}) %>
-			</div>
+<div id="sidebars">
+	<div class="offcanvas offcanvas-start" tabindex="-1" id="sdb_actions" aria-labelledby="sdb_actions_label">
+		<%- include(`${partials}/sidebar/header`, {id: 'actions', text: 'Actions'}) %>
+		<div class="offcanvas-body d-flex flex-column">
+			<form id="form_scrap_complete">
+				<button id='btn_scrap_complete' class="btn btn-success w-100 mb-1" disabled>Complete</button>
+			</form>
+			<form id="form_scrap_file_download">
+				<button id='btn_scrap_file_download' class="btn btn-success w-100 mb-1" disabled>Download File</button>
+			</form>
+			<form id="form_scrap_file_print">
+				<button id='btn_scrap_file_print' class="btn btn-primary w-100 mb-1" disabled>Print File</button>
+			</form>
+			<form id="form_scrap_file_delete">
+				<button id='btn_scrap_file_delete' class="btn btn-danger w-100 mb-1" disabled>Delete File</button>
+			</form>
+			<button class='btn btn-success mb-1 w-100' id='btn_lines_action' disabled>Action Lines</button>
+			<%- include(`${partials}/button/delete`, {text: 'Cancel'}) %>
 		</div>
-		<div class="offcanvas offcanvas-start" tabindex="-1" id="sdb_lines_filter" aria-labelledby="sdb_lines_filter_label">
-			<%- include(`${partials}/sidebar/header`, {id: 'lines_filter', text: 'Filter Lines'}) %>
-			<div class="offcanvas-body d-flex flex-column">
-				<%- include(`${partials}/filter/status`, {table: 'scrap_line'}) %>
-				<%- include(`${partials}/filter/item`, 	 {table: 'scrap_line'}) %>
-				<%- include(`${partials}/filter/size`, 	 {table: 'scrap_line'}) %>
-			</div>
+	</div>
+	<div class="offcanvas offcanvas-start" tabindex="-1" id="sdb_lines_filter" aria-labelledby="sdb_lines_filter_label">
+		<%- include(`${partials}/sidebar/header`, {id: 'lines_filter', text: 'Filter Lines'}) %>
+		<div class="offcanvas-body d-flex flex-column">
+			<%- include(`${partials}/filter/status`, {table: 'scrap_line'}) %>
+			<%- include(`${partials}/filter/item`, 	 {table: 'scrap_line'}) %>
+			<%- include(`${partials}/filter/size`, 	 {table: 'scrap_line'}) %>
 		</div>
-		<%- include(`${partials}/common/notes/sidebar`) %>
 	</div>
-	<div id="modals">
-        <%- include(`${partials}/common/notes/modals`) %>
-        <%- include(`${partials}/common/actions/modals`) %>
-		<%- include(`${partials}/modals/stores/mdl_line_view`, {table: 'Scrap'}) %>
-	</div>
-</section>
+	<%- include(`${partials}/common/notes/sidebar`) %>
+</div>
+<div id="modals">
+	<%- include(`${partials}/common/notes/modals`) %>
+	<%- include(`${partials}/common/actions/modals`) %>
+	<%- include(`${partials}/modals/stores/mdl_line_view`, {table: 'Scrap'}) %>
+</div>
 <%- include(`${partials}/foot/app`) %>
 <script>showTab('<%= tab %>')</script>
 <%- include(`${partials}/common/notes/scripts`) %>

@@ -14,7 +14,9 @@ module.exports = (m, fn) => {
             next();
         } else {
             req.flash('danger', 'Page only accessible from the admin site!');
-            res.redirect('/stores');
+            
+            console.log(`redirect to "${req.query.redirect || '/stores'}" functions.js | 18`);
+            fn.redirect(res, '/index');
         };
     };
     fn.loggedIn = function (req, res, next) {
@@ -26,11 +28,11 @@ module.exports = (m, fn) => {
                 next();
             } else {
                 if (req.user.reset) req.flash('info', 'You must change your password before you can continue');
-                res.redirect(`/password/${req.user.user_id}`);
+                fn.redirect(res, `/password/${req.user.user_id}`);
             };
         } else {
             req.flash('danger', 'You need to be signed in to do that!');
-            res.redirect(`/?redirect=${req._parsedUrl.pathname}`);
+            fn.redirect(res, `/?redirect=${req._parsedUrl.pathname}`);
         };
     };
     fn.permissions.get = function (permission = '', allow = false) {
@@ -50,20 +52,20 @@ module.exports = (m, fn) => {
                         req.allowed = (res.locals.permissions[permission] ? true : false);
                         next();
                     } else {
-                        req.flash('danger', `Permission denied - ${permission}`);
-                        res.redirect('/');
+                        req.flash('danger', `Permission denied: ${permission}`);
+                        fn.redirect(res, '/index', `Permission denied: ${permission}`);
                     };
                 })
                 .catch(err => {
                     console.error(err);
                     req.flash('danger', `Error getting permissions: ${err.message}`);
-                    res.redirect('/');
+                    fn.redirect(res, '/index');
                 });
             } else if (allow === true) next()
             else {
                 console.error('No user');
                 req.flash('danger', 'No user!');
-                res.redirect('/');
+                fn.redirect(res, '/index');
             };
         };
     };

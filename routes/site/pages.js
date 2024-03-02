@@ -3,7 +3,7 @@ module.exports = (app, fn) => {
     app.get("/", (req, res) => {
         if (req.isAuthenticated()) {
             req.flash('info', 'You are already logged in');
-            res.redirect(req.query.redirect || '/stores');
+            fn.redirect(res, req.query.redirect || '/index');
 
         } else {
             res.render('site/login', {redirect: req.query.redirect});
@@ -14,9 +14,11 @@ module.exports = (app, fn) => {
     app.get('/logout', fn.loggedIn, (req, res) => {
         req.logout(function(err) {
             if (err) return next(err);
-            res.redirect('/');
+            fn.redirect(res, '/');
         });
     });
 
-    app.post('/login', passport.authenticate('local', {failureRedirect: `/`}), fn.setSiteID, (req, res) => res.redirect(`${req.body.redirect || '/stores'}`));
+    app.post('/login', passport.authenticate('local', {failureRedirect: `/`}), fn.setSiteID, (req, res) => {
+        fn.redirect(res, `${req.body.redirect || '/index'}`);
+    });
 };

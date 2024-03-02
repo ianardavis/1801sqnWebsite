@@ -4,7 +4,7 @@ module.exports = (app, fn) => {
             res.render('users/index');
 
         } else {
-            res.redirect(`/users/${req.user.user_id}`);
+            fn.redirect(res, `/users/${req.user.user_id}`);
         
         };
     });
@@ -15,7 +15,7 @@ module.exports = (app, fn) => {
             res.render('users/show');
 
         } else {
-            res.redirect(`/users/${req.user.user_id}`);
+            fn.redirect(res, `/users/${req.user.user_id}`);
         
         };
     });

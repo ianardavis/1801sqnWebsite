@@ -1,6 +1,11 @@
 const execSync = require('child_process').execSync;
 module.exports = function (m, fn) {
     fn.op = require('sequelize').Op;
+    fn.redirect = function(res, url, message = null) {
+        // if (message) console.log(message);
+        // console.trace(`Redirecting to: ${url}`);
+        res.redirect(url);
+    };
     fn.sendError = function (res, err) {
         if (err.message) console.error(err);
         res.send({success: false, message: err.message || err});

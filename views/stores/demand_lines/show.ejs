@@ -4,48 +4,46 @@
 <%- include(`${partials}/breadcrumb`) %>
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/head/components/close`) %>
-<section class='container'>
-    <div class="row mb-1">
-        <span class="badge text-bg-secondary w-33" id="bdg_status_1">Pending</span>
-        <span class="badge text-bg-secondary w-33" id="bdg_status_2">Open</span>
-        <span class="badge text-bg-secondary w-34" id="bdg_status_3">Received</span>
-    </div>
-	<ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
-        <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'orders',  title: 'Orders', count_id: 'order'}) %>
-        <%- include(`${partials}/common/actions/tab_head`) %>
-        <%- include(`${partials}/common/notes/tab_head`) %>
-    </ul>
-    <div class="tab-content pt-3" id="myTabContent">
-        <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
-			<%- include(`${partials}/inputs/display`, {id: 'line_item',  	 title: 'Item', 	link: true}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'line_size',  	 title: 'Size', 	link: true}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'line_qty',  	 title: 'Quantity'}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'line_user',		 title: 'Added By', link: true}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'line_createdAt', title: 'Created'}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'line_updatedAt', title: 'Last Updated'}) %>
-		</div>
-        <div class="tab-pane fade" id="orders" role="tabpanel" aria-labelledby="orders-tab">
-			<table class='table table-sm table-hover'>
-				<thead class='thead-dark' id='tbl_orders_head'>
-					<th class='w-50' data-column='["createdAt"]' data-dir='DESC'>Date  </th>
-					<th class='w-50' data-column='["qty"]'						>Qty   </th>
-					<th><i class='fas fa-search'></i></th>
-				</thead>
-				<tbody id='tbl_orders'></tbody>
-			</table>
-		</div>
-        <%- include(`${partials}/common/actions/tab_body`) %>
-        <%- include(`${partials}/common/notes/tab_body`) %>
+<div class="row mb-1">
+	<span class="badge text-bg-secondary w-33" id="bdg_status_1">Pending</span>
+	<span class="badge text-bg-secondary w-33" id="bdg_status_2">Open</span>
+	<span class="badge text-bg-secondary w-34" id="bdg_status_3">Received</span>
+</div>
+<ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
+	<%- include(`${partials}/tab_head`, {id: 'details', title: 'Details'}) %>
+	<%- include(`${partials}/tab_head`, {id: 'orders',  title: 'Orders', count_id: 'order'}) %>
+	<%- include(`${partials}/common/actions/tab_head`) %>
+	<%- include(`${partials}/common/notes/tab_head`) %>
+</ul>
+<div class="tab-content pt-3" id="myTabContent">
+	<div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
+		<%- include(`${partials}/inputs/display`, {id: 'line_item',  	 title: 'Item', 	link: true}) %>
+		<%- include(`${partials}/inputs/display`, {id: 'line_size',  	 title: 'Size', 	link: true}) %>
+		<%- include(`${partials}/inputs/display`, {id: 'line_qty',  	 title: 'Quantity'}) %>
+		<%- include(`${partials}/inputs/display`, {id: 'line_user',		 title: 'Added By', link: true}) %>
+		<%- include(`${partials}/inputs/display`, {id: 'line_createdAt', title: 'Created'}) %>
+		<%- include(`${partials}/inputs/display`, {id: 'line_updatedAt', title: 'Last Updated'}) %>
 	</div>
-	<div id="sidebars">
-		<%- include(`${partials}/common/notes/sidebar`) %>
+	<div class="tab-pane fade" id="orders" role="tabpanel" aria-labelledby="orders-tab">
+		<table class='table table-sm table-hover'>
+			<thead class='thead-dark' id='tbl_orders_head'>
+				<th class='w-50' data-column='["createdAt"]' data-dir='DESC'>Date  </th>
+				<th class='w-50' data-column='["qty"]'						>Qty   </th>
+				<th><i class='fas fa-search'></i></th>
+			</thead>
+			<tbody id='tbl_orders'></tbody>
+		</table>
 	</div>
-	<div id="modals">
-        <%- include(`${partials}/common/notes/modals`) %>
-        <%- include(`${partials}/common/actions/modals`) %>
-	</div>
-</section>
+	<%- include(`${partials}/common/actions/tab_body`) %>
+	<%- include(`${partials}/common/notes/tab_body`) %>
+</div>
+<div id="sidebars">
+	<%- include(`${partials}/common/notes/sidebar`) %>
+</div>
+<div id="modals">
+	<%- include(`${partials}/common/notes/modals`) %>
+	<%- include(`${partials}/common/actions/modals`) %>
+</div>
 <%- include(`${partials}/foot/app`) %>
 <script>showTab('<%= tab %>')</script>
 <%- include(`${partials}/common/notes/scripts`) %>

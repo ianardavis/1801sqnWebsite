@@ -7,6 +7,6 @@ module.exports = (app, fn) => {
     app.get('/reports/5', fn.loggedIn, fn.permissions.get('stores_stock_admin'), (req, res) => res.render('stores/reports/show/5'));
     app.get('/reports/*', fn.loggedIn, fn.permissions.get('access_stores'),      (req, res) => {
         req.flash('danger', 'Invalid report');
-        res.redirect('/reports');
+        fn.redirect(res, '/reports');
     });
 };

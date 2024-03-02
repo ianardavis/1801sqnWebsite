@@ -7,23 +7,21 @@
 <% } %>
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/head/components/close`) %>
-<section class='container'>
-	<table class="table table-sm table-hover mt-1">
-        <thead class="thead-dark" id="tbl_sessions_head">
-            <th class='w-40' data-column='["createdAt"]' data-dir="DESC">Start</th>
-            <th class='w-40' data-column='["datetime_end"]'>End</th>
-            <th class='w-20' data-column='["status"]'>Status</th>
-            <th><i class='fas fa-search'></i></th>
-        </thead>
-        <tbody id="tbl_sessions"></tbody>
-    </table>
-	<%- include(`${partials}/limit`, {table: 'sessions'}) %>
-    <div id="modals">
+<table class="table table-sm table-hover mt-1">
+    <thead class="thead-dark" id="tbl_sessions_head">
+        <th class='w-40' data-column='["createdAt"]' data-dir="DESC">Start</th>
+        <th class='w-40' data-column='["datetime_end"]'>End</th>
+        <th class='w-20' data-column='["status"]'>Status</th>
+        <th><i class='fas fa-search'></i></th>
+    </thead>
+    <tbody id="tbl_sessions"></tbody>
+</table>
+<%- include(`${partials}/limit`, {table: 'sessions'}) %>
+<div id="modals">
 <% if (permissions.pos_supervisor) { %>
-        <%- include(`${partials}/modals/canteen/count`, {id: 'session_add', title: 'Open Session', submit_text: 'Open'}) %>
+    <%- include(`${partials}/modals/canteen/count`, {id: 'session_add', title: 'Open Session', submit_text: 'Open'}) %>
 <% } %>
-    </div>
-</section>
+</div>
 <%- include(`${partials}/foot/app`) %>
 <script src='/js/canteen/sessions/index/view.js'></script>
 <% if (permissions.pos_supervisor) { %>

@@ -4,55 +4,53 @@
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/breadcrumb`, {id: 'alert_main', classes: ['alert']}) %>
 <%- include(`${partials}/head/components/close`) %>
-<section class='container mx-auto'>
-	<button id='btn_finish' class='btn btn-lg btn-success w-100 mb-2' data-bs-toggle="modal" data-bs-target="#mdl_sale_complete">Finish</button>
-    <div class='row'>
-		<div class="col-12 col-lg-7 col-xl-8">
-            <div id="scannerWindow" height="600px" width="600px"></div>
-        </div>
-        <div class="col-12 col-lg-5 col-xl-4">
-            <%- include(`${partials}/inputs/display`, {id: 'total', title: 'Total (£)', classes: ['total']}) %>
-            <table class="table table-sm table-hover">
-                <thead class="thead-dark">
-                    <th class="w-40">Item</th>
-                    <th class="w-25">£/Each</th>
-                    <th class="w-10">Qty</th>
-                    <th class="w-25">£/Total</th>
-                    <th><i class='fas fa-minus'></i></th>
-                </thead>
-                <tbody id="tbl_sale_lines"></tbody>
-            </table>
-            <p class='text-start hidden'>Sale ID: <span id='sale_id'></span></p>
-        </div>
+<button id='btn_finish' class='btn btn-lg btn-success w-100 mb-2' data-bs-toggle="modal" data-bs-target="#mdl_sale_complete">Finish</button>
+<div class='row'>
+    <div class="col-12 col-lg-7 col-xl-8">
+        <div id="scannerWindow" height="600px" width="600px"></div>
     </div>
-    <div id="modals">
-        <div id='mdl_sale_complete' class="modal" tabindex="-1" role="dialog">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Finish Sale <span class='alert_pos'></span></h5>
-                    </div>
-                    <div class="modal-body">
-                        <%- include(`${partials}/inputs/checkbox`, {id: 'receipt', title: 'Print Receipt?', name: 'sale[receipt]', value: '1'}) %>
-                        <%- include(`${partials}/inputs/display`,  {id: 'total',   title: 'Total (£)',      classes: ['total']}) %>
-                        <form id='form_sale_complete'>
-                            <input type="hidden" class='sale_id' name='sale_id'>
-                            <%- include(`${partials}/inputs/select`,  {id: 'sel_credits',       title: 'Debit from',       name: 'sale[user_id_debit]',   reload_id: 'reload_debit'}) %>
-                            <%- include(`${partials}/inputs/select`,  {id: 'sel_users',         title: 'Credit change to', name: 'sale[user_id_credit]',  reload_id: 'reload_credit'}) %>
-                            <%- include(`${partials}/inputs/select`,  {id: 'sel_users_payment', title: 'Buyer',            name: 'sale[user_id_payment]', reload_id: 'reload_payment', required: true}) %>
-                            <%- include(`${partials}/inputs/number`,  {id: 'tendered',          title: 'Tendered (£)',     name: 'sale[tendered]', step: '0.01', value: '0.00', required: true}) %>
-                            <%- include(`${partials}/inputs/display`, {id: 'change',            title: 'Change (£)',       classes: ['f-20']}) %>
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button id='btn_sale_complete'       class='btn btn-lg btn-success w-100 mb-2'       form='form_sale_complete'>Pay</button>
-                        <button id='btn_close_sale_complete' class='btn btn-lg btn-danger w-100 mb-2 hidden' data-bs-dismiss="modal"  >Close</button>
-                    </div>
+    <div class="col-12 col-lg-5 col-xl-4">
+        <%- include(`${partials}/inputs/display`, {id: 'total', title: 'Total (£)', classes: ['total']}) %>
+        <table class="table table-sm table-hover">
+            <thead class="thead-dark">
+                <th class="w-40">Item</th>
+                <th class="w-25">£/Each</th>
+                <th class="w-10">Qty</th>
+                <th class="w-25">£/Total</th>
+                <th><i class='fas fa-minus'></i></th>
+            </thead>
+            <tbody id="tbl_sale_lines"></tbody>
+        </table>
+        <p class='text-start hidden'>Sale ID: <span id='sale_id'></span></p>
+    </div>
+</div>
+<div id="modals">
+    <div id='mdl_sale_complete' class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Finish Sale <span class='alert_pos'></span></h5>
+                </div>
+                <div class="modal-body">
+                    <%- include(`${partials}/inputs/checkbox`, {id: 'receipt', title: 'Print Receipt?', name: 'sale[receipt]', value: '1'}) %>
+                    <%- include(`${partials}/inputs/display`,  {id: 'total',   title: 'Total (£)',      classes: ['total']}) %>
+                    <form id='form_sale_complete'>
+                        <input type="hidden" class='sale_id' name='sale_id'>
+                        <%- include(`${partials}/inputs/select`,  {id: 'sel_credits',       title: 'Debit from',       name: 'sale[user_id_debit]',   reload_id: 'reload_debit'}) %>
+                        <%- include(`${partials}/inputs/select`,  {id: 'sel_users',         title: 'Credit change to', name: 'sale[user_id_credit]',  reload_id: 'reload_credit'}) %>
+                        <%- include(`${partials}/inputs/select`,  {id: 'sel_users_payment', title: 'Buyer',            name: 'sale[user_id_payment]', reload_id: 'reload_payment', required: true}) %>
+                        <%- include(`${partials}/inputs/number`,  {id: 'tendered',          title: 'Tendered (£)',     name: 'sale[tendered]', step: '0.01', value: '0.00', required: true}) %>
+                        <%- include(`${partials}/inputs/display`, {id: 'change',            title: 'Change (£)',       classes: ['f-20']}) %>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button id='btn_sale_complete'       class='btn btn-lg btn-success w-100 mb-2'       form='form_sale_complete'>Pay</button>
+                    <button id='btn_close_sale_complete' class='btn btn-lg btn-danger w-100 mb-2 hidden' data-bs-dismiss="modal"  >Close</button>
                 </div>
             </div>
         </div>
     </div>
-</section>
+</div>
 <%- include(`${partials}/foot/app`) %>
 <script src="/lib/js/html5-qrcode.min.js" type="text/javascript"></script>
 <script src="/js/common/barcode_scanning.js"></script>

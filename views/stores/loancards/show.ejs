@@ -3,110 +3,108 @@
 <%- include(`${partials}/breadcrumb`) %>
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/head/components/close`) %>
-<section class='container'>
-    <%- include(`${partials}/sidebar/button`, {id: 'actions', text: 'Actions', float: true}) %>
-    <div class="row mb-1">
-        <span class="badge text-bg-secondary w-33" id="bdg_status_1">Draft</span>
-        <span class="badge text-bg-secondary w-33" id="bdg_status_2">Complete</span>
-        <span class="badge text-bg-secondary w-34" id="bdg_status_3">Closed</span>
-    </div>
-	<ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
-        <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'lines',   title: 'Lines',	  count_id: 'line'}) %>
-        <%- include(`${partials}/common/actions/tab_head`) %>
-        <%- include(`${partials}/common/notes/tab_head`) %>
-    </ul>
-    <div class="tab-content pt-3" id="myTabContent">
-        <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
-			<%- include(`${partials}/inputs/display`, {id: 'loancard_user_loancard', title: 'User', link: true}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'loancard_createdAt', 	 title: 'Date'}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'loancard_date_due', 	 title: 'Date Due'}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'loancard_updatedAt', 	 title: 'Last Updated'}) %>
-			<div class="input-group mb-1">
-				<span class="input-group-text w-30">Filename</span>
-				<p class="form-control mb-0" id='loancard_filename'></p>
-			</div>
-			<%- include(`${partials}/inputs/display`, {id: 'loancard_user', title: 'Raised By', link: true}) %>
+<%- include(`${partials}/sidebar/button`, {id: 'actions', text: 'Actions', float: true}) %>
+<div class="row mb-1">
+	<span class="badge text-bg-secondary w-33" id="bdg_status_1">Draft</span>
+	<span class="badge text-bg-secondary w-33" id="bdg_status_2">Complete</span>
+	<span class="badge text-bg-secondary w-34" id="bdg_status_3">Closed</span>
+</div>
+<ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
+	<%- include(`${partials}/tab_head`, {id: 'details', title: 'Details'}) %>
+	<%- include(`${partials}/tab_head`, {id: 'lines',   title: 'Lines',	  count_id: 'line'}) %>
+	<%- include(`${partials}/common/actions/tab_head`) %>
+	<%- include(`${partials}/common/notes/tab_head`) %>
+</ul>
+<div class="tab-content pt-3" id="myTabContent">
+	<div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
+		<%- include(`${partials}/inputs/display`, {id: 'loancard_user_loancard', title: 'User', link: true}) %>
+		<%- include(`${partials}/inputs/display`, {id: 'loancard_createdAt', 	 title: 'Date'}) %>
+		<%- include(`${partials}/inputs/display`, {id: 'loancard_date_due', 	 title: 'Date Due'}) %>
+		<%- include(`${partials}/inputs/display`, {id: 'loancard_updatedAt', 	 title: 'Last Updated'}) %>
+		<div class="input-group mb-1">
+			<span class="input-group-text w-30">Filename</span>
+			<p class="form-control mb-0" id='loancard_filename'></p>
 		</div>
-		<div class="tab-pane fade" id="lines" 	role="tabpanel" aria-labelledby="lines-tab">
-			<%- include(`${partials}/sidebar/button`, {id: 'lines', text: 'Filter'}) %>
+		<%- include(`${partials}/inputs/display`, {id: 'loancard_user', title: 'Raised By', link: true}) %>
+	</div>
+	<div class="tab-pane fade" id="lines" 	role="tabpanel" aria-labelledby="lines-tab">
+		<%- include(`${partials}/sidebar/button`, {id: 'lines', text: 'Filter'}) %>
 
-			<% if (permissions.issuer) { %><form id='form_actions'><% } %>
-			<button class='btn btn-success mb-1 w-100' id='btn_action'>Action Lines</button>
-	        <table class='table table-sm table-hover'>
-				<thead class='thead-dark' id="'tbl_loancard_lines">
-					<th class='w-35' data-column='["size","item","description"]' data-dir="ASC">Item</th>
-					<th class='w-35' data-column='["size","size1"]'							   >Size</th>
-					<th class='w-10' data-column='["qty"]'									   >Qty</th>
-					<th class='w-10'									   					   >Open Qty</th>
-					<th class='w-10' data-column='["status"]'								   >Status</th>
-					<th class='w-10'>Actions</th>
-					<th><i class='fas fa-search'></i></th>
-				</thead>
-				<tbody id='tbl_lines'></tbody>
-			</table>
-			<% if (permissions.issuer) { %></form><% } %>
-			<%- include(`${partials}/limit`, {table: 'loancard_lines'}) %>
-		</div>
-        <%- include(`${partials}/common/actions/tab_body`) %>
-        <%- include(`${partials}/common/notes/tab_body`) %>
+		<% if (permissions.issuer) { %><form id='form_actions'><% } %>
+		<button class='btn btn-success mb-1 w-100' id='btn_action'>Action Lines</button>
+		<table class='table table-sm table-hover'>
+			<thead class='thead-dark' id="'tbl_loancard_lines">
+				<th class='w-35' data-column='["size","item","description"]' data-dir="ASC">Item</th>
+				<th class='w-35' data-column='["size","size1"]'							   >Size</th>
+				<th class='w-10' data-column='["qty"]'									   >Qty</th>
+				<th class='w-10'									   					   >Open Qty</th>
+				<th class='w-10' data-column='["status"]'								   >Status</th>
+				<th class='w-10'>Actions</th>
+				<th><i class='fas fa-search'></i></th>
+			</thead>
+			<tbody id='tbl_lines'></tbody>
+		</table>
+		<% if (permissions.issuer) { %></form><% } %>
+		<%- include(`${partials}/limit`, {table: 'loancard_lines'}) %>
 	</div>
-	<div id="sidebars">
-		<div id="sdb_actions" class="offcanvas offcanvas-start" tabindex="-1" aria-labelledby="sdb_actions_label">
-			<%- include(`${partials}/sidebar/header`, {id: 'actions', text: 'Actions'}) %>
-			<div class="offcanvas-body d-flex flex-column">
-				<%- include(`${partials}/button/modal`, {id: 'loancard_complete', text: 'Complete',	  	 type: 'success'}) %>
-				<%- include(`${partials}/button/modal`, {id: 'due_edit', 		  text: 'Edit Due Date', type: 'warning'}) %>
-				<form id="form_loancard_file_download">
-					<button id='btn_loancard_file_download' class="btn btn-success w-100 mb-1" disabled>Download File</button>
+	<%- include(`${partials}/common/actions/tab_body`) %>
+	<%- include(`${partials}/common/notes/tab_body`) %>
+</div>
+<div id="sidebars">
+	<div id="sdb_actions" class="offcanvas offcanvas-start" tabindex="-1" aria-labelledby="sdb_actions_label">
+		<%- include(`${partials}/sidebar/header`, {id: 'actions', text: 'Actions'}) %>
+		<div class="offcanvas-body d-flex flex-column">
+			<%- include(`${partials}/button/modal`, {id: 'loancard_complete', text: 'Complete',	  	 type: 'success'}) %>
+			<%- include(`${partials}/button/modal`, {id: 'due_edit', 		  text: 'Edit Due Date', type: 'warning'}) %>
+			<form id="form_loancard_file_download">
+				<button id='btn_loancard_file_download' class="btn btn-success w-100 mb-1" disabled>Download File</button>
+			</form>
+			<form id="form_loancard_file_print">
+				<button id='btn_loancard_file_print' class="btn btn-primary w-100 mb-1" disabled>Print File</button>
+			</form>
+			<form id="form_loancard_file_delete">
+				<button id='btn_loancard_file_delete' class="btn btn-danger w-100 mb-1" disabled>Delete File</button>
+			</form>
+			<%- include(`${partials}/button/delete`, {text: 'Cancel'}) %>
+		</div>
+	</div>
+	<div id="sdb_lines"   class="offcanvas offcanvas-start" tabindex="-1" aria-labelledby="sdb_lines_label">
+		<%- include(`${partials}/sidebar/header`, {id: 'lines', text: 'Filter Lines'}) %>
+		<div class="offcanvas-body d-flex flex-column">
+			<%- include(`${partials}/filter/status`, {table: 'loancard_lines'}) %>
+		</div>
+	</div>
+	<%- include(`${partials}/common/notes/sidebar`) %>
+</div>
+<div id="modals">
+	<%- include(`${partials}/common/notes/modals`) %>
+	<%- include(`${partials}/common/actions/modals`) %>
+	<% if (permissions.issuer) { %>
+		<div id='mdl_loancard_complete' class="modal fade" tabindex="-1" role="dialog">
+			<div class="modal-dialog modal-lg" role="document">
+				<form id='form_complete' class="modal-content">
+					<%- include(`${partials}/modals/header`, {title: 'Complete Loancard'}) %>
+					<div class="modal-body">
+						<%- include(`${partials}/inputs/date`, {id: 'date_due_complete', title: 'Due Date', name: 'date_due'}) %>
+					</div>
+					<%- include(`${partials}/modals/footer`, {submit: {text: 'Complete'}}) %>
 				</form>
-				<form id="form_loancard_file_print">
-					<button id='btn_loancard_file_print' class="btn btn-primary w-100 mb-1" disabled>Print File</button>
-				</form>
-				<form id="form_loancard_file_delete">
-					<button id='btn_loancard_file_delete' class="btn btn-danger w-100 mb-1" disabled>Delete File</button>
-				</form>
-                <%- include(`${partials}/button/delete`, {text: 'Cancel'}) %>
 			</div>
 		</div>
-		<div id="sdb_lines"   class="offcanvas offcanvas-start" tabindex="-1" aria-labelledby="sdb_lines_label">
-			<%- include(`${partials}/sidebar/header`, {id: 'lines', text: 'Filter Lines'}) %>
-			<div class="offcanvas-body d-flex flex-column">
-				<%- include(`${partials}/filter/status`, {table: 'loancard_lines'}) %>
+		<div id='mdl_due_edit' 			class="modal fade" tabindex="-1" role="dialog">
+			<div class="modal-dialog modal-lg" role="document">
+				<form id='form_due_edit' class="modal-content">
+					<%- include(`${partials}/modals/header`, {title: 'Change due date'}) %>
+					<div class="modal-body">
+						<input type="date" class="form-control" id='date_due_edit' name='loancard[date_due]'>
+					</div>
+					<%- include(`${partials}/modals/footer`, {submit: {text: 'Save'}}) %>
+				</form>
 			</div>
 		</div>
-		<%- include(`${partials}/common/notes/sidebar`) %>
-	</div>
-	<div id="modals">
-        <%- include(`${partials}/common/notes/modals`) %>
-        <%- include(`${partials}/common/actions/modals`) %>
-		<% if (permissions.issuer) { %>
-			<div id='mdl_loancard_complete' class="modal fade" tabindex="-1" role="dialog">
-				<div class="modal-dialog modal-lg" role="document">
-					<form id='form_complete' class="modal-content">
-						<%- include(`${partials}/modals/header`, {title: 'Complete Loancard'}) %>
-						<div class="modal-body">
-							<%- include(`${partials}/inputs/date`, {id: 'date_due_complete', title: 'Due Date', name: 'date_due'}) %>
-						</div>
-						<%- include(`${partials}/modals/footer`, {submit: {text: 'Complete'}}) %>
-					</form>
-				</div>
-			</div>
-			<div id='mdl_due_edit' 			class="modal fade" tabindex="-1" role="dialog">
-				<div class="modal-dialog modal-lg" role="document">
-					<form id='form_due_edit' class="modal-content">
-						<%- include(`${partials}/modals/header`, {title: 'Change due date'}) %>
-						<div class="modal-body">
-							<input type="date" class="form-control" id='date_due_edit' name='loancard[date_due]'>
-						</div>
-						<%- include(`${partials}/modals/footer`, {submit: {text: 'Save'}}) %>
-					</form>
-				</div>
-			</div>
-		<% } %>
-		<%- include(`${partials}/modals/stores/mdl_line_view`, {table: 'Loancard'}) %>
-	</div>
-</section>
+	<% } %>
+	<%- include(`${partials}/modals/stores/mdl_line_view`, {table: 'Loancard'}) %>
+</div>
 <%- include(`${partials}/foot/app`) %>
 <script>showTab('<%= tab %>')</script>
 <%- include(`${partials}/common/notes/scripts`) %>

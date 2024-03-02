@@ -1,18 +1,16 @@
 <%- include(`${partials}/head/app`, {text: 'Canteen'}) %>
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/head/components/close`) %>
-<section class='container'>
-	<div class="row menu">
-        <%- include(`${partials}/card`, {title: 'Point of Sale', image: 'cash-register', hidden: true, id: 'card_pos', permission: 'pos_user'}) %>
-        <%- include(`${partials}/card`, {title: 'Paid In/Out',   image: 'money-bill',    href: '/paid_in_outs',        permission: 'pay_in_out'}) %>
-		<%- include(`${partials}/card`, {title: 'Items',         image: 'candy-cane',    href: '/canteen_items',       permission: 'access_canteen'}) %>
-		<%- include(`${partials}/card`, {title: 'Sessions',      image: 'list',          href: '/sessions',            permission: 'access_canteen'}) %>
-        <%- include(`${partials}/card`, {title: 'Receipts',      image: 'receipt',       href: '/receipts',            permission: 'canteen_stock_admin'}) %>
-        <%- include(`${partials}/card`, {title: 'Writeoffs',     image: 'receipt',       href: '/writeoffs',           permission: 'canteen_stock_admin'}) %>
-        <%- include(`${partials}/card`, {title: 'Movements',     image: 'wallet',        href: '/movements',           permission: 'cash_admin'}) %>
-        <%- include(`${partials}/card`, {title: 'Holdings',      image: 'wallet',        href: '/holdings',            permission: 'cash_admin'}) %>
-	</div>
-</section>
+<div class="row menu">
+    <%- include(`${partials}/card`, {title: 'Point of Sale', image: 'cash-register', hidden: true, id: 'card_pos', permission: 'pos_user'}) %>
+    <%- include(`${partials}/card`, {title: 'Paid In/Out',   image: 'money-bill',    href: '/paid_in_outs',        permission: 'pay_in_out'}) %>
+    <%- include(`${partials}/card`, {title: 'Items',         image: 'candy-cane',    href: '/canteen_items',       permission: 'access_canteen'}) %>
+    <%- include(`${partials}/card`, {title: 'Sessions',      image: 'list',          href: '/sessions',            permission: 'access_canteen'}) %>
+    <%- include(`${partials}/card`, {title: 'Receipts',      image: 'receipt',       href: '/receipts',            permission: 'canteen_stock_admin'}) %>
+    <%- include(`${partials}/card`, {title: 'Writeoffs',     image: 'receipt',       href: '/writeoffs',           permission: 'canteen_stock_admin'}) %>
+    <%- include(`${partials}/card`, {title: 'Movements',     image: 'wallet',        href: '/movements',           permission: 'cash_admin'}) %>
+    <%- include(`${partials}/card`, {title: 'Holdings',      image: 'wallet',        href: '/holdings',            permission: 'cash_admin'}) %>
+</div>
 <%- include(`${partials}/foot/app`) %>
 <script src="/js/canteen/index/view.js"></script>
 <script async>checkSession()</script>

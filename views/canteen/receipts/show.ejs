@@ -3,28 +3,26 @@
 <%- include(`${partials}/breadcrumb`) %>
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/head/components/close`) %>
-<section class='container'>
-    <ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
-        <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details'}) %>
-        <%- include(`${partials}/common/notes/tab_head`) %>
-    </ul>
-    <div class="tab-content pt-3" id="myTabContent">
-        <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
-            <%- include(`${partials}/inputs/display`, {id: 'item',      title: 'Item', link: true}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'qty',       title: 'Qty'}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'cost',      title: 'Cost Each'}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'createdAt', title: 'Received'}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'user',      title: 'Received By', link: true}) %>
-        </div>
-        <%- include(`${partials}/common/notes/tab_body`) %>
+<ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
+    <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details'}) %>
+    <%- include(`${partials}/common/notes/tab_head`) %>
+</ul>
+<div class="tab-content pt-3" id="myTabContent">
+    <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
+        <%- include(`${partials}/inputs/display`, {id: 'item',      title: 'Item', link: true}) %>
+        <%- include(`${partials}/inputs/display`, {id: 'qty',       title: 'Qty'}) %>
+        <%- include(`${partials}/inputs/display`, {id: 'cost',      title: 'Cost Each'}) %>
+        <%- include(`${partials}/inputs/display`, {id: 'createdAt', title: 'Received'}) %>
+        <%- include(`${partials}/inputs/display`, {id: 'user',      title: 'Received By', link: true}) %>
     </div>
-    <div id="sidebars">
-        <%- include(`${partials}/common/notes/sidebar`) %>
-    </div>
-    <div id="modals">
-        <%- include(`${partials}/common/notes/modals`) %>
-    </div>
-</section>
+    <%- include(`${partials}/common/notes/tab_body`) %>
+</div>
+<div id="sidebars">
+    <%- include(`${partials}/common/notes/sidebar`) %>
+</div>
+<div id="modals">
+    <%- include(`${partials}/common/notes/modals`) %>
+</div>
 <%- include(`${partials}/foot/app`) %>
 <script src="/js/canteen/receipts/show/view.js"></script>
 <script>showTab('<%= tab %>')</script>

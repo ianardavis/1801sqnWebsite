@@ -2,37 +2,34 @@
 <%- include(`${partials}/breadcrumb`, {text: 'Suppliers'}) %>
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/head/components/close`) %>
-<section class="container">
+<%- include(`${partials}/sidebar/button`, {id: 'actions', text: 'Actions', float: true}) %>
 
-    <%- include(`${partials}/sidebar/button`, {id: 'actions', text: 'Actions', float: true}) %>
+<div class='menu row' id="tbl_suppliers"></div>
 
-	<div class='menu row' id="tbl_suppliers"></div>
-
-	<div id="sidebars">
-		<div class="offcanvas offcanvas-start" tabindex="-1" id="sdb_actions" aria-labelledby="sdb_actions_label">
-			<%- include(`${partials}/sidebar/header`, {id: 'actions', text: 'Actions'}) %>
-			<div class="offcanvas-body d-flex flex-column">
-				<input class='form-control w-100 mb-1' type='text' id='inp_supplier_name' placeholder='Filter by name...'>
-				<%- include(`${partials}/button/modal`, {id: 'supplier_add', text: 'Add Supplier', type: 'success'}) %>
-			</div>
+<div id="sidebars">
+	<div class="offcanvas offcanvas-start" tabindex="-1" id="sdb_actions" aria-labelledby="sdb_actions_label">
+		<%- include(`${partials}/sidebar/header`, {id: 'actions', text: 'Actions'}) %>
+		<div class="offcanvas-body d-flex flex-column">
+			<input class='form-control w-100 mb-1' type='text' id='inp_supplier_name' placeholder='Filter by name...'>
+			<%- include(`${partials}/button/modal`, {id: 'supplier_add', text: 'Add Supplier', type: 'success'}) %>
 		</div>
 	</div>
-	<div id="modals">
-		<div id='mdl_supplier_add' class="modal fade" tabindex="-1" role="dialog">
-			<div class="modal-dialog" role="document">
-				<form class="modal-content" id='form_supplier_add'>
-                    <%- include(`${partials}/modals/header`, {title: 'Add Supplier'}) %>
-					<div class="modal-body">
-						<%- include(`${partials}/inputs/text`,   {title: 'Supplier Name', name: 'supplier[name]',       required: true}) %>
-						<%- include(`${partials}/inputs/select`, {title: 'Account',   	  name: 'supplier[account_id]', id: 'sel_accounts', reload_id: 'reload_accounts'}) %>
-						<%- include(`${partials}/inputs/select`, {title: 'RAF Stores?',   name: 'supplier[is_stores]',  options: [{value: '0', text: 'No', selected: true}, {value: '1', text: 'Yes'}]}) %>
-					</div>
-                    <%- include(`${partials}/modals/footer`, {submit: {text: 'Save'}}) %>
-				</form>
-			</div>
+</div>
+<div id="modals">
+	<div id='mdl_supplier_add' class="modal fade" tabindex="-1" role="dialog">
+		<div class="modal-dialog" role="document">
+			<form class="modal-content" id='form_supplier_add'>
+				<%- include(`${partials}/modals/header`, {title: 'Add Supplier'}) %>
+				<div class="modal-body">
+					<%- include(`${partials}/inputs/text`,   {title: 'Supplier Name', name: 'supplier[name]',       required: true}) %>
+					<%- include(`${partials}/inputs/select`, {title: 'Account',   	  name: 'supplier[account_id]', id: 'sel_accounts', reload_id: 'reload_accounts'}) %>
+					<%- include(`${partials}/inputs/select`, {title: 'RAF Stores?',   name: 'supplier[is_stores]',  options: [{value: '0', text: 'No', selected: true}, {value: '1', text: 'Yes'}]}) %>
+				</div>
+				<%- include(`${partials}/modals/footer`, {submit: {text: 'Save'}}) %>
+			</form>
 		</div>
 	</div>
-</section>
+</div>
 <%- include(`${partials}/foot/app`) %>
 <script src='/js/constructors/card.js'></script>
 <script src='/js/utils/list/accounts.js'></script>

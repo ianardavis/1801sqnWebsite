@@ -7,35 +7,33 @@
 </li>
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/head/components/close`) %>
-<section class='container'>
-	<table class="table table-sm table-hover mt-1">
-        <thead class="thead-dark" id="tbl_receipts_head">
-            <th class='w-40' data-column='["createdAt"]' data-dir="DESC">Date</th>
-            <th class='w-40' data-column='["item","name"]'>Item</th>
-            <th class='w-10' data-column='["qty"]'>Qty </th>
-            <th class='w-10' data-column='["cost"]'>Cost</th>
-            <th><i class='fas fa-search'></i></th>
-        </thead>
-        <tbody id="tbl_receipts"></tbody>
-    </table>
-    <%- include(`${partials}/limit`, {table: 'receipts'}) %>
-    <div id="modals">
-        <div id='mdl_receipt_add' class="modal" tabindex="-1" role="dialog">
-            <div class="modal-dialog" role="document">
-                <form class="modal-content" id='form_receipt_add'>
-                    <%- include(`${partials}/modals/header`, {title: 'Add Receipt'}) %>
-                    <div class="modal-body">
-                        <%- include(`${partials}/inputs/select`, {title: 'Item',         id: 'sel_items',  name: 'receipts[0][item_id]', required: true}) %>
-                        <%- include(`${partials}/inputs/number`, {title: 'Cost (Total)', id: 'cost_total',                                               step: '0.01', min: '0.01'}) %>
-                        <%- include(`${partials}/inputs/number`, {title: 'Cost (Each)',  id: 'cost_each',  name: 'receipts[0][cost]',    required: true, step: '0.01', min: '0.01'}) %>
-                        <%- include(`${partials}/inputs/number`, {title: 'Quantity',     id: 'qty',        name: 'receipts[0][qty]',     required: true,               min: '1'}) %>
-                    </div>
-                    <%- include(`${partials}/modals/footer`, {submit: {text: 'Add Item'}}) %>
-                </form>
-            </div>
+<table class="table table-sm table-hover mt-1">
+    <thead class="thead-dark" id="tbl_receipts_head">
+        <th class='w-40' data-column='["createdAt"]' data-dir="DESC">Date</th>
+        <th class='w-40' data-column='["item","name"]'>Item</th>
+        <th class='w-10' data-column='["qty"]'>Qty </th>
+        <th class='w-10' data-column='["cost"]'>Cost</th>
+        <th><i class='fas fa-search'></i></th>
+    </thead>
+    <tbody id="tbl_receipts"></tbody>
+</table>
+<%- include(`${partials}/limit`, {table: 'receipts'}) %>
+<div id="modals">
+    <div id='mdl_receipt_add' class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <form class="modal-content" id='form_receipt_add'>
+                <%- include(`${partials}/modals/header`, {title: 'Add Receipt'}) %>
+                <div class="modal-body">
+                    <%- include(`${partials}/inputs/select`, {title: 'Item',         id: 'sel_items',  name: 'receipts[0][item_id]', required: true}) %>
+                    <%- include(`${partials}/inputs/number`, {title: 'Cost (Total)', id: 'cost_total',                                               step: '0.01', min: '0.01'}) %>
+                    <%- include(`${partials}/inputs/number`, {title: 'Cost (Each)',  id: 'cost_each',  name: 'receipts[0][cost]',    required: true, step: '0.01', min: '0.01'}) %>
+                    <%- include(`${partials}/inputs/number`, {title: 'Quantity',     id: 'qty',        name: 'receipts[0][qty]',     required: true,               min: '1'}) %>
+                </div>
+                <%- include(`${partials}/modals/footer`, {submit: {text: 'Add Item'}}) %>
+            </form>
         </div>
     </div>
-</section>
+</div>
 <%- include(`${partials}/foot/app`) %>
 <script src="/js/canteen/receipts/index/view.js"></script>
 <script src="/js/canteen/receipts/index/add.js"></script>

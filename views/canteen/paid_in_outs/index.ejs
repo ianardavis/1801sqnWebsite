@@ -5,39 +5,37 @@
 </li>
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/head/components/close`) %>
-<section class='container'>
-	<table class="table table-sm table-hover mt-1">
-        <thead class="thead-dark" id="tbl_paid_in_outs_head">
-            <th class='w-15' data-column='["createdAt"]' data-dir="DESC">Date</th>
-            <th class='w-10'>Paid In/Out</th>
-            <th class='w-20' data-column='["holding","description"]'>Holding</th>
-            <th class='w-20'>To/From</th>
-            <th class='w-15' data-column='["reason"]'>Reason</th>
-            <th class='w-10' data-column='["amount"]'>Amount</th>
-            <th class='w-10' data-column='["status"]'>Status</th>
-            <th><i class='fas fa-search'></i></th>
-        </thead>
-        <tbody id="tbl_paid_in_outs"></tbody>
-    </table>
-	<%- include(`${partials}/limit`, {table: 'paid_in_outs'}) %>
-    <div id="modals">
-        <div id='mdl_paid_in_out_add' class="modal" tabindex="-1" role="dialog">
-            <div class="modal-dialog" role="document">
-                <form class="modal-content" id='form_paid_in_out_add'>
-                    <%- include(`${partials}/modals/header`, {title: 'Pay In/Out'}) %>
-                    <div class="modal-body">
-                        <%- include(`${partials}/inputs/select`, {title: 'Pay In/Out?', name: 'paid_in_out[paid_in]',             id: 'paid_in_out_paid_in', options: [{value: '1', text: 'Pay In', selected: true}, {value: '0', text: 'Pay Out'}]}) %>
-                        <%- include(`${partials}/inputs/select`, {title: 'Holding',     name: 'paid_in_out[holding_id]',          id: 'sel_holdings'}) %>
-                        <%- include(`${partials}/inputs/select`, {title: 'To/From',     name: 'paid_in_out[user_id_paid_in_out]', id: 'sel_users'}) %>
-                        <%- include(`${partials}/inputs/text`,   {title: 'Reason',      name: 'paid_in_out[reason]',              id: 'paid_in_out_reason', required: true}) %>
-                        <%- include(`${partials}/inputs/number`, {title: 'Amount',      name: 'paid_in_out[amount]',              id: 'paid_in_out_amount', required: true, step: '0.01', min: '0'}) %>
-                    </div>
-                    <%- include(`${partials}/modals/footer`, {submit: {text: 'Save Item'}}) %>
-                </form>
-            </div>
+<table class="table table-sm table-hover mt-1">
+    <thead class="thead-dark" id="tbl_paid_in_outs_head">
+        <th class='w-15' data-column='["createdAt"]' data-dir="DESC">Date</th>
+        <th class='w-10'>Paid In/Out</th>
+        <th class='w-20' data-column='["holding","description"]'>Holding</th>
+        <th class='w-20'>To/From</th>
+        <th class='w-15' data-column='["reason"]'>Reason</th>
+        <th class='w-10' data-column='["amount"]'>Amount</th>
+        <th class='w-10' data-column='["status"]'>Status</th>
+        <th><i class='fas fa-search'></i></th>
+    </thead>
+    <tbody id="tbl_paid_in_outs"></tbody>
+</table>
+<%- include(`${partials}/limit`, {table: 'paid_in_outs'}) %>
+<div id="modals">
+    <div id='mdl_paid_in_out_add' class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <form class="modal-content" id='form_paid_in_out_add'>
+                <%- include(`${partials}/modals/header`, {title: 'Pay In/Out'}) %>
+                <div class="modal-body">
+                    <%- include(`${partials}/inputs/select`, {title: 'Pay In/Out?', name: 'paid_in_out[paid_in]',             id: 'paid_in_out_paid_in', options: [{value: '1', text: 'Pay In', selected: true}, {value: '0', text: 'Pay Out'}]}) %>
+                    <%- include(`${partials}/inputs/select`, {title: 'Holding',     name: 'paid_in_out[holding_id]',          id: 'sel_holdings'}) %>
+                    <%- include(`${partials}/inputs/select`, {title: 'To/From',     name: 'paid_in_out[user_id_paid_in_out]', id: 'sel_users'}) %>
+                    <%- include(`${partials}/inputs/text`,   {title: 'Reason',      name: 'paid_in_out[reason]',              id: 'paid_in_out_reason', required: true}) %>
+                    <%- include(`${partials}/inputs/number`, {title: 'Amount',      name: 'paid_in_out[amount]',              id: 'paid_in_out_amount', required: true, step: '0.01', min: '0'}) %>
+                </div>
+                <%- include(`${partials}/modals/footer`, {submit: {text: 'Save Item'}}) %>
+            </form>
         </div>
     </div>
-</section>
+</div>
 <%- include(`${partials}/foot/app`) %>
 <script src="/js/canteen/paid_in_outs/index/view.js"></script>
 <script src="/js/utils/list/users.js"></script>

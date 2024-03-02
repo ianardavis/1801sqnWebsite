@@ -1,4 +1,4 @@
-function get_item() {
+function getItem() {
     function disableAllButtons() {
         disableButton('delete');
     };
@@ -34,6 +34,6 @@ function get_item() {
     .catch(err => redirectOnError(err, '/items'));
 };
 window.addEventListener('load', function () {
-    addListener('reload', get_item);
-    get_item();
+    addListener('reload', getItem);
+    getItem();
 });

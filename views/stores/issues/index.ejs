@@ -2,65 +2,63 @@
 <%- include(`${partials}/breadcrumb`, {text: 'Issues'}) %>
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/head/components/close`) %>
-<section class="container">
-	<div class="row justify-content-between">
-		<div class="col-12 col-md-4 mb-1">
-			<%- include(`${partials}/sidebar/button`, {id: 'filter', text: 'Filter/Actions'}) %>
+<div class="row justify-content-between">
+	<div class="col-12 col-md-4 mb-1">
+		<%- include(`${partials}/sidebar/button`, {id: 'filter', text: 'Filter/Actions'}) %>
+	</div>
+</div>
+
+<% if (permissions.issuer) { %><form id='form_issue_edit'><% } %>
+	<table class="table table-sm table-hover">
+		<thead class="thead-dark" id="tbl_issues_head">
+			<th class='w-15' data-column='["createdAt"]' data-dir='DESC'>Date</th>
+			<th class='w-20' data-column='["user_issue","surname"]'		>User</th>
+			<th class='w-20' data-column='["size","item","description"]'>Description</th>
+			<th class='w-10' data-column='["size","size1"]'				>Size</th>
+			<th class='w-10' data-column='["qty"]'						>Qty</th>
+			<th class='w-10' data-column='["status"]'					>Status</th>
+			<th class='w-15'>Actions</th>
+			<th><i class="fas fa-search"></i></th>
+		</thead>
+		<tbody id="tbl_issues"></tbody>
+	</table>
+<% if (permissions.issuer) { %></form><% } %>
+<%- include(`${partials}/limit`, {table: 'issues'}) %>
+
+<div id="sidebars">
+	<div class="offcanvas offcanvas-start" tabindex="-1" id="sdb_filter" aria-labelledby="sdb_filter_label">
+		<%- include(`${partials}/sidebar/header`, {id: 'filter', text: 'Filter'}) %>
+		<div class="offcanvas-body d-flex flex-column">
+			<%- include(`${partials}/button/modal`, {id: 'issue_add', text: 'New Issue', type: 'success'}) %>
+			
+			<%- include(`${partials}/filter/status`, {table: 'issue'}) %>
+			<%- include(`${partials}/filter/user`, 	 {table: 'issue'}) %>
+			<%- include(`${partials}/filter/date`, 	 {table: 'issue'}) %>
+			<%- include(`${partials}/filter/item`, 	 {table: 'issue'}) %>
+			<%- include(`${partials}/filter/size`, 	 {table: 'issue'}) %>
+
+			<button class="btn btn-success w-100 mt-auto" form="form_issue_edit">
+				Action Selected Issues
+			</button>
 		</div>
 	</div>
-
-	<% if (permissions.issuer) { %><form id='form_issue_edit'><% } %>
-		<table class="table table-sm table-hover">
-			<thead class="thead-dark" id="tbl_issues_head">
-				<th class='w-15' data-column='["createdAt"]' data-dir='DESC'>Date</th>
-				<th class='w-20' data-column='["user_issue","surname"]'		>User</th>
-				<th class='w-20' data-column='["size","item","description"]'>Description</th>
-				<th class='w-10' data-column='["size","size1"]'				>Size</th>
-				<th class='w-10' data-column='["qty"]'						>Qty</th>
-				<th class='w-10' data-column='["status"]'					>Status</th>
-				<th class='w-15'>Actions</th>
-				<th><i class="fas fa-search"></i></th>
-			</thead>
-			<tbody id="tbl_issues"></tbody>
-		</table>
-	<% if (permissions.issuer) { %></form><% } %>
-	<%- include(`${partials}/limit`, {table: 'issues'}) %>
-
-	<div id="sidebars">
-		<div class="offcanvas offcanvas-start" tabindex="-1" id="sdb_filter" aria-labelledby="sdb_filter_label">
-			<%- include(`${partials}/sidebar/header`, {id: 'filter', text: 'Filter'}) %>
-			<div class="offcanvas-body d-flex flex-column">
-				<%- include(`${partials}/button/modal`, {id: 'issue_add', text: 'New Issue', type: 'success'}) %>
-				
-				<%- include(`${partials}/filter/status`, {table: 'issue'}) %>
-				<%- include(`${partials}/filter/user`, 	 {table: 'issue'}) %>
-				<%- include(`${partials}/filter/date`, 	 {table: 'issue'}) %>
-				<%- include(`${partials}/filter/item`, 	 {table: 'issue'}) %>
-				<%- include(`${partials}/filter/size`, 	 {table: 'issue'}) %>
-	
-				<button class="btn btn-success w-100 mt-auto" form="form_issue_edit">
-					Action Selected Issues
-				</button>
-			</div>
-		</div>
-	</div>
-	<div id="modals">
-		<%- include(`${partials}/modals/stores/issue_add`) %>
-	</div>
-</section>
+</div>
+<div id="modals">
+	<%- include(`${partials}/modals/stores/issue_add`) %>
+</div>
 <%- include(`${partials}/foot/app`) %>
 <script src='/js/utils/list/users.js'></script>
 <% if (permissions.issuer) { %>
-	<script src="/js/common/radios/nil_cancel.js"></script>
-	<script src="/js/common/radios/approve_decline.js"></script>
-	<script src="/js/common/radios/restore.js"></script>
-	<script src="/js/common/radios/issue_loancard.js"></script>
+<script src="/js/common/radios/nil_cancel.js"></script>
+<script src="/js/common/radios/approve_decline.js"></script>
+<script src="/js/common/radios/restore.js"></script>
+<script src="/js/common/radios/issue_loancard.js"></script>
 
-	<script src='/js/stores/issues/options.js'></script>
-	<script src='/js/common/add_qty_input.js'></script>
-	<% if (permissions.stores_stock_admin) { %>
-		<script src="/js/common/radios/order.js"></script>
-	<% } %>
+<script src='/js/stores/issues/options.js'></script>
+<script src='/js/common/add_qty_input.js'></script>
+<% if (permissions.stores_stock_admin) { %>
+<script src="/js/common/radios/order.js"></script>
+<% } %>
 <% } %>
 <script src='/js/stores/issues/index/view.js'></script>
 <%- include(`${partials}/foot/components/htmlClose`) %>

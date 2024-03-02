@@ -3,71 +3,69 @@
 <%- include(`${partials}/menu/breadcrumb_add`, {permission: 'stores_stock_admin', modal: 'order_add'}) %>
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/head/components/close`) %>
-<section class='container'>
-	<div class="row justify-content-between">
-		<div class="col-12 col-md-4 mb-1">
-			<%- include(`${partials}/sidebar/button`, {id: 'filter', text: 'Filter/Actions'}) %>
-		</div>
+<div class="row justify-content-between">
+	<div class="col-12 col-md-4 mb-1">
+		<%- include(`${partials}/sidebar/button`, {id: 'filter', text: 'Filter/Actions'}) %>
 	</div>
-	<% if (permissions.stores_stock_admin) { %><form id='form_order_edit'><% } %>
-		<table class="table table-sm table-hover">
-			<thead class="thead-dark" id="tbl_orders_head">
-				<th class='w-15' data-column='["createdAt"]' data-dir="DESC">Date</th>
-				<th class='w-20' data-column='["size","item","description"]'>Item</th>
-				<th class='w-15' data-column='["size","size1"]'				>Size</th>
-				<th class='w-15' data-column='["qty"]'						>Qty</th>
-				<th class='w-20' data-column='["status"]'					>Status</th>
-				<th class='w-15'>Actions</th>
-				<th><i class="fas fa-search"></i></th>
-			</thead>
-			<tbody id="tbl_orders"></tbody>
-		</table>
-	<% if (permissions.stores_stock_admin) { %></form><% } %>
-	<%- include(`${partials}/limit`, {table: 'orders'}) %>
+</div>
+<% if (permissions.stores_stock_admin) { %><form id='form_order_edit'><% } %>
+	<table class="table table-sm table-hover">
+		<thead class="thead-dark" id="tbl_orders_head">
+			<th class='w-15' data-column='["createdAt"]' data-dir="DESC">Date</th>
+			<th class='w-20' data-column='["size","item","description"]'>Item</th>
+			<th class='w-15' data-column='["size","size1"]'				>Size</th>
+			<th class='w-15' data-column='["qty"]'						>Qty</th>
+			<th class='w-20' data-column='["status"]'					>Status</th>
+			<th class='w-15'>Actions</th>
+			<th><i class="fas fa-search"></i></th>
+		</thead>
+		<tbody id="tbl_orders"></tbody>
+	</table>
+<% if (permissions.stores_stock_admin) { %></form><% } %>
+<%- include(`${partials}/limit`, {table: 'orders'}) %>
 
-	<div id="sidebars">
-		<div class="offcanvas offcanvas-start" tabindex="-1" id="sdb_filter" aria-labelledby="sdb_filter_label">
-			<%- include(`${partials}/sidebar/header`, {id: 'filter', text: 'Filter'}) %>
-			<div class="offcanvas-body d-flex flex-column">
-				<%- include(`${partials}/button/modal`, {id: 'order_add', text: 'New Order', type: 'success'}) %>
-				
-				<%- include(`${partials}/filter/status`, {table: 'order'}) %>
-				<%- include(`${partials}/filter/date`, 	 {table: 'order'}) %>
-				<%- include(`${partials}/filter/item`, 	 {table: 'order'}) %>
-				<%- include(`${partials}/filter/size`, 	 {table: 'order'}) %>
-	
-				<button class="btn btn-success w-100 mt-auto" form="form_order_edit">
-					Action Selected Orders
-				</button>
-			</div>
+<div id="sidebars">
+	<div class="offcanvas offcanvas-start" tabindex="-1" id="sdb_filter" aria-labelledby="sdb_filter_label">
+		<%- include(`${partials}/sidebar/header`, {id: 'filter', text: 'Filter'}) %>
+		<div class="offcanvas-body d-flex flex-column">
+			<%- include(`${partials}/button/modal`, {id: 'order_add', text: 'New Order', type: 'success'}) %>
+			
+			<%- include(`${partials}/filter/status`, {table: 'order'}) %>
+			<%- include(`${partials}/filter/date`, 	 {table: 'order'}) %>
+			<%- include(`${partials}/filter/item`, 	 {table: 'order'}) %>
+			<%- include(`${partials}/filter/size`, 	 {table: 'order'}) %>
+
+			<button class="btn btn-success w-100 mt-auto" form="form_order_edit">
+				Action Selected Orders
+			</button>
 		</div>
 	</div>
-	<div id="modals">
-		<% if (permissions.stores_stock_admin) { %>
-			<div class="modal fade" id="mdl_order_add" tabindex="-1" aria-hidden="true">
-				<div class="modal-dialog">
-					<form class="modal-content" id='form_order_add'>
-						<%- include(`${partials}/modals/header`, {title: 'Add Order'}) %>
-						<div class="modal-body">
-							<%- include(`${partials}/inputs/number`, {title: 'Quantity', value: '1', min: '1', id: 'order_add_qty'}) %>
-							<button type='button' class='btn btn-success w-100 mb-1' id='btn_order_sizes'>Add Item(s)</button>
-							<table class="table table-sm table-hover">
-								<thead class="thead-dark">
-									<th class="w-40">Item</th>
-									<th class="w-40">Size</th>
-									<th class="w-20">Quantity</th>
-									<th><i class="fas fa-trash-alt"></i></th>
-								</thead>
-								<tbody id="tbl_order_add"></tbody>
-							</table>
-						</div>
-						<%- include(`${partials}/modals/footer`, {submit: {text: 'Add Orders'}}) %>
-					</form>
+</div>
+<div id="modals">
+<% if (permissions.stores_stock_admin) { %>
+	<div class="modal fade" id="mdl_order_add" tabindex="-1" aria-hidden="true">
+		<div class="modal-dialog">
+			<form class="modal-content" id='form_order_add'>
+				<%- include(`${partials}/modals/header`, {title: 'Add Order'}) %>
+				<div class="modal-body">
+					<%- include(`${partials}/inputs/number`, {title: 'Quantity', value: '1', min: '1', id: 'order_add_qty'}) %>
+					<button type='button' class='btn btn-success w-100 mb-1' id='btn_order_sizes'>Add Item(s)</button>
+					<table class="table table-sm table-hover">
+						<thead class="thead-dark">
+							<th class="w-40">Item</th>
+							<th class="w-40">Size</th>
+							<th class="w-20">Quantity</th>
+							<th><i class="fas fa-trash-alt"></i></th>
+						</thead>
+						<tbody id="tbl_order_add"></tbody>
+					</table>
 				</div>
-			</div>
-		<% } %>
+				<%- include(`${partials}/modals/footer`, {submit: {text: 'Add Orders'}}) %>
+			</form>
+		</div>
 	</div>
-</section>
+<% } %>
+</div>
 <%- include(`${partials}/foot/app`) %>
 <script src="/js/stores/sizes/select/showWindow.js"></script>
 <script src="/js/common/receive_options.js"></script>

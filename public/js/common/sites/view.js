@@ -22,6 +22,7 @@ function getCurrentSite() {
         get({location: 'site/current'})
         .then(function ([site, options]) {
             dd_sites.innerText = site.name;
+            setSiteIDValues(site);
         })
     })
 };

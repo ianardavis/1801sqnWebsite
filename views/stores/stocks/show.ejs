@@ -5,105 +5,103 @@
 <%- include(`${partials}/breadcrumb`) %>
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/head/components/close`) %>
-<section class='container'>
-    <%- include(`${partials}/sidebar/button`, {id: 'actions', text: 'Actions', float: true}) %>
-    <ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
-        <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details'}) %>
-        <%- include(`${partials}/common/actions/tab_head`) %>
-        <%- include(`${partials}/common/notes/tab_head`) %>
-    </ul>
-    <div class="tab-content pt-3" id="myTabContent">
-        <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
-            <%- include(`${partials}/inputs/display`, {id: 'stock_item',     title: 'Item',     link: true}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'stock_size',     title: 'Size',     link: true}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'stock_location', title: 'Location', link: true}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'stock_qty',      title: 'Quantity'}) %>
-        </div>
-        <%- include(`${partials}/common/actions/tab_body`) %>
-        <%- include(`${partials}/common/notes/tab_body`) %>
+<%- include(`${partials}/sidebar/button`, {id: 'actions', text: 'Actions', float: true}) %>
+<ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
+    <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details'}) %>
+    <%- include(`${partials}/common/actions/tab_head`) %>
+    <%- include(`${partials}/common/notes/tab_head`) %>
+</ul>
+<div class="tab-content pt-3" id="myTabContent">
+    <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
+        <%- include(`${partials}/inputs/display`, {id: 'stock_item',     title: 'Item',     link: true}) %>
+        <%- include(`${partials}/inputs/display`, {id: 'stock_size',     title: 'Size',     link: true}) %>
+        <%- include(`${partials}/inputs/display`, {id: 'stock_location', title: 'Location', link: true}) %>
+        <%- include(`${partials}/inputs/display`, {id: 'stock_qty',      title: 'Quantity'}) %>
     </div>
+    <%- include(`${partials}/common/actions/tab_body`) %>
+    <%- include(`${partials}/common/notes/tab_body`) %>
+</div>
 
-    <div id="sidebars">
-        <div class="offcanvas offcanvas-start" tabindex="-1" id="sdb_actions" aria-labelledby="sdb_actions_label">
-            <%- include(`${partials}/sidebar/header`, {id: 'actions', text: 'Actions'}) %>
-            <div class="offcanvas-body d-flex flex-column">
-                <%- include(`${partials}/button/modal`, {id: 'transfer_add', text: 'Transfer',      type: 'success'}) %>
-                <%- include(`${partials}/button/modal`, {id: 'stock_edit',   text: 'Edit',          type: 'warning'}) %>
-                <%- include(`${partials}/button/modal`, {id: 'receipt_add',  text: 'Receive Stock', type: 'success'}) %>
-                <%- include(`${partials}/button/modal`, {id: 'count_add',    text: 'Count',         type: 'warning'}) %>
-                <%- include(`${partials}/button/modal`, {id: 'scrap_add',    text: 'Scrap',         type: 'danger'}) %>
-                <%- include(`${partials}/button/delete`) %>
+<div id="sidebars">
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="sdb_actions" aria-labelledby="sdb_actions_label">
+        <%- include(`${partials}/sidebar/header`, {id: 'actions', text: 'Actions'}) %>
+        <div class="offcanvas-body d-flex flex-column">
+            <%- include(`${partials}/button/modal`, {id: 'transfer_add', text: 'Transfer',      type: 'success'}) %>
+            <%- include(`${partials}/button/modal`, {id: 'stock_edit',   text: 'Edit',          type: 'warning'}) %>
+            <%- include(`${partials}/button/modal`, {id: 'receipt_add',  text: 'Receive Stock', type: 'success'}) %>
+            <%- include(`${partials}/button/modal`, {id: 'count_add',    text: 'Count',         type: 'warning'}) %>
+            <%- include(`${partials}/button/modal`, {id: 'scrap_add',    text: 'Scrap',         type: 'danger'}) %>
+            <%- include(`${partials}/button/delete`) %>
+        </div>
+    </div>
+    <%- include(`${partials}/common/notes/sidebar`) %>
+</div>
+<div id="modals">
+    <datalist id="locations_list"></datalist>
+    <%- include(`${partials}/common/notes/modals`) %>
+    <%- include(`${partials}/common/actions/modals`) %>
+    <% if (permissions.stores_stock_admin) { %>
+        <div id='mdl_receipt_add' class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+                <form class="modal-content" id='form_receipt_add'>
+                    <%- include(`${partials}/modals/header`, {title: 'Receive Stock'}) %>
+                    <div class="modal-body">
+                        <input type="hidden" class="stock_id" name='receipt[stock_id]'>
+                        <%- include(`${partials}/inputs/number`, {title: 'Quantity', id: 'receipt_qty', name: 'receipt[qty]', required: true}) %>
+                    </div>
+                    <%- include(`${partials}/modals/footer`, {submit: {text: 'Save'}}) %>
+                </form>
             </div>
         </div>
-        <%- include(`${partials}/common/notes/sidebar`) %>
-    </div>
-    <div id="modals">
-        <datalist id="locations_list"></datalist>
-        <%- include(`${partials}/common/notes/modals`) %>
-        <%- include(`${partials}/common/actions/modals`) %>
-        <% if (permissions.stores_stock_admin) { %>
-            <div id='mdl_receipt_add' class="modal fade" tabindex="-1" role="dialog">
-                <div class="modal-dialog modal-lg" role="document">
-                    <form class="modal-content" id='form_receipt_add'>
-                        <%- include(`${partials}/modals/header`, {title: 'Receive Stock'}) %>
-                        <div class="modal-body">
-                            <input type="hidden" class="stock_id" name='receipt[stock_id]'>
-                            <%- include(`${partials}/inputs/number`, {title: 'Quantity', id: 'receipt_qty', name: 'receipt[qty]', required: true}) %>
-                        </div>
-                        <%- include(`${partials}/modals/footer`, {submit: {text: 'Save'}}) %>
-                    </form>
-                </div>
+        <div id='mdl_stock_edit'     class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <form class="modal-content" id='form_stock_edit'>
+                    <%- include(`${partials}/modals/header`, {title: 'Change Location'}) %>
+                    <div class="modal-body">
+                        <%- include(`${partials}/inputs/text`, {title: 'Location', name: 'location', id: 'stock_location_edit', reload_id: 'reload_locations_edit', list_id: 'locations_list'}) %>
+                    </div>
+                    <%- include(`${partials}/modals/footer`, {submit: {text: 'Save'}}) %>
+                </form>
             </div>
-            <div id='mdl_stock_edit'     class="modal fade" tabindex="-1" role="dialog">
-                <div class="modal-dialog" role="document">
-                    <form class="modal-content" id='form_stock_edit'>
-                        <%- include(`${partials}/modals/header`, {title: 'Change Location'}) %>
-                        <div class="modal-body">
-                            <%- include(`${partials}/inputs/text`, {title: 'Location', name: 'location', id: 'stock_location_edit', reload_id: 'reload_locations_edit', list_id: 'locations_list'}) %>
-                        </div>
-                        <%- include(`${partials}/modals/footer`, {submit: {text: 'Save'}}) %>
-                    </form>
-                </div>
+        </div>
+        <div id='mdl_transfer_add'   class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <form class="modal-content" id='form_transfer_add'>
+                    <%- include(`${partials}/modals/header`, {title: 'Transfer Stock'}) %>
+                    <div class="modal-body">
+                        <%- include(`${partials}/inputs/text`,   {title: 'To Location', name: 'location_to', id: 'transfer_add_location', reload_id: 'reload_locations_transfer', list_id: 'locations_list'}) %>
+                        <%- include(`${partials}/inputs/number`, {title: 'Quantity',    name: 'qty',         id: 'transfer_add_qty', min: '0'}) %>
+                    </div>
+                    <%- include(`${partials}/modals/footer`, {submit: {text: 'Transfer'}}) %>
+                </form>
             </div>
-            <div id='mdl_transfer_add'   class="modal fade" tabindex="-1" role="dialog">
-                <div class="modal-dialog" role="document">
-                    <form class="modal-content" id='form_transfer_add'>
-                        <%- include(`${partials}/modals/header`, {title: 'Transfer Stock'}) %>
-                        <div class="modal-body">
-                            <%- include(`${partials}/inputs/text`,   {title: 'To Location', name: 'location_to', id: 'transfer_add_location', reload_id: 'reload_locations_transfer', list_id: 'locations_list'}) %>
-                            <%- include(`${partials}/inputs/number`, {title: 'Quantity',    name: 'qty',         id: 'transfer_add_qty', min: '0'}) %>
-                        </div>
-                        <%- include(`${partials}/modals/footer`, {submit: {text: 'Transfer'}}) %>
-                    </form>
-                </div>
+        </div>
+        <div id='mdl_count_add'      class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+                <form class="modal-content" id='form_count_add'>
+                    <%- include(`${partials}/modals/header`, {title: 'Count'}) %>
+                    <div class="modal-body">
+                        <%- include(`${partials}/inputs/number`, {title: 'Quantity', name: 'count[qty]', id: 'adjustment_qty_count', required: true}) %>
+                    </div>
+                    <%- include(`${partials}/modals/footer`, {submit: {text: 'Count Stock'}}) %>
+                </form>
             </div>
-            <div id='mdl_count_add'      class="modal fade" tabindex="-1" role="dialog">
-                <div class="modal-dialog modal-lg" role="document">
-                    <form class="modal-content" id='form_count_add'>
-                        <%- include(`${partials}/modals/header`, {title: 'Count'}) %>
-                        <div class="modal-body">
-                            <%- include(`${partials}/inputs/number`, {title: 'Quantity', name: 'count[qty]', id: 'adjustment_qty_count', required: true}) %>
-                        </div>
-                        <%- include(`${partials}/modals/footer`, {submit: {text: 'Count Stock'}}) %>
-                    </form>
-                </div>
+        </div>
+        <div id='mdl_scrap_add'      class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+                <form class="modal-content" id='form_scrap_add'>
+                    <%- include(`${partials}/modals/header`, {title: 'Scrap'}) %>
+                    <div class="modal-body">
+                        <%- include(`${partials}/inputs/select`, {title: 'Serial',   name: 'scrap[serial_id]', id: 'scrap_add_serial'}) %>
+                        <%- include(`${partials}/inputs/select`, {title: 'NSN',      name: 'scrap[nsn_id]',    id: 'scrap_add_nsn'}) %>
+                        <%- include(`${partials}/inputs/number`, {title: 'Quantity', name: 'scrap[qty]',       id: 'scrap_add_qty', required: true}) %>
+                    </div>
+                    <%- include(`${partials}/modals/footer`, {submit: {text: 'Scrap Stock'}}) %>
+                </form>
             </div>
-            <div id='mdl_scrap_add'      class="modal fade" tabindex="-1" role="dialog">
-                <div class="modal-dialog modal-lg" role="document">
-                    <form class="modal-content" id='form_scrap_add'>
-                        <%- include(`${partials}/modals/header`, {title: 'Scrap'}) %>
-                        <div class="modal-body">
-                            <%- include(`${partials}/inputs/select`, {title: 'Serial',   name: 'scrap[serial_id]', id: 'scrap_add_serial'}) %>
-                            <%- include(`${partials}/inputs/select`, {title: 'NSN',      name: 'scrap[nsn_id]',    id: 'scrap_add_nsn'}) %>
-                            <%- include(`${partials}/inputs/number`, {title: 'Quantity', name: 'scrap[qty]',       id: 'scrap_add_qty', required: true}) %>
-                        </div>
-                        <%- include(`${partials}/modals/footer`, {submit: {text: 'Scrap Stock'}}) %>
-                    </form>
-                </div>
-            </div>
-        <% } %>
-    </div>
-</section>
+        </div>
+    <% } %>
+</div>
 <%- include(`${partials}/foot/app`) %>
 <script>showTab('<%= tab %>')</script>
 <%- include(`${partials}/common/notes/scripts`) %>

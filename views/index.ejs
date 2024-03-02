@@ -1,0 +1,10 @@
+<%- include(`${partials}/head/app`, {text: 'Stores', noDD: true}) %>
+<%- include(`${partials}/head/components/close`) %>
+<div class="row menu mx-auto">
+	<%- include(`${partials}/card`, {id: 'stores', 	href: '/stores',  title: 'Stores',	image: 'address-card'}) %>
+	<%- include(`${partials}/card`, {id: 'canteen', href: '/canteen', title: 'Canteen',	image: 'cookie-bite'}) %>
+	<%- include(`${partials}/card`, {id: 'sites', 	href: '/sites',   title: 'Sites', 	image: 'list'}) %>
+	<%- include(`${partials}/card`, {id: 'users',   href: '/users',   title: 'Users', 	image: 'user'}) %>
+</div>
+<%- include(`${partials}/foot/app`) %>
+<%- include(`${partials}/foot/components/htmlClose`) %>

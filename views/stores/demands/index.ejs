@@ -2,36 +2,34 @@
 <%- include(`${partials}/breadcrumb`, {text: 'Demands'}) %>
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/head/components/close`) %>
-<section class='container'>
-	<div class="row justify-content-between">
-		<div class="col-12 col-md-4 mb-1">
-			<%- include(`${partials}/sidebar/button`, {id: 'demands', text: 'Filter'}) %>
-		</div>
+<div class="row justify-content-between">
+	<div class="col-12 col-md-4 mb-1">
+		<%- include(`${partials}/sidebar/button`, {id: 'demands', text: 'Filter'}) %>
 	</div>
-	
-	<table class="table table-sm table-hover">
-		<thead class="thead-dark" id='tbl_demands_head'>
-			<th class='w-30' data-column='["createdAt"]' data-dir='ASC'>Date</th>
-			<th class='w-30' data-column='["description"]'			   >Supplier</th>
-			<th class='w-15' data-column='["lines"]'				   >Lines</th>
-			<th class='w-25' data-column='["status"]'				   >Status</th>
-			<th><i class="fas fa-search"></i></th>
-		</thead>
-		<tbody id="tbl_demands"></tbody>
-	</table>
-	<%- include(`${partials}/limit`, {table: 'demands'}) %>
+</div>
 
-	<div id="sidebars">
-		<div class="offcanvas offcanvas-start" tabindex="-1" id="sdb_demands" aria-labelledby="sdb_demands_label">
-			<%- include(`${partials}/sidebar/header`, {id: 'demands', text: 'Filter'}) %>
-			<div class="offcanvas-body d-flex flex-column">
-				<%- include(`${partials}/filter/status`, {table: 'demands'}) %>
-				<%- include(`${partials}/filter/supplier`, {table: 'demands'}) %>
-				<%- include(`${partials}/filter/date`, {table: 'demands'}) %>
-			</div>
+<table class="table table-sm table-hover">
+	<thead class="thead-dark" id='tbl_demands_head'>
+		<th class='w-30' data-column='["createdAt"]' data-dir='ASC'>Date</th>
+		<th class='w-30' data-column='["description"]'			   >Supplier</th>
+		<th class='w-15' data-column='["lines"]'				   >Lines</th>
+		<th class='w-25' data-column='["status"]'				   >Status</th>
+		<th><i class="fas fa-search"></i></th>
+	</thead>
+	<tbody id="tbl_demands"></tbody>
+</table>
+<%- include(`${partials}/limit`, {table: 'demands'}) %>
+
+<div id="sidebars">
+	<div class="offcanvas offcanvas-start" tabindex="-1" id="sdb_demands" aria-labelledby="sdb_demands_label">
+		<%- include(`${partials}/sidebar/header`, {id: 'demands', text: 'Filter'}) %>
+		<div class="offcanvas-body d-flex flex-column">
+			<%- include(`${partials}/filter/status`, {table: 'demands'}) %>
+			<%- include(`${partials}/filter/supplier`, {table: 'demands'}) %>
+			<%- include(`${partials}/filter/date`, {table: 'demands'}) %>
 		</div>
 	</div>
-</section>
+</div>
 <%- include(`${partials}/foot/app`) %>
 <script src='/js/utils/list/suppliers.js'></script>
 <script src='/js/stores/demands/index/view.js'></script>

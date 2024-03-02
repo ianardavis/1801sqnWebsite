@@ -2,36 +2,34 @@
 <%- include(`${partials}/breadcrumb`, {text: 'Scraps'}) %>
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/head/components/close`) %>
-<section class='container'>
-	<div class="row justify-content-between">
-		<div class="col-12 col-md-4 mb-1">
-			<%- include(`${partials}/sidebar/button`, {id: 'filter', text: 'Filter'}) %>
+<div class="row justify-content-between">
+	<div class="col-12 col-md-4 mb-1">
+		<%- include(`${partials}/sidebar/button`, {id: 'filter', text: 'Filter'}) %>
+	</div>
+</div>
+<table class="table table-sm table-hover">
+	<thead class="thead-dark" id="tbl_scraps_head">
+		<th class='w-35' data-column='["createdAt"]' data-dir="DESC">Date</th>
+		<th class='w-35' data-column='["supplier","name"]'			>Supplier</th>
+		<th class='w-15' data-column='["lines"]'					>Lines</th>
+		<th class='w-15' data-column='["status"]'					>Status</th>
+		<th><i class="fas fa-search"></i></th>
+	</thead>
+	<tbody id="tbl_scraps"></tbody>
+</table>
+<%- include(`${partials}/limit`, {table: 'scraps'}) %>
+
+<div id="sidebars">
+	<div class="offcanvas offcanvas-start" tabindex="-1" id="sdb_filter" aria-labelledby="sdb_filter_label">
+		<%- include(`${partials}/sidebar/header`, {id: 'filter', text: 'Filter'}) %>
+		<div class="offcanvas-body d-flex flex-column">
+			<%- include(`${partials}/filter/supplier`, {table: 'scrap'}) %>
+			<%- include(`${partials}/filter/status`,   {table: 'scrap'}) %>
+			<%- include(`${partials}/filter/date`, 	   {table: 'scrap'}) %>
 		</div>
 	</div>
-	<table class="table table-sm table-hover">
-		<thead class="thead-dark" id="tbl_scraps_head">
-			<th class='w-35' data-column='["createdAt"]' data-dir="DESC">Date</th>
-			<th class='w-35' data-column='["supplier","name"]'			>Supplier</th>
-			<th class='w-15' data-column='["lines"]'					>Lines</th>
-			<th class='w-15' data-column='["status"]'					>Status</th>
-			<th><i class="fas fa-search"></i></th>
-		</thead>
-		<tbody id="tbl_scraps"></tbody>
-	</table>
-	<%- include(`${partials}/limit`, {table: 'scraps'}) %>
-	
-	<div id="sidebars">
-		<div class="offcanvas offcanvas-start" tabindex="-1" id="sdb_filter" aria-labelledby="sdb_filter_label">
-			<%- include(`${partials}/sidebar/header`, {id: 'filter', text: 'Filter'}) %>
-			<div class="offcanvas-body d-flex flex-column">
-				<%- include(`${partials}/filter/supplier`, {table: 'scrap'}) %>
-				<%- include(`${partials}/filter/status`,   {table: 'scrap'}) %>
-				<%- include(`${partials}/filter/date`, 	   {table: 'scrap'}) %>
-			</div>
-		</div>
-	</div>
-	<div id="modals"></div>
-</section>
+</div>
+<div id="modals"></div>
 <%- include(`${partials}/foot/app`) %>
 <script src='/js/stores/scraps/index/view.js'></script>
 <script src='/js/utils/list/suppliers.js'></script>

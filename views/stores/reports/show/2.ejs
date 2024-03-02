@@ -3,25 +3,23 @@
 <%- include(`${partials}/breadcrumb`, {text: 'Issues Overdue'}) %>
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/head/components/close`) %>
-<section class='container'>
-    <form id="form_actions">
-        <button id='btn_action' class="btn btn-success w-100 mb-1">Action lines</button>
-        <table class="table table-sm table-hover">
-            <thead class="thead-dark">
-                <th class='w-15'>Issued To</th>
-                <th class='w-15'>Description</th>
-                <th class='w-15'>Size</th>
-                <th class='w-5' >Qty</th>
-                <th class='w-15'>Date Issued</th>
-                <th class='w-15'>Date Due</th>
-                <th class='w-10'>Status</th>
-                <th class='w-10'>Actions</th>
-                <th><i class='fas fa-search'></i></th>
-            </thead>
-            <tbody id="tbl_issues"></tbody>
-        </table>
-    </form>
-</section>
+<form id="form_actions">
+    <button id='btn_action' class="btn btn-success w-100 mb-1">Action lines</button>
+    <table class="table table-sm table-hover">
+        <thead class="thead-dark">
+            <th class='w-15'>Issued To</th>
+            <th class='w-15'>Description</th>
+            <th class='w-15'>Size</th>
+            <th class='w-5' >Qty</th>
+            <th class='w-15'>Date Issued</th>
+            <th class='w-15'>Date Due</th>
+            <th class='w-10'>Status</th>
+            <th class='w-10'>Actions</th>
+            <th><i class='fas fa-search'></i></th>
+        </thead>
+        <tbody id="tbl_issues"></tbody>
+    </table>
+</form>
 <%- include(`${partials}/foot/app`) %>
 <script src="/js/stores/reports/2/view.js"></script>
 <!-- <script src="/js/stores/loancard_lines/edit.js"></script> -->

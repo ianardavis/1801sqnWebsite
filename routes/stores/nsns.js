@@ -40,7 +40,9 @@ module.exports = (app, fn) => {
     
     app.delete('/nsns/:id',       fn.loggedIn, fn.permissions.check('stores_stock_admin'), (req, res) => {
         fn.nsns.delete(req.params.id)
-        .then(result => res.redirect(`/sizes/${nsn.size_id}`))
+        .then(result => {
+            fn.redirect(res, `/sizes/${nsn.size_id}`);
+        })
         .catch(err => fn.sendError(res, err));
     });
 };

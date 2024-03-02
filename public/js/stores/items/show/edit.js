@@ -21,7 +21,7 @@ window.addEventListener('load', function () {
         'PUT',
         `/items/${path[2]}`,
         {onComplete: [
-            get_item,
+            getItem,
             function () {modalHide('item_edit')}
         ]}
     );

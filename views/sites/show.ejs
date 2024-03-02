@@ -3,87 +3,85 @@
 <%- include(`${partials}/breadcrumb`) %>
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/head/components/close`) %>
-<section class='container'>
-    <%- include(`${partials}/sidebar/button`, {id: 'menu', text: 'Menu', float: true}) %>
-    <ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
-        <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'users',   title: 'Users', count_id: 'user'}) %>
-        <%- include(`${partials}/common/notes/tab_head`) %>
-    </ul>
-    <div class="tab-content pt-3" id="myTabContent">
-        <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
-            <%- include(`${partials}/inputs/display`, {id: 'site_name',     title: 'Name'}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'site_is_admin', title: 'Admin Site?'}) %>
-        </div>
-        <div class="tab-pane fade" id="users" role="tabpanel" aria-labelledby="users-tab">
-            <div class="row justify-content-between">
-                <div class="col-12 col-md-4 mb-1">
-                    <%- include(`${partials}/sidebar/button`, {id: 'users', text: 'Filter'}) %>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-12 col-lg-6 mx-auto">
-                    <table class="table table-sm table-hover">
-                        <thead class="thead-dark" id="tbl_users_head">
-                            <th class='w-20' data-column='["service_number"]'		 >Bader/Service #</th>
-                            <th class='w-10' data-column='["rank","rank"]'			 >Rank		     </th>
-                            <th class='w-40' data-column='["surname"]' data-dir="ASC">Surname		 </th>
-                            <th class='w-30' data-column='["first_name"]'			 >First Name	 </th>
-                            <th><i class='fas fa-search'></i></th>
-                        </thead>
-                        <tbody id="tbl_users"></tbody>
-                    </table>
-                    <%- include(`${partials}/limit`, {table: 'sizes'}) %>
-                </div>
-            </div>
-        </div>
-        <%- include(`${partials}/common/notes/tab_body`) %>
+<%- include(`${partials}/sidebar/button`, {id: 'menu', text: 'Menu', float: true}) %>
+<ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
+    <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details'}) %>
+    <%- include(`${partials}/tab_head`, {id: 'users',   title: 'Users', count_id: 'user'}) %>
+    <%- include(`${partials}/common/notes/tab_head`) %>
+</ul>
+<div class="tab-content pt-3" id="myTabContent">
+    <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
+        <%- include(`${partials}/inputs/display`, {id: 'site_name',     title: 'Name'}) %>
+        <%- include(`${partials}/inputs/display`, {id: 'site_is_admin', title: 'Admin Site?'}) %>
     </div>
+    <div class="tab-pane fade" id="users" role="tabpanel" aria-labelledby="users-tab">
+        <div class="row justify-content-between">
+            <div class="col-12 col-md-4 mb-1">
+                <%- include(`${partials}/sidebar/button`, {id: 'users', text: 'Filter'}) %>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 col-lg-6 mx-auto">
+                <table class="table table-sm table-hover">
+                    <thead class="thead-dark" id="tbl_users_head">
+                        <th class='w-20' data-column='["service_number"]'		 >Bader/Service #</th>
+                        <th class='w-10' data-column='["rank","rank"]'			 >Rank		     </th>
+                        <th class='w-40' data-column='["surname"]' data-dir="ASC">Surname		 </th>
+                        <th class='w-30' data-column='["first_name"]'			 >First Name	 </th>
+                        <th><i class='fas fa-search'></i></th>
+                    </thead>
+                    <tbody id="tbl_users"></tbody>
+                </table>
+                <%- include(`${partials}/limit`, {table: 'sizes'}) %>
+            </div>
+        </div>
+    </div>
+    <%- include(`${partials}/common/notes/tab_body`) %>
+</div>
 
-    <div id="sidebars">
-        <div class="offcanvas offcanvas-start" tabindex="-1" id="sdb_menu"  aria-labelledby="sdb_menu_label">
-            <%- include(`${partials}/sidebar/header`, {id: 'menu', text: 'Menu'}) %>
-            <div class="offcanvas-body d-flex flex-column">
-                <%- include(`${partials}/button/modal`, {id: 'site_edit', text: 'Edit', type: 'warning'}) %>
-                <%- include(`${partials}/button/modal`, {id: 'user_existing_add', text: 'Add Existing User', type: 'warning'}) %>
-                <%- include(`${partials}/button/modal`, {id: 'user_new_add',      text: 'Add New User',      type: 'warning'}) %>
-                <%- include(`${partials}/button/delete`) %>
-            </div>
+<div id="sidebars">
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="sdb_menu"  aria-labelledby="sdb_menu_label">
+        <%- include(`${partials}/sidebar/header`, {id: 'menu', text: 'Menu'}) %>
+        <div class="offcanvas-body d-flex flex-column">
+            <%- include(`${partials}/button/modal`, {id: 'site_edit', text: 'Edit', type: 'warning'}) %>
+            <%- include(`${partials}/button/modal`, {id: 'user_existing_add', text: 'Add Existing User', type: 'warning'}) %>
+            <%- include(`${partials}/button/modal`, {id: 'user_new_add',      text: 'Add New User',      type: 'warning'}) %>
+            <%- include(`${partials}/button/delete`) %>
         </div>
-        <%- include(`${partials}/common/notes/sidebar`) %>
     </div>
-    <div id="modals">
-        <%- include(`${partials}/common/notes/modals`) %>
+    <%- include(`${partials}/common/notes/sidebar`) %>
+</div>
+<div id="modals">
+    <%- include(`${partials}/common/notes/modals`) %>
 <% if (permissions.site_admin) { %>
-        <div id='mdl_site_edit' class="modal fade" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <form class="modal-content" id='form_site_edit'>
-                    <%- include(`${partials}/modals/header`, {title: 'Edit Site'}) %>
-                    <div class="modal-body">
-                        <%- include(`${partials}/inputs/text`, {id: 'site_name_edit', title: 'Name', name: 'site[name]', required: true}) %>
-                   </div>
-                   <%- include(`${partials}/modals/footer`, {submit: {text: 'Save'}}) %>
-                </form>
-            </div>
+    <div id='mdl_site_edit' class="modal fade" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <form class="modal-content" id='form_site_edit'>
+                <%- include(`${partials}/modals/header`, {title: 'Edit Site'}) %>
+                <div class="modal-body">
+                    <%- include(`${partials}/inputs/text`, {id: 'site_name_edit', title: 'Name', name: 'site[name]', required: true}) %>
+                </div>
+                <%- include(`${partials}/modals/footer`, {submit: {text: 'Save'}}) %>
+            </form>
         </div>
-		<%- include(`${partials}/users/new`, {id: 'user_new'}) %>
-        <div id="mdl_user_existing_add" class="modal fade" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog modal-xl">
-                <form class="modal-content" id='form_user_existing_add'>
-                    <div class="modal-header">
-                        <h5 class="modal-title">Add User(s)</h5>
-                        <h6>This will add ALL the users selected below to this site!</h6>
-                    </div>
-                    <div class="modal-body">
-                        <%- include(`${partials}/users/select`, {id: 'users_existing'}) %>
-                    </div>
-                    <%- include(`${partials}/modals/footer`, {submit: {text: 'Add Users'}}) %>
-                </form>
-            </div>
-        </div>
-<% } %>
     </div>
-</section>
+    <%- include(`${partials}/users/new`, {id: 'user_new'}) %>
+    <div id="mdl_user_existing_add" class="modal fade" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <form class="modal-content" id='form_user_existing_add'>
+                <div class="modal-header">
+                    <h5 class="modal-title">Add User(s)</h5>
+                    <h6>This will add ALL the users selected below to this site!</h6>
+                </div>
+                <div class="modal-body">
+                    <%- include(`${partials}/users/select`, {id: 'users_existing'}) %>
+                </div>
+                <%- include(`${partials}/modals/footer`, {submit: {text: 'Add Users'}}) %>
+            </form>
+        </div>
+    </div>
+<% } %>
+</div>
 <%- include(`${partials}/foot/app`) %>
 <script>showTab('<%= tab %>')</script>
 <%- include(`${partials}/common/notes/scripts`) %>

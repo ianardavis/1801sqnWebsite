@@ -2,54 +2,52 @@
 <%- include(`${partials}/breadcrumb`, {text: 'Items'}) %>
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/head/components/close`) %>
-<section class='container'>
-    <%- include(`${partials}/sidebar/button`, {id: 'menu', text: 'Menu', float: true}) %>
+<%- include(`${partials}/sidebar/button`, {id: 'menu', text: 'Menu', float: true}) %>
 
-	<div class='row'>
-		<div class='col-12 col-lg-5 mx-auto'>
-	        <table class='table table-sm table-hover'>
-				<thead class='thead-dark' id='tbl_items_head'>
-					<th class='w-100' data-column='["description"]' data-dir='ASC'>Description</th>
-					<th><i class='fas fa-search'></i></th>
-				</thead>
-				<tbody id='tbl_items'></tbody>
-			</table>
-			<%- include(`${partials}/limit`, {table: 'items'}) %>
+<div class='row'>
+	<div class='col-12 col-lg-5 mx-auto'>
+		<table class='table table-sm table-hover'>
+			<thead class='thead-dark' id='tbl_items_head'>
+				<th class='w-100' data-column='["description"]' data-dir='ASC'>Description</th>
+				<th><i class='fas fa-search'></i></th>
+			</thead>
+			<tbody id='tbl_items'></tbody>
+		</table>
+		<%- include(`${partials}/limit`, {table: 'items'}) %>
+	</div>
+</div>
+
+<div id="sidebars">
+	<div class="offcanvas offcanvas-start" tabindex="-1" id="sdb_menu" aria-labelledby="sdb_menu_label">
+		<%- include(`${partials}/sidebar/header`, {id: 'menu', text: 'Menu'}) %>
+		<div class="offcanvas-body d-flex flex-column">
+			<h5>Filter</h5>
+			<%- include(`${partials}/filter/item`, {table: 'item'}) %>
+			<h5>Actions</h5>
+			<%- include(`${partials}/button/modal`, {id: 'item_add', text: 'New Item', type: 'success'}) %>
 		</div>
 	</div>
-
-	<div id="sidebars">
-		<div class="offcanvas offcanvas-start" tabindex="-1" id="sdb_menu" aria-labelledby="sdb_menu_label">
-			<%- include(`${partials}/sidebar/header`, {id: 'menu', text: 'Menu'}) %>
-			<div class="offcanvas-body d-flex flex-column">
-				<h5>Filter</h5>
-				<%- include(`${partials}/filter/item`, {table: 'item'}) %>
-				<h5>Actions</h5>
-				<%- include(`${partials}/button/modal`, {id: 'item_add', text: 'New Item', type: 'success'}) %>
-			</div>
-		</div>
-	</div>
-	<div id='modals'>
+</div>
+<div id='modals'>
 <% if (permissions.stores_stock_admin) { %>
-		<div id='mdl_item_add' class='modal fade' tabindex='-1' role='dialog'>
-			<div class='modal-dialog' role='document'>
-				<form class='modal-content' id='form_item_add'>
-					<%- include(`${partials}/modals/header`, {title: 'Add Item'}) %>
-					<div class='modal-body'>
-						<datalist id='list_descriptions'></datalist>
-						<%- include(`${partials}/inputs/text`, {title: 'Description', name: 'item[description]', required: true}) %>
-						<%- include(`${partials}/inputs/text`, {title: 'Size Text 1', name: 'item[size_text1]',  list_id: 'list_descriptions', required: true}) %>
-						<%- include(`${partials}/inputs/text`, {title: 'Size Text 2', name: 'item[size_text2]',  list_id: 'list_descriptions'}) %>
-						<%- include(`${partials}/inputs/text`, {title: 'Size Text 3', name: 'item[size_text3]',  list_id: 'list_descriptions'}) %>
-						<%- include(`${partials}/inputs/checkbox`, {title: 'Visible to this site only?', id: 'chk_item_add_site_id', classes: ['site_id'], name: 'item[site_id]', checked: true}) %>
-					</div>
-					<%- include(`${partials}/modals/footer`, {submit: {text: 'Save'}}) %>
-				</form>
-			</div>
+	<div id='mdl_item_add' class='modal fade' tabindex='-1' role='dialog'>
+		<div class='modal-dialog' role='document'>
+			<form class='modal-content' id='form_item_add'>
+				<%- include(`${partials}/modals/header`, {title: 'Add Item'}) %>
+				<div class='modal-body'>
+					<datalist id='list_descriptions'></datalist>
+					<%- include(`${partials}/inputs/text`, {title: 'Description', name: 'item[description]', required: true}) %>
+					<%- include(`${partials}/inputs/text`, {title: 'Size Text 1', name: 'item[size_text1]',  list_id: 'list_descriptions', required: true}) %>
+					<%- include(`${partials}/inputs/text`, {title: 'Size Text 2', name: 'item[size_text2]',  list_id: 'list_descriptions'}) %>
+					<%- include(`${partials}/inputs/text`, {title: 'Size Text 3', name: 'item[size_text3]',  list_id: 'list_descriptions'}) %>
+					<%- include(`${partials}/inputs/checkbox`, {title: 'Visible to this site only?', id: 'chk_item_add_site_id', classes: ['site_id'], name: 'item[site_id]', checked: true}) %>
+				</div>
+				<%- include(`${partials}/modals/footer`, {submit: {text: 'Save'}}) %>
+			</form>
 		</div>
-<% } %>
 	</div>
-</section>
+<% } %>
+</div>
 <%- include(`${partials}/foot/app`) %>
 <script src='/js/stores/items/index/view.js'></script>
 

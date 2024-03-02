@@ -3,86 +3,84 @@
 <%- include(`${partials}/breadcrumb`) %>
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/head/components/close`) %>
-<section class='container'>
-    <%- include(`${partials}/sidebar/button`, {id: 'actions', text: 'Actions', float: true}) %>
-    <div class="row mb-1">
-        <span class="badge text-bg-secondary w-33" id="bdg_status_1">Placed</span>
-        <span class="badge text-bg-secondary w-33" id="bdg_status_2">Added to Demand</span>
-        <span class="badge text-bg-secondary w-34" id="bdg_status_3">Received</span>
+<%- include(`${partials}/sidebar/button`, {id: 'actions', text: 'Actions', float: true}) %>
+<div class="row mb-1">
+    <span class="badge text-bg-secondary w-33" id="bdg_status_1">Placed</span>
+    <span class="badge text-bg-secondary w-33" id="bdg_status_2">Added to Demand</span>
+    <span class="badge text-bg-secondary w-34" id="bdg_status_3">Received</span>
+</div>
+<ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
+    <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details'}) %>
+    <%- include(`${partials}/common/actions/tab_head`) %>
+    <%- include(`${partials}/common/notes/tab_head`) %>
+</ul>
+<div class="tab-content pt-3" id="myTabContent">
+    <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
+        <%- include(`${partials}/inputs/display`, {id: 'order_item', 	  title: 'Item', link: true}) %>
+        <%- include(`${partials}/inputs/display`, {id: 'order_size', 	  title: 'Size', link: true}) %>
+        <%- include(`${partials}/inputs/display`, {id: 'order_qty',	 	  title: 'Quantity'}) %>
+        <%- include(`${partials}/inputs/display`, {id: 'order_createdAt', title: 'Date'}) %>
+        <%- include(`${partials}/inputs/display`, {id: 'order_updatedAt', title: 'Last Updated'}) %>
+        <%- include(`${partials}/inputs/display`, {id: 'order_user', 	  title: 'Raised By', link: true}) %>
+        <h6>Issues for this Order</h6>
+        <table class="table table-sm table-hover">
+            <thead class="thead-dark" id="tbl_order_issues_head">
+                <th class='w-33'>Date</th>
+                <th class='w-33'>User</th>
+                <th class='w-34'>Qty</th>
+                <th><i class="fas fa-search"></i></th>
+            </thead>
+            <tbody id="tbl_order_issues"></tbody>
+        </table>
+        <h6>Demand Lines for this Order</h6>
+        <table class="table table-sm table-hover">
+            <thead class="thead-dark" id="tbl_order_demand_lines_head">
+                <th class='w-50'>Date</th>
+                <th class='w-50'>Status</th>
+                <th><i class="fas fa-search"></i></th>
+            </thead>
+            <tbody id="tbl_order_demand_lines"></tbody>
+        </table>
     </div>
-	<ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
-		<%- include(`${partials}/tab_head`, {id: 'details', title: 'Details'}) %>
-		<%- include(`${partials}/common/actions/tab_head`) %>
-		<%- include(`${partials}/common/notes/tab_head`) %>
-  	</ul>
-    <div class="tab-content pt-3" id="myTabContent">
-        <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
-			<%- include(`${partials}/inputs/display`, {id: 'order_item', 	  title: 'Item', link: true}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'order_size', 	  title: 'Size', link: true}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'order_qty',	 	  title: 'Quantity'}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'order_createdAt', title: 'Date'}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'order_updatedAt', title: 'Last Updated'}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'order_user', 	  title: 'Raised By', link: true}) %>
-            <h6>Issues for this Order</h6>
-            <table class="table table-sm table-hover">
-                <thead class="thead-dark" id="tbl_order_issues_head">
-                    <th class='w-33'>Date</th>
-                    <th class='w-33'>User</th>
-                    <th class='w-34'>Qty</th>
-                    <th><i class="fas fa-search"></i></th>
-                </thead>
-                <tbody id="tbl_order_issues"></tbody>
-            </table>
-            <h6>Demand Lines for this Order</h6>
-            <table class="table table-sm table-hover">
-                <thead class="thead-dark" id="tbl_order_demand_lines_head">
-                    <th class='w-50'>Date</th>
-                    <th class='w-50'>Status</th>
-                    <th><i class="fas fa-search"></i></th>
-                </thead>
-                <tbody id="tbl_order_demand_lines"></tbody>
-            </table>
-		</div>
-        <%- include(`${partials}/common/actions/tab_body`) %>
-        <%- include(`${partials}/common/notes/tab_body`) %>
-    </div>
+    <%- include(`${partials}/common/actions/tab_body`) %>
+    <%- include(`${partials}/common/notes/tab_body`) %>
+</div>
 
-    <div id="sidebars">
-        <div class="offcanvas offcanvas-start" tabindex="-1" id="sdb_actions" aria-labelledby="sdb_actions_label">
-            <%- include(`${partials}/sidebar/header`, {id: 'actions', text: 'Actions'}) %>
-            <div class="offcanvas-body d-flex flex-column">
-                <%- include(`${partials}/button/modal`, {id: 'size_edit', text: 'Edit Size',     type: 'warning'}) %>
-                <%- include(`${partials}/button/modal`, {id: 'qty_edit',  text: 'Edit Quantity', type: 'warning'}) %>
-                <form class="input-group mb-3" id='form_mark_as'>
-                    <label class="input-group-text" for="sel_mark_as">Mark Order As:</label>
-                    <select class="form-select" id="sel_mark_as" name='order[status]'>
-                        <option value="0" id='btn_mark_0' disabled>Cancelled</option>
-                        <option value="1" id='btn_mark_1' disabled>Placed</option>
-                        <option value="2" id='btn_mark_2' disabled>Demanded</option>
-                        <option value="3" id='btn_mark_3' disabled>Received</option>
-                    </select>
-                    <button class="btn btn-success" id='btn_mark_as' disabled><i class="fas fa-save"></i></button>
-                </form>
-                <%- include(`${partials}/button/delete`, {text: 'Cancel'}) %>
-            </div>
+<div id="sidebars">
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="sdb_actions" aria-labelledby="sdb_actions_label">
+        <%- include(`${partials}/sidebar/header`, {id: 'actions', text: 'Actions'}) %>
+        <div class="offcanvas-body d-flex flex-column">
+            <%- include(`${partials}/button/modal`, {id: 'size_edit', text: 'Edit Size',     type: 'warning'}) %>
+            <%- include(`${partials}/button/modal`, {id: 'qty_edit',  text: 'Edit Quantity', type: 'warning'}) %>
+            <form class="input-group mb-3" id='form_mark_as'>
+                <label class="input-group-text" for="sel_mark_as">Mark Order As:</label>
+                <select class="form-select" id="sel_mark_as" name='order[status]'>
+                    <option value="0" id='btn_mark_0' disabled>Cancelled</option>
+                    <option value="1" id='btn_mark_1' disabled>Placed</option>
+                    <option value="2" id='btn_mark_2' disabled>Demanded</option>
+                    <option value="3" id='btn_mark_3' disabled>Received</option>
+                </select>
+                <button class="btn btn-success" id='btn_mark_as' disabled><i class="fas fa-save"></i></button>
+            </form>
+            <%- include(`${partials}/button/delete`, {text: 'Cancel'}) %>
         </div>
-        <%- include(`${partials}/common/notes/sidebar`) %>
     </div>
-	<div id="modals">
-        <%- include(`${partials}/common/notes/modals`) %>
-        <%- include(`${partials}/common/actions/modals`) %>
-        <%- include(`${partials}/modals/size_edit`) %>
-        <%- include(`${partials}/modals/qty_edit`) %>
-	</div>
-</section>
+    <%- include(`${partials}/common/notes/sidebar`) %>
+</div>
+<div id="modals">
+    <%- include(`${partials}/common/notes/modals`) %>
+    <%- include(`${partials}/common/actions/modals`) %>
+    <%- include(`${partials}/modals/size_edit`) %>
+    <%- include(`${partials}/modals/qty_edit`) %>
+</div>
 <%- include(`${partials}/foot/app`) %>
 <script>showTab('<%= tab %>')</script>
 <%- include(`${partials}/common/notes/scripts`) %>
 <%- include(`${partials}/common/actions/scripts`) %>
 
 <% if (permissions.stores_stock_admin) { %>
-	<script src="/js/stores/orders/show/edit.js"></script>
-	<script src="/js/stores/orders/show/delete.js"></script>
+<script src="/js/stores/orders/show/edit.js"></script>
+<script src="/js/stores/orders/show/delete.js"></script>
 <% } %>
 <script src="/js/stores/orders/show/view.js"></script>
 <%- include(`${partials}/foot/components/htmlClose`) %>

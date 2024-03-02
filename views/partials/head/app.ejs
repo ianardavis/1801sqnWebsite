@@ -1,18 +1,6 @@
-<!DOCTYPE html>
-<html>
-    <%- include(`${partials}/head/components/head`) %>
-    <body>
-        <%- include(`${partials}/head/components/navbar_open`) %>
-        <ul class="navbar-nav me-auto">
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <%= text %>
-                </a>
-                <div class="dropdown-menu">
-                    <%- include(`${partials}/head/components/dd_link`, {href: '/stores',   text: 'Stores',   permission: 'access_stores'}) %>
-                    <%- include(`${partials}/head/components/dd_link`, {href: '/canteen',  text: 'Canteen',  permission: 'access_canteen'}) %>
-                    <%- include(`${partials}/head/components/dd_link`, {href: '/users',    text: 'Users'}) %>
-                    <%- include(`${partials}/head/components/dd_link`, {href: '/settings', text: 'Settings', permission: 'access_settings'}) %>
-                    <%- include(`${partials}/head/components/dd_link`, {href: '/sites',    text: 'Sites',    permission: 'site_admin'}) %>
-                </div>
-            </li>
+<%- include(`${partials}/head/components/file`) %>
+<%- include(`${partials}/head/components/navbar_open`) %>
+<ul class="navbar-nav me-auto">
+<% if (!locals.noDD) { %>
+    <%- include(`${partials}/head/components/dd`) %>
+<% } %>

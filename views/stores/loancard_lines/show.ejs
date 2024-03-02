@@ -4,47 +4,45 @@
 <%- include(`${partials}/breadcrumb`) %>
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/head/components/close`) %>
-<section class='container'>
-    <div class="row mb-1">
-        <span class="badge text-bg-secondary w-33" id="bdg_status_1">Pending</span>
-        <span class="badge text-bg-secondary w-33" id="bdg_status_2">Complete</span>
-        <span class="badge text-bg-secondary w-34" id="bdg_status_3">Closed</span>
+<div class="row mb-1">
+    <span class="badge text-bg-secondary w-33" id="bdg_status_1">Pending</span>
+    <span class="badge text-bg-secondary w-33" id="bdg_status_2">Complete</span>
+    <span class="badge text-bg-secondary w-34" id="bdg_status_3">Closed</span>
+</div>
+<ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
+    <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details'}) %>
+    <%- include(`${partials}/common/actions/tab_head`) %>
+    <%- include(`${partials}/common/notes/tab_head`) %>
+</ul>
+<div class="tab-content pt-3" id="myTabContent">
+    <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
+        <%- include(`${partials}/inputs/display`, {id: 'line_item',  	 title: 'Item', 	link: true}) %>
+        <%- include(`${partials}/inputs/display`, {id: 'line_size',  	 title: 'Size', 	link: true}) %>
+        <%- include(`${partials}/inputs/display`, {id: 'line_qty',  	 title: 'Quantity'}) %>
+        <%- include(`${partials}/inputs/display`, {id: 'line_nsn',  	 title: 'NSN', 		link: true}) %>
+        <%- include(`${partials}/inputs/display`, {id: 'line_serial',  	 title: 'Serial #', link: true}) %>
+        <%- include(`${partials}/inputs/display`, {id: 'line_user',		 title: 'Added By', link: true}) %>
+        <%- include(`${partials}/inputs/display`, {id: 'line_createdAt', title: 'Created'}) %>
+        <%- include(`${partials}/inputs/display`, {id: 'line_updatedAt', title: 'Last Updated'}) %>
+        <h6>Issues for this Loancard Line</h6>
+        <table class="table table-sm table-hover">
+            <thead class="thead-dark" id="tbl_issues_head">
+                <th class='w-100'>ID</th>
+                <th><i class="fas fa-search"></i></th>
+            </thead>
+            <tbody id="tbl_issues"></tbody>
+        </table>
     </div>
-	<ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
-        <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details'}) %>
-        <%- include(`${partials}/common/actions/tab_head`) %>
-        <%- include(`${partials}/common/notes/tab_head`) %>
-    </ul>
-    <div class="tab-content pt-3" id="myTabContent">
-        <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
-			<%- include(`${partials}/inputs/display`, {id: 'line_item',  	 title: 'Item', 	link: true}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'line_size',  	 title: 'Size', 	link: true}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'line_qty',  	 title: 'Quantity'}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'line_nsn',  	 title: 'NSN', 		link: true}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'line_serial',  	 title: 'Serial #', link: true}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'line_user',		 title: 'Added By', link: true}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'line_createdAt', title: 'Created'}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'line_updatedAt', title: 'Last Updated'}) %>
-			<h6>Issues for this Loancard Line</h6>
-            <table class="table table-sm table-hover">
-                <thead class="thead-dark" id="tbl_issues_head">
-                    <th class='w-100'>ID</th>
-                    <th><i class="fas fa-search"></i></th>
-                </thead>
-                <tbody id="tbl_issues"></tbody>
-            </table>
-		</div>
-        <%- include(`${partials}/common/actions/tab_body`) %>
-        <%- include(`${partials}/common/notes/tab_body`) %>
-	</div>
-    <div id="sidebars">
-        <%- include(`${partials}/common/notes/sidebar`) %>
-    </div>
-	<div id="modals">
-        <%- include(`${partials}/common/notes/modals`) %>
-        <%- include(`${partials}/common/actions/modals`) %>
-	</div>
-</section>
+    <%- include(`${partials}/common/actions/tab_body`) %>
+    <%- include(`${partials}/common/notes/tab_body`) %>
+</div>
+<div id="sidebars">
+    <%- include(`${partials}/common/notes/sidebar`) %>
+</div>
+<div id="modals">
+    <%- include(`${partials}/common/notes/modals`) %>
+    <%- include(`${partials}/common/actions/modals`) %>
+</div>
 <%- include(`${partials}/foot/app`) %>
 <script>showTab('<%= tab %>')</script>
 <%- include(`${partials}/common/notes/scripts`) %>

@@ -3,30 +3,28 @@
 <%- include(`${partials}/breadcrumb`) %>
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/head/components/close`) %>
-<section class='container'>
-    <ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
-        <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details'}) %>
-        <%- include(`${partials}/common/notes/tab_head`) %>
-    </ul>
-    <div class="tab-content pt-3" id="myTabContent">
-        <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
-            <%- include(`${partials}/inputs/display`, {id: 'movement_description', title: 'Description'}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'movement_type',        title: 'Type'}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'movement_amount',      title: 'Amount'}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'movement_from',        title: 'From', link: true}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'movement_to',          title: 'To',   link: true}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'movement_user',        title: 'By',   link: true}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'movement_createdAt',   title: 'Date'}) %>
-        </div>
-        <%- include(`${partials}/common/notes/tab_body`) %>
+<ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
+    <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details'}) %>
+    <%- include(`${partials}/common/notes/tab_head`) %>
+</ul>
+<div class="tab-content pt-3" id="myTabContent">
+    <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
+        <%- include(`${partials}/inputs/display`, {id: 'movement_description', title: 'Description'}) %>
+        <%- include(`${partials}/inputs/display`, {id: 'movement_type',        title: 'Type'}) %>
+        <%- include(`${partials}/inputs/display`, {id: 'movement_amount',      title: 'Amount'}) %>
+        <%- include(`${partials}/inputs/display`, {id: 'movement_from',        title: 'From', link: true}) %>
+        <%- include(`${partials}/inputs/display`, {id: 'movement_to',          title: 'To',   link: true}) %>
+        <%- include(`${partials}/inputs/display`, {id: 'movement_user',        title: 'By',   link: true}) %>
+        <%- include(`${partials}/inputs/display`, {id: 'movement_createdAt',   title: 'Date'}) %>
     </div>
-    <div id="sidebars">
-        <%- include(`${partials}/common/notes/sidebar`) %>
-    </div>
-    <div id="modals">
-        <%- include(`${partials}/common/notes/modals`) %>
-    </div>
-</section>
+    <%- include(`${partials}/common/notes/tab_body`) %>
+</div>
+<div id="sidebars">
+    <%- include(`${partials}/common/notes/sidebar`) %>
+</div>
+<div id="modals">
+    <%- include(`${partials}/common/notes/modals`) %>
+</div>
 <%- include(`${partials}/foot/app`) %>
 <script src="/js/canteen/movements/show/view.js"></script>
 <%- include(`${partials}/common/notes/scripts`) %>

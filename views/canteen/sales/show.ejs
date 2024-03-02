@@ -3,47 +3,45 @@
 <%- include(`${partials}/breadcrumb`) %>
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/head/components/close`) %>
-<section class='container'>
-    <ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
-        <%- include(`${partials}/tab_head`, {id: 'details',  title: 'Details'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'lines',    title: 'Lines',    count_id: 'line'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'payments', title: 'Payments', count_id: 'payment'}) %>
-    </ul>
-    <div class="tab-content pt-3" id="myTabContent">
-        <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
-            <%- include(`${partials}/inputs/display`, {id: 'sale_createdAt', title: 'Date'}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'sale_user',      title: 'User'}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'sale_status',    title: 'Status'}) %>
-        </div>
-        <div class="tab-pane fade" id="lines" role="tabpanel" aria-labelledby="lines-tab">
-	        <table class="table table-sm table-hover">
-                <thead class="thead-dark" id="tbl_sale_lines_head">
-					<th class='w-35' data-column='["createdAt"]' data-dir="DESC">Date/Time</th>
-					<th class='w-25' data-column='["item","name"]'>Item</th>
-					<th class='w-10' data-column='["qty"]'>Qty</th>
-					<th class='w-15' data-column='["price"]'>Price</th>
-					<th class='w-15'>Total</th>
-                    <th><i class='fas fa-search'></i></th>
-                </thead>
-                <tbody id="tbl_lines"></tbody>
-            </table>
-            <%- include(`${partials}/limit`, {table: 'sale_lines'}) %>
-        </div>
-        <div class="tab-pane fade" id="payments" role="tabpanel" aria-labelledby="payments-tab">
-	        <table class="table table-sm table-hover">
-                <thead class="thead-dark" id="tbl_payments_head">
-					<th class='w-40' data-column='["createdAt"]' data-dir="DESC">Date/Time</th>
-					<th class='w-15' data-column='["amount"]'>Amount</th>
-					<th class='w-15' data-column='["method"]'>Method</th>
-					<th class='w-30' data-column='["user_payment","surname"]'>User</th>
-                    <th><i class='fas fa-search'></i></th>
-                </thead>
-                <tbody id="tbl_payments"></tbody>
-            </table>
-            <%- include(`${partials}/limit`, {table: 'payments'}) %>
-        </div>
+<ul class="nav nav-tabs nav-justified" id="mainTab" role="tablist">
+    <%- include(`${partials}/tab_head`, {id: 'details',  title: 'Details'}) %>
+    <%- include(`${partials}/tab_head`, {id: 'lines',    title: 'Lines',    count_id: 'line'}) %>
+    <%- include(`${partials}/tab_head`, {id: 'payments', title: 'Payments', count_id: 'payment'}) %>
+</ul>
+<div class="tab-content pt-3" id="myTabContent">
+    <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
+        <%- include(`${partials}/inputs/display`, {id: 'sale_createdAt', title: 'Date'}) %>
+        <%- include(`${partials}/inputs/display`, {id: 'sale_user',      title: 'User'}) %>
+        <%- include(`${partials}/inputs/display`, {id: 'sale_status',    title: 'Status'}) %>
     </div>
-</section>
+    <div class="tab-pane fade" id="lines" role="tabpanel" aria-labelledby="lines-tab">
+        <table class="table table-sm table-hover">
+            <thead class="thead-dark" id="tbl_sale_lines_head">
+                <th class='w-35' data-column='["createdAt"]' data-dir="DESC">Date/Time</th>
+                <th class='w-25' data-column='["item","name"]'>Item</th>
+                <th class='w-10' data-column='["qty"]'>Qty</th>
+                <th class='w-15' data-column='["price"]'>Price</th>
+                <th class='w-15'>Total</th>
+                <th><i class='fas fa-search'></i></th>
+            </thead>
+            <tbody id="tbl_lines"></tbody>
+        </table>
+        <%- include(`${partials}/limit`, {table: 'sale_lines'}) %>
+    </div>
+    <div class="tab-pane fade" id="payments" role="tabpanel" aria-labelledby="payments-tab">
+        <table class="table table-sm table-hover">
+            <thead class="thead-dark" id="tbl_payments_head">
+                <th class='w-40' data-column='["createdAt"]' data-dir="DESC">Date/Time</th>
+                <th class='w-15' data-column='["amount"]'>Amount</th>
+                <th class='w-15' data-column='["method"]'>Method</th>
+                <th class='w-30' data-column='["user_payment","surname"]'>User</th>
+                <th><i class='fas fa-search'></i></th>
+            </thead>
+            <tbody id="tbl_payments"></tbody>
+        </table>
+        <%- include(`${partials}/limit`, {table: 'payments'}) %>
+    </div>
+</div>
 <%- include(`${partials}/foot/app`) %>
 <script>showTab('<%= tab %>');</script>
 <script src='/js/canteen/sales/show/view.js'></script>
