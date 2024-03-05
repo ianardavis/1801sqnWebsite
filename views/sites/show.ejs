@@ -32,7 +32,7 @@
                     </thead>
                     <tbody id="tbl_users"></tbody>
                 </table>
-                <%- include(`${partials}/limit`, {table: 'sizes'}) %>
+                <%- include(`${partials}/limit`, {table: 'users'}) %>
             </div>
         </div>
     </div>
@@ -51,6 +51,7 @@
     </div>
     <%- include(`${partials}/common/notes/sidebar`) %>
 </div>
+
 <div id="modals">
     <%- include(`${partials}/common/notes/modals`) %>
 <% if (permissions.site_admin) { %>
@@ -65,22 +66,9 @@
             </form>
         </div>
     </div>
-    <%- include(`${partials}/users/new`, {id: 'user_new'}) %>
-    <div id="mdl_user_existing_add" class="modal fade" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-xl">
-            <form class="modal-content" id='form_user_existing_add'>
-                <div class="modal-header">
-                    <h5 class="modal-title">Add User(s)</h5>
-                    <h6>This will add ALL the users selected below to this site!</h6>
-                </div>
-                <div class="modal-body">
-                    <%- include(`${partials}/users/select`, {id: 'users_existing'}) %>
-                </div>
-                <%- include(`${partials}/modals/footer`, {submit: {text: 'Add Users'}}) %>
-            </form>
-        </div>
-    </div>
-<% } %>
+<% if (permissions.user_admin) { %>
+    <%- include(`${partials}/users/new`) %>
+<% }} %>
 </div>
 <%- include(`${partials}/foot/app`) %>
 <script>showTab('<%= tab %>')</script>

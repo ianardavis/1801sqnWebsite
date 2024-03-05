@@ -61,10 +61,10 @@ module.exports = function (m, fn) {
     };
 
     fn.sites.create = function (name, user_id_creator) {
-        function createPermission(pm_details, permission) {
+        function createPermission(details, permission) {
             return new Promise((resolve, reject) => {
                 m.permissions.create({
-                    ...pm_details,
+                    ...details,
                     permission: permission
                 })
                 .then(resolve)
@@ -79,16 +79,23 @@ module.exports = function (m, fn) {
                     site_id: site.site_id
                 })
                 .then(user_site => {
-                    const pm_details = { site_id: site.site_id, user_id: user_id_creator };
-                    Promise.allSettled([
-                        createPermission(pm_details, 'site_admin'),
-                        createPermission(pm_details, 'access_users'),
-                        createPermission(pm_details, 'user_admin'),
-                        createPermission(pm_details, 'access_settings'),
-                        createPermission(pm_details, 'edit_own_permissions')
-                    ])
-                    .then(results => {
+                    let permissionActions = [];
+                    function addPermission(permission) {
+                        permissionActions.push(createPermission(
+                            {
+                                site_id: site.site_id,
+                                user_id: user_id_creator
+                            },
+                            permission.permission
+                        ));
+                        if (permission.children && permission.children.length > 0) {
+                            permission.children.forEach(addPermission);
+                        };
+                    };
+                    fn.users.permissions.tree.forEach(addPermission);
 
+                    Promise.allSettled(permissionActions)
+                    .then(results => {
                         resolve(`${results.filter(e => e.status === 'fulfilled').length} permissions successfully created`);
                     })
                     .catch(reject);

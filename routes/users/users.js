@@ -60,10 +60,21 @@ module.exports = (app, fn) => {
         .then(results => fn.sendRes('users', res, results, req.query))
         .catch(err => fn.sendError(res, err));
     });
+    app.get('/get/users/existing', fn.loggedIn,                                            (req, res) => {
+        fn.users.findAll(
+            req.query,
+            { status_include: fn.inc.users.status( { current: true } ) }
+        )
+        .then(results => fn.sendRes('users', res, results, req.query))
+        .catch(err => fn.sendError(res, err));
+    });
 
     app.post('/users',            fn.loggedIn, fn.permissions.check('user_admin'),         (req, res) => {
         fn.users.create(req.body.user)
-        .then(password => res.send({success: true, message: `User added. Password: ${password}. Password shown in UPPER CASE for readability. Password to be entered in lowercase, do not enter '-'. User must change at first login`}))
+        .then(password => res.send({
+            success: true,
+            message: `User added. Password: ${password}. Password shown in UPPER CASE for readability. Password to be entered in lowercase, do not enter '-'. User must change at first login`
+        }))
         .catch(err => fn.sendError(res, err));
     });
     
