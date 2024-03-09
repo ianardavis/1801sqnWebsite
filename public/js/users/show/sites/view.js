@@ -11,7 +11,7 @@ function getUserSites() {
             results.forEach(site => {
                 let row = tbl_sites.insertRow(-1);
                 addCell(row, {text: site.name});
-                addCell(row, {text: (site.user_sites.is_default ? "Yes" : "")});
+                addCell(row, {text: (site.site_users.is_default ? "Yes" : "")});
             });
         });
     });

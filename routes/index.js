@@ -5,6 +5,8 @@ module.exports = function (app, m) {
     require(`${process.env.ROOT}/includes`) (fs, m, fn);
     require(`${process.env.ROOT}/functions`)(fs, m, fn);
     
+    app.use(require(`${process.env.ROOT}/middleware/query.js`)(fn));
+
     fs
     .readdirSync(__dirname)
     .filter(e => e.indexOf('.') === -1)

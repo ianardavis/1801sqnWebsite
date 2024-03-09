@@ -1,8 +1,8 @@
 /* jshint indent: 2 */
 
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('user_sites', {
-    'user_site_id': {
+  return sequelize.define('site_users', {
+    'site_user_id': {
       type: DataTypes.UUIDV4,
       allowNull: false,
       defaultValue: sequelize.fn('stores.uuid_generate_v1'),
@@ -35,7 +35,7 @@ module.exports = function(sequelize, DataTypes) {
       comment: "null"
     }
   }, {
-    tableName: 'user_sites',
+    tableName: 'site_users',
     schema: 'users'
   });
 };

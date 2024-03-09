@@ -11,18 +11,16 @@
                 <%- include(`${partials}/inputs/text`,   {title: 'Login ID',   name: 'user[login_id]',  	 required: true, id: 'inp_login_id'}) %>
                 <h4>Matched Users</h4>
                 <p>
-                    Based on the service number entered, the following matched users already exist.<br>
+                    Based on the service # entered, the following users already exist.<br>
                     Click the "Add" button to add them to the current site
                 </p>
                 <form id="form_users_existing">
                     <table class="table table-sm table-hover">
                         <thead class="thead-dark" id="tbl_users_existing_head">
-                            <th>Service #</th>
                             <th>Rank</th>
                             <th>Surname</th>
                             <th>First Name</th>
                             <th>Status</th>
-                            <th>Login ID</th>
                             <th><i class="fas fa-plus"></i></th>
                         </thead>
                         <tbody id="tbl_users_existing"></tbody>
@@ -30,7 +28,7 @@
                     <%- include(`${partials}/limit`, {table: 'users_existing'}) %>
                 </form>
             </div>
-            <%- include(`${partials}/modals/footer`, {submit: {text: 'Save', disabled: true}}) %>
+            <%- include(`${partials}/modals/footer`, {submit: {text: 'Save', disabled: true, id: 'btn_save_user'}}) %>
         </form>
     </div>
     <script src="/js/users/add.js"></script>

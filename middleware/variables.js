@@ -1,16 +1,16 @@
 module.exports = () => {
     return (req, res, next) => {
-        ['where', 'like', 'lt', 'gt', 'order', 'limit', 'offset'].forEach(e => {
-            if (req.query[e]){
-                try {
-                    req.query[e] = JSON.parse(req.query[e]);
-                } catch (err) {
-                    console.error(`Error parsing query: ${e}`);
-                    console.error(`Line: ${req.query[e]}`);
-                    console.error(`Error: ${err}`);
-                };
-            };
-        });
+        // ['where', 'like', 'lt', 'gt', 'order', 'limit', 'offset'].forEach(e => {
+        //     if (req.query[e]){
+        //         try {
+        //             req.query[e] = JSON.parse(req.query[e]);
+        //         } catch (err) {
+        //             console.error(`Error parsing query: ${e}`);
+        //             console.error(`Line: ${req.query[e]}`);
+        //             console.error(`Error: ${err}`);
+        //         };
+        //     };
+        // });
         res.locals.site     = req.session.site;
         res.locals.user     = req.user;
         res.locals.info     = req.flash('info');

@@ -47,7 +47,7 @@ module.exports = (passport, m) => {
 
                 } else {
                     let site_id;
-                    let default_site = user.sites.find(e => e.user_sites.is_default);
+                    let default_site = user.sites.find(e => e.site_users.is_default);
                     if (default_site) site_id = default_site.site_id
                     else              site_id = user.sites[0].site_id;
 

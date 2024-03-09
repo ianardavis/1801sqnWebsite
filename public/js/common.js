@@ -1,4 +1,5 @@
 const path = window.location.pathname.toString().split('/');
+let site_id;
 function getElement(id) {
     return new Promise((resolve, reject) => {
         const element = document.getElementById(id);
@@ -124,7 +125,7 @@ function selectableRow(row, row_id,  tbl, func) {
     });
 };
 function setSiteIDValues(site) {
-    document.querySelectorAll('.site_id').forEach(e => {console.log(e);e.setAttribute('value', site.site_id)});
+    document.querySelectorAll('.site_id').forEach(e => {e.setAttribute('value', site.site_id)});
     return site;
 };
 function setValue(id, text = '') {
@@ -561,6 +562,9 @@ function redirectOnError(err, path) {
     alert(err);
     window.location.assign(path);
 };
+function setPageSiteID(_site_id) {
+    site_id = _site_id
+}
 window.addEventListener('load', function() {
     let headers = [];
     if (path[1]) headers.push(toProperCase(path[1]));

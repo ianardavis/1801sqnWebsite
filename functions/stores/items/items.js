@@ -30,7 +30,6 @@ module.exports = function (m, fn) {
         return new Promise((resolve, reject) => {
             let where = query.where || {};
             where.site_id = {[fn.op.or]: [null, site_id]};
-            if (query.like) where.description = {[fn.op.substring]: query.like.description || ''};
             m.items.findAndCountAll({
                 where: where,
                 ...fn.pagination(query)

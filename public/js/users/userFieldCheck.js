@@ -1,11 +1,11 @@
-let inp_service_number = document.querySelector("#inp_service_number"),
-    inp_surname        = document.querySelector("#inp_surname"),
-    inp_first_name     = document.querySelector("#inp_first_name"),
-    inp_login_id       = document.querySelector("#inp_login_id"),
-    sel_statuses_add   = document.querySelector("#sel_statuses_add"),
-    sel_ranks_add      = document.querySelector("#sel_ranks_add"),
-    save_user          = document.querySelector("#save_user");
-function check_fields() {
+let inp_service_number = document.querySelector("#inp_service_number");
+let inp_surname        = document.querySelector("#inp_surname");
+let inp_first_name     = document.querySelector("#inp_first_name");
+let inp_login_id       = document.querySelector("#inp_login_id");
+let sel_statuses_add   = document.querySelector("#sel_statuses_add");
+let sel_ranks_add      = document.querySelector("#sel_ranks_add");
+let save_user          = document.querySelector("#btn_save_user");
+function checkFields() {
     if (
         inp_service_number.value !== '' && 
         inp_surname.value        !== '' && 
@@ -18,10 +18,10 @@ function check_fields() {
     } else save_user.disabled = true;
 };
 window.addEventListener('load', function () {
-    addListener('inp_service_number', check_fields, 'input');
-    addListener('inp_surname',        check_fields, 'input');
-    addListener('inp_first_name',     check_fields, 'input');
-    addListener('inp_login_id',       check_fields, 'input');
-    addListener('sel_ranks_add',      check_fields, 'change');
-    addListener('sel_statuses_add',   check_fields, 'change');
+    addListener('inp_service_number', checkFields, 'input');
+    addListener('inp_surname',        checkFields, 'input');
+    addListener('inp_first_name',     checkFields, 'input');
+    addListener('inp_login_id',       checkFields, 'input');
+    addListener('sel_ranks_add',      checkFields, 'change');
+    addListener('sel_statuses_add',   checkFields, 'change');
 });

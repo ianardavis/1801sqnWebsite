@@ -9,6 +9,11 @@ module.exports = function(sequelize, DataTypes) {
       comment: "null",
       primaryKey: true
     },
+    'site_id': {
+      type: DataTypes.UUIDV4,
+      allowNull: false,
+      comment: "null"
+    },
     'number': {
       type: DataTypes.TEXT,
       allowNull: false,

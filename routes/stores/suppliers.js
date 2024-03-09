@@ -4,9 +4,6 @@ module.exports = (app, fn) => {
 
     app.get('/get/suppliers',         fn.loggedIn, fn.permissions.check('supplier_admin'), (req, res) => {
         if (!req.query.where) req.query.where = {};
-        if (req.query.like && req.query.like.name) {
-            req.query.where.name = {[fn.op.substring]: req.query.like.name}
-        }
         fn.suppliers.findAll(req.query)
         .then(results => fn.sendRes('suppliers', res, results, req.query))
         .catch(err => fn.sendError(res, err));

@@ -60,7 +60,7 @@ module.exports = function (m) {
     m.users.belongsToMany(
         m.sites, 
         {
-            through: m.user_sites,
+            through: m.site_users,
             foreignKey: 'user_id',
             otherKey: 'site_id'
         }
@@ -68,7 +68,7 @@ module.exports = function (m) {
     m.sites.belongsToMany(
         m.users, 
         {
-            through: m.user_sites,
+            through: m.site_users,
             foreignKey: 'site_id',
             otherKey: 'user_id'
         }

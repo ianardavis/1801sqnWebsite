@@ -46,7 +46,7 @@ module.exports = (app, fn) => {
     });
     app.get('/get/users',         fn.loggedIn, fn.permissions.check('access_users', true), (req, res) => {
         if (!req.allowed) req.query.where.user_id = req.user.user_id;
-        fn.users.findAll(req.query, {extra_attributes: ['service_number']})
+        fn.users.findAll(req.query, req.session.site.site_id, {extra_attributes: ['service_number']})
         .then(results => fn.sendRes('users', res, results, req.query))
         .catch(err => fn.sendError(res, err));
     });
@@ -55,7 +55,8 @@ module.exports = (app, fn) => {
         if (!req.allowed)     req.query.where.user_id = req.user.user_id;
         fn.users.findAll(
             req.query,
-            {status_include: fn.inc.users.status({current: true})}
+            req.session.site.site_id,
+            { status_include: fn.inc.users.status( { current: true } ) }
         )
         .then(results => fn.sendRes('users', res, results, req.query))
         .catch(err => fn.sendError(res, err));
@@ -63,6 +64,7 @@ module.exports = (app, fn) => {
     app.get('/get/users/existing', fn.loggedIn,                                            (req, res) => {
         fn.users.findAll(
             req.query,
+            null,
             { status_include: fn.inc.users.status( { current: true } ) }
         )
         .then(results => fn.sendRes('users', res, results, req.query))
@@ -74,6 +76,15 @@ module.exports = (app, fn) => {
         .then(password => res.send({
             success: true,
             message: `User added. Password: ${password}. Password shown in UPPER CASE for readability. Password to be entered in lowercase, do not enter '-'. User must change at first login`
+        }))
+        .catch(err => fn.sendError(res, err));
+    });
+    
+    app.post('/users/site/:user_id/:site_id', fn.loggedIn, fn.permissions.check('user_admin'),         (req, res) => {
+        fn.sites.addUser(req.params.user_id, req.params.site_id)
+        .then(created => res.send({
+            success: true,
+            message: `User ${(created ? 'added to ' : 'is already on this ')}site`
         }))
         .catch(err => fn.sendError(res, err));
     });

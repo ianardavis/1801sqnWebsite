@@ -19,15 +19,24 @@ module.exports = function (m, fn) {
             .catch(reject);
         });
     };
-    fn.users.findAll = function (query, options = {}) {
+    fn.users.findAll = function (query, site_id, options = {}) {
         return new Promise((resolve, reject) => {
+            let include = [
+                fn.inc.users.rank(),
+                options.status_include || fn.inc.users.status()
+            ];
+            if (site_id) include.push({
+                model: m.sites,
+                where: { site_id: site_id },
+                required: true
+            })
             m.users.findAndCountAll({
                 where:      query.where,
-                include:    [fn.inc.users.rank(), options.status_include || fn.inc.users.status()],
+                include:    include,
                 attributes: options.attributes || default_attributes.concat(options.extra_attributes || []),
                 ...fn.pagination(query)
             })
-            .then(results => resolve(results))
+            .then(resolve)
             .catch(reject);
         });
     };
@@ -101,7 +110,7 @@ module.exports = function (m, fn) {
             fn.users.find({user_id: user_id}, ["user_id", "reset"])
             .then(user => {
                 fn.update(user, {reset: !user.reset})
-                .then(result => resolve(result))
+                .then(resolve)
                 .catch(reject);
             })
             .catch(reject);
