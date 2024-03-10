@@ -1,5 +1,5 @@
 module.exports = (app, fn) => {
-    app.get('/users',             fn.loggedIn, fn.permissions.get('access_users',   true), (req, res) => {
+    app.get('/users',               fn.loggedIn, fn.permissions.get('access_users',   true), (req, res) => {
         if (req.allowed) {
             res.render('users/index');
 
@@ -8,9 +8,9 @@ module.exports = (app, fn) => {
         
         };
     });
-    app.get('/users/select',      fn.loggedIn,                                             (req, res) => res.render('users/select'));
-    app.get('/password/:id',      fn.loggedIn, fn.permissions.get('access_stores'),        (req, res) => res.render('users/password'));
-    app.get('/users/:id',         fn.loggedIn, fn.permissions.get('access_users',   true), (req, res) => {
+    app.get('/users/select',        fn.loggedIn,                                             (req, res) => res.render('users/select'));
+    app.get('/password/:id',        fn.loggedIn, fn.permissions.get('access_stores'),        (req, res) => res.render('users/password'));
+    app.get('/users/:id',           fn.loggedIn, fn.permissions.get('access_users',   true), (req, res) => {
         if (req.allowed || req.params.id == req.user.user_id) {
             res.render('users/show');
 
@@ -20,7 +20,7 @@ module.exports = (app, fn) => {
         };
     });
 
-    app.get('/get/user',          fn.loggedIn, fn.permissions.check('access_users', true), (req, res) => {
+    app.get('/get/user',            fn.loggedIn, fn.permissions.check('access_users', true), (req, res) => {
         fn.users.find(
             req.query.where,
             ['user_id', 'full_name', 'service_number', 'first_name', 'surname', 'status_id', 'rank_id', 'login_id', 'reset', 'last_login']
@@ -44,13 +44,13 @@ module.exports = (app, fn) => {
             };
         });
     });
-    app.get('/get/users',         fn.loggedIn, fn.permissions.check('access_users', true), (req, res) => {
+    app.get('/get/users',           fn.loggedIn, fn.permissions.check('access_users', true), (req, res) => {
         if (!req.allowed) req.query.where.user_id = req.user.user_id;
         fn.users.findAll(req.query, req.session.site.site_id, {extra_attributes: ['service_number']})
         .then(results => fn.sendRes('users', res, results, req.query))
         .catch(err => fn.sendError(res, err));
     });
-    app.get('/get/users/current', fn.loggedIn, fn.permissions.check('access_users', true), (req, res) => {
+    app.get('/get/users/current',   fn.loggedIn, fn.permissions.check('access_users', true), (req, res) => {
         if (!req.query.where) req.query.where = {};
         if (!req.allowed)     req.query.where.user_id = req.user.user_id;
         fn.users.findAll(
@@ -61,7 +61,7 @@ module.exports = (app, fn) => {
         .then(results => fn.sendRes('users', res, results, req.query))
         .catch(err => fn.sendError(res, err));
     });
-    app.get('/get/users/existing', fn.loggedIn,                                            (req, res) => {
+    app.get('/get/users/existing',  fn.loggedIn,                                             (req, res) => {
         fn.users.findAll(
             req.query,
             null,
@@ -71,25 +71,36 @@ module.exports = (app, fn) => {
         .catch(err => fn.sendError(res, err));
     });
 
-    app.post('/users',            fn.loggedIn, fn.permissions.check('user_admin'),         (req, res) => {
-        fn.users.create(req.body.user)
+    app.post('/users',              fn.loggedIn, fn.permissions.check('user_admin'),         (req, res) => {
+        fn.users.create(req.body.user, req.session.site.site_id)
         .then(password => res.send({
             success: true,
             message: `User added. Password: ${password}. Password shown in UPPER CASE for readability. Password to be entered in lowercase, do not enter '-'. User must change at first login`
         }))
         .catch(err => fn.sendError(res, err));
     });
-    
-    app.post('/users/site/:user_id/:site_id', fn.loggedIn, fn.permissions.check('user_admin'),         (req, res) => {
-        fn.sites.addUser(req.params.user_id, req.params.site_id)
+
+    app.post('/users/site',         fn.loggedIn, fn.permissions.check('user_admin'),         (req, res) => {
+        fn.sites.addUser(req.body.user_id, req.session.site.site_id)
         .then(created => res.send({
             success: true,
             message: `User ${(created ? 'added to ' : 'is already on this ')}site`
         }))
         .catch(err => fn.sendError(res, err));
     });
-    
-    app.put('/password/:id',      fn.loggedIn, fn.permissions.check('user_admin',   true), (req, res) => {
+
+    app.put('/users/site/default',  fn.loggedIn, fn.permissions.check('user_admin',   true), (req, res) => {
+        if (req.allowed || req.user.user_id === req.body.user_id) {
+            fn.users.setDefaultSite(req.body.user_id, req.body.site_id)
+            .then(result => res.send({success: true, message: 'Default site set'}))
+            .catch(err => fn.sendError(res, err));
+
+        } else {
+            fn.sendError(res, new Error('permission denied'));
+
+        };
+    });
+    app.put('/password/:id',        fn.loggedIn, fn.permissions.check('user_admin',   true), (req, res) => {
         if (!req.allowed && String(req.user.user_id) !== String(req.params.id)) {
             fn.sendError(res, 'Permission denied');
 
@@ -102,19 +113,19 @@ module.exports = (app, fn) => {
             .catch(err => fn.sendError(res, err));
         };
     });
-    app.put('/password/:id/toggle', fn.loggedIn, fn.permissions.check('user_admin'),       (req, res) => {
+    app.put('/password/:id/toggle', fn.loggedIn, fn.permissions.check('user_admin'),         (req, res) => {
         fn.users.toggleReset(req.params.id)
         .then(result => res.send({success: true, message: 'Password reset toggled'}))
         .catch(err => fn.sendError(res, err));
     });
 
-    app.put('/users/:id',         fn.loggedIn, fn.permissions.check('user_admin'),         (req, res) => {
+    app.put('/users/:id',           fn.loggedIn, fn.permissions.check('user_admin'),         (req, res) => {
         fn.users.edit(req.params.id, req.body.user)
         .then(result => res.send({success: true, message: 'User saved'}))
         .catch(err => fn.sendError(res, err));
     });
     
-    app.delete('/users/:id',      fn.loggedIn, fn.permissions.check('user_admin'),         (req, res) => {
+    app.delete('/users/:id',        fn.loggedIn, fn.permissions.check('user_admin'),         (req, res) => {
         fn.users.delete(req.params.id, req.user.user_id)
         .then(result => res.send({success: true, message: 'User deleted'}))
         .catch(err => fn.sendError(res, err));

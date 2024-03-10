@@ -339,6 +339,9 @@
 <script src='/js/users/show/giftaid/edit.js'></script>
 <script src='/js/users/show/giftaid/delete.js'></script>
 <% } %>
+<% if (permissions.user_admin || user.user_id === url.split('/')[2]) { %>
+<script src='/js/users/show/sites/edit.js'></script>
+<% } %>
 <script src='/js/users/show/permissions/view.js'></script>
 <script src='/js/tree.js'></script>
 <% if (permissions.user_admin || permissions.edit_own_permissions) { %>

@@ -40,7 +40,7 @@ module.exports = function (m, fn) {
             .catch(reject);
         });
     };
-    fn.users.create = function (user) {
+    fn.users.create = function (user, site_id) {
         return new Promise((resolve, reject) => {
             if (
                 (user.service_number) &&
@@ -68,7 +68,11 @@ module.exports = function (m, fn) {
                         reject(new Error('There is already a user with this service #'));
 
                     } else {
-                        resolve(password.readable);
+                        fn.sites.addUser(user.user_id, site_id)
+                        .then(added => {
+                            resolve(password.readable);
+                        })
+                        .catch(new Error('User created, but not added to site'));
                     
                     };
                 })
@@ -104,6 +108,37 @@ module.exports = function (m, fn) {
             return Promise.reject(new Error('No details submitted'));
         
         };
+    };
+    fn.users.setDefaultSite = function (user_id, site_id) {
+        return new Promise((resolve, reject) => {
+            m.site_users.findOne({where: {
+                user_id: user_id,
+                site_id: site_id
+            }})
+            .then(site_user => {
+                if (!site_user) {
+                    reject(new Error('User is not on this site!'));
+
+                } else {
+                    m.site_users.update({ is_default: false }, { where: { user_id: user_id } })
+                    .then(result => {
+                        site_user.update({ is_default: true })
+                        .then(result => {
+                            if (result) {
+                                resolve(true);
+    
+                            } else {
+                                reject(new Error('record not updated'));
+    
+                            };
+                        })
+                        .catch(reject);
+                    })
+                    .catch(reject);
+                };
+            })
+            .catch(reject);
+        });
     };
     fn.users.toggleReset = function (user_id) {
         return new Promise((resolve, reject) => {

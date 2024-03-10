@@ -13,6 +13,7 @@ module.exports = () => {
         // });
         res.locals.site     = req.session.site;
         res.locals.user     = req.user;
+        res.locals.url      = req.url;
         res.locals.info     = req.flash('info');
         res.locals.danger   = req.flash('danger');
         res.locals.success  = req.flash('success');

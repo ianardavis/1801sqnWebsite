@@ -17,28 +17,50 @@ function getExistingUsers(){
                 addCell(row, {text: user.surname});
                 addCell(row, {text: user.first_name});
                 addCell(row, {text: user.status.status});
-                addCell(row, {append: new Form({
-                    attributes: [
-                        {field: 'id', value: `form_add_${user.user_id}`}
-                    ],
-                    append: [new Button({
-                        noType: true,
-                        text: 'Add',
-                        colour: 'success',
-                        small: true
-                    }).e]
-                }).e});
+                addCell(row, {append: AddUserButton(user.user_id)});
                 addFormListener(
                     `add_${user.user_id}`,
                     'POST',
-                    `/users/site/${user.user_id}/${site_id}`,
-                    {}
-                )
+                    '/users/site',
+                    {onComplete: [
+                        resetFields,
+                        getUsers
+                    ]}
+                );
             });
         });
     });
 };
+function resetFields() {
+    setValue('inp_service_number');
+    setValue('sel_ranks_add');
+    setValue('inp_surname');
+    setValue('inp_first_name');
+    setValue('sel_statuses_add');
+    setValue('inp_login_id');
+};
+function AddUserButton(user_id) {
+    const form = new Form({
+        attributes: [{field: 'id', value: `form_add_${user_id}`}],
+        append: [
+            new Button({
+                noType: true,
+                text: 'Add',
+                colour: 'success',
+                small: true
+            }).e,
+            new Hidden_Input({
+                attributes: [
+                    {field: 'name',  value: 'user_id'},
+                    {field: 'value', value: user_id}
+                ]
+            }).e
+        ]
+    });
+    return form.e;
+};
 window.addEventListener('load', function () {
     addListener('inp_service_number', getExistingUsers, 'input');
     modalOnShow('user_add', getExistingUsers);
+    modalOnShow('user_add', resetFields);
 });

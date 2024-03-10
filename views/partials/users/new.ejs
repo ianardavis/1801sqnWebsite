@@ -9,6 +9,7 @@
                 <%- include(`${partials}/inputs/text`,   {title: 'First Name', name: 'user[first_name]', 	 required: true, id: 'inp_first_name'}) %>
                 <%- include(`${partials}/inputs/select`, {title: 'Status',     name: 'user[status_id]', 	 required: true, id: 'sel_statuses_add', reload_id: 'reload_statuses_add'}) %>
                 <%- include(`${partials}/inputs/text`,   {title: 'Login ID',   name: 'user[login_id]',  	 required: true, id: 'inp_login_id'}) %>
+                <button class="btn btn-success w-100">Save User</button>
                 <h4>Matched Users</h4>
                 <p>
                     Based on the service # entered, the following users already exist.<br>
@@ -28,7 +29,8 @@
                     <%- include(`${partials}/limit`, {table: 'users_existing'}) %>
                 </form>
             </div>
-            <%- include(`${partials}/modals/footer`, {submit: {text: 'Save', disabled: true, id: 'btn_save_user'}}) %>
+            <!-- <%- include(`${partials}/modals/footer`, {submit: {text: 'Save', disabled: true, id: 'btn_save_user'}}) %> -->
+            <%- include(`${partials}/modals/footer`) %>
         </form>
     </div>
     <script src="/js/users/add.js"></script>
