@@ -1,8 +1,11 @@
 module.exports = function (m, fn) {
-    fn.sizes.find = function (where, include = []) {
+    fn.sizes.find = function (site_id, where, include = []) {
         return fn.find(
             m.sizes,
-            where,
+            {
+                site_id: {[fn.op.or]: [site_id, null]},
+                ...where
+            },
             [
                 fn.inc.stores.item(),
                 fn.inc.stores.supplier()

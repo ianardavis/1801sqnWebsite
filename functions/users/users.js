@@ -50,7 +50,7 @@ module.exports = function (m, fn) {
                 (user.status_id)      &&
                 (user.login_id)
             ) {
-                let password = fn.users.password.generate();
+                const password = fn.users.password.generate();
                 m.users.findOrCreate({
                     where: {service_number: user.service_number},
                     defaults: {

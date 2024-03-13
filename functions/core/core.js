@@ -169,6 +169,17 @@ module.exports = function (m, fn) {
         results.filter(e => e.status === 'rejected').forEach(e => console.error(e));
         return results;
     };
+    fn.rejectIfNull = function (result) {
+        return new Promise((resolve, reject) => {
+            if (result) {
+                resolve(result);
+
+            } else {
+                reject(new Error('No record found'));
+
+            };
+        });
+    };
     fn.find = function(table, where, include = []) {
         return new Promise((resolve, reject) => {
             table.findOne({
@@ -185,6 +196,28 @@ module.exports = function (m, fn) {
                 };
             })
             .catch(reject);
+        });
+    };
+    fn.checkUpdateResult = function ( result ) {
+        return new Promise(( resolve, reject ) => {
+            if ( result ) {
+                resolve( true );
+
+            } else {
+                reject( new Error( 'Record not updated' ) );
+
+            };
+        });
+    };
+    fn.checkDestroyResult = function ( result ) {
+        return new Promise(( resolve, reject ) => {
+            if ( result ) {
+                resolve( true );
+
+            } else {
+                reject( new Error( 'Record not deleted' ) );
+
+            };
         });
     };
     fn.update = function (record, details, return_value = true) {

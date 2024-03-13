@@ -1,9 +1,13 @@
-module.exports = function (m, fn) {
+module.exports = function ( m, fn ) {
     fn.adjustments = {};
-    fn.adjustments.find = function (where) {
-        return fn.find(
-            m.adjustments,
-            where
-        );
+    fn.adjustments.find = function ( where ) {
+        return new Promise( ( resolve, reject ) => {
+            m.adjustments.findOne({
+                where: where
+            })
+            .then( fn.rejectIfNull )
+            .then( resolve )
+            .catch( reject )
+        });
     };
 };

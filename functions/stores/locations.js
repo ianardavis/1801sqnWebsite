@@ -50,10 +50,13 @@ module.exports = function (m, fn) {
         };
     };
 
-    fn.locations.findOrCreate = function (location) {
+    fn.locations.findOrCreate = function (site_id, location) {
         if (location) {
             return new Promise((resolve, reject) => {
-                m.locations.findOrCreate({where: {location: location}})
+                m.locations.findOrCreate({where: {
+                    location: location,
+                    site_id:  site_id
+                }})
                 .then(([new_location, created]) => resolve(new_location))
                 .catch(reject);
             });

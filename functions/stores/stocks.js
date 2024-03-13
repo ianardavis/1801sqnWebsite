@@ -1,6 +1,6 @@
 module.exports = function (m, fn) {
     fn.stocks = {};
-    fn.stocks.find = function (options = {}) {
+    fn.stocks.find = function (site_id, options = {}) {
         return new Promise((resolve, reject) => {
             if (
                 options.stock_id ||
@@ -14,7 +14,10 @@ module.exports = function (m, fn) {
             ) {
                 if (options.stock_id) {
                     m.stocks.findOne({
-                        where: {stock_id: options.stock_id},
+                        where: {
+                            stock_id: options.stock_id,
+                            site_id:  site_id
+                        },
                         include: [m.locations]
                     })
                     .then(stock => {
@@ -29,11 +32,15 @@ module.exports = function (m, fn) {
                     .catch(reject);
 
                 } else if (options.size_id) {
-                    fn.sizes.find({size_id: options.size_id})
+                    fn.sizes.find(
+                        site_id,
+                        { size_id: options.size_id }
+                    )
                     .then(size => {
                         if (options.location_id) {
                             m.stocks.findOrCreate({
                                 where: {
+                                    site_id:     site_id,
                                     size_id:     size.size_id,
                                     location_id: options.location_id
                                 },
@@ -43,10 +50,11 @@ module.exports = function (m, fn) {
                             .catch(reject);
                             
                         } else if (options.location) {
-                            fn.locations.findOrCreate(options.location)
+                            fn.locations.findOrCreate(site_id, options.location)
                             .then(location => {
                                 m.stocks.findOrCreate({
                                     where: {
+                                        site_id:     site_id,
                                         size_id:     size.size_id,
                                         location_id: location.location_id
                                     },
@@ -70,6 +78,7 @@ module.exports = function (m, fn) {
                 };
             } else {
                 reject(new Error('No size, location or stock ID submitted'));
+
             };
         });
     };

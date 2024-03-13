@@ -2,26 +2,33 @@ const statuses = {0: 'cancelled', 1: 'requested', 2: 'approved', 3: 'ordered', 4
 module.exports = function (m, fn) {
     fn.issues = {};
     
-    fn.issues.find = function (where, include = {}) {
-        let includes = [
-            fn.inc.stores.size(),
-            fn.inc.users.user(),
-            fn.inc.users.user({as: 'user_issue'})
-        ];
-        if (include.loancard_lines) includes.push({
-            model: m.loancard_lines,
-            include: [m.loancards]
+    fn.issues.find = function (site_id, where, include = {}) {
+        return new Promise((resolve, reject) => {
+            let includes = [
+                { model: m.sizes, as: 'size', include: [ m.items ] },
+                fn.inc.users.user(),
+                fn.inc.users.user({as: 'user_issue'})
+            ];
+            if (include.loancard_lines) includes.push({
+                model: m.loancard_lines,
+                include: [m.loancards]
+            });
+            if (include.order) includes.push(m.orders);
+    
+            m.issues.findOne({
+                where: {
+                    site_id: site_id,
+                    ...where
+                },
+                include: includes
+            })
+            .then(fn.rejectIfNull)
+            .then(resolve)
+            .catch(reject);
         });
-        if (include.order) includes.push(m.orders);
-
-        return fn.find(
-            m.issues, 
-            where,
-            includes
-        );
     };
-    fn.issues.count = function (where) { return m.issues.count({where: where}); };
-    fn.issues.sum = function (where) { return m.issues.sum('qty', {where: where}); };
+    fn.issues.count = function (where) { return m.issues.count({ where: where }); };
+    fn.issues.sum   = function (where) { return m.issues.sum('qty', { where: where }); };
     fn.issues.increment = function (issue, qty, user_id) {
         return new Promise((resolve, reject) => {
             issue.increment('qty', {by: qty})
