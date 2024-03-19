@@ -1,5 +1,7 @@
 @import "sizing.css";
-@import "colours.css";
+@import "colour_schema.css";
+@import "tables/core.css";
+@import "tables/colours.css";
 @media (min-width: 768px) {
 	h1 {font-size: 2.9rem}
 }
@@ -22,20 +24,10 @@ h1 {
 input {
 	text-align: center;
 }
-table {
-	overflow-x: auto;
-}
 select {
 	text-align-last: center;
 }
 /* /////////////////////////////////////////////////////////////////// */
-#title {
-	margin: 5px 5px 10px 5px;
-}
-#navigation {
-	margin: 5px 0 5px 0;
-	padding: 0;
-}
 #ul_tree {
 	margin: 0;
 	padding: 0;
@@ -61,21 +53,11 @@ select {
 }
 .caret {
 	cursor: pointer;
-	user-select: none; /* Prevent text selection */
+	user-select: none;
 	vertical-align: middle;
-}
-.crests {
-	padding: 0px;
 }
 .sideways {
 	transform: rotate(90deg);
-	/* text-orientation: sideways; */
-}
-.crest {
-	height: 100px;
-	padding: 0 5px;
-	margin-left: auto;
-	margin-right: auto;
 }
 .fixed {
 	position: fixed;
@@ -86,25 +68,14 @@ select {
 .offcanvas {
 	z-index: 9500;
 }
-button.dropdown-item {
-	font-size: 25px;
-}
 .mb-60px {
 	margin-bottom: 60px;
 }
 .form_inline {
 	display: inline;
 }
-input.dropdown-item {
-	font-size: 25px;
-}
-.fb {
-	height: 30px;
-}
 .form-control {
 	text-align: center;
-	/* text-align-last: center; */
-	/* margin-bottom: 5px; */
 }
 .hidden {
 	display: none;
@@ -116,75 +87,15 @@ input.dropdown-item {
 	display: none;
 	transition: 0.5s;
 }
-.nav-link {
-	padding-top: 0;
-	padding-bottom: 0;
-}
-.navbar {
-	padding: 0;
-}
 .notification {
 	width: 650px
-}
-.sqnName {
-	text-align: center;
-	margin: auto 0;
-	padding: 0;
-	font-weight: bold;
-}
-ul.navbar-nav li.nav-item a.nav-link {
-	padding: 0 8px !important;
-	margin: 0 2px !important;
-}
-.stores_nav {
-	padding: 0 8px !important;
-	margin: 0 2px !important;
 }
 .div_toasts {
 	position: relative;
 }
 
-/* /////////////////////////////////////////////////////////////////// */
-.body .dropdown-item {
-	padding-top: 0;
-	padding-bottom: 0;
-}
-.body .nav-link {
-	padding-top: 0;
-	padding-bottom: 0;
-}
-.dropdown-item:hover {
-	transition: 0.3s;
-	-webkit-transition: 0.3s;
-	-moz-transition: 0.3s;
-}
 div input {
 	width: 100%;
-}
-.navbar-light .navbar-nav .nav-link {
-	 padding-left: 30px;
-	 padding-right: 30px;
-}
-.navbar-dark .navbar-nav .nav-link {
-	padding-left: 30px;
-	padding-right: 30px;
-}
-.nav-link:hover {
-	transition: 0.3s;
-	-webkit-transition: 0.3s;
-	-moz-transition: 0.3s;
-}
-table, th, td, thead {
-	border-collapse: collapse;
-	font-size: 0.9rem;
-}
-tr.padded td {
-	padding-left: 10px;
-	padding-right: 10px;
-}
-
-td a {
-	font-size: 1rem;
 }
 
 ul, #treeUL {

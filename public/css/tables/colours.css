@@ -1,0 +1,23 @@
+@import "../colour_schema.css";
+
+.selected_row {
+	background-color: var(--main-color);
+	color: var(--main-bg-color);
+}
+
+table, th, td, thead {
+	border: 1px solid var(--main-color);
+}
+.table {
+	color: var(--main-color);
+}
+.table .thead-dark th {
+	background-color: var(--main-color);
+	color: var(--alt-color2);
+}
+.table-hover tbody tr:hover {
+	color: var(--main-color);
+}
+.table {
+	--bs-table-hover-color: var(--main-color);
+}
