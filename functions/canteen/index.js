@@ -4,5 +4,5 @@ module.exports = function (fs, m, fn) {
     .filter(file => {
         return (file.indexOf(".js") !== -1 && file !=="index.js");
     })
-    .forEach(file => require(`./${file}`)(m, fn));
+    .forEach(file => require(`./${file}`)( m, fn ));
 };

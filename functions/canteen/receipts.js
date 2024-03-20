@@ -1,51 +1,53 @@
-module.exports = function (m, fn) {
+module.exports = function ( m, fn ) {
     fn.receipts = {};
-    fn.receipts.find = function (where) {
+    fn.receipts.find = function ( where ) {
         return fn.find(
             m.receipts,
             where,
             [
                 fn.inc.users.user(),
-                fn.inc.canteen.item()
+                { model: m.canteen_items, include:  include, as: 'item' }
             ]
         );
     };
-    fn.receipts.findAll = function (query) {
-        return new Promise((resolve, reject) => {
+    fn.receipts.findAll = function ( query ) {
+        return new Promise( ( resolve, reject ) => {
             m.receipts.findAndCountAll({
                 where: query.where,
                 include: [
                     fn.inc.users.user(),
-                    fn.inc.canteen.item()
+                    { model: m.canteen_items, include:  include, as: 'item' }
                 ],
-                ...fn.pagination(query)
+                ...fn.pagination( query )
             })
-            .then(results => resolve(results))
-            .catch(reject);
+            .then( resolve )
+            .catch( reject );
         });
     };
     
-    fn.receipts.create = function (receipts, user_id) {
-        function create_receipt(receipt, user_id) {
-            function check(receipt) {
-                return new Promise((resolve, reject) => {
-                    if (!receipt.qty) {
-                        reject(new Error('No quantity submitted'));
+    fn.receipts.create = function ( receipts, user_id ) {
+        function receiveStock( receipt ) {
+            function checkReceiptDetails() {
+                return new Promise( ( resolve, reject ) => {
+                    if ( !receipt.qty ) {
+                        reject( new Error( 'No quantity submitted' ) );
         
-                    } else if (!receipt.cost) {
-                        reject(new Error('No cost submitted'));
+                    } else if ( !receipt.cost ) {
+                        reject( new Error( 'No cost submitted' ) );
         
                     } else {
-                        resolve(receipt);
+                        resolve( receipt );
         
                     };
                 });
             };
-            function checkItemQty(item, user_id) {
-                return new Promise((resolve, reject) => {
-                    if (item.qty < 0) {
-                        fn.update(item, {qty: 0})
-                        .then(result => {
+            function checkItemQty( item ) {
+                function setQtyToZero() {
+                    return new Promise( ( resolve, reject ) => {
+                        item.update( { qty: 0 } )
+                        .then( fn.checkResult )
+                        .then( item.reload )
+                        .then( item => {
                             m.notes.create({
                                 _table:  'canteen_items',
                                 id:      item.item_id,
@@ -53,106 +55,105 @@ module.exports = function (m, fn) {
                                 system:  1,
                                 user_id: user_id
                             })
-                            .then(note => resolve(true))
-                            .catch(err => {
-                                console.error(err);
-                                resolve(true);
+                            .then( note => resolve( item ) )
+                            .catch( err => {
+                                console.error( err );
+                                resolve( item );
                             });
                         })
-                        .catch(reject);
+                        .catch( reject );
+                    })
+                };
+                return new Promise( ( resolve, reject ) => {
+                    if ( item.qty < 0 ) {
+                        setQtyToZero()
+                        .then( resolve )
+                        .catch( reject );
                     } else {
-                        resolve(true);
+                        resolve( [ item, item.qty] );
                     };
                 });
             };
-            function createReceiptEntry(item, receipt, user_id) {
-                function createAction(action, receipt_id, user_id) {
-                    return new Promise(resolve => {
-                        fn.actions.create([
-                            `RECEIPTS | ${action}`,
-                            user_id,
-                            [{_table: 'receipts', id: receipt_id}]
-                        ])
-                        .then(action => resolve(true));
-                    });
-                };
-                return new Promise((resolve, reject) => {
+            function createReceipt( [ item, originalQty ] ) {
+                return new Promise( ( resolve, reject ) => {
                     m.receipts.create({
                         item_id: item.item_id,
                         qty:     receipt.qty,
                         cost:    receipt.cost,
                         user_id: user_id
                     })
-                    .then(receipt => {
-                        item.increment('qty', {by: Number(receipt.qty)})
-                        .then(result => {
-                            createAction('CREATED', receipt.receipt_id, user_id)
-                            .then(result => resolve(receipt));
+                    .then( receipt => {
+                        item.increment( 'qty', { by: Number( receipt.qty ) } )
+                        .then( result => {
+                            fn.actions.create([
+                                `RECEIPT | CREATED`,
+                                user_id,
+                                [ { _table: 'receipts', id: receipt.receipt_id } ]
+                            ])
+                            .then( result => resolve( [ item, receipt, originalQty ] ) );
                         })
-                        .catch(reject);
+                        .catch( reject );
                     })
-                    .catch(reject);
+                    .catch( reject );
                 });
             };
-            function checkItemCost(original_qty, item, receipt) {
-                return new Promise(resolve => {
-                    if (item.cost !== receipt.cost) {
-                        const stock_value_original = original_qty * item   .cost;
-                        const stock_value_received = receipt .qty * receipt.cost;
-                        const total_qty = original_qty + receipt.qty;
-                        const cost_new = Number((stock_value_original + stock_value_received) / total_qty);
-                        fn.update(item, {cost: cost_new})
-                        .then(result => {
+            function checkItemCost( [ item, receipt, originalQty ] ) {
+                return new Promise( resolve => {
+                    if ( item.cost !== receipt.cost ) {
+                        const valueOriginal = originalQty * item.cost;
+                        const valueReceived = receipt.qty * receipt.cost;
+                        const totalQty = originalQty + receipt.qty;
+                        const newCost = Number( ( valueOriginal + valueReceived ) / totalQty );
+                        
+                        item.update( { cost: newCost } )
+                        .then( fn.checkResult )
+                        .then( result => {
                             fn.notes.create(
                                 'canteen_items',
                                 user_id,
                                 item.item_id,
-                                `Item cost updated from £${item.cost.toFixed(2)} to £${cost_new.toFixed(2)} by receipt`
+                                `Item cost updated from £${ item.cost.toFixed(2) } to £${ newCost.toFixed(2) } by receipt`
                             )
-                            .then(note => resolve(true))
-                            .catch(err => {
-                                console.error(err);
-                                resolve(false);
+                            .then( note => resolve( true ) )
+                            .catch( err => {
+                                console.error( err );
+                                resolve( false );
                             });
                         })
-                        .catch(err => resolve(true))
-                    } resolve(true);
+                        .catch( err => {
+                            console.error( err )
+                            resolve( false );
+                        })
+                    } else {
+                        resolve( true );
+
+                    };
                 });
             };
-            return new Promise((resolve, reject) => {
-                check(receipt)
-                .then(receipt => {
-                    fn.canteen_items.find({item_id: receipt.item_id})
-                    .then(item => {
-                        checkItemQty(item, user_id)
-                        .then(result => {
-                            let qty_original = (item.qty < 0 ? 0 : item.qty);
-                            createReceiptEntry(item, receipt, user_id)
-                            .then(receipt => {
-                                checkItemCost(qty_original, item, receipt)
-                                .then(result => resolve(true));
-                            })
-                            .catch(reject);
-                        })
-                        .catch(reject);
-                    })
-                    .catch(reject);
+            return new Promise( ( resolve, reject ) => {
+                checkReceiptDetails()
+                .then( receipt => {
+                    m.canteen_items.find( { where: { item_id: receipt.item_id } } )
+                    .then( fn.rejectIfNull )
+                    .then( checkItemQty )
+                    .then( createReceipt )
+                    .then( checkItemCost )
+                    .then( result => resolve( true ) )
+                    .catch( reject );
                 })
-                .catch(reject);
+                .catch( reject );
             });
         };
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             if (receipts) {
-                let actions = [];
-                receipts.forEach(receipt => {
-                    actions.push(
-                        create_receipt(
-                            receipt,
-                            user_id
-                        )
-                    );
-                });
-                Promise.allSettled(actions)
+                // let actions = [];
+                // receipts.forEach(receipt => {
+                //     actions.push(
+                //         receiveStock( receipt )
+                //     );
+                // });
+                // Promise.allSettled(actions)
+                Promise.allSettled(receipts.map(receiveStock))
                 .then(fn.logRejects)
                 .then(results => {
                     const failed_qty = results.filter(e => e.status === 'rejected').length;
@@ -164,7 +165,7 @@ module.exports = function (m, fn) {
                     
                     };
                 })
-                .catch(reject);
+                .catch( reject );
     
             } else {
                 reject(new Error('No items submitted'));

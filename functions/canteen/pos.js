@@ -1,3 +1,3 @@
-module.exports = function (m, fn) {
+module.exports = function ( m, fn ) {
     fn.pos = {};
 };

@@ -1,27 +1,27 @@
-module.exports = function (m, fn) {
+module.exports = function ( m, fn ) {
     fn.payments = {};
-    fn.payments.find= function (where) {
+    fn.payments.find = function ( where ) {
         return fn.find(
             m.payments,
             where
         );
     };
-    fn.payments.findAll = function (query) {
-        return new Promise((resolve, reject) => {
+    fn.payments.findAll = function ( query ) {
+        return new Promise( ( resolve, reject ) => {
             m.payments.findAndCountAll({
                 where: query.where,
                 include: [
-                    fn.inc.canteen.sale(),
+                    { model: m.sales, include: [ fn.inc.users.user() ], as: 'sale' },
                     fn.inc.users.user()
                 ],
-                ...fn.pagination(query)
+                ...fn.pagination( query )
             })
-            .then(results => resolve(results))
-            .catch(reject);
+            .then( resolve )
+            .catch( reject );
         });
     };
-    fn.payments.findAllForSession = function (where, pagination) {
-        return new Promise((resolve, reject) => {
+    fn.payments.findAllForSession = function ( where, pagination ) {
+        return new Promise( ( resolve, reject ) => {
             m.payments.findAndCountAll({
                 include: [
                     fn.inc.canteen.sale({
@@ -32,13 +32,13 @@ module.exports = function (m, fn) {
                 ],
                 ...pagination
             })
-            .then(results => resolve(results))
-            .catch(reject);
+            .then( resolve )
+            .catch( reject );
         });
     };
 
-    fn.payments.create = function (sale_id, amount, user_id, options = {}) {
-        return new Promise((resolve, reject) => {
+    fn.payments.create = function ( sale_id, amount, user_id, options = {} ) {
+        return new Promise( ( resolve, reject ) => {
             m.payments.create({
                 sale_id: sale_id,
                 amount:  amount,
@@ -46,8 +46,8 @@ module.exports = function (m, fn) {
                 user_id: user_id,
                 user_id_payment: options.user_id_payment || null
             })
-            .then(payment => resolve(true))
-            .catch(reject);
+            .then( payment => resolve( true ) )
+            .catch( reject );
         });
     };
 };
