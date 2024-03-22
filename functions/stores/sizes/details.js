@@ -1,23 +1,23 @@
-module.exports = function (m, fn) {
+module.exports = function ( m, fn ) {
     fn.sizes.details.find = function (where) {
         return fn.find(
             m.details,
             where
         );
     };
-    fn.sizes.details.findAll = function (query) {
-        return new Promise((resolve, reject) => {
+    fn.sizes.details.findAll = function ( query ) {
+        return new Promise( ( resolve, reject ) => {
             m.details.findAndCountAll({
                 where: query.where,
-                ...fn.pagination(query)
+                ...fn.pagination( query )
             })
             .then(details => resolve(details))
-            .catch(reject);
+            .catch( reject );
         });
     };
 
     fn.sizes.details.create = function (detail) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             if (!detail.name) {
                 reject(new Error('Name not submitted'));
     
@@ -41,25 +41,25 @@ module.exports = function (m, fn) {
 
                     };
                 })
-                .catch(reject);
+                .catch( reject );
             };
         });
     };
 
     fn.sizes.details.edit = function (detail_id, details) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             fn.sizes.details.find(detail_id)
             .then(detail => {
                 fn.update(detail, details)
                 .then(result => resolve(true))
-                .catch(reject);
+                .catch( reject );
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
     fn.sizes.details.updateBulk = function (details) {
         function updateDetail(size_id, name, value) {
-            return new Promise((resolve, reject) => {
+            return new Promise( ( resolve, reject ) => {
                 fn.sizes.details.find({
                     size_id: size_id,
                     name: `Demand ${name}`
@@ -68,12 +68,12 @@ module.exports = function (m, fn) {
                     if (value === '') {
                         detail.destroy()
                         .then(result => resolve(true))
-                        .catch(reject);
+                        .catch( reject );
 
                     } else if (detail) {
                         fn.update(detail, {value: value})
                         .then(result => resolve(true))
-                        .catch(reject);
+                        .catch( reject );
 
                     } else {
                         m.details.create({
@@ -82,7 +82,7 @@ module.exports = function (m, fn) {
                             value: value
                         })
                         .then(result => resolve(true))
-                        .catch(reject);
+                        .catch( reject );
 
                     };
                 })
@@ -94,7 +94,7 @@ module.exports = function (m, fn) {
                             value: value
                         })
                         .then(result => resolve(true))
-                        .catch(reject);
+                        .catch( reject );
 
                     } else {
                         resolve(false);
@@ -103,7 +103,7 @@ module.exports = function (m, fn) {
                 });
             });
         };
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             let actions = [];
             details.forEach(_detail => {
                 actions.push(updateDetail(_detail.size_id, 'Cell', _detail.Cell));
@@ -114,12 +114,12 @@ module.exports = function (m, fn) {
             .then(results => {
                 resolve(true);
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
 
     fn.sizes.details.delete = function (detail_id) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             m.details.destroy({where: {detail_id: detail_id}})
             .then(result => {
                 if (!result) {
@@ -130,7 +130,7 @@ module.exports = function (m, fn) {
     
                 };
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
 };

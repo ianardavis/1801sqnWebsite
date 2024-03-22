@@ -1,4 +1,4 @@
-module.exports = function (m, fn) {
+module.exports = function ( m, fn ) {
     fn.notes = {};
     fn.notes.find = function (where) {
         return fn.find(
@@ -7,20 +7,20 @@ module.exports = function (m, fn) {
             [fn.inc.users.user()]
         );
     };
-    fn.notes.findAll = function (query) {
-        return new Promise((resolve, reject) => {
+    fn.notes.findAll = function ( query ) {
+        return new Promise( ( resolve, reject ) => {
             m.notes.findAndCountAll({
                 where:   query.where,
                 include: [fn.inc.users.user()],
-                ...fn.pagination(query)
+                ...fn.pagination( query )
             })
             .then(results => resolve(results))
-            .catch(reject);
+            .catch( reject );
         });
     };
 
     fn.notes.create = function (note, user_id, id, table, system = true) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             m.notes.create({
                 note:    note,
                 id:      id,
@@ -29,12 +29,12 @@ module.exports = function (m, fn) {
                 user_id: user_id
             })
             .then(note => resolve(true))
-            .catch(reject);
+            .catch( reject );
         });
     };
 
     fn.notes.edit = function (note_id, note_text) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             fn.notes.find({note_id: note_id})
             .then(note => {
                 if (note.system) {
@@ -43,15 +43,15 @@ module.exports = function (m, fn) {
                 } else {
                     fn.update(note, note_text)
                     .then(result => resolve(true))
-                    .catch(reject);
+                    .catch( reject );
                 };
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
 
     fn.notes.delete = function (note_id) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             fn.notes.find({note_id: note_id})
             .then(note => {
                 if (note.system) {
@@ -68,11 +68,11 @@ module.exports = function (m, fn) {
 
                         };
                     })
-                    .catch(reject);
+                    .catch( reject );
 
                 };
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
 };

@@ -1,4 +1,4 @@
-module.exports = function (m, fn) {
+module.exports = function ( m, fn ) {
     const x_0 = 28;
     const x_1 = 140;
     const x_2 = 170;
@@ -6,7 +6,7 @@ module.exports = function (m, fn) {
 
     fn.scraps.pdf.create = function (scrap_id, user) {
         function check(scrap_id, user) {
-            return new Promise((resolve, reject) => {
+            return new Promise( ( resolve, reject ) => {
                 m.scraps.findOne({
                     where: {scrap_id: scrap_id},
                     include: [
@@ -34,11 +34,11 @@ module.exports = function (m, fn) {
     
                     };
                 })
-                .catch(reject);
+                .catch( reject );
             });
         };
         function createPDF([scrap, user]) {
-            return new Promise((resolve, reject) => {
+            return new Promise( ( resolve, reject ) => {
                 fn.pdfs.createBarcodes(scrap.scrap_id)
                 .then(result => {
                     fn.pdfs.create(scrap.scrap_id, 'scraps', 'scrap', user)
@@ -47,9 +47,9 @@ module.exports = function (m, fn) {
                         y += addHeader(doc, y, true);
                         resolve([scrap, doc, file, writeStream, y-13]);
                     })
-                    .catch(reject);
+                    .catch( reject );
                 })
-                .catch(reject);
+                .catch( reject );
             });
         };
         function addLines([scrap, doc, file, writeStream, y]) {
@@ -74,7 +74,7 @@ module.exports = function (m, fn) {
                 return 60;
             };
             function addBarcode(doc, nsn, location) {
-                return new Promise((resolve, reject) => {
+                return new Promise( ( resolve, reject ) => {
                     fn.pdfs.createBarcode(
                         fn.printNSN(nsn, ''),
                         'code128',
@@ -88,10 +88,10 @@ module.exports = function (m, fn) {
                         doc.image(file, ...location, {fit: [x_3-x_2-20, 50], align: 'center'});
                         resolve(true);
                     })
-                    .catch(reject);
+                    .catch( reject );
                 });
             };
-            return new Promise((resolve, reject) => {
+            return new Promise( ( resolve, reject ) => {
                 let print_nsn_barcodes = []; 
                 scrap.lines.forEach(line => {
                     if (y >= 708-(line.nsn ? 15 : 0)-(line.serial ? 15 : 0)) {
@@ -108,11 +108,11 @@ module.exports = function (m, fn) {
                 });
                 Promise.all(print_nsn_barcodes)
                 .then(result => resolve([doc, scrap, writeStream, file]))
-                .catch(reject);
+                .catch( reject );
             });
         };
         function finalisePDF([doc, scrap, writeStream, file]) {
-            return new Promise((resolve, reject) => {
+            return new Promise( ( resolve, reject ) => {
                 writeStream.on('error', err => reject(err));
                 writeStream.on('finish', function () {
                     resolve([scrap, file]);
@@ -123,10 +123,10 @@ module.exports = function (m, fn) {
             });
         };
         function updateScrap([scrap, filename]) {
-            return new Promise((resolve, reject) => {
+            return new Promise( ( resolve, reject ) => {
                 fn.update(scrap, {filename: filename})
                 .then(result => resolve(filename))
-                .catch(reject);
+                .catch( reject );
             });
         };
         
@@ -155,14 +155,14 @@ module.exports = function (m, fn) {
             const x = (((column_end-column_start)-string_length)/2)+column_start;
             doc.text(text, x, y);
         };
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             check(scrap_id, user)
             .then(createPDF)
             .then(addLines)
             .then(finalisePDF)
             .then(updateScrap)
             .then(resolve)
-            .catch(reject);
+            .catch( reject );
         });
     };
 };

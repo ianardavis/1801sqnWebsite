@@ -1,4 +1,4 @@
-module.exports = function (m, fn) {
+module.exports = function ( m, fn ) {
     fn.scraps.lines.find = function (where) {
         return fn.find(
             m.scrap_lines,
@@ -14,8 +14,8 @@ module.exports = function (m, fn) {
             ]
         );
     };
-    fn.scraps.lines.findAll = function (query) {
-        return new Promise((resolve, reject) => {
+    fn.scraps.lines.findAll = function ( query ) {
+        return new Promise( ( resolve, reject ) => {
             let where = fn.buildQuery(query);
             m.scrap_lines.findAndCountAll({
                 where: where,
@@ -25,16 +25,16 @@ module.exports = function (m, fn) {
                     fn.inc.stores.serial(),
                     fn.inc.stores.scrap()
                 ],
-                ...fn.pagination(query)
+                ...fn.pagination( query )
             })
             .then(results => resolve(results))
-            .catch(reject);
+            .catch( reject );
         })
     };
     
     fn.scraps.lines.create = function (scrap_id, size_id, options = {}) {
         function checkNSN(nsn_id, size_id) {
-            return new Promise((resolve, reject) => {
+            return new Promise( ( resolve, reject ) => {
                 m.nsns.findByPk(nsn_id)
                 .then(nsn => {
                     if (!nsn) {
@@ -48,11 +48,11 @@ module.exports = function (m, fn) {
     
                     };
                 })
-                .catch(reject);
+                .catch( reject );
             });
         };
         function checkSerial(serial_id, size_id) {
-            return new Promise((resolve, reject) => {
+            return new Promise( ( resolve, reject ) => {
                 fn.serials.find({serial_id: serial_id})
                 .then(serial => {
                     if (serial.size_id !== size_id) {
@@ -63,10 +63,10 @@ module.exports = function (m, fn) {
     
                     };
                 })
-                .catch(reject);
+                .catch( reject );
             });
         };
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             Promise.all([]
                 .concat((options.nsn_id    ? [checkNSN(   options.nsn_id,    size_id)] : []))
                 .concat((options.serial_id ? [checkSerial(options.serial_id, size_id)] : []))
@@ -98,11 +98,11 @@ module.exports = function (m, fn) {
 
                             };
                         })
-                        .catch(reject);
+                        .catch( reject );
                         
                     };
                 })
-                .catch(reject);
+                .catch( reject );
             })
             .catch(err => {
                 console.error(err);
@@ -113,7 +113,7 @@ module.exports = function (m, fn) {
     
     fn.scraps.lines.cancel = function (line_id, qty, location, user_id) {
         function cancelSerialScrap(line, location) {
-            return new Promise((resolve, reject) => {
+            return new Promise( ( resolve, reject ) => {
                 if (line.serial) {
                     if (line.serial.issue || line.serial.location) {
                         reject(new Error('Serial is issued or in stock'));
@@ -123,9 +123,9 @@ module.exports = function (m, fn) {
                         .then(new_location => {
                             fn.update(line.serial, {location_id: new_location.location_id})
                             .then(result => resolve(line.scrap_id))
-                            .catch(reject);
+                            .catch( reject );
                         })
-                        .catch(reject);
+                        .catch( reject );
     
                     };
     
@@ -136,7 +136,7 @@ module.exports = function (m, fn) {
             });
         };
         function cancelStockScrap(line, location, qty, user_id) {
-            return new Promise((resolve, reject) => {
+            return new Promise( ( resolve, reject ) => {
                 if (line.qty >= qty) {
                     line.decrement('qty', {by: qty})
                     .then(result => {
@@ -154,11 +154,11 @@ module.exports = function (m, fn) {
                                 ])
                                 .then(action => resolve(line.scrap_id));
                             })
-                            .catch(reject);
+                            .catch( reject );
                         })
-                        .catch(reject);
+                        .catch( reject );
                     })
-                    .catch(reject);
+                    .catch( reject );
     
                 } else {
                     reject(new Error('Cancel quantity is greater than line quantity'));
@@ -166,23 +166,23 @@ module.exports = function (m, fn) {
                 };
             });
         };
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             if (location) {
                 fn.scraps.lines.find({line_id: line_id})
                 .then(line => {
                     if (line.size.has_serials) {
                         cancelSerialScrap(line, location)
                         .then(scrap_id => resolve(scrap_id))
-                        .catch(reject);
+                        .catch( reject );
     
                     } else {
                         cancelStockScrap(line, location, qty, user_id)
                         .then(scrap_id => resolve(scrap_id))
-                        .catch(reject);
+                        .catch( reject );
     
                     };
                 })
-                .catch(reject);
+                .catch( reject );
 
             } else {
                 reject(new Error('No location specified'));
@@ -193,7 +193,7 @@ module.exports = function (m, fn) {
 
     fn.scraps.lines.update = function (lines, user_id) {
         function cancelLines(lines, user_id) {
-            return new Promise((resolve, reject) => {
+            return new Promise( ( resolve, reject ) => {
                 if (lines && lines.length > 0) {
                     let actions = [];
                     lines.forEach(line => {
@@ -207,7 +207,7 @@ module.exports = function (m, fn) {
                         });
                         resolve(scrap_ids);
                     })
-                    .catch(reject);
+                    .catch( reject );
     
                 } else {
                     reject(new Error('No lines to cancel'));
@@ -216,17 +216,17 @@ module.exports = function (m, fn) {
             });
         };
         function checkScrap(scrap_id, user_id) {
-            return new Promise((resolve, reject) => {
+            return new Promise( ( resolve, reject ) => {
                 fn.scraps.cancel_check(scrap_id)
                 .then(scrap => {
                     fn.scraps.cancel(scrap_id, user_id)
                     .then(result => resolve(true))
-                    .catch(reject);
+                    .catch( reject );
                 })
-                .catch(reject);
+                .catch( reject );
             });
         };
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             cancelLines(lines.filter(e => e.status === '0'), user_id)
             .then(scrap_ids => {
                 let checks = [];
@@ -237,9 +237,9 @@ module.exports = function (m, fn) {
                 });
                 Promise.allSettled(checks)
                 .then(results => resolve(true))
-                .catch(reject);
+                .catch( reject );
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
 };

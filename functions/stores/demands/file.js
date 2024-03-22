@@ -1,89 +1,101 @@
-module.exports = function (m, fn) {
-    const excel = require('exceljs');
-    fn.demands.file.create = function ([demand_id, user]) {
-        function check(demand_id) {
-            return new Promise((resolve, reject) => {
-                fn.demands.find(
-                    {demand_id: demand_id},
-                    [{
+module.exports = function ( m, fn ) {
+    const excel = require( 'exceljs' );
+    fn.demands.file.create = function ( [ demand_id, user ] ) {
+        function checkDemand() {
+            return new Promise( ( resolve, reject ) => {
+                m.demands.findOne({
+                    where: { demand_id: demand_id },
+                    include: [{
                         model:   m.demand_lines,
                         as:      'lines',
-                        where:   {status: 2},
+                        where:   { status: 2 },
                         include: [
                             m.orders,
-                            fn.inc.stores.size({details: true})
+                            {
+                                model:   m.sizes,
+                                include: [
+                                    { model: m.items, as: 'item' },
+                                    m.details
+                                ],
+                                as:      'size'
+                            }
                         ]
                     }]
-                )
-                .then(demand => {
-                    if (demand.status !== 2) {
-                        reject(new Error('This demand is not complete'));
+                })
+                .then( fn.rejectIfNull )
+                .then( demand => {
+                    if ( demand.status !== 2 ) {
+                        reject( new Error( 'This demand is not complete' ) );
     
-                    } else if (!demand.lines || demand.lines.length === 0) {
-                        reject(new Error('No valid lines for this demand'));
+                    } else if ( !demand.lines || demand.lines.length === 0 ) {
+                        reject( new Error( 'No valid lines for this demand' ) );
     
                     } else {
-                        resolve(demand);
+                        resolve( demand );
     
                     };
                 })
-                .catch(reject);
+                .catch( reject );
             });
         };
-        function createFile(demand) {
-            function getDemandTemplate(supplier_id) {
-                return new Promise((resolve, reject) => {
-                    fn.suppliers.find(
-                        {supplier_id: supplier_id},
-                        [
-                            fn.inc.stores.files({
-                                where: {description: 'Demand'},
-                                details: true
-                            })
-                        ]
-                    )
-                    .then(supplier => {
-                        if (!supplier.files) {
-                            reject(new Error('No demand template for this supplier'));
+        function createFile( demand ) {
+            function getTemplate( supplier_id )  {
+                return new Promise( ( resolve, reject ) => {
+                    m.suppliers.findOne({
+                        where: { supplier_id: supplier_id},
+                        include: [{
+                            model: m.files,
+                            where: { description: 'Demand' },
+                            required: false,
+                            include: [{
+                                model: m.file_details,
+                                as: 'details'
+                            }]
+                        }]
+                    })
+                    .then( fn.rejectIfNull )
+                    .then( supplier => {
+                        if ( !supplier.files ) {
+                            reject( new Error( 'No demand template for this supplier' ) );
         
-                        } else if ( supplier.files.length !== 1) {
-                            reject(new Error(`${supplier.files.length} demand templates for this supplier`));
+                        } else if ( supplier.files.length !== 1 ) {
+                            reject( new Error( `${ supplier.files.length } demand templates for this supplier` ) );
         
-                        } else if (!supplier.account) {
-                            reject(new Error('No account for this supplier'));
+                        } else if ( !supplier.account ) {
+                            reject( new Error( 'No account for this supplier' ) );
         
                         } else {
-                            resolve([supplier.files[0], supplier.account]);
+                            resolve( [ supplier.files[0], supplier.account ] );
         
                         };
                     })
-                    .catch(reject);
+                    .catch( reject );
                 });
             };
-            return new Promise((resolve, reject) => {
+            return new Promise( ( resolve, reject ) => {
                 Promise.all([
-                    getDemandTemplate(demand.supplier_id),
-                    fn.fs.folderExists('demands', true)
+                    getTemplate( demand.supplier_id ),
+                    fn.fs.folderExists( 'demands', true )
                 ])
-                .then(([[file, account], folderPath]) => {
-                    if (file.filename) {
-                        const filename = `demand_${demand.demand_id}.xlsx`;
+                .then( ( [ [ file, account ], folderPath ] ) => {
+                    if ( file.filename ) {
+                        const filename = `demand_${ demand.demand_id }.xlsx`;
                         fn.fs.copyFile(
-                            fn.publicFile('files', file.filename),
-                            fn.publicFile('demands', filename)
+                            fn.publicFile( 'files', file.filename ),
+                            fn.publicFile( 'demands', filename )
                         )
-                        .then(result => resolve([filename, file, account, demand]))
-                        .catch(reject);
+                        .then( result => resolve( [ filename, file, account, demand ] ) )
+                        .catch( reject );
     
                     } else {
-                        reject(new Error('No demand file specified'));
+                        reject( new Error( 'No demand file specified' ) );
     
                     };
                 })
-                .catch(reject);
+                .catch( reject );
             });
         };
-        function writeFile([filename, file, account, demand]) {
+        function writeFile( [ filename, file, account, demand ] ) {
             function writeCoverSheet(workbook) {
                 function fileDetail(details, name) {
                     const detail = details.filter(d => d.name.toLowerCase() === name);
@@ -119,7 +131,7 @@ module.exports = function (m, fn) {
                         resolve(cells);
                     });
                 };
-                return new Promise((resolve, reject) => {
+                return new Promise( ( resolve, reject ) => {
                     Promise.all([
                         fn.demands.findUsers(demand.demand_id),
                         getCells(file)
@@ -161,12 +173,12 @@ module.exports = function (m, fn) {
         
                         };
                     })
-                    .catch(reject);
+                    .catch( reject );
                 });
             };
             function writeItems(workbook) {
                 function getSizes() {
-                    return new Promise((resolve, reject) => {
+                    return new Promise( ( resolve, reject ) => {
                         let sizes = [];
                         demand.lines.forEach(line => {
                             const demand_page_index = line.size.details.findIndex(e => e.name === 'Demand Page');
@@ -208,7 +220,7 @@ module.exports = function (m, fn) {
                         };
                     });
                 };
-                return new Promise((resolve, reject) => {
+                return new Promise( ( resolve, reject ) => {
                     getSizes()
                     .then(sizes => {
                         let fails = [];
@@ -225,10 +237,10 @@ module.exports = function (m, fn) {
                         });
                         resolve(workbook);
                     })
-                    .catch(reject);
+                    .catch( reject );
                 });
             };
-            return new Promise((resolve, reject) => {
+            return new Promise( ( resolve, reject ) => {
                 const path   = fn.publicFile('demands', filename);
                 let workbook = new excel.Workbook();
                 workbook.xlsx.readFile(path)
@@ -238,16 +250,16 @@ module.exports = function (m, fn) {
                     .then(workbook => {
                         workbook.xlsx.writeFile(path)
                         .then(() => resolve({filename: filename, account_id: account.account_id}))
-                        .catch(reject);
+                        .catch( reject );
                     })
-                    .catch(reject);
+                    .catch( reject );
                 })
-                .catch(reject);
+                .catch( reject );
             });
         };
 
-        return new Promise((resolve, reject) => {
-            check(demand_id)
+        return new Promise( ( resolve, reject ) => {
+            checkDemand()
             .then(demand => {
                 if (demand.filename && demand.filename !== '') {
                     resolve(demand.filename);
@@ -258,11 +270,11 @@ module.exports = function (m, fn) {
                     .then(demand.update)
                     .then(demand.reload)
                     .then(result => resolve(demand.filename))
-                    .catch(reject);
+                    .catch( reject );
 
                 };
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
 };

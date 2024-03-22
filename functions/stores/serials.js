@@ -1,4 +1,4 @@
-module.exports = function (m, fn) {
+module.exports = function ( m, fn ) {
     fn.serials = {};
     fn.serials.find = function (where) {
         return fn.find(
@@ -11,7 +11,7 @@ module.exports = function (m, fn) {
             ]
         )
     };
-    fn.serials.findAll = function (query) {
+    fn.serials.findAll = function ( query ) {
         return m.serials.findAndCountAll({
             where: query.where,
             include: [
@@ -19,12 +19,12 @@ module.exports = function (m, fn) {
                 fn.inc.stores.issue(),
                 fn.inc.stores.size()
             ],
-            ...fn.pagination(query)
+            ...fn.pagination( query )
         });
     };
 
     fn.serials.edit = function (serial_id, new_serial, user_id) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             fn.serials.find({serial_id: serial_id})
             .then(serial => {
                 let original_serial = serial.serial;
@@ -38,14 +38,14 @@ module.exports = function (m, fn) {
                     .then(result => resolve(true));
 
                 })
-                .catch(reject);
+                .catch( reject );
             })
-        .catch(reject);
+        .catch( reject );
         });
     };
     fn.serials.transfer = function (serial_id, location, user_id) {
         if (location) {
-            return new Promise((resolve, reject) => {
+            return new Promise( ( resolve, reject ) => {
                 fn.serials.find({serial_id: serial_id})
                 .then(serial => {
                     let original_location = serial.location.location;
@@ -63,16 +63,16 @@ module.exports = function (m, fn) {
                             )
                             .then(fn.actions.create)
                             .then(action => resolve(true))
-                            .catch(reject);
+                            .catch( reject );
 
                         } else {
                             reject(new Error('From and to locations are the same'));
 
                         };
                     })
-                    .catch(reject);
+                    .catch( reject );
                 })
-                .catch(reject);
+                .catch( reject );
             });
             
         } else {
@@ -84,7 +84,7 @@ module.exports = function (m, fn) {
     fn.serials.scrap = function (serial_id, details, user_id) {
         if (details) {
             function checkSerial() {
-                return new Promise((resolve, reject) => {
+                return new Promise( ( resolve, reject ) => {
                     fn.serials.find({serial_id: serial_id})
                     .then(serial => {
                         if (serial.size.has_nsns && !details.nsn_id) {
@@ -104,10 +104,10 @@ module.exports = function (m, fn) {
     
                         };
                     })
-                    .catch(reject);
+                    .catch( reject );
                 });
             };
-            return new Promise((resolve, reject) => {
+            return new Promise( ( resolve, reject ) => {
                 checkSerial()
                 .then(serial => {
                     fn.update(serial, {location_id: null}, serial.size.supplier_id)
@@ -126,11 +126,11 @@ module.exports = function (m, fn) {
                             ])
                             .then(results => resolve(true));
                         })
-                        .catch(reject);
+                        .catch( reject );
                     })
-                    .catch(reject);
+                    .catch( reject );
                 })
-                .catch(reject);
+                .catch( reject );
             });
 
         } else {
@@ -140,7 +140,7 @@ module.exports = function (m, fn) {
     };
     fn.serials.create = function (serial, size_id, user_id) {
         function checkSize() {
-            return new Promise((resolve, reject) => {
+            return new Promise( ( resolve, reject ) => {
                 fn.sizes.find({size_id: size_id})
                 .then(size => {
                     if (!size.has_serials) {
@@ -151,11 +151,11 @@ module.exports = function (m, fn) {
 
                     };
                 })
-                .catch(reject);
+                .catch( reject );
             });
         };
         function createSerial(size_id) {
-            return new Promise((resolve, reject) => {
+            return new Promise( ( resolve, reject ) => {
                 m.serials.findOrCreate({
                     where: {
                         size_id: size_id,
@@ -176,16 +176,16 @@ module.exports = function (m, fn) {
 
                     };
                 })
-                .catch(reject);
+                .catch( reject );
             });
         };
         if (serial && size_id) {
-            return new Promise((resolve, reject) => {
+            return new Promise( ( resolve, reject ) => {
                 checkSize()
                 .then(createSerial)
                 .then(fn.actions.create)
                 .then(resolve)
-                .catch(reject);
+                .catch( reject );
             });
 
         } else {
@@ -195,7 +195,7 @@ module.exports = function (m, fn) {
     };
     fn.serials.return = function (serial_id, location) {
         function checkSerial() {
-            return new Promise((resolve, reject) => {
+            return new Promise( ( resolve, reject ) => {
                 fn.serials.find({serial_id: serial_id})
                 .then(serial => {
                     if (!serial.issue_id) {
@@ -209,10 +209,10 @@ module.exports = function (m, fn) {
     
                     };
                 })
-                .catch(reject);
+                .catch( reject );
             });
         };
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             checkSerial()
             .then(serial => {
                 m.locations.findOrCreate({
@@ -227,16 +227,16 @@ module.exports = function (m, fn) {
                         }
                     )
                     .then(result => resolve({_table: 'serials', id: serial.serial_id}))
-                    .catch(reject);
+                    .catch( reject );
                 })
-                .catch(reject);
+                .catch( reject );
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
     fn.serials.receive = function (location, serial, size_id, user_id) {
         if (location && serial && size_id && user_id) {
-            return new Promise((resolve, reject) => {
+            return new Promise( ( resolve, reject ) => {
                 fn.serials.create(serial, size_id, user_id)
                 .then(serial => {
                     fn.serials.setLocation(
@@ -251,7 +251,7 @@ module.exports = function (m, fn) {
                         resolve({serial_id: serial.serial_id});
                     });
                 })
-                .catch(reject);
+                .catch( reject );
             });
 
         } else {
@@ -260,7 +260,7 @@ module.exports = function (m, fn) {
         };
     };
     fn.serials.setLocation = function (serial, location, user_id, action_append = '') {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             fn.locations.findOrCreate(location)
             .then(location => {
                 fn.update(
@@ -274,14 +274,14 @@ module.exports = function (m, fn) {
                 )
                 .then(fn.actions.create)
                 .then(result => resolve(true))
-                .catch(reject);
+                .catch( reject );
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
 
     fn.serials.delete = function (serial_id) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             Promise.all([
                 fn.serials.find({serial_id: serial_id}),
                 m.actions.findOne({where: {serial_id: serial.serial_id}}),
@@ -297,11 +297,11 @@ module.exports = function (m, fn) {
                 } else {
                     fn.destroy(serial)
                     .then(resolve)
-                    .catch(reject);
+                    .catch( reject );
                     
                 };
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
 };

@@ -1,4 +1,4 @@
-module.exports = function (m, fn) {
+module.exports = function ( m, fn ) {
     const line_status = {0: "Cancelled", 1: "Pending", 2: "Open", 3: "Closed"};
     function createLineAction(action, line_id, user_id, links = []) {
         return new Promise(resolve => {
@@ -27,7 +27,7 @@ module.exports = function (m, fn) {
         );
     };
     fn.demands.lines.findAndCountAll = function (where, pagination) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             m.demand_lines.findAndCountAll({
                 where: where,
                 include: [
@@ -39,11 +39,11 @@ module.exports = function (m, fn) {
                 ...pagination
             })
             .then(results => resolve(results))
-            .catch(reject);
+            .catch( reject );
         });
     };
     fn.demands.lines.findAll = function (where = {}, include = [], options = {}) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             m.demand_lines.findAll({
                 where:   where,
                 include: include
@@ -60,13 +60,13 @@ module.exports = function (m, fn) {
 
                 };
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
 
     fn.demands.lines.create = function (size_id, demand_id, user_id, orders = []) {
         function checkSize(size_id) {
-            return new Promise((resolve, reject) => {
+            return new Promise( ( resolve, reject ) => {
                 fn.sizes.find(
                     {size_id: size_id},
                     [fn.inc.stores.details({
@@ -88,11 +88,11 @@ module.exports = function (m, fn) {
     
                     };
                 })
-                .catch(reject);
+                .catch( reject );
             });
         };
         function checkDemand(size) {
-            return new Promise((resolve, reject) => {
+            return new Promise( ( resolve, reject ) => {
                 fn.demands.find({demand_id: demand_id})
                 .then(demand => {
                     if (demand.status !== 1) {
@@ -106,11 +106,11 @@ module.exports = function (m, fn) {
     
                     };
                 })
-                .catch(reject);
+                .catch( reject );
             });
         };
         function createLine([demand_id, size_id]) {
-            return new Promise((resolve, reject) => {
+            return new Promise( ( resolve, reject ) => {
                 m.demand_lines.findOrCreate({
                     where: {
                         demand_id: demand_id,
@@ -140,22 +140,22 @@ module.exports = function (m, fn) {
                             line.line_id
                         ]);
                     })
-                    .catch(reject);
+                    .catch( reject );
                 })
-                .catch(reject);
+                .catch( reject );
             });
         };
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             checkSize(size_id, demand_id, user_id, orders)
             .then(checkDemand)
             .then(createLine)
             .then(fn.actions.create)
             .then(line_id => resolve(line_id))
-            .catch(reject);
+            .catch( reject );
         });
     };
     fn.demands.lines.createBulk = function (lines, demand_id, user_id) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             if (!lines || lines.length === 0) {
                 reject(new Error('No lines'));
 
@@ -173,14 +173,14 @@ module.exports = function (m, fn) {
                 });
                 Promise.all(actions)
                 .then(result => resolve(true))
-                .catch(reject);
+                .catch( reject );
 
             };
         });
     };
 
     fn.demands.lines.update = function (site_id, lines, user_id) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             if (!lines || lines.length === 0) {
                 fn.sendError(res, 'No lines submitted');
     
@@ -203,7 +203,7 @@ module.exports = function (m, fn) {
                 });
                 Promise.all(actions)
                 .then(results => resolve(true))
-                .catch(reject);
+                .catch( reject );
                 
             };
         });
@@ -211,7 +211,7 @@ module.exports = function (m, fn) {
     
     fn.demands.lines.cancel = function (line_id, user_id) {
         function check(line_id, user_id) {
-            return new Promise((resolve, reject) => {
+            return new Promise( ( resolve, reject ) => {
                 fn.demands.lines.find(
                     {line_id: line_id},
                     [m.orders]
@@ -226,26 +226,26 @@ module.exports = function (m, fn) {
     
                     };
                 })
-                .catch(reject);
+                .catch( reject );
             });
         };
         function updateLine(line, user_id) {
-            return new Promise((resolve, reject) => {
+            return new Promise( ( resolve, reject ) => {
                 fn.update(line, {status: 0})
                 .then(result => resolve(line, user_id))
-                .catch(reject);
+                .catch( reject );
             });
         };
         function updateOrders(line, user_id) {
-            return new Promise((resolve, reject) => {
+            return new Promise( ( resolve, reject ) => {
                 let order_actions = [];
                 line.orders.forEach(order => {
                     //For each order, if its status is demanded, change to Placed and return order id
-                    order_actions.push(new Promise((resolve, reject) => {
+                    order_actions.push(new Promise( ( resolve, reject ) => {
                         if (order.status === 3) {
                             fn.update(order, {status: 2})
                             .then(result => resolve(order.order_id))
-                            .catch(reject);
+                            .catch( reject );
     
                         } else {
                             reject(new Error(`Non-allowed order status: ${order.status}`));
@@ -264,22 +264,22 @@ module.exports = function (m, fn) {
                         [{_table: 'demand_lines', id: line.line_id}].concat(links)
                     ]);
                 })
-                .catch(reject);
+                .catch( reject );
             });
         };
-        return new Promise ((resolve, reject) => {
+        return new Promise (( resolve, reject ) => {
             check(line_id, user_id)
             .then(updateLine)
             .then(updateOrders)
             .then(fn.actions.create)
             .then(result => resolve(true))
-            .catch(reject);
+            .catch( reject );
         });
     };
 
     fn.demands.lines.receive = function (site_id, line, user_id) {
         function check(details, user_id) {
-            return new Promise((resolve, reject) => {
+            return new Promise( ( resolve, reject ) => {
                 fn.demands.lines.find(
                     {line_id: details.line_id},
                     [{
@@ -296,12 +296,12 @@ module.exports = function (m, fn) {
     
                     };
                 })
-                .catch(reject);
+                .catch( reject );
             });
         };
         function receiveOrders(line, details, user_id) {
             function receiveSerials(line, details, user_id) {
-                return new Promise((resolve, reject) => {
+                return new Promise( ( resolve, reject ) => {
                     let actions = [];
                     let serials = details.serials
                     for (let i = 0; (i < line.orders.length) && (serials.length > 0); i++) {
@@ -324,11 +324,11 @@ module.exports = function (m, fn) {
                     Promise.allSettled(actions)
                     .then(fn.logRejects)
                     .then(results => resolve([results, serials]))
-                    .catch(reject);
+                    .catch( reject );
                 });
             };
             function receiveStock(line, details, user_id) {
-                return new Promise((resolve, reject) => {
+                return new Promise( ( resolve, reject ) => {
                     let qty_left = details.qty || 0;
                     let actions = []
                     for (let i = 0; (i < line.orders.length) && (qty_left > 0); i++) {
@@ -357,10 +357,10 @@ module.exports = function (m, fn) {
                     Promise.allSettled(actions)
                     .then(fn.logRejects)
                     .then(results => resolve([results, qty_left]))
-                    .catch(reject);
+                    .catch( reject );
                 });
             };
-            return new Promise((resolve, reject) => {
+            return new Promise( ( resolve, reject ) => {
                 const has_serials = (line.size.has_serials);
                 let action = null;
                 if (has_serials) {
@@ -380,11 +380,11 @@ module.exports = function (m, fn) {
                         remaining:   (has_serials ? remaining : {qty: remaining, location: details.location})
                     });
                 })
-                .catch(reject);
+                .catch( reject );
             });
         };
         function receiveRemaining(order_qty, size_id, line_id, user_id, receipt) {
-            return new Promise((resolve, reject) => {
+            return new Promise( ( resolve, reject ) => {
                 if (order_qty > 0) {
                     fn.orders.create(
                         site_id,
@@ -401,9 +401,9 @@ module.exports = function (m, fn) {
                             [{_table: 'demand_lines', id: line_id}]
                         )
                         .then(resolve)
-                        .catch(reject);
+                        .catch( reject );
                     })
-                    .catch(reject);
+                    .catch( reject );
     
                 } else {
                     resolve(0);
@@ -412,7 +412,7 @@ module.exports = function (m, fn) {
             });
         };
         function checkReceiptVariance(demand_line, qty, user_id) {
-            return new Promise((resolve, reject) => {
+            return new Promise( ( resolve, reject ) => {
                 let qty_original = demand_line.qty;
                 if (qty > qty_original) {
                     fn.update(demand_line, {qty: qty})
@@ -424,7 +424,7 @@ module.exports = function (m, fn) {
                         )
                         .then(action => resolve({demand_line: demand_line}));
                     })
-                    .catch(reject);
+                    .catch( reject );
 
                 } else if (qty < qty_original) {
                     m.demand_lines.create({
@@ -445,9 +445,9 @@ module.exports = function (m, fn) {
                             )
                             .then(action => resolve({demand_line: new_line}));
                         })
-                        .catch(reject);
+                        .catch( reject );
                     })
-                    .catch(reject);
+                    .catch( reject );
 
                 } else {
                     resolve({demand_line: demand_line});
@@ -456,7 +456,7 @@ module.exports = function (m, fn) {
             });
         };
         // 
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             check(line, user_id)
             .then(receiveOrders)
             .then(result => {
@@ -483,13 +483,13 @@ module.exports = function (m, fn) {
                     .then(variance_result => {
                         fn.update(variance_result.demand_line, {status: 3})
                         .then(result => resolve(true))
-                        .catch(reject);
+                        .catch( reject );
                     })
-                    .catch(reject);
+                    .catch( reject );
                 })
-                .catch(reject);
+                .catch( reject );
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
 };

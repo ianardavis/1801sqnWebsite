@@ -70,7 +70,7 @@ module.exports = function ( m, fn ) {
         return new Promise( ( resolve, reject ) => {
             fn.accounts.find( { account_id: account_id } )
             .then( updateAccount )
-            .then( fn.checkUpdateResult )
+            .then( fn.checkResult )
             .then( resolve )
             .catch( reject );
         });
@@ -97,15 +97,8 @@ module.exports = function ( m, fn ) {
         function deleteAccount( account ) {
             return new Promise( ( resolve, reject ) => {
                 account.destroy()
-                .then( result => {
-                    if ( result ) {
-                        resolve( account.account_id );
-
-                    } else {
-                        reject( new Error( 'Account not deleted' ) );
-
-                    };
-                })
+                .then( fn.checkResult )
+                .then( result => resolve( account.account_id ))
                 .catch( reject );
             });
         };

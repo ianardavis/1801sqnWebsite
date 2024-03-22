@@ -1,7 +1,7 @@
-module.exports = function (m, fn) {
+module.exports = function ( m, fn ) {
     fn.stocks = {};
     fn.stocks.find = function (site_id, options = {}) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             if (
                 options.stock_id ||
                 (
@@ -29,7 +29,7 @@ module.exports = function (m, fn) {
                             
                         };
                     })
-                    .catch(reject);
+                    .catch( reject );
 
                 } else if (options.size_id) {
                     fn.sizes.find(
@@ -47,7 +47,7 @@ module.exports = function (m, fn) {
                                 include: [m.locations]
                             })
                             .then(([stock, created]) => resolve(stock))
-                            .catch(reject);
+                            .catch( reject );
                             
                         } else if (options.location) {
                             fn.locations.findOrCreate(site_id, options.location)
@@ -61,16 +61,16 @@ module.exports = function (m, fn) {
                                     include: [m.locations]
                                 })
                                 .then(([stock, created]) => resolve(stock))
-                                .catch(reject);
+                                .catch( reject );
                             })
-                            .catch(reject);
+                            .catch( reject );
 
                         } else {
                             reject(new Error('No location details submitted'));
                         
                         };
                     })
-                    .catch(reject);
+                    .catch( reject );
 
                 } else {
                     reject(new Error('No size or stock ID submitted'));
@@ -93,20 +93,20 @@ module.exports = function (m, fn) {
         )
     };
 
-    fn.stocks.findAll = function (query) {
+    fn.stocks.findAll = function ( query ) {
         return m.stocks.findAndCountAll({
             where: query.where,
             include: [
                 fn.inc.stores.size(),
                 fn.inc.stores.location()
             ],
-            ...fn.pagination(query)
+            ...fn.pagination( query )
         });
     };
     fn.stocks.sum = function (where) {return m.stocks.sum('qty', {where: where})};
 
     fn.stocks.findByID = function (stock_id) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             m.stocks.findOne({
                 where: {stock_id: stock_id},
                 include: [m.locations]
@@ -120,11 +120,11 @@ module.exports = function (m, fn) {
                     
                 };
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
     fn.stocks.create = function (size_id, location) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             Promise.all([
                 fn.sizes.find({size_id: size_id}),
                 m.locations.findOrCreate({where: {location: location}})
@@ -137,14 +137,14 @@ module.exports = function (m, fn) {
                     }
                 })
                 .then(([stock, created]) => resolve(true))
-                .catch(reject);
+                .catch( reject );
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
     fn.stocks.scrap = function (stock_id, details, user_id) {
         function checkStock() {
-            return new Promise((resolve, reject) => {
+            return new Promise( ( resolve, reject ) => {
                 m.stocks.findOne({
                     where: {stock_id: stock_id},
                     include: [m.sizes]
@@ -158,11 +158,11 @@ module.exports = function (m, fn) {
 
                     };
                 })
-                .catch(reject);
+                .catch( reject );
             });
         };
         function createScrapLine(stock) {
-            return new Promise((resolve, reject) => {
+            return new Promise( ( resolve, reject ) => {
                 fn.scraps.findOrCreate(stock.size.supplier_id)
                 .then(scrap => {
                     fn.scraps.lines.create(
@@ -171,12 +171,12 @@ module.exports = function (m, fn) {
                         details
                     )
                     .then(scrap_line => resolve({_table: 'scrap_lines', id: scrap_line.line_id}))
-                    .catch(reject);
+                    .catch( reject );
                 })
-                .catch(reject);
+                .catch( reject );
             });
         };
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             checkStock()
             .then(stock => {
                 Promise.all([
@@ -192,14 +192,14 @@ module.exports = function (m, fn) {
                     ])
                     .then(action => resolve(true));
                 })
-                .catch(reject);
+                .catch( reject );
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
     fn.stocks.count = function (stock_id, qty, user_id) {
         function updateStock(stock) {
-            return new Promise((resolve, reject) => {
+            return new Promise( ( resolve, reject ) => {
                 const variance = qty - stock.qty;
                 fn.update(stock, {qty: qty})
                 .then(result => resolve([
@@ -212,15 +212,15 @@ module.exports = function (m, fn) {
                     user_id,
                     [{_table: 'stocks', id: stock.stock_id}]
                 ]))
-                .catch(reject);
+                .catch( reject );
             });
         };
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             fn.stocks.findByID(stock_id)
             .then(updateStock)
             .then(fn.actions.create)
             .then(results => resolve(true))
-            .catch(reject);
+            .catch( reject );
         });
     };
     fn.stocks.countBulk = function (counts, user_id) {
@@ -228,7 +228,7 @@ module.exports = function (m, fn) {
             return Promise.reject(new Error('No details'));
 
         } else {
-            return new Promise((resolve, reject) => {
+            return new Promise( ( resolve, reject ) => {
                 let actions = [];
                 counts.filter(a => a.qty).forEach(count => {
                     actions.push(fn.stocks.count(count.stock_id, count.qty, user_id))
@@ -236,14 +236,14 @@ module.exports = function (m, fn) {
                 Promise.allSettled(actions)
                 .then(fn.logRejects)
                 .then(results => resolve(true))
-                .catch(reject);
+                .catch( reject );
     
             });
 
         };
     };
     fn.stocks.increment = function (stock, qty) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             stock.increment('qty', {by: qty})
             .then(result => {
                 if (result) {
@@ -254,11 +254,11 @@ module.exports = function (m, fn) {
 
                 };
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
     fn.stocks.decrement = function (stock, qty) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             stock.decrement('qty', {by: qty})
             .then(result => {
                 if (result) {
@@ -269,11 +269,11 @@ module.exports = function (m, fn) {
 
                 };
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
     fn.stocks.receive = function (options = {}) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             fn.stocks.find(options.stock)
             .then(stock => {
                 fn.stocks.increment(
@@ -288,26 +288,26 @@ module.exports = function (m, fn) {
                     ])
                     .then(action => resolve(true));
                 })
-                .catch(reject);
+                .catch( reject );
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
     fn.stocks.return = function (stock_id, qty) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             fn.stocks.findByID(stock_id)
             .then(stock => {
                 fn.stocks.increment(stock, qty)
                 .then(result => resolve({_table: 'stocks', id: stock_id}))
-                .catch(reject);
+                .catch( reject );
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
     
     fn.stocks.transfer = function (stock_id_from, location_to, qty, user_id) {
         function checkFromStock() {
-            return new Promise((resolve, reject) => {
+            return new Promise( ( resolve, reject ) => {
                 fn.stocks.findByID(stock_id_from)
                 .then(stock => {
                     if (qty > stock.qty) {
@@ -318,11 +318,11 @@ module.exports = function (m, fn) {
 
                     };
                 })
-                .catch(reject);
+                .catch( reject );
             });
         };
         function checkToStock(stock_from) {
-            return new Promise((resolve, reject) => {
+            return new Promise( ( resolve, reject ) => {
                 m.locations.findOrCreate({where: {location: location_to}})
                 .then(([location, created]) => {
                     if (
@@ -339,15 +339,15 @@ module.exports = function (m, fn) {
                             }
                         })
                         .then(([stock_to, created]) => resolve([stock_from, stock_to]))
-                        .catch(reject);
+                        .catch( reject );
 
                     };
                 })
-                .catch(reject);
+                .catch( reject );
             });
         };
         function transferStock([stock_from, stock_to]) {
-            return new Promise((resolve, reject) => {
+            return new Promise( ( resolve, reject ) => {
                 Promise.all([
                     fn.stocks.decrement(stock_from, qty),
                     fn.stocks.increment(stock_to,   qty)
@@ -362,16 +362,16 @@ module.exports = function (m, fn) {
                         ]
                     ]);
                 })
-                .catch(reject);
+                .catch( reject );
             });
         };
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             checkFromStock()
             .then(checkToStock)
             .then(transferStock)
             .then(fn.actions.create)
             .then(result => resolve(true))
-            .catch(reject);
+            .catch( reject );
         });
     };
 };

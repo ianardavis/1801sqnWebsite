@@ -1,6 +1,6 @@
-module.exports = function (m, fn) {
+module.exports = function ( m, fn ) {
     fn.nsns.find = function (where, return_null = true) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             m.nsns.findOne({
                 where: where,
                 include: [
@@ -18,11 +18,11 @@ module.exports = function (m, fn) {
                     reject(new Error('NSN not found'));
                 };
             })
-            .catch(err => fn.sendError(res, err));
+            .catch(err => fn.sendError( res, err ));
         });
     };
-    fn.nsns.findAll = function (query) {
-        return new Promise((resolve, reject) => {
+    fn.nsns.findAll = function ( query ) {
+        return new Promise( ( resolve, reject ) => {
             m.nsns.findAndCountAll({
                 where: query.where,
                 include: [
@@ -31,15 +31,15 @@ module.exports = function (m, fn) {
                     fn.inc.stores.nsn_country(),
                     fn.inc.stores.size()
                 ],
-                ...fn.pagination(query)
+                ...fn.pagination( query )
             })
             .then(results => resolve(results))
-            .catch(reject);
+            .catch( reject );
         });
     };
 
     fn.nsns.create = function (nsn, isDefault = false) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             Promise.all([
                 fn.sizes.find({size_id: nsn.size_id}),
                 fn.nsns.groups.find({nsn_group_id: nsn.nsn_group_id}),
@@ -75,14 +75,14 @@ module.exports = function (m, fn) {
     
                     };
                 })
-                .catch(reject);
+                .catch( reject );
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
 
     fn.nsns.edit = function (nsn_id, details) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             Promise.all([
                 fn.nsns.find({nsn_id: nsn_id}, false),
                 fn.nsns.groups.find({nsn_group_id: details.nsn_group_id}),
@@ -108,14 +108,14 @@ module.exports = function (m, fn) {
 
                     };
                 })
-                .catch(reject);
+                .catch( reject );
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
 
     fn.nsns.delete = function (nsn_id) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             Promise.all([
                 fn.nsns.find({nsn_id: nsn_id}, false),
                 m.action_links.findOne({where: {_table: 'nsns', id: nsn_id}}),
@@ -141,10 +141,10 @@ module.exports = function (m, fn) {
                             resolve(false);
                         });
                     })
-                    .catch(reject);
+                    .catch( reject );
                 };
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
 };

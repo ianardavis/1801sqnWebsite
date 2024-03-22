@@ -1,4 +1,4 @@
-module.exports = function (m, fn) {
+module.exports = function ( m, fn ) {
     fn.sizes.find = function (site_id, where, include = []) {
         return fn.find(
             m.sizes,
@@ -12,24 +12,24 @@ module.exports = function (m, fn) {
             ].concat(include)
         );
     };
-    fn.sizes.findAll = function (query) {
-        return new Promise((resolve, reject) => {
+    fn.sizes.findAll = function ( query ) {
+        return new Promise( ( resolve, reject ) => {
             m.sizes.findAndCountAll({
                 where: query.where,
                 include: [
                     fn.inc.stores.item(),
                     fn.inc.stores.supplier()
                 ],
-                ...fn.pagination(query)
+                ...fn.pagination( query )
             })
             .then(sizes => resolve(sizes))
-            .catch(reject);
+            .catch( reject );
         });
     };
     fn.sizes.count = function (where) {return m.sizes.count({where: where})};
 
     fn.sizes.create = function (size) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             if (size.supplier_id === '') size.supplier_id = null;
             m.sizes.findOrCreate({
                 where: {
@@ -49,24 +49,24 @@ module.exports = function (m, fn) {
 
                 };
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
 
     fn.sizes.edit = function (size_id, details) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             fn.sizes.find({size_id: size_id})
             .then(size => {
                 fn.update(size, details)
                 .then(result => resolve(true))
-                .catch(reject);
+                .catch( reject );
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
 
     fn.sizes.delete = function (size_id) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             const where = {size_id: size_id}
             fn.sizes.find(where)
             .then(size => {
@@ -84,12 +84,12 @@ module.exports = function (m, fn) {
                     } else {
                         size.destroy()
                         .then(result => resolve(true))
-                        .catch(reject);
+                        .catch( reject );
                     };
                 })
-                .catch(reject);
+                .catch( reject );
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
 };

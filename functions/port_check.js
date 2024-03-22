@@ -1,5 +1,5 @@
 module.exports = function () {
-    return new Promise((resolve, reject) => {
+    return new Promise( ( resolve, reject ) => {
         const port = process.env.PORT
         const execSync = require('child_process').execSync;
         const runCmd = function (cmd) {

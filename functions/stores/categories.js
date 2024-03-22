@@ -21,7 +21,7 @@ module.exports = function ( m, fn ) {
                 model: m.categories,
                 as:    'parent'
             }],
-            ...fn.pagination(query)
+            ...fn.pagination( query )
         });
     };
     fn.categories.edit = function ( category_id, details ) {
@@ -31,7 +31,7 @@ module.exports = function ( m, fn ) {
             fn.categories.find( { category_id: category_id } )
             .then( category => {
                 category.update( details )
-                .then( fn.checkUpdateResult )
+                .then( fn.checkResult )
                 .then( resolve )
                 .catch( reject );
             })
@@ -59,7 +59,7 @@ module.exports = function ( m, fn ) {
                 )
                 .then( result => {
                     category.destroy()
-                    .then( fn.checkDestroyResult )
+                    .then( fn.checkResult )
                     .then( resolve )
                     .catch( reject );
                 })

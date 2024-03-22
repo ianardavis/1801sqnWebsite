@@ -1,4 +1,4 @@
-module.exports = function (m, fn) {
+module.exports = function ( m, fn ) {
     fn.suppliers = {contacts: {}, addresses: {}};
 
     fn.suppliers.find = function (where, include = []) {
@@ -8,36 +8,36 @@ module.exports = function (m, fn) {
             [fn.inc.stores.account()].concat(include)
         );
     };
-    fn.suppliers.findAll = function (query) {
+    fn.suppliers.findAll = function ( query ) {
         return m.suppliers.findAndCountAll({
             where: query.where,
-            ...fn.pagination(query)
+            ...fn.pagination( query )
         });
     };
     fn.suppliers.edit = function (supplier_id, details) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             fn.suppliers.find({supplier_id: supplier_id})
             .then(supplier => {
                 fn.update(supplier, details)
                 .then(resolve)
-                .catch(reject);
+                .catch( reject );
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
 
     fn.suppliers.create = function (supplier) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             supplier = fn.nullify(supplier);
             m.suppliers.create(supplier)
             .then(supplier => resolve(true))
-            .catch(reject);
+            .catch( reject );
         });
     };
 
     fn.suppliers.delete = function (supplier_id) {
         function deleteSupplier(supplier_id) {
-            return new Promise((resolve, reject) => {
+            return new Promise( ( resolve, reject ) => {
                 fn.suppliers.find({supplier_id: supplier_id})
                 .then(supplier => {
                     supplier.destroy()
@@ -50,9 +50,9 @@ module.exports = function (m, fn) {
     
                         };
                     })
-                    .catch(reject);
+                    .catch( reject );
                 })
-                .catch(reject);
+                .catch( reject );
             });
         };
         function deleteDefaultSupplier(supplier_id) {
@@ -81,16 +81,16 @@ module.exports = function (m, fn) {
                 .catch(err => resolve(false));
             });
         };
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             deleteSupplier(supplier_id)
             .then(deleteDefaultSupplier)
             .then(resolve)
-            .catch(reject);
+            .catch( reject );
         });
     };
 
     function find(where, table) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             m[`supplier_${table.pl}`].findOne({
                 where: where,
                 include: [m[table.pl]]
@@ -107,20 +107,20 @@ module.exports = function (m, fn) {
         });
     };
     function findAll(table, query) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             table.findAndCountAll({
                 include: [{
                     model: m.suppliers,
                     where: query.where
                 }],
-                ...fn.pagination(query)
+                ...fn.pagination( query )
             })
             .then(results => resolve(results))
-            .catch(reject);
+            .catch( reject );
         });
     };
     function create(supplier_id, record, type, table) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             fn.suppliers.find({supplier_id: supplier_id})
             .then(supplier => {
                 m[table.pl].findOrCreate({
@@ -132,15 +132,15 @@ module.exports = function (m, fn) {
                     create_record[`${table.si}_id`] = result[`${table.si}_id`];
                     m[`supplier_${table.pl}`].create(create_record)
                     .then(result => resolve(true))
-                    .catch(reject);
+                    .catch( reject );
                 })
-                .catch(reject);
+                .catch( reject );
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
     function edit(id, new_record, user_id, table) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             let where = {};
             where[`${table.si}`] = id;
             m[table.pl].findOne(where)
@@ -155,34 +155,34 @@ module.exports = function (m, fn) {
                         ])
                         .then(result => resolve(true));
                     })
-                    .catch(reject);
+                    .catch( reject );
 
                 } else {
                     reject(new Error(`No ${table.si} for this record`));
 
                 };
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
     function _delete(where, table) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             fn.suppliers[table.pl].get(where)
             .then(link => {
                 let actions = [link.destroy()];
                 if (link[table.si]) actions.push(link[table.si].destroy());
                 Promise.all(actions)
                 .then(result => resolve(true))
-                .catch(reject);
+                .catch( reject );
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
 
     fn.suppliers.contacts.get = function (where) {
         return find(where, {pl: 'contacts', si: 'contact'});
     };
-    fn.suppliers.contacts.get_all = function (query) {
+    fn.suppliers.contacts.get_all = function ( query ) {
         return findAll(m.contacts, query);
     };
     fn.suppliers.contacts.create = function (supplier_id, contact, type) {
@@ -198,7 +198,7 @@ module.exports = function (m, fn) {
     fn.suppliers.addresses.get = function (where) {
         return find(where, {pl: 'addresses', si: 'address'});
     };
-    fn.suppliers.addresses.get_all = function (query) {
+    fn.suppliers.addresses.get_all = function ( query ) {
         return findAll(m.addresses, query);
     };
     fn.suppliers.addresses.create = function (supplier_id, address, type) {

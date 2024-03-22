@@ -1,10 +1,10 @@
 const fs  = require('fs');
 const pdf = require('pdfkit');
 const bwipjs = require('bwip-js');
-module.exports = function (m, fn) {
+module.exports = function ( m, fn ) {
     fn.pdfs = {};
     fn.pdfs.create = function (id, folder, name, author) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             try {
                 fn.fs.mkdir(folder)
                 .then(result => {
@@ -23,7 +23,7 @@ module.exports = function (m, fn) {
                     doc.font(`${process.env.ROOT}/public/lib/fonts/myriad-pro/d (1).woff`);
                     resolve([doc, filename, writeStream]);
                 })
-                .catch(reject);
+                .catch( reject );
             } catch (err) {
                 console.error(err);
                 reject(err);
@@ -65,7 +65,7 @@ module.exports = function (m, fn) {
         return y;
     };
     fn.pdfs.createBarcode = function(text, type, options) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             fn.fs.mkdir('barcodes')
             .then(path => {
                 bwipjs.toBuffer({
@@ -81,19 +81,19 @@ module.exports = function (m, fn) {
                     const file = fn.publicFile('barcodes', `${text}_${type}.png`);
                     fs.writeFile(file, barcode, () => resolve(file));
                 })
-                .catch(reject);
+                .catch( reject );
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
     fn.pdfs.createBarcodes = function (text, options = {}) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             Promise.allSettled([
                 fn.pdfs.createBarcode(text, 'code128', {scale: 3, height: 15, includetext: false, ...options}),
                 fn.pdfs.createBarcode(text, 'qrcode',  {scale: 3, height: 30, includetext: false, ...options})
             ])
             .then(([file_128, file_qr]) => resolve([file_128.value, file_qr.value]))
-            .catch(reject);
+            .catch( reject );
         });
     };
 };

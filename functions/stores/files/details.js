@@ -1,23 +1,23 @@
-module.exports = function (m, fn) {
+module.exports = function ( m, fn ) {
     fn.files.details.find = function (where) {
         return fn.find(
             m.file_details,
             where
         );
     };
-    fn.files.details.findAll = function (query) {
-        return new Promise((resolve, reject) => {
+    fn.files.details.findAll = function ( query ) {
+        return new Promise( ( resolve, reject ) => {
             m.file_details.findAndCountAll({
                 where: query.where,
-                ...fn.pagination(query)
+                ...fn.pagination( query )
             })
             .then(results => resolve(results))
-            .catch(reject);
+            .catch( reject );
         });
     };
 
     fn.files.details.create = function (details, user_id) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             fn.files.find({file_id: details.file_id})
             .then(file => {
                 m.file_details.findOrCreate({
@@ -43,30 +43,30 @@ module.exports = function (m, fn) {
                             }
                         )
                         .then(result => resolve(true))
-                        .catch(reject);
+                        .catch( reject );
 
                     };
                 })
-                .catch(reject);
+                .catch( reject );
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
 
     fn.files.details.edit = function (file_detail_id, details) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             fn.files.details.find({file_detail_id: file_detail_id})
             .then(file_detail => {
                 fn.update(file_detail, details)
                 .then(result => resolve(result))
-                .catch(reject);
+                .catch( reject );
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
 
     fn.files.details.delete = function (file_detail_id) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             m.file_details.destroy({
                 where: {file_detail_id: file_detail_id}
             })
@@ -79,7 +79,7 @@ module.exports = function (m, fn) {
                 
                 };
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
 };

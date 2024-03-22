@@ -1,6 +1,6 @@
-module.exports = function (m, fn) {
+module.exports = function ( m, fn ) {
     fn.items.create = function (item) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             item = fn.nullify(item);
             m.items.findOrCreate({
                 where: {description: item.description},
@@ -15,7 +15,7 @@ module.exports = function (m, fn) {
 
                 };
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
 
@@ -27,20 +27,20 @@ module.exports = function (m, fn) {
         );
     };
     fn.items.findAll = function (query, site_id) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             let where = query.where || {};
             where.site_id = {[fn.op.or]: [null, site_id]};
             m.items.findAndCountAll({
                 where: where,
-                ...fn.pagination(query)
+                ...fn.pagination( query )
             })
             .then(resolve)
-            .catch(reject);
+            .catch( reject );
         });
     };
 
     fn.items.findUniform = function (pagination) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             m.items.findAndCountAll({
                 include: [{
                     model: m.item_categories,
@@ -53,12 +53,12 @@ module.exports = function (m, fn) {
                 ...pagination
             })
             .then(resolve)
-            .catch(reject);
+            .catch( reject );
         });
     };
 
     fn.items.findForSupplier = function (where, pagination) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             m.items.findAndCountAll({
                 distinct: true,
                 include: [{
@@ -69,24 +69,24 @@ module.exports = function (m, fn) {
                 ...pagination
             })
             .then(resolve)
-            .catch(reject);
+            .catch( reject );
         });
     };
 
     fn.items.edit = function (item_id, details, site_id) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             fn.items.find({item_id: item_id}, site_id)
             .then(item => {
                 fn.update(item, details)
                 .then(result => resolve(true))
-                .catch(reject);
+                .catch( reject );
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
 
     fn.items.delete = function (item_id) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             m.sizes.findOne({where: {item_id: item_id}})
             .then(sizes => {
                 if (sizes) {
@@ -103,11 +103,11 @@ module.exports = function (m, fn) {
     
                         };
                     })
-                    .catch(reject);
+                    .catch( reject );
     
                 };
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
 };

@@ -1,6 +1,6 @@
-module.exports = function (m, fn) {
+module.exports = function ( m, fn ) {
     fn.scraps.find = function (where, line_where = null) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             m.scraps.findOne({
                 where: where,
                 include: [
@@ -17,16 +17,16 @@ module.exports = function (m, fn) {
 
                 };
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
     fn.scraps.findOrCreate = function (supplier_id) {
         function checkSupplier(supplier_id) {
-            return new Promise((resolve, reject) => {
+            return new Promise( ( resolve, reject ) => {
                 if (supplier_id) {
                     fn.suppliers.find({supplier_id: supplier_id})
                     .then(supplier => resolve(supplier))
-                    .catch(reject);
+                    .catch( reject );
     
                 } else {
                     resolve(null);
@@ -34,7 +34,7 @@ module.exports = function (m, fn) {
                 };
             });
         };
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             checkSupplier(supplier_id)
             .then(supplier_id_checked => {
                 m.scraps.findOrCreate({
@@ -44,13 +44,13 @@ module.exports = function (m, fn) {
                     }
                 })
                 .then(([scrap, created]) => resolve(scrap))
-                .catch(reject);
+                .catch( reject );
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
-    fn.scraps.findAll = function (query) {
-        return new Promise((resolve, reject) => {
+    fn.scraps.findAll = function ( query ) {
+        return new Promise( ( resolve, reject ) => {
             m.scraps.findAndCountAll({
                 where: query.where,
                 include: [
@@ -62,10 +62,10 @@ module.exports = function (m, fn) {
                     },
                     fn.inc.stores.supplier()
                 ],
-                ...fn.pagination(query)
+                ...fn.pagination( query )
             })
             .then(results => resolve(results))
-            .catch(reject);
+            .catch( reject );
         });
     };
     fn.scraps.count = function (where) {return m.scraps.count({where: where})};
@@ -75,13 +75,13 @@ module.exports = function (m, fn) {
         .then(scrap => {
             fn.update(scrap, details)
             .then(result => resolve(true))
-            .catch(reject);
+            .catch( reject );
         })
-        .catch(reject);
+        .catch( reject );
     };
 
     fn.scraps.cancel_check = function (scrap_id) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             fn.scraps.find(
                 {scrap_id: scrap_id},
                 {
@@ -116,7 +116,7 @@ module.exports = function (m, fn) {
         });
     };
     fn.scraps.cancel = function (scrap_id, user_id) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             fn.scraps.cancel_check(scrap_id)
             .then(scrap => {
                 m.scrap_lines.update(
@@ -133,17 +133,17 @@ module.exports = function (m, fn) {
                         ])
                         .then(result => resolve(result));
                     })
-                    .catch(reject);
+                    .catch( reject );
                 })
-                .catch(reject);
+                .catch( reject );
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
 
     fn.scraps.complete = function (scrap_id, user) {
         function check(scrap_id) {
-            return new Promise((resolve, reject) => {
+            return new Promise( ( resolve, reject ) => {
                 m.scraps.findOne({
                     where: {scrap_id: scrap_id},
                     include: [
@@ -175,10 +175,10 @@ module.exports = function (m, fn) {
     
                     };
                 })
-                .catch(reject);
+                .catch( reject );
             });
         };
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             check(scrap_id)
             .then(scrap => {
                 let actions = [];
@@ -196,16 +196,16 @@ module.exports = function (m, fn) {
                             resolve(false);
                         });
                     })
-                    .catch(reject);
+                    .catch( reject );
                 })
-                .catch(reject);
+                .catch( reject );
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
 
     function getFilename(scrap_id) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             fn.scraps.find({scrap_id: scrap_id})
             .then(scrap => {
                 if (scrap.status !== 2) {
@@ -217,22 +217,22 @@ module.exports = function (m, fn) {
                 } else {
                     fn.scraps.pdf.create(scrap.scrap_id)
                     .then(filename => resolve(filename))
-                    .catch(reject);
+                    .catch( reject );
 
                 };
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
     fn.scraps.download = function (scrap_id, res) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             getFilename(scrap_id)
             .then(filename => {
                 fn.fs.download('scraps', filename, res)
                 .then(result => resolve(true))
-                .catch(reject);
+                .catch( reject );
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
 };

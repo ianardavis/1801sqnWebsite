@@ -1,5 +1,5 @@
 const statuses = {0: 'cancelled', 1: 'placed', 2: 'demanded', 3: 'received'};
-module.exports = function (m, fn) {
+module.exports = function ( m, fn ) {
     fn.orders = {};
     fn.orders.find = function (where, include = []) {
         return fn.find(
@@ -11,21 +11,21 @@ module.exports = function (m, fn) {
             ].concat(include)
         );
     };
-    fn.orders.findAll = function (query) {
+    fn.orders.findAll = function ( query ) {
         return m.orders.findAndCountAll({
             where: query.where,
             include: [
                 fn.inc.stores.size(),
                 fn.inc.users.user()
             ],
-            ...fn.pagination(query)
+            ...fn.pagination( query )
         });
     };
     fn.orders.count = function (where) {return m.orders.count({where: where})};
     fn.orders.sum   = function (where) {return m.orders.sum('qty', {where: where})};
     
     function updateOrderStatus([order, status, user_id, action, links = []]) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             fn.update(order, {status: status})
             .then(result => {
                 if (action) {
@@ -43,14 +43,14 @@ module.exports = function (m, fn) {
 
                 };
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
     
     fn.orders.markAs = function (site_id, order_id, status, user_id) {
         function check() {
             if (status in statuses) {
-                return new Promise((resolve, reject) => {
+                return new Promise( ( resolve, reject ) => {
                     fn.orders.find({
                         order_id: order_id,
                         site_id:  site_id
@@ -69,7 +69,7 @@ module.exports = function (m, fn) {
     
                         };
                     })
-                    .catch(reject);
+                    .catch( reject );
                 });
     
             } else {
@@ -77,11 +77,11 @@ module.exports = function (m, fn) {
     
             };
         };
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             check()
             .then(updateOrderStatus)
             .then(order => resolve(`Order marked as ${statuses[status]}`))
-            .catch(reject);
+            .catch( reject );
         });
     };
 
@@ -111,7 +111,7 @@ module.exports = function (m, fn) {
                     resolve(sizes);
                 });
             };
-            return new Promise((resolve, reject) => {
+            return new Promise( ( resolve, reject ) => {
                 checkForDuplicateLines()
                 .then(sizes => {
                     let order_actions = [];
@@ -122,16 +122,16 @@ module.exports = function (m, fn) {
                     });
                     Promise.allSettled(order_actions)
                     .then(results => resolve(true))
-                    .catch(reject);
+                    .catch( reject );
                 })
-                .catch(reject);
+                .catch( reject );
             });
         };
     };
 
     fn.orders.create = function (site_id, size_id, qty, user_id, issues = []) {
         function createOrIncrementOrder(size_id) {
-            return new Promise((resolve, reject) => {
+            return new Promise( ( resolve, reject ) => {
                 m.orders.findOrCreate({
                     where: {
                         site_id: site_id,
@@ -158,14 +158,14 @@ module.exports = function (m, fn) {
 
                             };
                         })
-                        .catch(reject);
+                        .catch( reject );
         
                     };
                 })
-                .catch(reject);
+                .catch( reject );
             });
         };
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             fn.sizes.find({size_id: size_id})
             .then(size => {
                 if (!size.orderable) {
@@ -183,17 +183,17 @@ module.exports = function (m, fn) {
                         ])
                         .then(action => resolve(order));
                     })
-                    .catch(reject);
+                    .catch( reject );
 
                 };
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
 
     fn.orders.update = function (site_id, lines, user_id) {
         function filterOrders([orders, submitted]) {
-            return new Promise((resolve, reject) => {
+            return new Promise( ( resolve, reject ) => {
                 let actions = [];
                 orders.filter(e => e.status === '-3').forEach(order => {
                     actions.push(fn.orders.restore(site_id, order.order_id, user_id));
@@ -221,18 +221,18 @@ module.exports = function (m, fn) {
                 };
             });
         };
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             fn.checkLines(lines)
             .then(filterOrders)
             .then(fn.actionLines)
             .then(resolve)
-            .catch(reject);
+            .catch( reject );
         });
     };
 
     fn.orders.cancel = function (site_id, order_id, user_id) {
         function check() {
-            return new Promise((resolve, reject) => {
+            return new Promise( ( resolve, reject ) => {
                 fn.orders.find({order_id: order_id, site_id: site_id})
                 .then(order => {
                     if (order.status === 0) {
@@ -249,28 +249,28 @@ module.exports = function (m, fn) {
     
                     };
                 })
-                .catch(reject);
+                .catch( reject );
             });
         };
         function updateIssues(issues) {
-            return new Promise((resolve, reject) => {
+            return new Promise( ( resolve, reject ) => {
                 let actions = [];
                 issues.forEach(issue => {
-                    actions.push(new Promise((resolve, reject) => {
+                    actions.push(new Promise( ( resolve, reject ) => {
                         let record = {order_id: null};
                         if (issue.status === 3) record.status = 2;
                         
                         fn.update(issue, record)
                         .then(result => resolve({_table: 'issues', id: issue.issue_id}))
-                        .catch(reject);
+                        .catch( reject );
                     }));
                 });
                 Promise.all(actions)
                 .then(links => resolve(links))
-                .catch(reject);
+                .catch( reject );
             });
         };
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             check()
             .then(updateOrderStatus)
             .then(order => {
@@ -283,15 +283,15 @@ module.exports = function (m, fn) {
                     ])
                     .then(action => resolve(true));
                 })
-                .catch(reject);
+                .catch( reject );
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
 
     fn.orders.restore = function (site_id, order_id, user_id) {
         function check() {
-            return new Promise((resolve, reject) => {
+            return new Promise( ( resolve, reject ) => {
                 fn.orders.find({order_id: order_id, site_id: site_id})
                 .then(order => {
                     if (order.status !== 0) {
@@ -302,10 +302,10 @@ module.exports = function (m, fn) {
     
                     };
                 })
-                .catch(reject);
+                .catch( reject );
             });
         };
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             check()
             .then(updateOrderStatus)
             .then(order => {
@@ -316,7 +316,7 @@ module.exports = function (m, fn) {
                 ])
                 .then(action => resolve(true));
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
 
@@ -324,7 +324,7 @@ module.exports = function (m, fn) {
         function sortOrdersBySupplier(orders) {
             function getOrders() {
                 function checkOrder(order) {
-                    return new Promise((resolve, reject) => {
+                    return new Promise( ( resolve, reject ) => {
                         if (order.status !== 1) {
                             reject(new Error('Only placed orders can be demanded'));
     
@@ -343,20 +343,20 @@ module.exports = function (m, fn) {
                         };
                     });
                 };
-                return new Promise((resolve, reject) => {
+                return new Promise( ( resolve, reject ) => {
                     let actions = [];
                     orders.forEach(order => {
-                        actions.push(new Promise((resolve, reject) => {
+                        actions.push(new Promise( ( resolve, reject ) => {
                             fn.orders.find({order_id: order.order_id, site_id: site_id})
                             .then(checkOrder)
                             .then(resolve)
-                            .catch(reject);
+                            .catch( reject );
                         }));
                     });
                     Promise.allSettled(actions)
                     .then(fn.checkResults)
                     .then(resolve)
-                    .catch(reject);
+                    .catch( reject );
                 });
             };
             function sortOrders(orders) {
@@ -389,19 +389,19 @@ module.exports = function (m, fn) {
                 });
                 return suppliers;
             };
-            return new Promise((resolve, reject) => {
+            return new Promise( ( resolve, reject ) => {
                 getOrders()
                 .then(sortOrders)
                 .then(resolve)
-                .catch(reject);
+                .catch( reject );
             });
         };
         function demandSizes(suppliers) {
             function addSizesToDemand([demand, supplier]) {
-                return new Promise((resolve, reject) => {
+                return new Promise( ( resolve, reject ) => {
                     let actions = [];
                     supplier.sizes.forEach(size => {
-                        actions.push(new Promise((resolve, reject) => {
+                        actions.push(new Promise( ( resolve, reject ) => {
                             fn.demands.lines.create(
                                 size.size_id,
                                 demand.demand_id,
@@ -413,20 +413,20 @@ module.exports = function (m, fn) {
                                 size.orders.forEach(e => order_updates.push(updateOrderStatus([e, 2, user_id])));
                                 Promise.all(order_updates)
                                 .then(results => resolve(line_id))
-                                .catch(reject);
+                                .catch( reject );
                             })
-                            .catch(reject);
+                            .catch( reject );
                         }));
                     });
                     Promise.allSettled(actions)
                     .then(results => resolve(true))
-                    .catch(reject);
+                    .catch( reject );
                 });
             };
-            return new Promise((resolve, reject) => {
+            return new Promise( ( resolve, reject ) => {
                 let actions = [];
                 suppliers.forEach(supplier => {
-                    actions.push(new Promise((resolve, reject) => {
+                    actions.push(new Promise( ( resolve, reject ) => {
                         fn.demands.create(
                             supplier.supplier_id,
                             user_id,
@@ -434,29 +434,29 @@ module.exports = function (m, fn) {
                         )
                         .then(addSizesToDemand)
                         .then(resolve)
-                        .catch(reject);
+                        .catch( reject );
                     }));
                 });
                 Promise.allSettled(actions)
                 .then(results => resolve(true))
-                .catch(reject);
+                .catch( reject );
             });
         };
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             fn.allowed(user_id, 'authorised_demander')
             .then(result => {
                 sortOrdersBySupplier(orders)
                 .then(demandSizes)
                 .then(result => resolve(true))
-                .catch(reject);
+                .catch( reject );
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
 
     fn.orders.receive = function (site_id, order_id, receipt, user_id, links = []) {
         function checkOrder(allowed) {
-            return new Promise((resolve, reject) => {
+            return new Promise( ( resolve, reject ) => {
                 fn.orders.find({order_id: order_id, site_id: site_id})
                 .then(order => {
                     if (!order.size) {
@@ -475,11 +475,11 @@ module.exports = function (m, fn) {
                         resolve(order);
                     };
                 })
-                .catch(reject);
+                .catch( reject );
             });
         };
         function checkLinks(order) {
-            return new Promise((resolve, reject) => {
+            return new Promise( ( resolve, reject ) => {
                 if (order.status === 1) {
                     resolve(order);
     
@@ -493,7 +493,7 @@ module.exports = function (m, fn) {
         };
         function receiveOrder(order) {
             function receiveSerials() {
-                return new Promise((resolve, reject) => {
+                return new Promise( ( resolve, reject ) => {
                     let actions = [];
                     receipt.serials.forEach(serial => {
                         actions.push(
@@ -526,11 +526,11 @@ module.exports = function (m, fn) {
         
                         };
                     })
-                    .catch(reject);
+                    .catch( reject );
                 });
             };
             function receiveStock() {
-                return new Promise((resolve, reject) => {
+                return new Promise( ( resolve, reject ) => {
                     fn.stocks.receive({
                         qty:          receipt.qty,
                         user_id:      user_id,
@@ -541,11 +541,11 @@ module.exports = function (m, fn) {
                         },
                     })
                     .then(result => resolve([receipt.qty, []]))
-                    .catch(reject);
+                    .catch( reject );
                 });
             };
             function checkVariance(qty, links) {
-                return new Promise((resolve, reject) => {
+                return new Promise( ( resolve, reject ) => {
                     let qty_original = order.qty;
                     if (qty > qty_original) {
                         fn.update(
@@ -559,7 +559,7 @@ module.exports = function (m, fn) {
                         )
                         .then(fn.actions.create)
                         .then(result => resolve([order, links, qty]))
-                        .catch(reject);
+                        .catch( reject );
                         
                     } else if (qty < qty_original) {
                         m.orders.create({
@@ -587,9 +587,9 @@ module.exports = function (m, fn) {
 
                                 };
                             })
-                            .catch(reject);
+                            .catch( reject );
                         })
-                        .catch(reject);
+                        .catch( reject );
                         
                     } else {
                         resolve([order, links, qty]);
@@ -597,7 +597,7 @@ module.exports = function (m, fn) {
                     };
                 });
             };
-            return new Promise((resolve, reject) => {
+            return new Promise( ( resolve, reject ) => {
                 let action = null;
                 if (order.size.has_serials) {
                     action = receiveSerials;
@@ -609,10 +609,10 @@ module.exports = function (m, fn) {
                 action(order)
                 .then(checkVariance)
                 .then(resolve)
-                .catch(reject);
+                .catch( reject );
             });
         };
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             fn.allowed(user_id, 'stores_stock_admin')
             .then(checkOrder)
             .then(checkLinks)
@@ -626,15 +626,15 @@ module.exports = function (m, fn) {
                     links.concat(receive_links)
                 ])
                 .then(order => resolve(qty))
-                .catch(reject);
+                .catch( reject );
             })
-            .catch(reject);
+            .catch( reject );
         })
-        .catch(reject);
+        .catch( reject );
     };
     
     function changeCheck(site_id, order_id) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             fn.orders.find({order_id: order_id, site_id: site_id})
             .then(order => {
                 if (!order.size) {
@@ -648,11 +648,11 @@ module.exports = function (m, fn) {
 
                 };
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
     fn.orders.changeSize = function (site_id, order_id, size_id, user_id) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             changeCheck(site_id, order_id)
             .then(order => {
                 fn.sizes.find({size_id: size_id})
@@ -671,16 +671,16 @@ module.exports = function (m, fn) {
                             ])
                             .then(result => resolve(true));
                         })
-                        .catch(reject);
+                        .catch( reject );
                     };
                 })
-                .catch(reject);
+                .catch( reject );
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
     fn.orders.changeQty = function (site_id, order_id, qty, user_id) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             qty = Number(qty);
             if (!qty || !Number.isInteger(qty) || qty < 1) {
                 reject(new Error('Invalid qty'));
@@ -698,9 +698,9 @@ module.exports = function (m, fn) {
                         ])
                         .then(result => resolve(true));
                     })
-                    .catch(reject);
+                    .catch( reject );
                 })
-                .catch(reject);
+                .catch( reject );
             };
         });
     };

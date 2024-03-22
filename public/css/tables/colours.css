@@ -1,4 +1,4 @@
-@import "../colour_schema.css";
+/* @import "../colour_schema.css"; */
 
 .selected_row {
 	background-color: var(--main-color);

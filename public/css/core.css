@@ -1,7 +1,10 @@
-@import "sizing.css";
 @import "colour_schema.css";
+@import "sizing.css";
+@import "colours+.css";
 @import "tables/core.css";
 @import "tables/colours.css";
+@import "nav/core.css";
+@import "nav/colours.css";
 @media (min-width: 768px) {
 	h1 {font-size: 2.9rem}
 }

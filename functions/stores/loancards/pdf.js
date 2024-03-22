@@ -1,4 +1,4 @@
-module.exports = function (m, fn) {
+module.exports = function ( m, fn ) {
     // string height @ 30: 38.19
     // string height @ 15: 19.095
     // string height @ 10: 12.7299999
@@ -6,7 +6,7 @@ module.exports = function (m, fn) {
 
     fn.loancards.pdf.create = function ([site_id, loancard_id]) {
         function check(loancard_id) {
-            return new Promise((resolve, reject) => {
+            return new Promise( ( resolve, reject ) => {
                 fn.loancards.find(
                     {loancard_id: loancard_id, site_id: site_id},
                     [{
@@ -34,11 +34,11 @@ module.exports = function (m, fn) {
     
                     };
                 })
-                .catch(reject);
+                .catch( reject );
             });
         };
         function createPDF(loancard) {
-            return new Promise((resolve, reject) => {
+            return new Promise( ( resolve, reject ) => {
                 fn.pdfs.createBarcodes(loancard.loancard_id)
                 .then(result => {
                     fn.pdfs.create(
@@ -53,9 +53,9 @@ module.exports = function (m, fn) {
                         y += addHeader(doc, loancard, y);
                         resolve([loancard, doc, filename, writeStream, y]);
                     })
-                    .catch(reject);
+                    .catch( reject );
                 })
-                .catch(reject);
+                .catch( reject );
             });
         };
         function addLines([loancard, doc, filename, writeStream, y]) {
@@ -114,10 +114,10 @@ module.exports = function (m, fn) {
             });
         };
         function updateLoancard([loancard, filename]) {
-            return new Promise((resolve, reject) => {
+            return new Promise( ( resolve, reject ) => {
                 fn.update(loancard, {filename: filename})
                 .then(result => resolve(filename))
-                .catch(reject);
+                .catch( reject );
             });
         };
         
@@ -145,14 +145,14 @@ module.exports = function (m, fn) {
             return 55;
         };
 
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             check(loancard_id)
             .then(createPDF)
             .then(addLines)
             .then(finaliseLoancard)
             .then(updateLoancard)
             .then(resolve)
-            .catch(reject);
+            .catch( reject );
         })
     };
 };

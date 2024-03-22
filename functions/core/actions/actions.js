@@ -1,4 +1,4 @@
-module.exports = function (m, fn) {
+module.exports = function ( m, fn ) {
     fn.actions.find = function (where) {
         return fn.find(
             m.actions,
@@ -6,18 +6,18 @@ module.exports = function (m, fn) {
             [fn.inc.users.user()]
         );
     };
-    fn.actions.findAll = function (query) {
-        return new Promise((resolve, reject) => {
+    fn.actions.findAll = function ( query ) {
+        return new Promise( ( resolve, reject ) => {
             m.actions.findAndCountAll({
                 include: [{
                     model: m.action_links,
                     as:    'links',
                     where: query.where
                 }],
-                ...fn.pagination(query)
+                ...fn.pagination( query )
             })
             .then(results => resolve(results))
-            .catch(reject);
+            .catch( reject );
         });
     };
 

@@ -1,6 +1,6 @@
-module.exports = function (m, fn) {
+module.exports = function ( m, fn ) {
     function permissionsAllowed(user_id, allowed) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             fn.allowed(user_id, 'edit_own_permissions', true)
             .then(edit_own => {
                 if (!allowed && !edit_own) {
@@ -11,25 +11,25 @@ module.exports = function (m, fn) {
                 
                 };
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
     fn.users.permissions.get_all = function (user_id, allowed, query) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             permissionsAllowed(user_id, allowed)
             .then(allowed => {
                 m.permissions.findAndCountAll({
                     where: query.where,
-                    ...fn.pagination(query)
+                    ...fn.pagination( query )
                 })
                 .then(results => resolve(results))
-                .catch(reject);
+                .catch( reject );
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
     fn.users.permissions.update = function (site_id, user_id_self, user_id, allowed, submitted_permissions) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             permissionsAllowed(user_id_self, allowed)
             .then(allowed => {
                 fn.users.find({user_id: user_id})
@@ -63,13 +63,13 @@ module.exports = function (m, fn) {
                         });
                         Promise.allSettled(actions)
                         .then(results => resolve(true))
-                        .catch(reject);
+                        .catch( reject );
                     })
-                    .catch(reject);
+                    .catch( reject );
                 })
-                .catch(reject);
+                .catch( reject );
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
     fn.users.permissions.tree = function () {

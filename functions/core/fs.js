@@ -1,8 +1,8 @@
 const fs = require("fs");
-module.exports = function (m, fn) {
+module.exports = function ( m, fn ) {
 	fn.fs = {};
 	function pathExists(path, createIfFalse = false) {
-		return new Promise((resolve, reject) => {
+		return new Promise( ( resolve, reject ) => {
 			if (fs.existsSync(path)) {
 				resolve(path);
 
@@ -10,7 +10,7 @@ module.exports = function (m, fn) {
 				if (createIfFalse) {
 					fn.fs.mkdir(path)
 					.then(path => resolve(true))
-					.catch(reject);
+					.catch( reject );
 
 				} else {
 					reject(new Error('Path does not exist'));
@@ -39,7 +39,7 @@ module.exports = function (m, fn) {
 		});
 	};
 	fn.fs.copyFile 	= function (src, dest) {
-		return new Promise((resolve, reject) => {
+		return new Promise( ( resolve, reject ) => {
 			fn.fs.fileExists(src.folder, src.folder)
 			.then(src => {
 				fs.copyFile(
@@ -61,11 +61,11 @@ module.exports = function (m, fn) {
 					}
 				);
 			})
-			.catch(reject);
+			.catch( reject );
 		});
 	};
 	fn.fs.uploadFile 	= function (options = {}) {
-		return new Promise((resolve, reject) => {
+		return new Promise( ( resolve, reject ) => {
 			fn.suppliers.find({supplier_id: options.supplier_id})
 			.then(supplier => {
 				fn.fs.copyFile(
@@ -90,15 +90,15 @@ module.exports = function (m, fn) {
 
 						};
 					})
-					.catch(reject);
+					.catch( reject );
 				})
-				.catch(reject);
+				.catch( reject );
 			})
-			.catch(reject);
+			.catch( reject );
 		});
 	};
 	fn.fs.rmdir 		= function (folder) {
-		return new Promise((resolve, reject) => {
+		return new Promise( ( resolve, reject ) => {
 			fn.fs.fileExists(folder, '')
 			.then(exists => {
 				fs.rm(
@@ -116,11 +116,11 @@ module.exports = function (m, fn) {
 					}
 				);
 			})
-			.catch(reject);
+			.catch( reject );
 		});
 	};
 	fn.fs.rm 			= function (file) {
-		return new Promise((resolve, reject) => {
+		return new Promise( ( resolve, reject ) => {
 			fs.access(file, fs.constants.R_OK, function (err) {
 				if (err) {
 					reject(err);
@@ -140,7 +140,7 @@ module.exports = function (m, fn) {
 		});
 	};
 	fn.fs.deleteFile 	= function (options = {}) {
-		return new Promise((resolve, reject) => {
+		return new Promise( ( resolve, reject ) => {
 			m[options.table].findByPk(options.id)
 			.then(result => {
 				if (result.filename) {
@@ -157,22 +157,22 @@ module.exports = function (m, fn) {
 								])
 								.then(result => resolve(true));
 							})
-							.catch(reject);
+							.catch( reject );
 						})
-						.catch(reject);
+						.catch( reject );
 					})
-					.catch(reject);
+					.catch( reject );
 					
 				} else {
 					reject(new Error('No file for this record'));
 
 				};
 			})
-			.catch(reject);
+			.catch( reject );
 		});
 	};
 	fn.fs.download 		= function (folder, file, res) {
-		return new Promise((resolve, reject) => {
+		return new Promise( ( resolve, reject ) => {
 			fn.fs.fileExists(folder, file)
 			.then(path => {
 				res.download(path, file, err => {
@@ -185,7 +185,7 @@ module.exports = function (m, fn) {
 					};
 				});
 			})
-			.catch(reject);
+			.catch( reject );
 		});
 	};
 };

@@ -24,7 +24,11 @@ module.exports = (app, fn) => {
     });
     app.get('/get/issue',       fn.loggedIn, fn.permissions.check('issuer',        true), (req, res) => {
         if (!req.allowed) req.query.where["user_id_issue"] = req.user.user_id;
-        fn.issues.find({...req.query.where, site_id: req.session.site.site_id}, {order: true, loancard_lines: true})
+        fn.issues.find(
+            req.session.site.site_id,
+            req.query.where,
+            { order: true, loancard_lines: true }
+        )
         .then(issue => res.send({success: true, result: issue}))
         .catch(err => fn.sendError(res, err));
     });

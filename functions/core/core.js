@@ -1,5 +1,5 @@
 const execSync = require('child_process').execSync;
-module.exports = function (m, fn) {
+module.exports = function ( m, fn ) {
     fn.op = require('sequelize').Op;
     fn.redirect = function(res, url, message = null) {
         // if (message) console.log(message);
@@ -30,7 +30,7 @@ module.exports = function (m, fn) {
         res.send(_return);
     };
     fn.allowed = function (user_id, _permission, allow = false) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             m.permissions.findOne({
                 where: {
                     permission: _permission,
@@ -49,7 +49,7 @@ module.exports = function (m, fn) {
                     resolve(true);
                 };
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
     fn.nullify = function (record) {
@@ -81,14 +81,14 @@ module.exports = function (m, fn) {
             return `${nsn_group}${nsn_class}${separator}${nsn_country}${separator}${nsn_number}`
         };
     };
-    fn.pagination = function (query) {
+    fn.pagination = function ( query ) {
         let pagination = {distinct: true};
         if (query.order ) pagination.order  = [query.order];
         if (query.limit ) pagination.limit  = query.limit;
         if (query.offset) pagination.offset = query.offset * query.limit || 0;
         return pagination;
     };
-    fn.buildQuery = function (query) {
+    fn.buildQuery = function ( query ) {
         let where = {};
         
         // so that following tests dont fail when trying to access keys of query.where
@@ -137,7 +137,7 @@ module.exports = function (m, fn) {
         return execSync(cmd, { encoding: 'utf-8' });
     };
     fn.checkLines = function (lines) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             if (!lines) {
                 reject(new Error('No lines submitted'));
                 
@@ -153,7 +153,7 @@ module.exports = function (m, fn) {
         });
     };
     fn.actionLines = function ([actions, submitted]) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             Promise.allSettled(actions)
             .then(fn.logRejects)
             .then(results => {
@@ -161,7 +161,7 @@ module.exports = function (m, fn) {
                 const message = `${resolved} of ${submitted} tasks completed`;
                 resolve(message)
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
     
@@ -170,7 +170,7 @@ module.exports = function (m, fn) {
         return results;
     };
     fn.rejectIfNull = function (result) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             if (result) {
                 resolve(result);
 
@@ -181,7 +181,7 @@ module.exports = function (m, fn) {
         });
     };
     fn.find = function(table, where, include = []) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             table.findOne({
                 where: where,
                 include: include
@@ -195,33 +195,22 @@ module.exports = function (m, fn) {
 
                 };
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
-    fn.checkUpdateResult = function ( result ) {
-        return new Promise(( resolve, reject ) => {
+    fn.checkResult = function ( result ) {
+        return new Promise( ( resolve, reject ) => {
             if ( result ) {
                 resolve( true );
 
             } else {
-                reject( new Error( 'Record not updated' ) );
-
-            };
-        });
-    };
-    fn.checkDestroyResult = function ( result ) {
-        return new Promise(( resolve, reject ) => {
-            if ( result ) {
-                resolve( true );
-
-            } else {
-                reject( new Error( 'Record not deleted' ) );
+                reject( new Error( 'Database action failed' ) );
 
             };
         });
     };
     fn.update = function (record, details, return_value = true) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             record.update(details)
             .then(result => {
                 if (result) {
@@ -232,11 +221,11 @@ module.exports = function (m, fn) {
 
                 };
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
     fn.destroy = function (record) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             record.destroy()
             .then(result => {
                 if (result) {
@@ -247,7 +236,7 @@ module.exports = function (m, fn) {
                     
                 };
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
     fn.checkResults = function (results) {

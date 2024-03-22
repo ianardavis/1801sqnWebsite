@@ -1,4 +1,4 @@
-module.exports = function (m, fn) {
+module.exports = function ( m, fn ) {
     fn.sites = {};
     fn.sites.find = function (where, options = {}) {
         return fn.find(
@@ -8,35 +8,35 @@ module.exports = function (m, fn) {
         );
     };
     fn.sites.findAll = function (query, options = {}) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             m.sites.findAndCountAll({
                 where: query.where || {},
-                ...fn.pagination(query),
+                ...fn.pagination( query ),
                 include: options.include || (options.for_user ? [{model: m.users, where: {user_id: options.for_user}, required: true}] : [])
             })
             .then(sites => resolve(sites))
-            .catch(reject);
+            .catch( reject );
         });
     };
     fn.sites.findForUser = function (user_id) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             m.users.findOne({
                 where:   {user_id: user_id},
                 include: [m.sites]
             })
             .then(user => resolve(user.sites))
-            .catch(reject);
+            .catch( reject );
         });
     };
     fn.sites.findCurrent = function (site_id) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             fn.sites.find({site_id: site_id})
             .then(resolve)
-            .catch(reject);
+            .catch( reject );
         });
     };
     fn.sites.switch = function (req) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             m.sites.findOne({
                 where: {site_id: req.params.id},
                 include: [{
@@ -54,11 +54,11 @@ module.exports = function (m, fn) {
                     reject(new Error('You do not have access to this site!'));
                 };
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
     fn.sites.addUser = function (user_id, site_id) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             Promise.all([
                 fn.users.find({user_id: user_id}),
                 fn.sites.find({site_id: site_id})
@@ -71,24 +71,24 @@ module.exports = function (m, fn) {
                     }
                 })
                 .then(([site_user, created]) => {resolve(created)})
-                .catch(reject);
+                .catch( reject );
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
 
     fn.sites.create = function (name, user_id_creator) {
         function createPermission(details, permission) {
-            return new Promise((resolve, reject) => {
+            return new Promise( ( resolve, reject ) => {
                 m.permissions.create({
                     ...details,
                     permission: permission
                 })
                 .then(resolve)
-                .catch(reject);
+                .catch( reject );
             });
         };
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             m.sites.create({ name: name })
             .then(site => {
                 m.site_users.create({
@@ -115,16 +115,16 @@ module.exports = function (m, fn) {
                     .then(results => {
                         resolve(`${results.filter(e => e.status === 'fulfilled').length} permissions successfully created`);
                     })
-                    .catch(reject);
+                    .catch( reject );
                 })
-                .catch(reject);
+                .catch( reject );
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
 
     fn.sites.delete = function (site_id) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             const where = { site_id: site_id };
             fn.sites.find(where)
             .then(site => {
@@ -147,13 +147,13 @@ module.exports = function (m, fn) {
                         .then(results => {
                             site.destroy()
                             .then(resolve)
-                            .catch(reject);
+                            .catch( reject );
                         })
-                        .catch(reject);
+                        .catch( reject );
     
                     };
                 })
-                .catch(reject);
+                .catch( reject );
             })
             .catch(err => reject(new Error('Site not found')));
         });

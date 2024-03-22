@@ -1,10 +1,10 @@
 const fs = require("fs");
-module.exports = function (m, fn) {
+module.exports = function ( m, fn ) {
     fn.settings = {
         logs: {}
     };
     fn.settings.find = function (where) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             m.settings.findAll({where: where})
             .then(settings => {
                 if (!settings || settings.length === 0) {
@@ -18,40 +18,40 @@ module.exports = function (m, fn) {
                 
                 };
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
-    fn.settings.findAll = function (query) {
-        return new Promise((resolve, reject) => {
+    fn.settings.findAll = function ( query ) {
+        return new Promise( ( resolve, reject ) => {
             m.settings.findAll({
                 where:      query.where,
                 attributes: ['setting_id','name', 'value'],
-                ...fn.pagination(query)
+                ...fn.pagination( query )
             })
             .then(settings => resolve(settings))
-            .catch(reject);
+            .catch( reject );
         });
     };
 
     fn.settings.edit = function (setting_id, details) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             m.settings.findOne({where: {setting_id: setting_id}})
             .then(setting => {
                 if (setting) {
                     fn.update(setting, details)
                     .then(result => resolve(true))
-                    .catch(reject);
+                    .catch( reject );
 
                 } else {
                     reject(new Error('Setting not found'));
                 
                 };
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
     fn.settings.set = function (name, value) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             m.settings.findOrCreate({
                 where:    {name:  name},
                 defaults: {value: value}
@@ -63,15 +63,15 @@ module.exports = function (m, fn) {
                 } else {
                     fn.update(setting, {value: value})
                     .then(result => resolve(true))
-                    .catch(reject);
+                    .catch( reject );
 
                 };
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
     fn.settings.delete = function (setting_id) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             fn.settings.find({setting_id: setting_id})
             .then(setting => {
                 setting.destroy()
@@ -84,14 +84,14 @@ module.exports = function (m, fn) {
 
                     };
                 })
-                .catch(reject);
+                .catch( reject );
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
 
     fn.settings.logs.find = function (type, res) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             fn.settings.find({name: `log ${type || ''}`})
             .then(setting => {
                 let readStream = fs.createReadStream(setting.value);
@@ -103,12 +103,12 @@ module.exports = function (m, fn) {
                 });
                 resolve(true);
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
 
     fn.settings.runCommand = function (command) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             try {
                 const output = fn.runCommand(command);
                 console.log(output);

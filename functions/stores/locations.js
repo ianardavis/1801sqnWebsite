@@ -1,8 +1,8 @@
-module.exports = function (m, fn) {
+module.exports = function ( m, fn ) {
     fn.locations = {};
 
     fn.locations.findByID = function (location_id) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             m.locations.findOne({where: {location_id: location_id}})
             .then(location => {
                 if (location) {
@@ -13,11 +13,11 @@ module.exports = function (m, fn) {
 
                 };
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
     fn.locations.findByLocation = function (location) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             m.locations.findOne({where: {location: location}})
             .then(location => {
                 if (location) {
@@ -28,13 +28,13 @@ module.exports = function (m, fn) {
 
                 };
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
-    fn.locations.findAll = function (query) {
+    fn.locations.findAll = function ( query ) {
         return m.locations.findAndCountAll({
             where: query.where,
-            ...fn.pagination(query)
+            ...fn.pagination( query )
         });
     };
     fn.locations.get = function (search) {
@@ -52,13 +52,13 @@ module.exports = function (m, fn) {
 
     fn.locations.findOrCreate = function (site_id, location) {
         if (location) {
-            return new Promise((resolve, reject) => {
+            return new Promise( ( resolve, reject ) => {
                 m.locations.findOrCreate({where: {
                     location: location,
                     site_id:  site_id
                 }})
                 .then(([new_location, created]) => resolve(new_location))
-                .catch(reject);
+                .catch( reject );
             });
 
         } else {
@@ -69,7 +69,7 @@ module.exports = function (m, fn) {
 
     fn.locations.edit = function (location_id, new_location) {
         if (new_location) {
-            return new Promise((resolve, reject) => {
+            return new Promise( ( resolve, reject ) => {
                 fn.locations.findByID(location_id)
                 .then(location => {
                     fn.locations.findByLocation(new_location)
@@ -78,7 +78,7 @@ module.exports = function (m, fn) {
                         if (err.message === 'Location not found') {
                             fn.update(location, {location: new_location})
                             .then(resolve)
-                            .catch(reject);
+                            .catch( reject );
     
                         } else {
                             reject(err);
@@ -86,7 +86,7 @@ module.exports = function (m, fn) {
                         };
                     });
                 })
-                .catch(reject);
+                .catch( reject );
             });
             
         } else {

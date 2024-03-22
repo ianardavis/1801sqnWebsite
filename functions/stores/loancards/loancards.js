@@ -1,4 +1,4 @@
-module.exports = function (m, fn) {
+module.exports = function ( m, fn ) {
     fn.loancards.find = function (where, include = []) {
         return fn.find(
             m.loancards,
@@ -33,7 +33,7 @@ module.exports = function (m, fn) {
                 };
             });
         };
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             if (!query.where) query.where = {};
             issuerAllowed(query.where.user_id_loancard, user_id)
             .then(user_filter => {
@@ -53,23 +53,23 @@ module.exports = function (m, fn) {
                 m.loancards.findAndCountAll({
                     where: fn.buildQuery(query),
                     include: include,
-                    ...fn.pagination(query)
+                    ...fn.pagination( query )
                 })
                 .then(results => resolve(results))
-                .catch(reject);
+                .catch( reject );
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
     fn.loancards.edit = function (site_id, loancard_id, details) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             fn.loancards.find({loancard_id: loancard_id, site_id: site_id})
             .then(loancard => {
                 fn.update(loancard, details)
                 .then(result => resolve(true))
-                .catch(reject);
+                .catch( reject );
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
     fn.loancards.count = function (site_id, where) {
@@ -79,7 +79,7 @@ module.exports = function (m, fn) {
     
     fn.loancards.cancel = function (site_id, loancard_id, user_id) {
         function check(loancard_id) {
-            return new Promise((resolve, reject) => {
+            return new Promise( ( resolve, reject ) => {
                 fn.loancards.find(
                     {loancard_id: loancard_id, site_id: site_id},
                     [{
@@ -114,7 +114,7 @@ module.exports = function (m, fn) {
                 .then(reject);
             });
         };
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             check(loancard_id)
             .then(loancard => {
                 fn.update(loancard, {status: 0})
@@ -126,13 +126,13 @@ module.exports = function (m, fn) {
                     ])
                     .then(action => resolve(true));
                 })
-                .catch(reject);
+                .catch( reject );
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
     fn.loancards.create = function (site_id, user_id_loancard, user_id) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             m.loancards.findOrCreate({
                 where: {
                     site_id: site_id,
@@ -142,13 +142,13 @@ module.exports = function (m, fn) {
                 defaults: {user_id: user_id}
             })
             .then(([loancard, created]) => resolve(loancard.loancard_id))
-            .catch(reject);
+            .catch( reject );
         });
     };
 
     fn.loancards.complete = function (site_id, loancard_id, user_id, date_due) {
         function check(loancard_id) {
-            return new Promise((resolve, reject) => {
+            return new Promise( ( resolve, reject ) => {
                 fn.loancards.find( 
                     {loancard_id: loancard_id, site_id: site_id},
                     [{
@@ -170,25 +170,25 @@ module.exports = function (m, fn) {
                         
                     };
                 })
-                .catch(reject);
+                .catch( reject );
             });
         };
         function updateLines(lines) {
-            return new Promise((resolve, reject) => {
+            return new Promise( ( resolve, reject ) => {
                 let actions = [];
                 lines.forEach(line => {
-                    actions.push(new Promise((resolve, reject) => {
+                    actions.push(new Promise( ( resolve, reject ) => {
                         fn.update(line, {status: 2})
                         .then(result => resolve({_table: 'loancard_lines', id: line.line_id}))
-                        .catch(reject);
+                        .catch( reject );
                     }));
                 });
                 Promise.all(actions)
                 .then(links => resolve(links))
-                .catch(reject);
+                .catch( reject );
             });
         };
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             check(loancard_id)
             .then(loancard => {
                 updateLines(loancard.lines)
@@ -208,45 +208,45 @@ module.exports = function (m, fn) {
                         ])
                         .then(action => resolve([loancard.loancard_id, site_id]));
                     })
-                    .catch(reject);
+                    .catch( reject );
                 })
-                .catch(reject);
+                .catch( reject );
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
 
     function getFilename(loancard_id, site_id) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             fn.loancards.find({loancard_id: loancard_id, site_id: site_id})
             .then(loancard => {
                 if (!loancard.filename) {
                     fn.loancards.pdf.create([site_id, loancard.loancard_id])
                     .then(filename => resolve(filename))
-                    .catch(reject);
+                    .catch( reject );
 
                 } else {
                     resolve(loancard.filename);
                 
                 };
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
     fn.loancards.download = function (site_id, loancard_id, res) {
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             getFilename(loancard_id, site_id)
             .then(filename => {
                 fn.fs.download('loancards', filename, res)
-                .catch(reject);
+                .catch( reject );
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
 
     fn.loancards.close = function (site_id, loancard_id, user_id) {
         function check(loancard_id) {
-            return new Promise((resolve, reject) => {
+            return new Promise( ( resolve, reject ) => {
                 fn.loancards.find(
                     {loancard_id: loancard_id, site_id: site_id},
                     [{
@@ -265,10 +265,10 @@ module.exports = function (m, fn) {
                         
                     };
                 })
-                .catch(reject);
+                .catch( reject );
             });
         };
-        return new Promise((resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             check(loancard_id)
             .then(loancard => {
                 fn.update(loancard, {status: 3})
@@ -280,9 +280,9 @@ module.exports = function (m, fn) {
                     ])
                     .then(action => resolve(true));
                 })
-                .catch(reject);
+                .catch( reject );
             })
-            .catch(reject);
+            .catch( reject );
         });
     };
 };
