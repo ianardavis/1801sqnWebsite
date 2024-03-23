@@ -209,6 +209,9 @@ module.exports = function ( m, fn ) {
             };
         });
     };
+    fn.fulfilledOnly = function ( results ) {
+        return results.filter( result => result.status === 'fulfilled');
+    };
     fn.update = function (record, details, return_value = true) {
         return new Promise( ( resolve, reject ) => {
             record.update(details)

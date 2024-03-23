@@ -286,7 +286,7 @@ module.exports = function ( m, fn ) {
                 .then(results => {
                     resolve(true);
                     // let resolve_obj = [];
-                    // results.filter(e => e.status === 'fulfilled').forEach(r => resolve_obj.concat(r.value));
+                    // results.filter( fn.fulfilledOnly ).forEach(r => resolve_obj.concat(r.value));
                     // resolve(resolve_obj);
                 })
                 .catch( reject );

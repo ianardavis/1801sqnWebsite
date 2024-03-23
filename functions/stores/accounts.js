@@ -83,7 +83,7 @@ module.exports = function ( m, fn ) {
                     fn.demands.find( { account_id: account.account_id } )
                 ])
                 .then( results => {
-                    if ( results.filter( e => e.status === 'fulfilled' ).length > 0 ) {
+                    if ( results.filter( fn.fulfilledOnly ).length > 0 ) {
                         reject( new Error( 'Account has linked data, it cannot be destroyed' ) );
 
                     } else {

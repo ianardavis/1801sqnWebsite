@@ -202,7 +202,7 @@ module.exports = function ( m, fn ) {
                     Promise.allSettled(actions)
                     .then(results => {
                         let scrap_ids = [];
-                        results.filter(e => e.status === 'fulfilled').forEach(result => {
+                        results.filter( fn.fulfilledOnly ).forEach(result => {
                             if (!scrap_ids.includes(result.value)) scrap_ids.push(result.value);
                         });
                         resolve(scrap_ids);

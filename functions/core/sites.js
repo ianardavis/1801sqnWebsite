@@ -113,7 +113,7 @@ module.exports = function ( m, fn ) {
 
                     Promise.allSettled(permissionActions)
                     .then(results => {
-                        resolve(`${results.filter(e => e.status === 'fulfilled').length} permissions successfully created`);
+                        resolve(`${results.filter( fn.fulfilledOnly ).length} permissions successfully created`);
                     })
                     .catch( reject );
                 })

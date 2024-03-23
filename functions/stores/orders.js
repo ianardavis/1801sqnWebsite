@@ -507,7 +507,7 @@ module.exports = function ( m, fn ) {
                     });
                     Promise.allSettled(actions)
                     .then(results => {
-                        const serials = results.filter(e => e.status === 'fulfilled');
+                        const serials = results.filter( fn.fulfilledOnly );
                         const qty = serials.length;
                         if (qty && qty > 0) {
                             let links = [];

@@ -410,7 +410,7 @@ module.exports = function ( m, fn ) {
                 };
                 function collateIssues( results ) {
                     return new Promise( ( resolve ) => {
-                        const fulfilled = results.filter( e => e.status === 'fulfilled' );
+                        const fulfilled = results.filter( fn.fulfilledOnly );
                         let issues = [];
                         fulfilled.forEach( issue => issues.push( issue.value ) );
                         resolve( issues );
@@ -588,7 +588,7 @@ module.exports = function ( m, fn ) {
                     Promise.allSettled( issue_actions )
                     .then( fn.logRejects )
                     .then( results => {
-                        if ( results.filter( e => e.status === 'fulfilled').length > 0 ) {
+                        if ( results.filter( fn.fulfilledOnly ).length > 0 ) {
                             resolve( true );
     
                         } else {
