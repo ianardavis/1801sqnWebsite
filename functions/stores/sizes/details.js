@@ -1,5 +1,5 @@
 module.exports = function ( m, fn ) {
-    fn.sizes.details.find = function (where) {
+    fn.sizes.details.find = function ( where ) {
         return fn.find(
             m.details,
             where
@@ -11,126 +11,137 @@ module.exports = function ( m, fn ) {
                 where: query.where,
                 ...fn.pagination( query )
             })
-            .then(details => resolve(details))
+            .then( resolve )
             .catch( reject );
         });
     };
 
-    fn.sizes.details.create = function (detail) {
+    fn.sizes.details.create = function ( detail ) {
+        function checkDetails() {
+            return new Promise( ( resolve, reject ) => {
+                if ( !detail.name ) {
+                    reject( new Error( 'Name not submitted' ) );
+        
+                } else if (!detail.value) {
+                    reject( new Error( 'Value not submitted' ) );
+        
+                } else {
+                    resolve( true );
+
+                };
+            });
+        };
         return new Promise( ( resolve, reject ) => {
-            if (!detail.name) {
-                reject(new Error('Name not submitted'));
-    
-            } else if (!detail.name) {
-                reject(new Error('Value not submitted'));
-    
-            } else {
+            checkDetails()
+            .then( result => {
                 m.details.findOrCreate({
                     where: {
                         size_id: detail.size_id,
                         name:    detail.name
                     },
-                    defaults: {value: detail.value}
+                    defaults: { value: detail.value }
                 })
-                .then(([new_detail, created]) => {
-                    if (!created) {
-                        reject(new Error('Detail already exists'));
-    
-                    } else {
-                        resolve(new_detail);
-
-                    };
-                })
-                .catch( reject );
-            };
-        });
-    };
-
-    fn.sizes.details.edit = function (detail_id, details) {
-        return new Promise( ( resolve, reject ) => {
-            fn.sizes.details.find(detail_id)
-            .then(detail => {
-                fn.update(detail, details)
-                .then(result => resolve(true))
+                .then( fn.rejectIfNotCreated )
+                .then( resolve )
                 .catch( reject );
             })
             .catch( reject );
         });
     };
-    fn.sizes.details.updateBulk = function (details) {
-        function updateDetail(size_id, name, value) {
-            return new Promise( ( resolve, reject ) => {
-                fn.sizes.details.find({
+
+    fn.sizes.details.edit = function ( detail_id, details ) {
+        return new Promise( ( resolve, reject ) => {
+            m.sizes.details.findOne({
+                where: { detail_id: detail_id }
+            })
+            .then( fn.rejectIfNull )
+            .then( detail => {
+                detail.update( details )
+                .then( fn.checkResult )
+                .then( resolve )
+                .catch( reject );
+            })
+            .catch( reject );
+        });
+    };
+    fn.sizes.details.updateBulk = function ( details ) {
+        function updateDetail( size_id, name, value ) {
+            function createDetail() {
+                return m.details.create({
                     size_id: size_id,
-                    name: `Demand ${name}`
+                    name: `Demand ${ name }`,
+                    value: value
                 })
-                .then(detail => {
-                    if (value === '') {
+            };
+            return new Promise( ( resolve, reject ) => {
+                m.sizes.details.findOne({
+                    where: {
+                        size_id: size_id,
+                        name: `Demand ${ name }`
+                    }
+                })
+                .then( fn.rejectIfNull )
+                .then( detail => {
+                    if ( value === '' ) {
                         detail.destroy()
-                        .then(result => resolve(true))
+                        .then( fn.checkResult )
+                        .then( resolve )
                         .catch( reject );
 
-                    } else if (detail) {
-                        fn.update(detail, {value: value})
-                        .then(result => resolve(true))
+                    } else if ( detail ) {
+                        detail.update( { value: value } )
+                        .then( fn.checkResult )
+                        .then( resolve )
                         .catch( reject );
 
                     } else {
-                        m.details.create({
-                            size_id: size_id,
-                            name: `Demand ${name}`,
-                            value: value
-                        })
-                        .then(result => resolve(true))
+                        createDetail()
+                        .then( new_detail => resolve( true ) )
                         .catch( reject );
 
                     };
                 })
                 .catch(err => {
-                    if (value) {
-                        m.details.create({
-                            size_id: size_id,
-                            name: `Demand ${name}`,
-                            value: value
-                        })
-                        .then(result => resolve(true))
+                    if ( value ) {
+                        createDetail()
+                        .then( new_detail => resolve( true ) )
                         .catch( reject );
 
                     } else {
-                        resolve(false);
+                        resolve( false );
                     
                     };
                 });
             });
         };
         return new Promise( ( resolve, reject ) => {
-            let actions = [];
-            details.forEach(_detail => {
-                actions.push(updateDetail(_detail.size_id, 'Cell', _detail.Cell));
-                actions.push(updateDetail(_detail.size_id, 'Page', _detail.Page));
-            });
-            Promise.allSettled(actions)
-            .then(fn.logRejects)
-            .then(results => {
-                resolve(true);
+            Promise.allSettled( 
+                details.map( ( { size_id, Cell, Page } ) => {
+                    updateDetail( size_id, 'Cell', Cell );
+                    updateDetail( size_id, 'Page', Page );
+                })
+            )
+            .then( fn.logRejects )
+            .then( results => {
+                resolve( true );
             })
             .catch( reject );
         });
     };
 
-    fn.sizes.details.delete = function (detail_id) {
+    fn.sizes.details.delete = function ( detail_id ) {
         return new Promise( ( resolve, reject ) => {
-            m.details.destroy({where: {detail_id: detail_id}})
-            .then(result => {
-                if (!result) {
-                    reject(new Error('Detail not deleted'));
-    
-                } else {
-                    resolve(true);
-    
-                };
+            m.details.findOne({
+                where: { detail_id: detail_id }
             })
-            .catch( reject );
+            .then( fn.rejectIfNull )
+            .then( detail => {
+                detail.destroy()
+                .then( fn.checkResult )
+                .then( resolve )
+                .catch( reject );
+            })
+            .catch( reject )
         });
     };
 };

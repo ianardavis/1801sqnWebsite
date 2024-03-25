@@ -112,8 +112,9 @@ module.exports = function ( m, fn ) {
                     fn.users.permissions.tree().forEach(addPermission);
 
                     Promise.allSettled(permissionActions)
+                    .then( fn.fulfilledOnly )
                     .then(results => {
-                        resolve(`${results.filter( fn.fulfilledOnly ).length} permissions successfully created`);
+                        resolve(`${results.length} permissions successfully created`);
                     })
                     .catch( reject );
                 })

@@ -14,7 +14,7 @@ module.exports = function ( m, fn ) {
                 include: [fn.inc.users.user()],
                 ...fn.pagination( query )
             })
-            .then(results => resolve(results))
+            .then( resolve )
             .catch( reject );
         });
     };

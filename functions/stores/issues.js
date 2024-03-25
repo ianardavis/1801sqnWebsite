@@ -408,21 +408,13 @@ module.exports = function ( m, fn ) {
                         .catch( reject );
                     });
                 };
-                function collateIssues( results ) {
-                    return new Promise( ( resolve ) => {
-                        const fulfilled = results.filter( fn.fulfilledOnly );
-                        let issues = [];
-                        fulfilled.forEach( issue => issues.push( issue.value ) );
-                        resolve( issues );
-                    })
-                };
                 return new Promise( ( resolve, reject ) => {
                     let actions = [];
                     issues.forEach( issue => {
                         actions.push( checkIssue( issue.issue_id ) );
                     });
                     Promise.allSettled( actions )
-                    .then( collateIssues )
+                    .then( fn.fulfilledOnly )
                     .then( resolve )
                     .catch( reject );
                 });
@@ -587,8 +579,9 @@ module.exports = function ( m, fn ) {
                     });
                     Promise.allSettled( issue_actions )
                     .then( fn.logRejects )
+                    .then( fn.fulfilledOnly )
                     .then( results => {
-                        if ( results.filter( fn.fulfilledOnly ).length > 0 ) {
+                        if ( results.length > 0 ) {
                             resolve( true );
     
                         } else {

@@ -210,7 +210,9 @@ module.exports = function ( m, fn ) {
         });
     };
     fn.fulfilledOnly = function ( results ) {
-        return results.filter( result => result.status === 'fulfilled');
+        return results
+            .filter( result => result.status === 'fulfilled' )
+            .map   ( result => result.value );
     };
     fn.update = function (record, details, return_value = true) {
         return new Promise( ( resolve, reject ) => {
@@ -254,5 +256,11 @@ module.exports = function ( m, fn ) {
             };
         });
         return return_result;
+    };
+    fn.rejectIfNotCreated = function ( [ record, created ] ) {
+        return new Promise( ( resolve, reject ) => {
+            if ( created ) resolve( record )
+            else reject( new Error( 'Record already exists ' ) );
+        });
     };
 };

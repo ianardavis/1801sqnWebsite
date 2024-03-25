@@ -1,5 +1,8 @@
 module.exports = function (fs, m, fn) {
-    fn.scraps = {lines: {}, pdf: {}};
+    fn.scraps = {
+        lines: {},
+        pdf: {}
+    };
     fs
     .readdirSync(__dirname)
     .filter(file => {

@@ -1,5 +1,5 @@
 module.exports = function ( m, fn ) {
-    fn.nsns.classes.find = function (where) {
+    fn.nsns.classes.find = function ( where ) {
         return fn.find(
             m.nsn_classes,
             where
@@ -7,12 +7,12 @@ module.exports = function ( m, fn ) {
     };
     fn.nsns.classes.findAll = function ( query ) {
         return new Promise( ( resolve, reject ) => {
-            if (query.nsn_group_id === '') query.nsn_group_id = null;
+            if ( query.nsn_group_id === '' ) query.nsn_group_id = null;
             m.nsn_classes.findAndCountAll({
                 where: query.where,
                 ...fn.pagination( query )
             })
-            .then(results => resolve(results))
+            .then( resolve )
             .catch( reject );
         });
     };

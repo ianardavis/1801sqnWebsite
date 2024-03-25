@@ -22,7 +22,7 @@ module.exports = function ( m, fn ) {
                     where: query.where,
                     ...fn.pagination( query )
                 })
-                .then(results => resolve(results))
+                .then( resolve )
                 .catch( reject );
             })
             .catch( reject );
