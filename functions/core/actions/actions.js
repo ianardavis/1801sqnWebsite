@@ -1,9 +1,14 @@
 module.exports = function ( m, fn ) {
-    fn.actions.find = function (where) {
+    fn.actions.find = function ( where ) {
         return fn.find(
             m.actions,
             where,
-            [fn.inc.users.user()]
+            [{
+                model:      m.users,
+                include:    [ m.ranks ],
+                attributes: fn.users.attributes.slim(),
+                as:         'user'
+            }]
         );
     };
     fn.actions.findAll = function ( query ) {
@@ -21,7 +26,7 @@ module.exports = function ( m, fn ) {
         });
     };
 
-    fn.actions.create = function ([action, user_id, links, return_result = true]) {
+    fn.actions.create = function ( [ action, user_id, links, return_result = true ] ) {
         return new Promise((resolve) => {
             m.actions.create({
                 action:  action,
@@ -33,10 +38,10 @@ module.exports = function ( m, fn ) {
                     as: 'links'
                 }]
             })
-            .then(action => resolve(return_result))
-            .catch(err => {
-                console.error(err);
-                resolve(return_result);
+            .then( action => resolve( return_result ) )
+            .catch( err => {
+                console.error( err );
+                resolve( return_result );
             });
         });
     };

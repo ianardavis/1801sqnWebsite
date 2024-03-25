@@ -4,8 +4,18 @@ module.exports = function ( m, fn ) {
             m.loancards,
             where,
             [
-                fn.inc.users.user(),
-                fn.inc.users.user({as: 'user_loancard'})
+                {
+                    model:      m.users,
+                    include:    [ m.ranks ],
+                    attributes: fn.users.attributes.slim(),
+                    as:         'user'
+                },
+                {
+                    model:      m.users,
+                    include:    [ m.ranks ],
+                    attributes: fn.users.attributes.slim(),
+                    as:         'user_loancard'
+                }
             ].concat(include)
         );
     };
@@ -47,7 +57,12 @@ module.exports = function ( m, fn ) {
                         where: {status: {[fn.op.ne]: 0}},
                         required: false
                     },
-                    fn.inc.users.user(),
+                    {
+                        model:      m.users,
+                        include:    [ m.ranks ],
+                        attributes: fn.users.attributes.slim(),
+                        as:         'user'
+                    },
                     fn.inc.users.user({as: 'user_loancard', ...user_filter})
                 ];
                 m.loancards.findAndCountAll({

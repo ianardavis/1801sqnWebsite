@@ -37,7 +37,12 @@ module.exports = function ( m, fn ) {
                 where: where,
                 include: [
                     fn.inc.stores.size(),
-                    fn.inc.users.user(),
+                    {
+                        model:      m.users,
+                        include:    [ m.ranks ],
+                        attributes: fn.users.attributes.slim(),
+                        as:         'user'
+                    },
                     fn.inc.stores.demand(),
                     fn.inc.stores.orders()
                 ],

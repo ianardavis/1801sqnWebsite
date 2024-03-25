@@ -1,17 +1,27 @@
 module.exports = function ( m, fn ) {
     fn.notes = {};
-    fn.notes.find = function (where) {
+    fn.notes.find = function ( where ) {
         return fn.find(
             m.notes,
             where,
-            [fn.inc.users.user()]
+            [{
+                model:      m.users,
+                include:    [ m.ranks ],
+                attributes: fn.users.attributes.slim(),
+                as:         'user'
+            }]
         );
     };
     fn.notes.findAll = function ( query ) {
         return new Promise( ( resolve, reject ) => {
             m.notes.findAndCountAll({
                 where:   query.where,
-                include: [fn.inc.users.user()],
+                include: [{
+                    model:      m.users,
+                    include:    [ m.ranks ],
+                    attributes: fn.users.attributes.slim(),
+                    as:         'user'
+                }],
                 ...fn.pagination( query )
             })
             .then( resolve )
@@ -19,7 +29,7 @@ module.exports = function ( m, fn ) {
         });
     };
 
-    fn.notes.create = function (note, user_id, id, table, system = true) {
+    fn.notes.create = function ( note, user_id, id, table, system = true ) {
         return new Promise( ( resolve, reject ) => {
             m.notes.create({
                 note:    note,
@@ -33,16 +43,20 @@ module.exports = function ( m, fn ) {
         });
     };
 
-    fn.notes.edit = function (note_id, note_text) {
+    fn.notes.edit = function ( note_id, note_text ) {
         return new Promise( ( resolve, reject ) => {
-            fn.notes.find({note_id: note_id})
+            m.notes.findOne({
+                where: { note_id: note_id }
+            })
+            .then( fn.rejectIfNull )
             .then(note => {
                 if (note.system) {
                     reject(new Error('System generated notes can not be edited'));
                     
                 } else {
-                    fn.update(note, note_text)
-                    .then(result => resolve(true))
+                    note.update( note_text )
+                    .then( fn.checkResult )
+                    .then( resolve )
                     .catch( reject );
                 };
             })
@@ -50,24 +64,20 @@ module.exports = function ( m, fn ) {
         });
     };
 
-    fn.notes.delete = function (note_id) {
+    fn.notes.delete = function ( note_id ) {
         return new Promise( ( resolve, reject ) => {
-            fn.notes.find({note_id: note_id})
-            .then(note => {
-                if (note.system) {
+            m.notes.findOne({
+                where: { note_id: note_id }
+            })
+            .then( fn.rejectIfNull )
+            .then( note => {
+                if ( note.system ) {
                     reject(new Error('System generated notes can not be deleted'));
 
                 } else {
                     note.destroy()
-                    .then(result => {
-                        if (result) {
-                            resolve(true);
-
-                        } else {
-                            reject(new Error('Note not deleted'));
-
-                        };
-                    })
+                    .then( fn.checkResult )
+                    .then( resolve )
                     .catch( reject );
 
                 };

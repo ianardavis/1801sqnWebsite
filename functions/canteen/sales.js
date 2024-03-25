@@ -7,7 +7,12 @@ module.exports = function ( m, fn ) {
             [
                 { model: m.sessions,   as: 'session' },
                 { model: m.sale_lines, as: 'lines' },
-                fn.inc.users.user()
+                {
+                    model:      m.users,
+                    include:    [ m.ranks ],
+                    attributes: fn.users.attributes.slim(),
+                    as:         'user'
+                }
             ]
         );
     };
@@ -21,7 +26,12 @@ module.exports = function ( m, fn ) {
                         include: [ { model: m.canteen_items, as: 'item' } ],
                         as: 'lines'
                     },
-                    fn.inc.users.user()
+                    {
+                        model:      m.users,
+                        include:    [ m.ranks ],
+                        attributes: fn.users.attributes.slim(),
+                        as:         'user'
+                    }
                 ],
                 ...fn.pagination( query )
             })
@@ -166,7 +176,10 @@ module.exports = function ( m, fn ) {
                     });
                 };
                 return new Promise( ( resolve, reject ) => {
-                    fn.credits.find( { credit_id: user_id_debit } )
+                    m.credits.findOne({
+                        where: { credit_id: user_id_debit }
+                    })
+                    .then( fn.rejectIfNull )
                     .then( account => {
                         if ( balance <= account.credit ) {
                             debitAccount( sale.sale_id, account, balance )
@@ -265,7 +278,10 @@ module.exports = function ( m, fn ) {
         function processSoldStock( [ sale, change ] ) {
             function subtractSoldQtyFromStock( { item_id, qty } ) {
                 return new Promise( ( resolve, reject ) => {
-                    fn.canteen_items.find( { item_id: item_id } )
+                    m.canteen_items.findOne({ 
+                        where: { item_id: item_id } 
+                    })
+                    .then( fn.rejectIfNull )
                     .then( item => {
                         item.decrement( 'qty', { by: qty } )
                         .then( result => resolve( true ) )

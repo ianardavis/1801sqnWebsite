@@ -5,7 +5,12 @@ module.exports = function ( m, fn ) {
             m.receipts,
             where,
             [
-                fn.inc.users.user(),
+                {
+                    model:      m.users,
+                    include:    [ m.ranks ],
+                    attributes: fn.users.attributes.slim(),
+                    as:         'user'
+                },
                 { model: m.canteen_items, include:  include, as: 'item' }
             ]
         );
@@ -15,7 +20,12 @@ module.exports = function ( m, fn ) {
             m.receipts.findAndCountAll({
                 where: query.where,
                 include: [
-                    fn.inc.users.user(),
+                    {
+                        model:      m.users,
+                        include:    [ m.ranks ],
+                        attributes: fn.users.attributes.slim(),
+                        as:         'user'
+                    },
                     { model: m.canteen_items, include:  include, as: 'item' }
                 ],
                 ...fn.pagination( query )

@@ -5,8 +5,18 @@ module.exports = function ( m, fn ) {
             m.sessions,
             where,
             [
-                fn.inc.users.user( { as: 'user_open' } ),
-                fn.inc.users.user( { as: 'user_close' } )
+                {
+                    model:      m.users,
+                    include:    [ m.ranks ],
+                    attributes: fn.users.attributes.slim(),
+                    as:         'user_open'
+                },
+                {
+                    model:      m.users,
+                    include:    [ m.ranks ],
+                    attributes: fn.users.attributes.slim(),
+                    as:         'user_close'
+                }
             ]
         );
     };
@@ -15,8 +25,18 @@ module.exports = function ( m, fn ) {
             m.sessions.findAndCountAll({
                 where: query.where,
                 include: [
-                    fn.inc.users.user( { as: 'user_open' } ),
-                    fn.inc.users.user( { as: 'user_close' } ),
+                    {
+                        model:      m.users,
+                        include:    [ m.ranks ],
+                        attributes: fn.users.attributes.slim(),
+                        as:         'user_open'
+                    },
+                    {
+                        model:      m.users,
+                        include:    [ m.ranks ],
+                        attributes: fn.users.attributes.slim(),
+                        as:         'user_close'
+                    }
                 ],
                 ...fn.pagination( query )
             })
@@ -49,12 +69,18 @@ module.exports = function ( m, fn ) {
     };
     
     fn.sessions.countCash = function ( obj ) {
-        let cash = 0.0;
-        for ( let denomination of Object.values( obj )) {
-            for ( let value of Object.values( denomination ) ) {
-                cash += Number( value );
-            };
-        };
+        // let cash = 0.0;
+        let cash = Object.values( obj ).reduce( ( total, current ) => {
+            total += Object.values( current ).reduce( ( dTotal, dCurrent ) => {
+                dTotal += Number ( dCurrent );
+            });
+        });
+
+        // for ( let denomination of Object.values( obj )) {
+        //     for ( let value of Object.values( denomination ) ) {
+        //         cash += Number( value );
+        //     };
+        // };
         return cash;
     };
     fn.sessions.create = function ( balance, user_id ) {
@@ -87,7 +113,12 @@ module.exports = function ( m, fn ) {
                 where:   { type: { [ fn.op.or ]: [ 'Cash', 'cash' ] } },
                 include: [{
                     model:    m.sales,
-                    include:  [ fn.inc.users.user() ],
+                    include:  [{
+                        model:      m.users,
+                        include:    [ m.ranks ],
+                        attributes: fn.users.attributes.slim(),
+                        as:         'user'
+                    }],
                     as:       'sale',
                     where:    { session_id: session_id },
                     required: true
@@ -148,7 +179,12 @@ module.exports = function ( m, fn ) {
                     where:   { type: { [ fn.op.or ]: [ 'Cash', 'cash' ] } },
                     include: [{
                         model:    m.sales,
-                        include:  [ fn.inc.users.user() ],
+                        include:  [{
+                            model:      m.users,
+                            include:    [ m.ranks ],
+                            attributes: fn.users.attributes.slim(),
+                            as:         'user'
+                        }],
                         as:       'sale',
                         where:    { session_id: session_id },
                         required: true

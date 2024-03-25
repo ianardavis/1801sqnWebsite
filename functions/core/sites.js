@@ -1,103 +1,108 @@
 module.exports = function ( m, fn ) {
     fn.sites = {};
-    fn.sites.find = function (where, options = {}) {
+    fn.sites.find = function ( where, options = {} ) {
         return fn.find(
             m.sites,
             where,
-            options.include || (options.for_user ? [{model: m.users, where: {user_id: options.for_user}, required: true}] : [])
+            options.include || ( options.for_user ? [ { model: m.users, where: { user_id: options.for_user }, required: true } ] : [] )
         );
     };
-    fn.sites.findAll = function (query, options = {}) {
+    fn.sites.findAll = function ( query, options = {} ) {
         return new Promise( ( resolve, reject ) => {
             m.sites.findAndCountAll({
                 where: query.where || {},
                 ...fn.pagination( query ),
-                include: options.include || (options.for_user ? [{model: m.users, where: {user_id: options.for_user}, required: true}] : [])
+                include: options.include || ( options.for_user ? [ { model: m.users, where: { user_id: options.for_user }, required: true } ] : [] )
             })
-            .then(sites => resolve(sites))
+            .then( resolve )
             .catch( reject );
         });
     };
-    fn.sites.findForUser = function (user_id) {
+    fn.sites.findForUser = function ( user_id ) {
         return new Promise( ( resolve, reject ) => {
             m.users.findOne({
-                where:   {user_id: user_id},
-                include: [m.sites]
+                where:   { user_id: user_id },
+                include: [ m.sites ]
             })
-            .then(user => resolve(user.sites))
+            .then( user => resolve( user.sites ) )
             .catch( reject );
         });
     };
-    fn.sites.findCurrent = function (site_id) {
+    fn.sites.findCurrent = function ( site_id ) {
         return new Promise( ( resolve, reject ) => {
-            fn.sites.find({site_id: site_id})
-            .then(resolve)
+            m.sites.findOne({ 
+                where: { site_id: site_id }
+            })
+            .then( resolve )
             .catch( reject );
         });
     };
-    fn.sites.switch = function (req) {
+    fn.sites.switch = function ( req ) {
         return new Promise( ( resolve, reject ) => {
             m.sites.findOne({
-                where: {site_id: req.params.id},
+                where: { site_id: req.params.id },
                 include: [{
                     model: m.users,
-                    where: {user_id: req.user.user_id},
+                    where: { user_id: req.user.user_id },
                     required: true
                 }]
             })
-            .then(site => {
-                if (site) {
+            .then( site => {
+                if ( site ) {
                     req.session.site = site.dataValues;
                     req.session.save();
-                    resolve(true);
+                    resolve( true );
+
                 } else {
-                    reject(new Error('You do not have access to this site!'));
+                    reject( new Error( 'You do not have access to this site!' ) );
+
                 };
             })
             .catch( reject );
         });
     };
-    fn.sites.addUser = function (user_id, site_id) {
+    fn.sites.addUser = function ( user_id, site_id ) {
         return new Promise( ( resolve, reject ) => {
             Promise.all([
-                fn.users.find({user_id: user_id}),
-                fn.sites.find({site_id: site_id})
+                m.users.findOne( { where: { user_id: user_id } } ),
+                m.sites.findOne( { where: { site_id: site_id } } )
             ])
-            .then(([user, site]) => {
+            .then( fn.rejectIfAnyNull )
+            .then( ( [ user, site ] ) => {
                 m.site_users.findOrCreate({
                     where: {
                         user_id: user.user_id,
                         site_id: site.site_id
                     }
                 })
-                .then(([site_user, created]) => {resolve(created)})
+                .then( ( [ site_user, created ] ) => resolve( created ) )
                 .catch( reject );
             })
             .catch( reject );
         });
     };
 
-    fn.sites.create = function (name, user_id_creator) {
-        function createPermission(details, permission) {
+    fn.sites.create = function ( name, user_id_creator ) {
+        function createPermission( details, permission ) {
             return new Promise( ( resolve, reject ) => {
                 m.permissions.create({
                     ...details,
                     permission: permission
                 })
-                .then(resolve)
+                .then( resolve )
                 .catch( reject );
             });
         };
         return new Promise( ( resolve, reject ) => {
             m.sites.create({ name: name })
-            .then(site => {
+            .then( site => {
                 m.site_users.create({
                     user_id: user_id_creator,
                     site_id: site.site_id
                 })
-                .then(site_user => {
+                .then( site_user => {
                     let permissionActions = [];
-                    function addPermission(permission) {
+                    function addPermission( permission ) {
                         permissionActions.push(createPermission(
                             {
                                 site_id: site.site_id,
@@ -105,17 +110,15 @@ module.exports = function ( m, fn ) {
                             },
                             permission.permission
                         ));
-                        if (permission.children && permission.children.length > 0) {
-                            permission.children.forEach(addPermission);
+                        if ( permission.children && permission.children.length > 0 ) {
+                            permission.children.forEach( addPermission );
                         };
                     };
-                    fn.users.permissions.tree().forEach(addPermission);
+                    fn.users.permissions.tree().forEach( addPermission );
 
-                    Promise.allSettled(permissionActions)
+                    Promise.allSettled( permissionActions )
                     .then( fn.fulfilledOnly )
-                    .then(results => {
-                        resolve(`${results.length} permissions successfully created`);
-                    })
+                    .then( results => resolve( `${ results.length } permissions successfully created` ) )
                     .catch( reject );
                 })
                 .catch( reject );
@@ -124,30 +127,34 @@ module.exports = function ( m, fn ) {
         });
     };
 
-    fn.sites.delete = function (site_id) {
+    fn.sites.delete = function ( site_id ) {
         return new Promise( ( resolve, reject ) => {
             const where = { site_id: site_id };
-            fn.sites.find(where)
-            .then(site => {
+            m.sites.findOne({
+                where: where
+            })
+            .then( fn.rejectIfNull )
+            .then( site => {
                 Promise.allSettled([
-                    m.demands  .findOne({ where: where }),
-                    m.issues   .findOne({ where: where }),
-                    m.loancards.findOne({ where: where }),
-                    m.orders   .findOne({ where: where }),
-                    m.stocks   .findOne({ where: where }),
+                    m.demands  .findOne( { where: where } ),
+                    m.issues   .findOne( { where: where } ),
+                    m.loancards.findOne( { where: where } ),
+                    m.orders   .findOne( { where: where } ),
+                    m.stocks   .findOne( { where: where } ),
                 ])
-                .then(results => {
+                .then( results => {
                     console.log(results);
-                    if (results.filter(r = r.value).length > 0) {
-                        reject(new Error('There are records on this site, it cannot be deleted'));
+                    if ( results.filter( r = r.value ).length > 0 ) {
+                        reject( new Error( 'There are records on this site, it cannot be deleted' ) );
     
                     } else {
                         Promise.allSettled([
-                            m.accounts.destroy({where: {site_id: site_id}})
+                            m.accounts.destroy( { where: { site_id: site_id } } )
                         ])
-                        .then(results => {
+                        .then( results => {
                             site.destroy()
-                            .then(resolve)
+                            .then( fn.checkResult )
+                            .then( resolve )
                             .catch( reject );
                         })
                         .catch( reject );
@@ -156,7 +163,7 @@ module.exports = function ( m, fn ) {
                 })
                 .catch( reject );
             })
-            .catch(err => reject(new Error('Site not found')));
+            .catch(err => reject( new Error( 'Site not found' ) ) );
         });
     };
 };
