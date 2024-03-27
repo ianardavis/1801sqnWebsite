@@ -76,7 +76,8 @@ module.exports = function ( m, fn ) {
                     .then(existing_location => reject(new Error('Location already exists')))
                     .catch(err => {
                         if (err.message === 'Location not found') {
-                            fn.update(location, {location: new_location})
+                            location.update( { location: new_location } )
+                            .then( fn.checkResult )
                             .then(resolve)
                             .catch( reject );
     

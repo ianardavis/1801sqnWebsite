@@ -1,22 +1,22 @@
-const { scryptSync, randomBytes } = require("crypto");
+const { scryptSync, randomBytes } = require( "crypto" );
 module.exports = function ( m, fn ) {
     fn.users.password.generate = function () {
-        const consenants = ['b','c','d','f','g','h','j','k','l','m','n','p','q','r','s','t','v','w','x','z'];
-        const vowels     = ['a','e','i','o','u','y'];
-        const pattern = ['C','V','C','-','C','V','C','-','C','V','C'];
+        const consenants = [ 'b','c','d','f','g','h','j','k','l','m','n','p','q','r','s','t','v','w','x','z' ];
+        const vowels     = [ 'a','e','i','o','u','y' ];
+        const pattern    = [ 'C','V','C','-','C','V','C','-','C','V','C' ];
         let plain      = '';
         let readable   = '';
 
         pattern.forEach(l => {
             const rand = Math.random();
-            function randomLetter (arr) { return arr[ Math.floor( rand * arr.length ) ]}
+            function randomLetter ( arr ) { return arr[ Math.floor( rand * arr.length ) ] }
             let letter = '-';
             if ( l === 'C' ) {
-                letter = randomLetter(consenants);
+                letter = randomLetter( consenants );
                 plain += letter;
                 
             } else if ( l === 'V' ){
-                letter = randomLetter(vowels);
+                letter = randomLetter( vowels );
                 plain += letter;
                 
             };

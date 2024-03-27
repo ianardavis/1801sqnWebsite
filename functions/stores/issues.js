@@ -645,17 +645,17 @@ module.exports = function ( m, fn ) {
 
                     } else {
                         const original_size = fn.printSize( issue.size );
-                        fn.update(
-                            issue,
-                            { size_id: size.size_id },
-                            [
+                        issue.update( { size_id: size.size_id } )
+                        .then( fn.checkResult )
+                        .then( result => {
+                            fn.actions.create([
                                 `ISSUE | UPDATED | Size changed From: ${ original_size } to: ${ fn.printSize( size ) }`,
                                 user_id,
                                 [ { _table: 'issues', id: issue.issue_id } ]
-                            ]
-                        )
-                        .then( fn.actions.create )
-                        .then( result => resolve( true ) )
+                            ])
+                            .then( result => resolve( true ) )
+                            .catch( reject );
+                        })
                         .catch( reject );
                     };
                 })
@@ -674,17 +674,17 @@ module.exports = function ( m, fn ) {
                 changeCheck( issue_id, site_id )
                 .then( issue => {
                     const original_qty = issue.qty;
-                    fn.update(
-                        issue,
-                        { qty: qty },
-                        [
+                    issue.update( { qty: qty } )
+                    .then( fn.checkResult )
+                    .then( result => {
+                        fn.actions.create ([
                             `ISSUE | UPDATED | Quantity changed From: ${ original_qty } to: ${ qty }`,
                             user_id,
                             [ { _table: 'issues', id: issue.issue_id } ]
-                        ]
-                    )
-                    .then( fn.actions.create )
-                    .then( result => resolve( true ) )
+                        ])
+                        .then( result => resolve( true ) )
+                        .catch( reject );
+                    })
                     .catch( reject );
                 })
                 .catch( reject );

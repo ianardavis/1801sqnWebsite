@@ -28,7 +28,8 @@ module.exports = function ( m, fn ) {
             fn.serials.find({serial_id: serial_id})
             .then(serial => {
                 let original_serial = serial.serial;
-                fn.update(serial, {serial: new_serial})
+                serial.update( { serial: new_serial } )
+                .then( fn.checkResult )
                 .then(result => {
                     fn.actions.create([
                         `EDITED | Serial # changed from ${original_serial} to ${new_serial}`,
@@ -52,15 +53,16 @@ module.exports = function ( m, fn ) {
                     fn.locations.findOrCreate(location)
                     .then(new_location => {
                         if (new_location.location_id !== serial.location_id) {
-                            fn.update(
-                                serial,
-                                {location_id: new_location.location_id},
-                                [
+                            serial.update( { location_id: new_location.location_id } )
+                            .then( result => {
+                                fn.actions.create([
                                     `SERIAL | LOCATION | transferred from ${original_location} to ${new_location.location}`,
                                     user_id,
-                                    [{_table: 'serials', id: serial.serial_id}]
-                                ]
-                            )
+                                    [ { _table: 'serials', id: serial.serial_id } ]
+                                ])
+                                .then(action => resolve(true))
+                                .catch( reject );
+                            })
                             .then(fn.actions.create)
                             .then(action => resolve(true))
                             .catch( reject );
@@ -110,21 +112,24 @@ module.exports = function ( m, fn ) {
             return new Promise( ( resolve, reject ) => {
                 checkSerial()
                 .then(serial => {
-                    fn.update(serial, {location_id: null}, serial.size.supplier_id)
-                    .then(fn.scraps.findOrCreate)
-                    .then(scrap => {
-                        fn.scraps.lines.create(
-                            scrap.scrap_id,
-                            serial.size_id,
-                            details
-                        )
-                        .then(result => {
-                            fn.actions.create([
-                                'SERIAL | SCRAPPED',
-                                user_id,
-                                [{_table: 'serials', id: serial.serial_id}]
-                            ])
-                            .then(results => resolve(true));
+                    serial.update( { location_id: null } )
+                    .then(result => {
+                        fn.scraps.findOrCreate( serial.size.supplier_id )
+                        .then(scrap => {
+                            fn.scraps.lines.create(
+                                scrap.scrap_id,
+                                serial.size_id,
+                                details
+                            )
+                            .then(result => {
+                                fn.actions.create([
+                                    'SERIAL | SCRAPPED',
+                                    user_id,
+                                    [{_table: 'serials', id: serial.serial_id}]
+                                ])
+                                .then(results => resolve(true));
+                            })
+                            .catch( reject );
                         })
                         .catch( reject );
                     })
@@ -219,13 +224,11 @@ module.exports = function ( m, fn ) {
                     where: {location: location}
                 })
                 .then(([location, created]) => {
-                    fn.update(
-                        serial,
-                        {
-                            location_id: location.location_id,
-                            issue_id:    null
-                        }
-                    )
+                    serial.update({
+                        location_id: location.location_id,
+                        issue_id:    null
+                    })
+                    .then( fn.checkResult )
                     .then(result => resolve({_table: 'serials', id: serial.serial_id}))
                     .catch( reject );
                 })
@@ -263,17 +266,19 @@ module.exports = function ( m, fn ) {
         return new Promise( ( resolve, reject ) => {
             fn.locations.findOrCreate(location)
             .then(location => {
-                fn.update(
-                    serial,
-                    {location_id: location.location_id},
-                    [
+                serial.update( { location_id: location.location_id},
+                    
+                )
+                .then( fn.checkResult )
+                .then( result => {
+                    fn.actions.create([
                         `SERIAL | LOCATION | Set to ${location.location}${action_append}`,
                         user_id,
-                        [{_table: 'serials', id: serial.serial_id}]
-                    ]
-                )
-                .then(fn.actions.create)
-                .then(result => resolve(true))
+                        [ { _table: 'serials', id: serial.serial_id } ]
+                    ])
+                    .then(result => resolve(true))
+                    .catch( reject );
+                })
                 .catch( reject );
             })
             .catch( reject );
@@ -295,7 +300,8 @@ module.exports = function ( m, fn ) {
                     reject(new Error('Cannot delete a serial with loancards'));
                             
                 } else {
-                    fn.destroy(serial)
+                    serial.destroy()
+                    .then( fn.checkResult )
                     .then(resolve)
                     .catch( reject );
                     

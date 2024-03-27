@@ -80,7 +80,8 @@ module.exports = function ( m, fn ) {
         return new Promise( ( resolve, reject ) => {
             fn.loancards.find({loancard_id: loancard_id, site_id: site_id})
             .then(loancard => {
-                fn.update(loancard, details)
+                loancard.update( details )
+                .then( fn.checkResult )
                 .then(result => resolve(true))
                 .catch( reject );
             })
@@ -132,7 +133,8 @@ module.exports = function ( m, fn ) {
         return new Promise( ( resolve, reject ) => {
             check(loancard_id)
             .then(loancard => {
-                fn.update(loancard, {status: 0})
+                loancard.update( { status: 0 } )
+                .then( fn.checkResult )
                 .then(result => {
                     fn.actions.create([
                         'LOANCARD | CANCELLED',
@@ -193,7 +195,8 @@ module.exports = function ( m, fn ) {
                 let actions = [];
                 lines.forEach(line => {
                     actions.push(new Promise( ( resolve, reject ) => {
-                        fn.update(line, {status: 2})
+                        line.update( { status: 2 } )
+                        .then( fn.checkResult )
                         .then(result => resolve({_table: 'loancard_lines', id: line.line_id}))
                         .catch( reject );
                     }));
@@ -208,13 +211,11 @@ module.exports = function ( m, fn ) {
             .then(loancard => {
                 updateLines(loancard.lines)
                 .then(line_links => {
-                    fn.update(
-                        loancard,
-                        {
-                            status:   2,
-                            date_due: date_due
-                        }
-                    )
+                    loancard.update({
+                        status:   2,
+                        date_due: date_due
+                    })
+                    .then( fn.checkResult )
                     .then(result => {
                         fn.actions.create([
                             'LOANCARD | COMPLETED',
@@ -286,7 +287,8 @@ module.exports = function ( m, fn ) {
         return new Promise( ( resolve, reject ) => {
             check(loancard_id)
             .then(loancard => {
-                fn.update(loancard, {status: 3})
+                loancard.update( { status: 3 } )
+                .then( fn.checkResult )
                 .then(result => {
                     fn.actions.create([
                         'LOANCARD | CLOSED',

@@ -1,5 +1,11 @@
 module.exports = function (fs, m, fn) {
-    fn.users = {password: {}, permissions: {}, ranks: {}, statuses: {}, attributes: {}};
+    fn.users = {
+        password:    {},
+        permissions: {},
+        ranks:       {},
+        statuses:    {},
+        attributes:  {}
+    };
     fn.users.attributes.slim = [
         'user_id',
         'full_name',

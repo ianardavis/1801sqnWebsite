@@ -201,7 +201,8 @@ module.exports = function ( m, fn ) {
         function updateStock(stock) {
             return new Promise( ( resolve, reject ) => {
                 const variance = qty - stock.qty;
-                fn.update(stock, {qty: qty})
+                stock.update( { qty: qty } )
+                .then( fn.checkResult )
                 .then(result => resolve([
                     `COUNT | ${(variance < 0 ? 
                         `Decreased by ${variance}. New qty: ${qty}` : (variance > 0 ? 

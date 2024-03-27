@@ -82,7 +82,8 @@ module.exports = function ( m, fn ) {
                     ['user_id', 'full_name', 'salt', 'password', 'last_login', 'createdAt', 'updatedAt', 'reset'].forEach(e => {
                         if (details[e]) delete details[e];
                     });
-                    fn.update(user, details)
+                    user.update( details )
+                    .then( fn.checkresult )
                     .then(resolve)
                     .catch( reject );
                 });
@@ -137,7 +138,8 @@ module.exports = function ( m, fn ) {
         return new Promise( ( resolve, reject ) => {
             fn.users.find({user_id: user_id}, ["user_id", "reset"])
             .then(user => {
-                fn.update(user, {reset: !user.reset})
+                user.update( { reset: !user.reset } )
+                .then( fn.checkResult )
                 .then(resolve)
                 .catch( reject );
             })

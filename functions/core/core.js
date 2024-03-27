@@ -180,7 +180,7 @@ module.exports = function ( m, fn ) {
     fn.find = function( table, where, include = [] ) {
         return new Promise( ( resolve, reject ) => {
             table.findOne({
-                where: where,
+                where:   where,
                 include: include
             })
             .then( fn.rejectIfNull )
@@ -203,29 +203,6 @@ module.exports = function ( m, fn ) {
         return results
             .filter( result => result.status === 'fulfilled' )
             .map   ( result => result.value );
-    };
-    fn.update = function ( record, details, return_value = true ) {
-        return new Promise( ( resolve, reject ) => {
-            record.update( details )
-            .then( result => {
-                if ( result ) {
-                    resolve( return_value );
-
-                } else {
-                    reject( new Error( 'Record not updated' ) );
-
-                };
-            })
-            .catch( reject );
-        });
-    };
-    fn.destroy = function ( record ) {
-        return new Promise( ( resolve, reject ) => {
-            record.destroy()
-            .then( fn.checkResult )
-            .then( resolve)
-            .catch( reject );
-        });
     };
     fn.rejectIfNotCreated = function ( [ record, created ] ) {
         return new Promise( ( resolve, reject ) => {

@@ -86,12 +86,13 @@ module.exports = function ( m, fn ) {
                 function checkLines(lines) {
                     function close_loancard_line(line) {
                         return new Promise( ( resolve, reject ) => {
-                            fn.update(line, {status: 3})
+                            line.update( { status: 3 } )
+                            .then( fn.checkResult )
                             .then(result => {
                                 fn.actions.create([
                                     'LOANCARD LINE | CLOSED',
                                     user_id,
-                                    [{_table: 'loancard_lines', id: line.line_id}]
+                                    [ { _table: 'loancard_lines', id: line.line_id } ]
                                 ])
                                 .then(resolve);
                             })
@@ -266,16 +267,14 @@ module.exports = function ( m, fn ) {
                                 })
                                 .then(link_line => {
                                     Promise.all([
-                                        fn.update(
-                                            serial,
-                                            {
-                                                issue_id:    issue.issue_id,
-                                                location_id: null
-                                            }
-                                        ),
-                                        fn.update(issue, {status: 4})
+                                        serial.update({
+                                            issue_id:    issue.issue_id,
+                                            location_id: null
+                                        }),
+                                        issue.update( { status: 4 } )
                                     ])
-                                    .then(([result1, result2]) => {
+                                    .then( fn.rejectIfAnyNull )
+                                    .then( ( [ result1, result2 ] ) => {
                                         fn.actions.create([
                                             'LOANCARD LINE | CREATED',
                                             user_id,
@@ -350,7 +349,8 @@ module.exports = function ( m, fn ) {
                                 line_id: loancard_line.line_id
                             })
                             .then(link_line => {
-                                fn.update(issue, {status: 4})
+                                issue.update( { status: 4 } )
+                                .then( fn.checkResult )
                                 .then(result => {
                                     fn.actions.create([
                                         `LOANCARD LINE | ${(created ? 'CREATED' : `INCREMENTED BY ${line.qty}`)}`,
@@ -467,7 +467,8 @@ module.exports = function ( m, fn ) {
                         issue.issue_loancard_lines.destroy()
                         .then(result => {
                             if (result) {
-                                fn.update(issue, {status: 2})
+                                issue.update( { status: 2 } )
+                                .then( fn.checkResult )
                                 .then(result => resolve({_table: 'issues', id: issue.issue_id}))
                                 .catch( reject );
 
@@ -486,7 +487,8 @@ module.exports = function ( m, fn ) {
         };
         function updateLine([line, links]) {
             return new Promise( ( resolve, reject ) => {
-                fn.update(line, {status: 0})
+                line.update( { status: 0 } )
+                .then( fn.checkResult )
                 .then(result => resolve([
                     'LOANCARD LINE | CANCELLED',
                     user_id,
@@ -623,13 +625,11 @@ module.exports = function ( m, fn ) {
             };
             function returnSerial() {
                 return new Promise( ( resolve, reject ) => {
-                    fn.update(
-                        destination.serial.serial,
-                        {
-                            issue_id: null,
-                            location_id: destination.serial.location_id
-                        }
-                    )
+                    destination.serial.serial.update({
+                        issue_id: null,
+                        location_id: destination.serial.location_id
+                    })
+                    .then( fn.checkResult )
                     .then(result => resolve([loancard_line, {_table: 'serials', id: destination.serial.serial.serial_id}]))
                     .catch( reject );
                 });
@@ -698,7 +698,7 @@ module.exports = function ( m, fn ) {
                         actions.push(createIssueForRemainder);
                         
                     };
-                    actions.push(fn.update(issue, issue_record))
+                    actions.push(issue.update( issue_record ))
                     Promise.all(actions)
                     .then(results => resolve({_table: 'issues', id: issue.issue_id}))
                     .catch( reject );

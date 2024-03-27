@@ -115,7 +115,8 @@ module.exports = function ( m, fn ) {
         };
         function updateLoancard([loancard, filename]) {
             return new Promise( ( resolve, reject ) => {
-                fn.update(loancard, {filename: filename})
+                loancard.update( { filename: filename } )
+                .then( fn.checkResult )
                 .then(result => resolve(filename))
                 .catch( reject );
             });

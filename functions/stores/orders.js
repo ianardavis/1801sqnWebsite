@@ -31,7 +31,8 @@ module.exports = function ( m, fn ) {
     
     function updateOrderStatus([order, status, user_id, action, links = []]) {
         return new Promise( ( resolve, reject ) => {
-            fn.update(order, {status: status})
+            order.update( { status: status } )
+            .then( fn.checkResult )
             .then(result => {
                 if (action) {
                     fn.actions.create([
@@ -265,7 +266,8 @@ module.exports = function ( m, fn ) {
                         let record = {order_id: null};
                         if (issue.status === 3) record.status = 2;
                         
-                        fn.update(issue, record)
+                        issue.update( record )
+                        .then( fn.checkResult )
                         .then(result => resolve({_table: 'issues', id: issue.issue_id}))
                         .catch( reject );
                     }));
@@ -554,17 +556,17 @@ module.exports = function ( m, fn ) {
                 return new Promise( ( resolve, reject ) => {
                     let qty_original = order.qty;
                     if (qty > qty_original) {
-                        fn.update(
-                            order,
-                            {qty: qty},
-                            [
+                        order.update( { qty: qty } )
+                        .then( fn.checkResult )
+                        .then( result => {
+                            fn.actions.create([
                                 `ORDER | Quantity increased from ${qty_original} to ${qty} on over receipt`,
                                 user_id,
                                 [{_table: 'orders', id: order.order_id}]
-                            ]
-                        )
-                        .then(fn.actions.create)
-                        .then(result => resolve([order, links, qty]))
+                            ])
+                            .then(result => resolve([order, links, qty]))
+                            .catch( reject );
+                        })
                         .catch( reject );
                         
                     } else if (qty < qty_original) {
@@ -668,8 +670,9 @@ module.exports = function ( m, fn ) {
 
                     } else {
                         const original_size = order.size;
-                        fn.update(order, {size_id: size.size_id})
-                        .then(result => {
+                        order.update( { size_id: size.size_id } )
+                        .then( fn.checkResult )
+                        .then( result => {
                             fn.actions.create([
                                 `ORDER | UPDATED | Size changed From: ${fn.printSize(original_size)} to: ${fn.printSize(size)}`,
                                 user_id,
@@ -695,7 +698,8 @@ module.exports = function ( m, fn ) {
                 changeCheck(site_id, order_id)
                 .then(order => {
                     let original_qty = order.qty;
-                    fn.update(order, {qty: qty})
+                    order.update( { qty: qty } )
+                    .then( fn.checkResult )
                     .then(result => {
                         fn.actions.create([
                             `ORDER | UPDATED | Quantity changed From: ${original_qty} to: ${qty}`,

@@ -18,8 +18,9 @@ module.exports = function ( m, fn ) {
         return new Promise( ( resolve, reject ) => {
             fn.suppliers.find({supplier_id: supplier_id})
             .then(supplier => {
-                fn.update(supplier, details)
-                .then(resolve)
+                supplier.update( details )
+                .then( fn.checkResult )
+                .then( resolve )
                 .catch( reject );
             })
             .catch( reject );
@@ -142,25 +143,21 @@ module.exports = function ( m, fn ) {
     function edit(id, new_record, user_id, table) {
         return new Promise( ( resolve, reject ) => {
             let where = {};
-            where[`${table.si}`] = id;
-            m[table.pl].findOne(where)
-            .then(result => {
-                if (result) {
-                    fn.update(result, new_record)
-                    .then(result => {
-                        fn.actions.create([
-                            `${table.si.toUpperCase()} | UPDATED`,
-                            user_id,
-                            [{_table: table.pl, id: result[`${table.si}_id`]}]
-                        ])
-                        .then(result => resolve(true));
-                    })
-                    .catch( reject );
-
-                } else {
-                    reject(new Error(`No ${table.si} for this record`));
-
-                };
+            where[ `${table.si}` ] = id;
+            m[ table.pl ].findOne( where )
+            .then( fn.rejectIfNull )
+            .then( result => {
+                result.update( new_record )
+                .then( fn.checkResult )
+                .then(result => {
+                    fn.actions.create([
+                        `${table.si.toUpperCase()} | UPDATED`,
+                        user_id,
+                        [ { _table: table.pl, id: result[ `${ table.si }_id` ] } ]
+                    ])
+                    .then(result => resolve(true));
+                })
+                .catch( reject );
             })
             .catch( reject );
         });
