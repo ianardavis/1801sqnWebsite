@@ -1,31 +1,24 @@
 module.exports = function ( m, fn ) {
     const default_attributes = ['user_id', 'full_name', 'first_name', 'surname', 'status_id', 'rank_id'];
-    fn.users.find = function (where, attributes = default_attributes) {
+    fn.users.find = function ( where, attributes = default_attributes ) {
         return new Promise( ( resolve, reject ) => {
             m.users.findOne({
                 where: where,
-                include: [fn.inc.users.rank(), fn.inc.users.status()],
+                include: [ m.ranks, m.statuses ],
                 attributes: attributes
             })
-            .then(user => {
-                if (user) {
-                    resolve(user);
-
-                } else {
-                    reject(new Error('User not found'));
-                
-                };
-            })
+            .then( fn.rejectIfNull )
+            .then( resolve )
             .catch( reject );
         });
     };
-    fn.users.findAll = function (query, site_id, options = {}) {
+    fn.users.findAll = function ( query, site_id, options = {} ) {
         return new Promise( ( resolve, reject ) => {
             let include = [
-                fn.inc.users.rank(),
-                options.status_include || fn.inc.users.status()
+                m.ranks,
+                options.status_include || m.statuses
             ];
-            if (site_id) include.push({
+            if ( site_id ) include.push({
                 model: m.sites,
                 where: { site_id: site_id },
                 required: true

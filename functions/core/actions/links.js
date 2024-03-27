@@ -1,5 +1,5 @@
 module.exports = function ( m, fn ) {
-    fn.actions.links.find = function (where) {
+    fn.actions.links.find = function ( where ) {
         return fn.find(
             m.action_links,
             where
@@ -11,7 +11,7 @@ module.exports = function ( m, fn ) {
                 where: query.where,
                 ...fn.pagination( query )
             })
-            .then(links => resolve(links))
+            .then( resolve )
             .catch( reject );
         });
     };

@@ -1,5 +1,9 @@
 module.exports = function (fs, m, fn) {
-    fn.nsns = {classes: {}, groups: {}, countries: {}};
+    fn.nsns = {
+        classes: {}, 
+        groups: {}, 
+        countries: {}
+    };
     fs
     .readdirSync(__dirname)
     .filter(file => {

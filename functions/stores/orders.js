@@ -16,7 +16,12 @@ module.exports = function ( m, fn ) {
             where: query.where,
             include: [
                 fn.inc.stores.size(),
-                fn.inc.users.user()
+                {
+                    model:      m.users,
+                    include:    [ m.ranks ],
+                    attributes: fn.users.attributes.slim(),
+                    as:         'user'
+                }
             ],
             ...fn.pagination( query )
         });
@@ -354,8 +359,9 @@ module.exports = function ( m, fn ) {
                         }));
                     });
                     Promise.allSettled(actions)
-                    .then(fn.checkResults)
-                    .then(resolve)
+                    .then( fn.logRejects )
+                    .then( fn.fulfilledOnly )
+                    .then( resolve )
                     .catch( reject );
                 });
             };
@@ -506,18 +512,18 @@ module.exports = function ( m, fn ) {
                         )
                     });
                     Promise.allSettled(actions)
-                    .then(results => {
-                        const serials = results.filter( fn.fulfilledOnly );
+                    .then( fn.fulfilledOnly )
+                    .then( serials => {
                         const qty = serials.length;
                         if (qty && qty > 0) {
                             let links = [];
                             serials.forEach(serial => {
                                 if (serial.location_id) {
-                                    if (links.indexOf({_table: 'locations', id: serial.value.location_id}) === -1) {
-                                        links.push({_table: 'locations', id: serial.value.location_id});
+                                    if (links.indexOf({_table: 'locations', id: serial.location_id}) === -1) {
+                                        links.push({_table: 'locations', id: serial.location_id});
                                     };
                                 };
-                                links.push({_table: 'serials', id: serial.value.serial_id})
+                                links.push({_table: 'serials', id: serial.serial_id})
                             });
                             resolve([qty, links]);
         

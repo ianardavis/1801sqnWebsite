@@ -11,8 +11,21 @@ module.exports = function ( m, fn ) {
             m.payments.findAndCountAll({
                 where: query.where,
                 include: [
-                    { model: m.sales, include: [ fn.inc.users.user() ], as: 'sale' },
-                    fn.inc.users.user()
+                    { 
+                        model: m.sales,
+                        include: [{
+                            model:      m.users,
+                            include:    [ m.ranks ],
+                            attributes: fn.users.attributes.slim(),
+                            as:         'user'
+                        }],
+                        as: 'sale' },
+                    {
+                        model:      m.users,
+                        include:    [ m.ranks ],
+                        attributes: fn.users.attributes.slim(),
+                        as:         'user'
+                    }
                 ],
                 ...fn.pagination( query )
             })
@@ -28,7 +41,12 @@ module.exports = function ( m, fn ) {
                         where:    where,
                         required: true
                     }),
-                    fn.inc.users.user()
+                    {
+                        model:      m.users,
+                        include:    [ m.ranks ],
+                        attributes: fn.users.attributes.slim(),
+                        as:         'user'
+                    }
                 ],
                 ...pagination
             })

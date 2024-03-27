@@ -1,5 +1,3 @@
-/* @import "../colour_schema.css"; */
-
 .selected_row {
 	background-color: var(--main-color);
 	color: var(--main-bg-color);

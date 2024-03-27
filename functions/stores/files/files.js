@@ -94,12 +94,12 @@ module.exports = function ( m, fn ) {
                     user_id: user_id
                 })
                 .then(result => {
-                    fn.fs.rmdir(`${process.env.ROOT}/public/uploads/${files.uploaded.uuid}`)
+                    fn.fs.rmdir(`${ process.env.ROOT }/public/uploads/${files.uploaded.uuid}`)
                     .then(result => resolve(true))
                     .catch( reject );
                 })
                 .catch(error => {
-                    fn.fs.rmdir(`${process.env.ROOT}/public/uploads/${files.uploaded.uuid}`)
+                    fn.fs.rmdir(`${ process.env.ROOT }/public/uploads/${files.uploaded.uuid}`)
                     .then(result => reject(error))
                     .catch( reject );
                 });

@@ -1,0 +1,32 @@
+.modal-header {
+	color: var(--main-bg-color-dark);
+	background-color: var(--main-color)
+}
+.modal-footer {
+	color: var(--main-bg-color-dark);
+	background-color: var(--main-color)
+}
+.modal-content {
+	background-color: var(--main-bg-color)
+}
+.toast {
+	background-color: var(--alt-color2);
+}
+
+.offcanvas-header {
+	background-color: var(--main-color);
+	color: var(--main-bg-color);
+}
+.offcanvas {
+	background-color: var(--main-bg-color);
+	color: var(--main-color);
+}
+
+.toast-warn {
+	background-color: #f95056;
+	color: var(--main-bg-color-dark)
+}
+.toast-header {
+	background-color: var(--main-color);
+	color: var(--main-bg-color-dark)
+}

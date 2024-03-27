@@ -37,7 +37,12 @@ module.exports = function ( m, fn ) {
                 where: where,
                 include: [
                     fn.inc.stores.size(),
-                    fn.inc.users.user(),
+                    {
+                        model:      m.users,
+                        include:    [ m.ranks ],
+                        attributes: fn.users.attributes.slim(),
+                        as:         'user'
+                    },
                     fn.inc.stores.demand(),
                     fn.inc.stores.orders()
                 ],
@@ -330,6 +335,7 @@ module.exports = function ( m, fn ) {
                     };
                     Promise.allSettled( actions )
                     .then( fn.logRejects )
+                    .then( fn.fulfilledOnly )
                     .then( results => resolve( [ results, serials ] ) )
                     .catch( reject );
                 });
@@ -361,11 +367,13 @@ module.exports = function ( m, fn ) {
                     };
                     Promise.allSettled( actions )
                     .then( fn.logRejects )
+                    .then( fn.fulfilledOnly )
                     .then( results => resolve( [ results, qtyRemaining ] ) )
                     .catch( reject );
                 });
             };
-            const sumValues = ( a, b ) => a + Number( b.value );
+            const sumValues = ( a, b ) => a + Number( b );
+
             return new Promise( ( resolve, reject ) => {
                 const has_serials = ( line.size.has_serials );
                 ( has_serials ? receiveSerials : receiveStock )
@@ -374,7 +382,7 @@ module.exports = function ( m, fn ) {
 
                     resolve({
                         demand_line: line,
-                        qty:         Number( results.filter( fn.fulfilledOnly ).reduce( sumValues )),
+                        qty:         Number( results.reduce( sumValues )),
                         remaining:   ( has_serials ? remaining : { qty: remaining, location: details.location } )
                     });
                 })

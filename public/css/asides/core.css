@@ -1,0 +1,9 @@
+.sideways {
+	transform: rotate(90deg);
+}
+.offcanvas {
+	z-index: 9500;
+}
+.div_toasts {
+	position: relative;
+}

@@ -5,6 +5,8 @@
 @import "tables/colours.css";
 @import "nav/core.css";
 @import "nav/colours.css";
+@import "asides/core.css";
+@import "asides/colours.css";
 @media (min-width: 768px) {
 	h1 {font-size: 2.9rem}
 }
@@ -59,23 +61,14 @@ select {
 	user-select: none;
 	vertical-align: middle;
 }
-.sideways {
-	transform: rotate(90deg);
-}
 .fixed {
 	position: fixed;
 	top: 100px;
 	left: 0px;
 	z-index: 9000;
 }
-.offcanvas {
-	z-index: 9500;
-}
 .mb-60px {
 	margin-bottom: 60px;
-}
-.form_inline {
-	display: inline;
 }
 .form-control {
 	text-align: center;
@@ -83,18 +76,12 @@ select {
 .hidden {
 	display: none;
 }
-.inline-form {
-	display: inline;
-}
 .nested {
 	display: none;
 	transition: 0.5s;
 }
 .notification {
 	width: 650px
-}
-.div_toasts {
-	position: relative;
 }
 
 div input {

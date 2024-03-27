@@ -1,5 +1,3 @@
-@import "colour_schema.css";
-
 #col_headers .btn {
 	background-color: #bdffa3;
 	color:#010a1f;
@@ -52,40 +50,10 @@ body {
 .list-group-item {
 	color: var(--main-bg-color-dark);
 }
-.modal-header {
-	color: var(--main-bg-color-dark);
-	background-color: var(--main-color)
-}
-.modal-footer {
-	color: var(--main-bg-color-dark);
-	background-color: var(--main-color)
-}
-.modal-content {
-	background-color: var(--main-bg-color)
-}
-.toast {
-	background-color: var(--alt-color2);
-}
 
-.offcanvas-header {
-	background-color: var(--main-color);
-	color: var(--main-bg-color);
-}
-.offcanvas {
-	background-color: var(--main-bg-color);
-	color: var(--main-color);
-}
 
 .pwd_warn {
 	background: #f95056;
-}
-.toast-warn {
-	background-color: #f95056;
-	color: var(--main-bg-color-dark)
-}
-.toast-header {
-	background-color: var(--main-color);
-	color: var(--main-bg-color-dark)
 }
 .menu .card .card-header {
 	color: var(--main-bg-color);

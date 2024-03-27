@@ -1,5 +1,5 @@
 module.exports = function ( m, fn ) {
-    fn.nsns.groups.find = function (where) {
+    fn.nsns.groups.find = function ( where ) {
         return fn.find(
             m.nsn_groups,
             where
@@ -11,7 +11,7 @@ module.exports = function ( m, fn ) {
                 where: query.where,
                 ...fn.pagination( query )
             })
-            .then(results => resolve(results))
+            .then( resolve )
             .catch( reject );
         });
     };

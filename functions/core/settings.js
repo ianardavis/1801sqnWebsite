@@ -1,20 +1,20 @@
-const fs = require("fs");
+const fs = require( "fs" );
 module.exports = function ( m, fn ) {
     fn.settings = {
         logs: {}
     };
-    fn.settings.find = function (where) {
+    fn.settings.find = function ( where ) {
         return new Promise( ( resolve, reject ) => {
-            m.settings.findAll({where: where})
-            .then(settings => {
-                if (!settings || settings.length === 0) {
-                    reject(new Error('Setting not found'));
-
-                } else if (settings.length > 1) {
-                    reject(new Error('Multiple settings found'));
+            m.settings.findAll({
+                where: where
+            })
+            .then( fn.rejectIfNull )
+            .then( settings => {
+                if ( settings.length > 1 ) {
+                    reject( new Error('Multiple settings found' ) );
 
                 } else {
-                    resolve(settings[0]);
+                    resolve( settings[0] );
                 
                 };
             })
@@ -25,44 +25,43 @@ module.exports = function ( m, fn ) {
         return new Promise( ( resolve, reject ) => {
             m.settings.findAll({
                 where:      query.where,
-                attributes: ['setting_id','name', 'value'],
+                attributes: [ 'setting_id','name', 'value' ],
                 ...fn.pagination( query )
             })
-            .then(settings => resolve(settings))
+            .then( resolve )
             .catch( reject );
         });
     };
 
-    fn.settings.edit = function (setting_id, details) {
+    fn.settings.edit = function ( setting_id, details ) {
         return new Promise( ( resolve, reject ) => {
-            m.settings.findOne({where: {setting_id: setting_id}})
-            .then(setting => {
-                if (setting) {
-                    fn.update(setting, details)
-                    .then(result => resolve(true))
-                    .catch( reject );
-
-                } else {
-                    reject(new Error('Setting not found'));
-                
-                };
+            m.settings.findOne({
+                where: { setting_id: setting_id }
+            })
+            .then( fn.rejectIfNull )
+            .then( setting => {
+                setting.update( details )
+                .then( fn.checkResult )
+                .then( resolve )
+                .catch( reject );
             })
             .catch( reject );
         });
     };
-    fn.settings.set = function (name, value) {
+    fn.settings.set = function ( name, value ) {
         return new Promise( ( resolve, reject ) => {
             m.settings.findOrCreate({
-                where:    {name:  name},
-                defaults: {value: value}
+                where:    { name:  name },
+                defaults: { value: value }
             })
-            .then(([setting, created]) => {
-                if (created) {
+            .then( ( [ setting, created ] ) => {
+                if ( created ) {
                     resolve(true);
 
                 } else {
-                    fn.update(setting, {value: value})
-                    .then(result => resolve(true))
+                    setting.update( { value: value } )
+                    .then( fn.checkResult )
+                    .then( resolve )
                     .catch( reject );
 
                 };
@@ -70,52 +69,51 @@ module.exports = function ( m, fn ) {
             .catch( reject );
         });
     };
-    fn.settings.delete = function (setting_id) {
+    fn.settings.delete = function ( setting_id ) {
         return new Promise( ( resolve, reject ) => {
-            fn.settings.find({setting_id: setting_id})
-            .then(setting => {
+            m.settings.findOne({
+                where: { setting_id: setting_id }
+            })
+            .then( fn.rejectIfNull )
+            .then( setting => {
                 setting.destroy()
-                .then(result => {
-                    if (result) {
-                        resolve(true);
-
-                    } else {
-                        reject(new Error('Setting not deleted'));
-
-                    };
-                })
+                .then( fn.checkResult )
+                .then( resolve )
                 .catch( reject );
             })
             .catch( reject );
         });
     };
 
-    fn.settings.logs.find = function (type, res) {
+    fn.settings.logs.find = function ( type, res ) {
         return new Promise( ( resolve, reject ) => {
-            fn.settings.find({name: `log ${type || ''}`})
+            m.settings.findOne({
+                where: { name: `log ${ type || '' }` }
+            })
+            .then( fn.rejectIfNull )
             .then(setting => {
-                let readStream = fs.createReadStream(setting.value);
-                readStream.on('open',  ()  => {readStream.pipe(res)});
-                readStream.on('close', ()  => {res.end()});
-                readStream.on('error', err => {
-                    console.error(err);
+                let readStream = fs.createReadStream( setting.value );
+                readStream.on( 'open',  ()  => { readStream.pipe( res ) } );
+                readStream.on( 'close', ()  => { res.end() } );
+                readStream.on( 'error', err => {
+                    console.error( err );
                     res.end();
                 });
-                resolve(true);
+                resolve( true );
             })
             .catch( reject );
         });
     };
 
-    fn.settings.runCommand = function (command) {
+    fn.settings.runCommand = function ( command ) {
         return new Promise( ( resolve, reject ) => {
             try {
-                const output = fn.runCommand(command);
-                console.log(output);
-                resolve(true);
+                const output = fn.runCommand( command );
+                console.log( output );
+                resolve( true );
 
-            } catch (err) {
-                reject(err);
+            } catch ( err ) {
+                reject( err );
                 
             };
         });

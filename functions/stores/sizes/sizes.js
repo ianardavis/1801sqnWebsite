@@ -1,15 +1,15 @@
 module.exports = function ( m, fn ) {
-    fn.sizes.find = function (site_id, where, include = []) {
+    fn.sizes.find = function ( site_id, where, include = [] ) {
         return fn.find(
             m.sizes,
             {
-                site_id: {[fn.op.or]: [site_id, null]},
+                site_id: { [ fn.op.or ]: [ site_id, null ]  },
                 ...where
             },
             [
-                fn.inc.stores.item(),
-                fn.inc.stores.supplier()
-            ].concat(include)
+                { model: m.items, as: 'item' },
+                { model: m.suppliers, as: 'supplier' }
+            ].concat( include )
         );
     };
     fn.sizes.findAll = function ( query ) {
@@ -17,20 +17,20 @@ module.exports = function ( m, fn ) {
             m.sizes.findAndCountAll({
                 where: query.where,
                 include: [
-                    fn.inc.stores.item(),
-                    fn.inc.stores.supplier()
+                    { model: m.items, as: 'item' },
+                    { model: m.suppliers, as: 'supplier' }
                 ],
                 ...fn.pagination( query )
             })
-            .then(sizes => resolve(sizes))
+            .then( resolve )
             .catch( reject );
         });
     };
-    fn.sizes.count = function (where) {return m.sizes.count({where: where})};
+    fn.sizes.count = function ( where ) { return m.sizes.count( { where: where } ) };
 
-    fn.sizes.create = function (size) {
+    fn.sizes.create = function ( size ) {
         return new Promise( ( resolve, reject ) => {
-            if (size.supplier_id === '') size.supplier_id = null;
+            if ( size.supplier_id === '' ) size.supplier_id = null;
             m.sizes.findOrCreate({
                 where: {
                     item_id: size.item_id,
@@ -40,25 +40,22 @@ module.exports = function ( m, fn ) {
                 },
                 defaults: size
             })
-            .then(([size, created]) => {
-                if (created) {
-                    resolve(size);
-
-                } else {
-                    reject(new Error('This size already exists'));7
-
-                };
-            })
+            .then( fn.rejectIfNotCreated )
+            .then( resolve )
             .catch( reject );
         });
     };
 
-    fn.sizes.edit = function (size_id, details) {
+    fn.sizes.edit = function ( size_id, details ) {
         return new Promise( ( resolve, reject ) => {
-            fn.sizes.find({size_id: size_id})
-            .then(size => {
-                fn.update(size, details)
-                .then(result => resolve(true))
+            m.sizes.findOne({
+                where: { size_id: size_id }
+            })
+            .then( fn.rejectIfNull )
+            .then( size => {
+                size.update( details )
+                .then( fn.checkResult )
+                .then( resolve )
                 .catch( reject );
             })
             .catch( reject );
@@ -67,23 +64,27 @@ module.exports = function ( m, fn ) {
 
     fn.sizes.delete = function (size_id) {
         return new Promise( ( resolve, reject ) => {
-            const where = {size_id: size_id}
-            fn.sizes.find(where)
-            .then(size => {
+            const where = { size_id: size_id }
+            m.sizes.findOne({
+                where: where
+            })
+            .then( fn.rejectIfNull )
+            .then( size => {
                 Promise.all([
-                    m.stocks.findOne({where: where}),
-                    m.nsns  .findOne({where: where})
+                    m.stocks.findOne( { where: where } ),
+                    m.nsns  .findOne( { where: where } )
                 ])
-                .then(([stocks, nsns]) => {
-                    if (stocks) {
-                        reject(new Error('Cannot delete a size whilst it has stock'));
+                .then( ( [ stocks, nsns ] ) => {
+                    if ( stocks ) {
+                        reject( new Error( 'Cannot delete a size whilst it has stock' ) );
     
-                    } else if (nsns) {
-                        reject(new Error('Cannot delete a size whilst it has NSNs'));
+                    } else if ( nsns ) {
+                        reject( new Error( 'Cannot delete a size whilst it has NSNs' ) );
 
                     } else {
                         size.destroy()
-                        .then(result => resolve(true))
+                        .then( fn.checkResult )
+                        .then( resolve )
                         .catch( reject );
                     };
                 })

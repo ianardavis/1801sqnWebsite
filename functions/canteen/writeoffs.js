@@ -5,7 +5,12 @@ module.exports = function ( m, fn ) {
             m.writeoffs,
             where,
             [
-                fn.inc.users.user(),
+                {
+                    model:      m.users,
+                    include:    [ m.ranks ],
+                    attributes: fn.users.attributes.slim(),
+                    as:         'user'
+                },
                 fn.inc.canteen.item()
             ]
         );
@@ -15,7 +20,12 @@ module.exports = function ( m, fn ) {
             m.writeoffs.findAndCountAll({
                 where: query.where,
                 include: [
-                    fn.inc.users.user(),
+                    {
+                        model:      m.users,
+                        include:    [ m.ranks ],
+                        attributes: fn.users.attributes.slim(),
+                        as:         'user'
+                    },
                     fn.inc.canteen.item()
                 ],
                 ...fn.pagination( query )
@@ -40,26 +50,24 @@ module.exports = function ( m, fn ) {
                     reject( new Error( 'No item ID' ) );
     
                 } else {
-                    resolve( true );
+                    resolve( { where: { item_id: writeoff.item_id } } );
     
                 };
             });
         };
         return new Promise( ( resolve, reject ) => {
             checkWriteoff()
-            .then(result => {
-                fn.canteen_items.find({item_id: writeoff.item_id})
-                .then(item => {
-                    item.decrement('qty', {by: writeoff.qty})
-                    .then(result => {
-                        m.writeoffs.create({
-                            ...writeoff,
-                            cost:    item.cost,
-                            user_id: user_id
-                        })
-                        .then(writeoff => resolve(true))
-                        .catch( reject );
+            .then( m.canteen_items.findOne )
+            .then( fn.rejectIfNull )
+            .then( item => {
+                item.decrement( 'qty', { by: writeoff.qty } )
+                .then( result => {
+                    m.writeoffs.create({
+                        ...writeoff,
+                        cost:    item.cost,
+                        user_id: user_id
                     })
+                    .then( writeoff => resolve(true))
                     .catch( reject );
                 })
                 .catch( reject );

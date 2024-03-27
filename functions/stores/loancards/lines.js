@@ -13,12 +13,27 @@ module.exports = function ( m, fn ) {
                 include: [
                     m.issues,
                     fn.inc.stores.size(),
-                    fn.inc.users.user(),
+                    {
+                        model:      m.users,
+                        include:    [ m.ranks ],
+                        attributes: fn.users.attributes.slim(),
+                        as:         'user'
+                    },
                     fn.inc.stores.loancard({
                         ...options.loancard_where || {},
                         include: [
-                            fn.inc.users.user(),
-                            fn.inc.users.user({as: 'user_loancard'})
+                            {
+                                model:      m.users,
+                                include:    [ m.ranks ],
+                                attributes: fn.users.attributes.slim(),
+                                as:         'user'
+                            },
+                            {
+                                model:      m.users,
+                                include:    [ m.ranks ],
+                                attributes: fn.users.attributes.slim(),
+                                as:         'user_loancard'
+                            }
                         ]
                     })
                 ],
@@ -47,8 +62,9 @@ module.exports = function ( m, fn ) {
                 });
     
                 Promise.allSettled(actions)
-                .then(fn.checkResults)
-                .then(resolve)
+                .then( fn.logRejects )
+                .then( fn.fulfilledOnly )
+                .then( resolve )
                 .catch( reject );
             });
         };
@@ -160,7 +176,8 @@ module.exports = function ( m, fn ) {
                     }));
                 });
                 Promise.allSettled(actions)
-                .then(fn.checkResults)
+                .then( fn.logRejects )
+                .then( fn.fulfilledOnly )
                 .then(results => resolve(true))
                 .catch( reject );
             });
@@ -286,7 +303,7 @@ module.exports = function ( m, fn ) {
                 .then(results => {
                     resolve(true);
                     // let resolve_obj = [];
-                    // results.filter( fn.fulfilledOnly ).forEach(r => resolve_obj.concat(r.value));
+                    // results.filter( fn.fulfilledOnly ).forEach(r => resolve_obj.concat(r));
                     // resolve(resolve_obj);
                 })
                 .catch( reject );

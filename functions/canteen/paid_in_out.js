@@ -1,25 +1,37 @@
 module.exports = function ( m, fn ) {
     fn.paid_in_outs = {};
     
+    const include = [
+        {
+            model:      m.users,
+            include:    [ m.ranks ],
+            attributes: fn.users.attributes.slim(),
+            as:         'user_paid_in_out'
+        },
+        {
+            model:      m.users,
+            include:    [ m.ranks ],
+            attributes: fn.users.attributes.slim(),
+            as:         'user'
+        },
+        { model: m.holdings, as: 'holding' }
+    ]
     fn.paid_in_outs.find = function ( where ) {
-        return fn.find(
-            m.paid_in_outs,
-            where,
-            [
-                fn.inc.users.user({as: 'user_paid_in_out'}),
-                fn.inc.users.user(),
-                { model: m.holdings, as: 'holding' }
-            ]
-        );
+        return new Promise( ( resolve, reject ) => {
+            m.paid_in_outs.findOne({
+                where: where,
+                include: include
+            })
+            .then( fn.rejectIfNull )
+            .then( resolve )
+            .catch( reject );
+        });
     };
     fn.paid_in_outs.findAll = function ( query ) {
         return new Promise( ( resolve, reject ) => {
             m.paid_in_outs.findAndCountAll({
                 where: query.where,
-                include: [
-                    fn.inc.users.user( { as: 'user_paid_in_out' } ),
-                    { model: m.holdings, as: 'holding' }
-                ],
+                include: include,
                 ...fn.pagination( query )
             })
             .then( resolve )
@@ -94,10 +106,11 @@ module.exports = function ( m, fn ) {
         function getHoldingCheckUser( paid_in_out ) {
             return new Promise( ( resolve, reject ) => {
                 Promise.all([
-                    fn.holdings.find( { holding_id: paid_in_out.holding_id } ),
-                    fn.users.find(    { user_id:    paid_in_out.user_id_paid_in_out } )
+                    m.holdings.findOne( { where: { holding_id: paid_in_out.holding_id } } ),
+                    m.users.findOne(    { where: { user_id:    paid_in_out.user_id_paid_in_out } } )
                 ])
-                .then( results => resolve( [ paid_in_out, results[0] ] ) )
+                .then( fn.rejectIfAnyNull )
+                .then( ( [ holding, user ] ) => resolve( [ paid_in_out, holding ] ) )
                 .catch( reject );
             });
         };

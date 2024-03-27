@@ -1,10 +1,14 @@
 module.exports = function ( m, fn ) {
     fn.canteen_items = {};
     fn.canteen_items.find = function ( where ) {
-        return fn.find(
-            m.canteen_items,
-            where
-        );
+        return new Promise( ( resolve, reject ) => {
+            m.canteen_items.findOne({
+                where: where
+            })
+            .then( fn.rejectIfNull )
+            .then( resolve )
+            .catch( reject )
+        });
     };
     fn.canteen_items.findAll = function ( query ) {
         return new Promise( ( resolve, reject ) => {
@@ -20,7 +24,7 @@ module.exports = function ( m, fn ) {
         return new Promise( ( resolve, reject ) => {
             m.eans.findOne({
                 where: { ean: ean },
-                include: [ fn.inc.canteen.item() ]
+                include: [ { model: m.canteen_items, as: 'item' } ]
             })
             .then( fn.rejectIfNull )
             .then( _ean => {
@@ -59,7 +63,7 @@ module.exports = function ( m, fn ) {
                 .catch( reject );
 
             } else {
-                reject( new Error( 'No item' ) );
+                reject( new Error( 'No item details' ) );
 
             };
         });
@@ -73,15 +77,8 @@ module.exports = function ( m, fn ) {
                     m.writeoffs .findOne( { where: { item_id: item_id } } ),
                     m.receipts  .findOne( { where: { item_id: item_id } } )
                 ])
-                .then( results => {
-                    if ( results.filter(e => !e).length > 0 ) {
-                        reject( new Error( 'This item has linked data and cannot be deleted' ) );
-                        
-                    } else {
-                        resolve( true );
-                        
-                    };
-                })
+                .then( fn.resolveIfAllNull )
+                .then( resolve )
                 .catch( reject );
             });
         };
@@ -93,6 +90,7 @@ module.exports = function ( m, fn ) {
             .then(item => {
                 check_for_linked_data( item.item_id )
                 .then( item.destroy )
+                .then( fn.checkResult )
                 .then( resolve )
                 .catch( reject );
             })

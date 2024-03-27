@@ -1,10 +1,14 @@
 module.exports = function ( m, fn ) {
 	fn.giftaid = {};
     fn.giftaid.find = function ( where ) {
-        return fn.find(
-            m.giftaid,
-            where
-        );
+        return new Promise ( ( resolve, reject ) => {
+			m.giftaid.findOne({
+				where: where
+			})
+			.then( fn.rejectIfNull )
+			.then( resolve )
+			.catch( reject );
+		});
     };
 	fn.giftaid.findAll = function ( query ) {
 		return new Promise( ( resolve, reject ) => {
@@ -25,7 +29,7 @@ module.exports = function ( m, fn ) {
 				.catch( reject );
 
 			} else {
-				reject( new Error( 'No record' ) );
+				reject( new Error( 'No record details submitted' ) );
 
 			};
 		});
@@ -33,23 +37,17 @@ module.exports = function ( m, fn ) {
 
 	fn.giftaid.edit = function ( giftaid_id, details ) {
 		return new Promise( ( resolve, reject ) => {
-			if ( giftaid ) {
-				m.giftaid.findOne({
-					where: { giftaid_id: giftaid_id } 
-				})
-				.then( fn.rejectIfNull )
-				.then( giftaid => {
-					giftaid.update( details )
-					.then( fn.checkResult )
-					.then( resolve )
-					.catch( reject );
-				})
+			m.giftaid.findOne({
+				where: { giftaid_id: giftaid_id } 
+			})
+			.then( fn.rejectIfNull )
+			.then( giftaid => {
+				giftaid.update( details )
+				.then( fn.checkResult )
+				.then( resolve )
 				.catch( reject );
-
-			} else {
-				reject( new Error( 'No record' ) );
-
-			};
+			})
+			.catch( reject );
 		});
 	};
 };
