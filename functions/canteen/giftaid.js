@@ -41,7 +41,7 @@ module.exports = function ( m, fn ) {
 				.then( giftaid => {
 					giftaid.update( details )
 					.then( fn.checkResult )
-					.then(result => resolve( true ) )
+					.then( resolve )
 					.catch( reject );
 				})
 				.catch( reject );

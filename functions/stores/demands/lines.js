@@ -409,22 +409,24 @@ module.exports = function ( m, fn ) {
                 };
             });
         };
-        function checkReceiptVariance(demand_line, qty) {
+        function checkReceiptVariance( demand_line, qty ) {
             return new Promise( ( resolve, reject ) => {
-                let qty_original = demand_line.qty;
-                if (qty > qty_original) {
-                    fn.update(demand_line, {qty: qty})
-                    .then(result => {
+                let qtyOriginal = demand_line.qty;
+
+                if ( qty > qtyOriginal ) {
+                    demand_line.update( { qty: qty } )
+                    .then( fn.checkResult )
+                    .then( result => {
                         createLineAction(
-                            `UPDATED | Qty increased from ${qty_original} to ${qty} on receipt`,
+                            `UPDATED | Qty increased from ${ qtyOriginal } to ${ qty } on receipt`,
                             demand_line.line_id,
                             user_id
                         )
-                        .then(action => resolve({demand_line: demand_line}));
+                        .then(action => resolve( { demand_line: demand_line } ) );
                     })
                     .catch( reject );
 
-                } else if (qty < qty_original) {
+                } else if ( qty < qtyOriginal ) {
                     m.demand_lines.create({
                         demand_id: demand_line.demand_id,
                         size_id:   demand_line.size_id,
@@ -432,28 +434,28 @@ module.exports = function ( m, fn ) {
                         status:    3,
                         user_id:   user_id
                     })
-                    .then(new_line => {
-                        demand_line.decrement('qty', {by: qty})
+                    .then( new_line => {
+                        demand_line.decrement( 'qty', { by: qty } )
                         .then(result => {
                             createLineAction(
-                                `UPDATED | Partial receipt | New demand line created for receipt qty | Existing demand line qty updated from ${qty_original} to ${qty_original - qty}`,
+                                `UPDATED | Partial receipt | New demand line created for receipt qty | Existing demand line qty updated from ${ qtyOriginal } to ${ qtyOriginal - qty }`,
                                 demand_line.line_id,
                                 user_id,
-                                [{_table: 'demand_lines', id: new_line.line_id}]
+                                [ { _table: 'demand_lines', id: new_line.line_id } ]
                             )
-                            .then(action => resolve({demand_line: new_line}));
+                            .then( action => resolve( { demand_line: new_line } ) );
                         })
                         .catch( reject );
                     })
                     .catch( reject );
 
                 } else {
-                    resolve({demand_line: demand_line});
+                    resolve( { demand_line: demand_line } );
                     
                 };
             });
         };
-        // 
+        
         return new Promise( ( resolve, reject ) => {
             checkLine()
             .then( receiveOrders )
@@ -479,7 +481,7 @@ module.exports = function ( m, fn ) {
                     .then( variance_result => {
                         variance_result.demand_line.update( { status: 3 } )
                         .then( fn.checkResult )
-                        .then( result => resolve( true ) )
+                        .then( resolve )
                         .catch( reject );
                     })
                     .catch( reject );

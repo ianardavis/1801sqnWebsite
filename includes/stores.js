@@ -120,7 +120,7 @@ module.exports = (m, fn) => {
             as:    'lines'
         };
     };
-    fn.inc.stores.loancard = (options = {}) => {
+    fn.inc.stores.loancard = ( options = {} ) => {
         return {
             model:    m.loancards,
             include:  options.include  || [],
@@ -183,7 +183,7 @@ module.exports = (m, fn) => {
             include: [fn.inc.stores.supplier()]
         };
     };
-    fn.inc.stores.scrap_lines = (where = null, required = false) => {
+    fn.inc.stores.scrap_lines = ( where = null, required = false ) => {
         return {
             model: m.scrap_lines,
             as:    'lines',
@@ -191,7 +191,7 @@ module.exports = (m, fn) => {
             required: required
         };
     };
-    fn.inc.stores.size = (options = {}) => {
+    fn.inc.stores.size = ( options = {} ) => {
         let includes = [fn.inc.stores.item()];
         if (options.details)  includes.push(fn.inc.stores.details());
         if (options.supplier) includes.push(fn.inc.stores.supplier());
@@ -208,7 +208,7 @@ module.exports = (m, fn) => {
             include: [fn.inc.users.item()]
         };
     };
-    fn.inc.stores.size_filter = (query) => {
+    fn.inc.stores.size_filter = ( query ) => {
         return {
             model: m.sizes,
             where: {

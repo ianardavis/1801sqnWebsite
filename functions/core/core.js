@@ -1,6 +1,6 @@
-const execSync = require('child_process').execSync;
+const execSync = require( 'child_process' ).execSync;
 module.exports = function ( m, fn ) {
-    fn.op = require('sequelize').Op;
+    fn.op = require( 'sequelize' ).Op;
     fn.redirect = function(res, url, message = null) {
         // if (message) console.log(message);
         // console.trace(`Redirecting to: ${url}`);
